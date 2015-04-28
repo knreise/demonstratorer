@@ -1,0 +1,14 @@
+html, body, #map { 
+    margin: 0; 
+    height: 100%; 
+    background: #fff; 
+}
+
+.marker-cluster { 
+    background-color: rgba(40, 130, 200, 0.5); 
+    color: #fff; 
+}
+
+.marker-cluster div { 
+    background-color: rgba(40, 130, 200, 0.9); 
+}
