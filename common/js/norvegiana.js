@@ -4,6 +4,7 @@ var NorvegianaAPI = function () {
     'use strict';
 
     var datasets = {
+        '*': 'Alle',
         'Artsdatabanken': 'Artsdatabanken',
         'difo': 'Digitalt fortalt',
         'DiMu': 'DigitaltMuseum',

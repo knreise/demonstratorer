@@ -1,0 +1,6 @@
+.leaflet-container .leaflet-control-dataset {
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}

@@ -12,47 +12,12 @@
 
 
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
-        <style type="text/css">
+        <link href='../common/css/L.Control.DatasetChooser.css' rel='stylesheet' />
 
-                #info {
-                    background: #fff;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                    position: absolute;
-                    bottom: 20px;
-                    left: 10%;
-                    right: 10%;
-                    z-index: 3000;
-                    height: 100px;
-                }
-
-        </style>
     </head>
     <body>
         <div id="sidebar"></div>
         <div id="map"></div>
-        <div id="info">
-            <label for="dataset">Datasett:</label>
-            <select class="form-control" id="dataset">
-            </select>
-            <form id="type" autocomplete="off">
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="click" value="click" checked>
-                        Klikk i kartet for å finne objekter innenfor radius
-                    </label>
-                </div>
-                <!--
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="pan" value="pan" >
-                        Oppdater objekter i kartet når du panorerer
-                    </label>
-                </div>
-            -->
-            </form>
-
-        </div>
 
         <!-- templates -->
         <script type="text/template" id="popup_template">
@@ -78,9 +43,11 @@
 
 
         <script src="../common/js/L.TileLayer.Kartverket.js"></script>
+        <script src="../common/js/L.Control.DatasetChooser.js"></script>
         <script src="../common/js/norvegiana.js"></script>
 
         <script type="text/javascript">
+
             (function () {
                 'use strict';
 
@@ -119,7 +86,6 @@
                                 }
                                 
                                 layer.on('click', function () {
-                                    console.log(feature.properties.europeana_isShownAt);
                                     sidebar.setContent(popupTemplate({
                                         title: feature.properties.dc_title,
                                         img: img,
@@ -141,7 +107,10 @@
                     var pos;
 
                     function getData(pos, dataset) {
-                        api.getWithin('delving_spec:' + dataset, pos, 5000, displayFunc);
+                        if (dataset !== '') {
+                            dataset = 'delving_spec:' + dataset;
+                        }
+                        api.getWithin(dataset, pos, 5000, displayFunc);
                     }
 
                     function mapClicked (e) {
@@ -173,59 +142,21 @@
                         off: off
                     };
                 }
-                /*
-                var MapPan = function (dataset) {
-                    var layer = getGeoJsonImageLayer();
-                    var displayFunc = getDisplayFunc(layer);
 
-                    function mapMoved() {
-                        var bbox = map.getBounds().toBBoxString();
-                        console.log(bbox);
-                        api.getBbox('delving_spec:DiMu', bbox, displayFunc);
-                    }
-
-                    function on () {
-                        layer.addTo(map);
-                        map.on('moveend', mapMoved);
-                    }
-
-                    function off() {
-                        map.off('moveend', mapMoved);
-                        map.removeLayer(layer);
-                        layer.clearLayers();
-                    }
-
-                    return {
-                        on: on,
-                        off: off
-                    };
-                }
-                */
                 var selectedDataset = 'DiMu';
                 var clickFunc = new MapClick(api, map, selectedDataset);
-                //var panFunc = new MapPan(api, map);
 
-                var optionTemplate = _.template('<option value="<%=key%>" <% if(selected) {print("selected")} %>><%=value%></option>');
-                var options = _.map(api.datasets(), function (value, key) {
-                    return $(optionTemplate({key: key, value: value, selected: key === selectedDataset}));
-                });
-
-                $('#dataset').append(options).change(function() {
-                    clickFunc.setDataset($(this).val());
-                });
-
-                clickFunc.on();
-                $('#type').change(function (e) {
-                    var val = $('#type input[type="radio"]:checked').val();
-
-                    if (val === 'click') {
-                        clickFunc.on();
-                        panFunc.off();
-                    } else {
-                        clickFunc.off();
-                        panFunc.on();
+                var datasetChooser = L.control.datasetChooser({
+                    datasets: api.datasets(),
+                    initialDataset: selectedDataset,
+                    datasetSelected: function (dataset) {
+                        clickFunc.setDataset(dataset);
                     }
                 });
+
+                map.addControl(datasetChooser);
+
+                clickFunc.on();
 
             }());
 
