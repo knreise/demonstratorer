@@ -41,9 +41,10 @@
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
 
-
         <script src="../common/js/L.TileLayer.Kartverket.js"></script>
         <script src="../common/js/L.Control.DatasetChooser.js"></script>
+        <script src="../common/js/L.Control.MapClick.js"></script>
+        <script src="../common/js/L.NorvegianaGeoJSON.js"></script>
         <script src="../common/js/norvegiana.js"></script>
 
         <script type="text/javascript">
@@ -51,101 +52,36 @@
             (function () {
                 'use strict';
 
+                //template used for sidebar
                 var popupTemplate = _.template($('#popup_template').html());
 
+                //create the map
                 var map = L.map('map');
 
+                //add a background layer from kartverket
                 L.tileLayer.kartverket('topo2graatone').addTo(map);
-                var pos = new L.LatLng(59.910586, 10.734329);
-                map.setView(pos, 16);
 
+
+                //initialize the map in oslo
+                map.setView(new L.LatLng(59.910586, 10.734329), 16);
+
+                //set up an instance of the Norvegiana API
                 var api = new NorvegianaAPI();
 
+                //the sidebar, used for displaying information
                 var sidebar = L.control.sidebar('sidebar', {
                     position: 'left'
                 });
-
                 map.addControl(sidebar);
 
-                function getDisplayFunc(layer) {
-                    return function (geoJson) {
-                        layer.clearLayers();
-                        layer = layer.addData(geoJson);
-                    };
-                }
-
-                function getGeoJsonLayer(pointToLayer) {
-                    return L.geoJson(
-                        null,
-                        {
-                            pointToLayer: pointToLayer,
-                            onEachFeature: function (feature, layer) {
-                                var img = feature.properties.delving_thumbnail;
-                                if (_.isArray(img)) {
-                                    img = img[0];
-                                }
-                                
-                                layer.on('click', function () {
-                                    sidebar.setContent(popupTemplate({
-                                        title: feature.properties.dc_title,
-                                        img: img,
-                                        desc: feature.properties.dc_description,
-                                        dataset: feature.properties.europeana_collectionTitle,
-                                        link: feature.properties.europeana_isShownAt
-                                    }));
-                                    sidebar.show();
-                                });
-                                
-                            }
-                        }
-                    );
-                }
-
-                function MapClick(api, map, dataset) {
-                    var layer = getGeoJsonLayer(api.pointToLayer);
-                    var displayFunc = getDisplayFunc(layer);
-                    var pos;
-
-                    function getData(pos, dataset) {
-                        if (dataset !== '') {
-                            dataset = 'delving_spec:' + dataset;
-                        }
-                        api.getWithin(dataset, pos, 5000, displayFunc);
-                    }
-
-                    function mapClicked (e) {
-                        pos = e.latlng;
-                        getData(pos, dataset);
-                    }
-
-                    function on () {
-                        layer.addTo(map);
-                        map.on('click', mapClicked);
-                    }
-
-                    function off() {
-                        map.off('click', mapClicked);
-                        map.removeLayer(layer);
-                        layer.clearLayers();
-                    }
-
-                    function setDataset(newDataset) {
-                        dataset = newDataset;
-                        if (pos) {
-                            getData(pos, dataset);
-                        }
-                    }
-
-                    return {
-                        setDataset: setDataset,
-                        on: on,
-                        off: off
-                    };
-                }
+                var layer = L.norvegianaGeoJSON(sidebar, api.pointToLayer, {popupTemplate: popupTemplate});
 
                 var selectedDataset = 'DiMu';
-                var clickFunc = new MapClick(api, map, selectedDataset);
+                var clickFunc = L.control.mapClick(layer, api, selectedDataset)
+                map.addControl(clickFunc);
+                clickFunc.on();
 
+                //simple control to choose datasets
                 var datasetChooser = L.control.datasetChooser({
                     datasets: api.datasets(),
                     initialDataset: selectedDataset,
@@ -153,10 +89,7 @@
                         clickFunc.setDataset(dataset);
                     }
                 });
-
                 map.addControl(datasetChooser);
-
-                clickFunc.on();
 
             }());
 
