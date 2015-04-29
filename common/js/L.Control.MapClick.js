@@ -14,7 +14,6 @@ L.Control.MapClick = L.Control.extend({
         if (this._layer) {
             this._layer.clearLayers();
         }
-        console.log("add");
         this._layer.addGeoJSON(geoJson);
     },
 

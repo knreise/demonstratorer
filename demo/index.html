@@ -36,6 +36,15 @@
             <a href="<%= link %>">Mer info</a>
             <% }%>
         </script>
+
+        <script type="text/template" id="list_item_template">
+            <a href="#" class="list-group-item">
+                <i class="fa fa-<%= icon %>"></i>
+                <%= title %>
+            </a>
+        </script>
+        <span class="glyphicon glyphicon-file"></span>
+
         <!-- end templates -->
 
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -60,7 +69,7 @@
 
                 //template used for sidebar
                 var popupTemplate = _.template($('#popup_template').html());
-
+                var listElementTemplate = _.template($('#list_item_template').html());
                 //create the map
                 var map = L.map('map');
 
@@ -72,12 +81,13 @@
                 map.setView(new L.LatLng(59.910586, 10.734329), 16);
 
                 //set up an instance of the Norvegiana API
-                var api = new NorvegianaAPI();
+                var api = new Norvegiana.API();
 
                 //the sidebar, used for displaying information
                 var sidebar = L.control.norvegianaSidebar('sidebar', {
                     position: 'left',
-                    template: popupTemplate
+                    template: popupTemplate,
+                    listElementTemplate: listElementTemplate
                 });
                 map.addControl(sidebar);
 

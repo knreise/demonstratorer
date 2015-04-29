@@ -1,6 +1,24 @@
+var Norvegiana = {};
 
+Norvegiana.contentIcons = {
+    'IMAGE': 'camera-retro',
+    'VIDEO': 'file-video-o',
+    'SOUND': 'music',
+    'TEXT': 'file-text',
+    'default': 'file-o'
+};
 
-var NorvegianaAPI = function () {
+Norvegiana.iconForFeature = function (feature) {
+    'use strict';
+
+    var contentType = feature.properties.europeana_type;
+    if (_.has(Norvegiana.contentIcons, contentType)) {
+        return Norvegiana.contentIcons[contentType];
+    }
+    return Norvegiana.contentIcons['default'];
+};
+
+Norvegiana.API = function () {
     'use strict';
 
     var datasets = {
@@ -15,7 +33,7 @@ var NorvegianaAPI = function () {
         'Stedsnavn': 'Stedsnavn'
     };
 
-    var baseUrl = 'http://kulturnett2.delving.org/api/search'
+    var baseUrl = 'http://kulturnett2.delving.org/api/search';
 
 
     function createQueryParameterString(params) {
@@ -40,12 +58,12 @@ var NorvegianaAPI = function () {
 
     function geoJSONFeature(latLng, properties) {
         return {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [latLng.lng, latLng.lat]
-          },
-          'properties': properties
+            'type': 'Feature',
+            'geometry': {
+                'type': 'Point',
+                'coordinates': [latLng.lng, latLng.lat]
+            },
+            'properties': properties
         };
     }
 
@@ -59,11 +77,11 @@ var NorvegianaAPI = function () {
             .reduce(function (acc, field) {
                 acc[field[0]] = arrOrvalue(field[1]);
                 return acc;
-            }, {}).value()
+            }, {}).value();
         var pos = _.find(item.item.fields, function (value, key) {
             return key === 'abm_latLong';
         });
-        
+
         var pos = _.map(pos[0].split(','), parseFloat);
         var feature = geoJSONFeature({lat: pos[0], lng: pos[1]}, params);
         return feature;
@@ -83,8 +101,8 @@ var NorvegianaAPI = function () {
         $.ajax({
             type: 'get',
             url: url,
-            success: function (response){
-                callback(parseNorvegianaItems(response))
+            success: function (response) {
+                callback(parseNorvegianaItems(response));
             }
         });
     }
@@ -99,8 +117,8 @@ var NorvegianaAPI = function () {
             format: 'json',
             rows: 100
         };
-        //var url = baseUrl + '?'  + createQueryParameterString(params);
-        var url = 'test.json';
+        var url = baseUrl + '?'  + createQueryParameterString(params);
+        //var url = 'test.json';
         sendRequest(url, callback);
     }
 
@@ -126,14 +144,6 @@ var NorvegianaAPI = function () {
         'Sentralt stedsnavnregister': 'darkgreen'
     };
 
-    var contentIcons = {
-        'IMAGE': 'file-image-o',
-        'VIDEO': 'file-video-o',
-        'SOUND': 'music',
-        'TEXT': 'file-text'
-    };
-    
-
     function pointToLayer(feature, latlng) {
 
         var provider = feature.properties.abm_contentProvider;
@@ -142,19 +152,15 @@ var NorvegianaAPI = function () {
             color = providerColors[provider];
         }
 
-        var contentType = feature.properties.europeana_type;
-        var icon = 'file-o';
-        if (_.has(contentIcons, contentType)) {
-            icon = contentIcons[contentType];
-        }
+        var faIcon = Norvegiana.iconForFeature(feature);
 
         var icon = L.AwesomeMarkers.icon({
-            icon: icon,
+            icon: faIcon,
             markerColor: color,
             prefix: 'fa'
         });
 
-        return L.marker(latlng,{
+        return L.marker(latlng, {
             icon: icon
         });
     }
@@ -162,7 +168,7 @@ var NorvegianaAPI = function () {
     return {
         getWithin: getWithin,
         getBbox: getBbox,
-        datasets: function () {return _.extend({}, datasets);},
+        datasets: function () {return _.extend({}, datasets); },
         pointToLayer: pointToLayer
     };
 };

@@ -22,7 +22,8 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         L.GeoJSON.prototype.initialize.call(this, null, options);
         if (this.options.cluster) {
             this._cluster = L.markerClusterGroup({
-                zoomToBoundsOnClick: false
+                zoomToBoundsOnClick: false,
+                spiderfyOnMaxZoom: false
             });
             this._cluster.addLayer(this);
             this._cluster.on('clusterclick', this._clusterClick, this);

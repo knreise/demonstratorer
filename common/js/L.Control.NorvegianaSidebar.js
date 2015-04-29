@@ -26,7 +26,12 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
     showFeatures: function (features) {
         var list = $('<div class="list-group"></ul>');
         var elements = _.map(features, function (feature) {
-            var li =  $('<a href="#" class="list-group-item">' + feature.properties.dc_title + '</a>');
+         
+            var icon = Norvegiana.iconForFeature(feature);
+            var li = $(this.options.listElementTemplate({
+                title: feature.properties.dc_title,
+                icon: icon
+            }));
             li.on('click', _.bind(function (e) {
                 e.preventDefault();
                 this.showFeature(feature);
