@@ -45,6 +45,8 @@
         <script src="../common/js/L.Control.DatasetChooser.js"></script>
         <script src="../common/js/L.Control.MapClick.js"></script>
         <script src="../common/js/L.NorvegianaGeoJSON.js"></script>
+        <script src="../common/js/L.Control.NorvegianaSidebar.js"></script>
+        
         <script src="../common/js/norvegiana.js"></script>
 
         <script type="text/javascript">
@@ -69,12 +71,13 @@
                 var api = new NorvegianaAPI();
 
                 //the sidebar, used for displaying information
-                var sidebar = L.control.sidebar('sidebar', {
-                    position: 'left'
+                var sidebar = L.control.norvegianaSidebar('sidebar', {
+                    position: 'left',
+                    template: popupTemplate
                 });
                 map.addControl(sidebar);
 
-                var layer = L.norvegianaGeoJSON(sidebar, api.pointToLayer, {popupTemplate: popupTemplate});
+                var layer = L.norvegianaGeoJSON(sidebar, api.pointToLayer);
 
                 var selectedDataset = 'DiMu';
                 var clickFunc = L.control.mapClick(layer, api, selectedDataset)

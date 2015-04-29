@@ -26,20 +26,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     _featureClick: function (e) {
-        var feature = e.target.feature;
-        var img = feature.properties.delving_thumbnail;
-        if (_.isArray(img)) {
-            img = img[0];
-        }
-        this._sidebar.setContent(this.options.popupTemplate({
-            title: feature.properties.dc_title,
-            img: img,
-            desc: feature.properties.dc_description,
-            dataset: feature.properties.europeana_collectionTitle,
-            link: feature.properties.europeana_isShownAt
-        }));
-        this._sidebar.show();
-
+        this._sidebar.showFeature(e.target.feature);
     }
 });
 
