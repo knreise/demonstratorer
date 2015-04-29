@@ -3,9 +3,14 @@
 
 L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
+    options: {
+        cluster: true
+    },
+
     initialize: function (sidebar, pointToLayer, options) {
         options = options || {};
-        options =  L.extend(
+        L.setOptions(this, options);
+        options = L.extend(
             options,
             {
                 pointToLayer: pointToLayer,
@@ -13,7 +18,40 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
             }
         );
         this._sidebar = sidebar;
-        return L.GeoJSON.prototype.initialize.call(this, null, options);
+
+        L.GeoJSON.prototype.initialize.call(this, null, options);
+        if (this.options.cluster) {
+            this._cluster = L.markerClusterGroup({
+                zoomToBoundsOnClick: false
+            });
+            this._cluster.addLayer(this);
+            this._cluster.on('clusterclick', this._clusterClick, this);
+        }
+    },
+
+    addLayer: function (layer) {
+        if (this.options.cluster) {
+            var id = this.getLayerId(layer);
+            this._layers[id] = layer;
+            return this;
+        }
+        return L.GeoJSON.prototype.addLayer.call(this, layer);
+    },
+
+    addGeoJSON: function (geojson) {
+        this.addData(geojson);
+
+        if (this.options.cluster) {
+            this._cluster.clearLayers();
+            this._cluster.addLayers(this.getLayers());
+        }
+    },
+
+    onAdd: function (map) {
+        if (this.options.cluster) {
+            map.addLayer(this._cluster);
+        }
+        L.GeoJSON.prototype.onAdd.call(this, map);
     },
 
     _onEachFeature: function (feature, layer) {
@@ -27,6 +65,13 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _featureClick: function (e) {
         this._sidebar.showFeature(e.target.feature);
+    },
+
+    _clusterClick: function (e) {
+        var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
+            return marker.feature;
+        });
+        this._sidebar.showFeatures(features);
     }
 });
 

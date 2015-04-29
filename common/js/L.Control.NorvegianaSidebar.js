@@ -9,7 +9,6 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
     },
 
     showFeature: function (feature) {
-        console.log(feature);
         var img = feature.properties.delving_thumbnail;
         if (_.isArray(img)) {
             img = img[0];
@@ -21,6 +20,23 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
             dataset: feature.properties.europeana_collectionTitle,
             link: feature.properties.europeana_isShownAt
         }));
+        this.show();
+    },
+
+    showFeatures: function (features) {
+        var list = $('<div class="list-group"></ul>');
+        var elements = _.map(features, function (feature) {
+            var li =  $('<a href="#" class="list-group-item">' + feature.properties.dc_title + '</a>');
+            li.on('click', _.bind(function (e) {
+                e.preventDefault();
+                this.showFeature(feature);
+                return false;
+            }, this));
+            return li;
+        }, this);
+
+        list.append(elements);
+        $(this.getContainer()).html(list);
         this.show();
     }
 });

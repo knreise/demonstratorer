@@ -99,7 +99,8 @@ var NorvegianaAPI = function () {
             format: 'json',
             rows: 100
         };
-        var url = baseUrl + '?'  + createQueryParameterString(params);
+        //var url = baseUrl + '?'  + createQueryParameterString(params);
+        var url = 'test.json';
         sendRequest(url, callback);
     }
 
