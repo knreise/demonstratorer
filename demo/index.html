@@ -8,7 +8,9 @@
         <link href="../bower_components/leaflet/dist/leaflet.css" rel="stylesheet"/>
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
-        
+        <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+
+
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
         <style type="text/css">
 
@@ -27,6 +29,7 @@
         </style>
     </head>
     <body>
+        <div id="sidebar"></div>
         <div id="map"></div>
         <div id="info">
             <label for="dataset">Datasett:</label>
@@ -55,10 +58,15 @@
         <script type="text/template" id="popup_template">
             <h3><%= title %></h3>
             <p><%= dataset %></p>
-            <% if (img) { %> 
-            <img width="400" src="<%=img %>" />
+            <% if (img) { %>
+            <a href="<%= link %>">
+                <img width="400" src="<%=img %>" />
+            </a>
             <% }%>
             <p><%= desc %></p>
+            <% if (!img) { %>
+            <a href="<%= link %>">Mer info</a>
+            <% }%>
         </script>
         <!-- end templates -->
 
@@ -66,6 +74,8 @@
         <script src="../bower_components/underscore/underscore-min.js"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
+        <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
+
 
         <script src="../common/js/L.TileLayer.Kartverket.js"></script>
         <script src="../common/js/norvegiana.js"></script>
@@ -84,6 +94,11 @@
 
                 var api = new NorvegianaAPI();
 
+                var sidebar = L.control.sidebar('sidebar', {
+                    position: 'left'
+                });
+
+                map.addControl(sidebar);
 
                 function getDisplayFunc(layer) {
                     return function (geoJson) {
@@ -102,13 +117,19 @@
                                 if (_.isArray(img)) {
                                     img = img[0];
                                 }
-                                layer.bindPopup(popupTemplate({
-                                    title: feature.properties.dc_title,
-                                    img: img,
-                                    desc: feature.properties.dc_description,
-                                    dataset: feature.properties.europeana_collectionTitle
-                                }), 
-                                {maxWidth: 500});
+                                
+                                layer.on('click', function () {
+                                    console.log(feature.properties.europeana_isShownAt);
+                                    sidebar.setContent(popupTemplate({
+                                        title: feature.properties.dc_title,
+                                        img: img,
+                                        desc: feature.properties.dc_description,
+                                        dataset: feature.properties.europeana_collectionTitle,
+                                        link: feature.properties.europeana_isShownAt
+                                    }));
+                                    sidebar.show();
+                                });
+                                
                             }
                         }
                     );
@@ -120,7 +141,6 @@
                     var pos;
 
                     function getData(pos, dataset) {
-                        console.log(pos);
                         api.getWithin('delving_spec:' + dataset, pos, 5000, displayFunc);
                     }
 
