@@ -7,13 +7,13 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         cluster: true
     },
 
-    initialize: function (sidebar, pointToLayer, options) {
+    initialize: function (sidebar, options) {
         options = options || {};
         L.setOptions(this, options);
         options = L.extend(
             options,
             {
-                pointToLayer: pointToLayer,
+                pointToLayer: _.bind(this._pointToLayer, this),
                 onEachFeature: _.bind(this._onEachFeature, this)
             }
         );
@@ -23,7 +23,8 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         if (this.options.cluster) {
             this._cluster = L.markerClusterGroup({
                 zoomToBoundsOnClick: false,
-                spiderfyOnMaxZoom: false
+                spiderfyOnMaxZoom: false,
+                iconCreateFunction: _.bind(this._createClusterIcon, this)
             });
             this._cluster.addLayer(this);
             this._cluster.on('clusterclick', this._clusterClick, this);
@@ -73,6 +74,45 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
             return marker.feature;
         });
         this._sidebar.showFeatures(features);
+    },
+
+    _createClusterIcon: function (cluster) {
+        var firstPhoto = _.find(cluster.getAllChildMarkers(), function (marker) {
+            return marker.feature.properties.europeana_type === 'IMAGE';
+        });
+        if (firstPhoto) {
+            return new L.DivIcon(L.extend({
+                className: 'leaflet-marker-photo', 
+                html: '<div style="background-image: url(' + firstPhoto.feature.properties.delving_thumbnail + ');"></div>​<b>' + cluster.getChildCount() + '</b>',
+                iconSize: [40, 40]
+            }, this.icon));
+        }
+
+        return L.MarkerClusterGroup.prototype._defaultIconCreateFunction(cluster);
+    },
+
+    _createFeatureIcon: function (feature) {
+        var color = Norvegiana.colorForFeature(feature);
+
+        var faIcon = Norvegiana.iconForFeature(feature);
+        if (feature.properties.europeana_type === 'IMAGE') {
+            return L.divIcon({
+                html: '<div style="background-image: url(' + feature.properties.delving_thumbnail + ');"></div>​',
+                className: 'leaflet-marker-photo',
+                iconSize: [40, 40]
+            })
+        }
+        return L.AwesomeMarkers.icon({
+            icon: faIcon,
+            markerColor: color,
+            prefix: 'fa'
+        });
+    },
+
+    _pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+            icon: this._createFeatureIcon(feature)
+        });
     }
 });
 

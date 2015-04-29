@@ -11,6 +11,7 @@
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
         <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
         <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
 
 
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
@@ -39,7 +40,7 @@
 
         <script type="text/template" id="list_item_template">
             <a href="#" class="list-group-item">
-                <i class="fa fa-<%= icon %>"></i>
+                <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
                 <%= title %>
             </a>
         </script>
@@ -91,7 +92,7 @@
                 });
                 map.addControl(sidebar);
 
-                var layer = L.norvegianaGeoJSON(sidebar, api.pointToLayer);
+                var layer = L.norvegianaGeoJSON(sidebar, {cluster: true});
 
                 var selectedDataset = 'DiMu';
                 var clickFunc = L.control.mapClick(layer, api, selectedDataset)

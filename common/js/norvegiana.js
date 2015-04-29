@@ -18,6 +18,29 @@ Norvegiana.iconForFeature = function (feature) {
     return Norvegiana.contentIcons['default'];
 };
 
+
+Norvegiana.providerColors = {
+    'Artsdatabanken': 'darkpuple',
+    'Digitalt fortalt': 'orange',
+    'DigitaltMuseum': 'cadetblue',
+    'Industrimuseum': 'darkred',
+    'Kulturminnesøk': 'green',
+    'Naturbase': 'purple',
+    'Sentralt stedsnavnregister': 'darkgreen',
+    'default': 'blue'
+};
+
+Norvegiana.colorForFeature = function (feature) {
+    'use strict';
+    var provider = feature.properties.abm_contentProvider;
+    
+    if (_.has(Norvegiana.providerColors, provider)) {
+        return Norvegiana.providerColors[provider];
+    }
+    return Norvegiana.providerColors['default'];
+}
+
+
 Norvegiana.API = function () {
     'use strict';
 
@@ -134,41 +157,9 @@ Norvegiana.API = function () {
         sendRequest(url, callback);
     }
 
-    var providerColors = {
-        'Artsdatabanken': 'darkpuple',
-        'Digitalt fortalt': 'orange',
-        'DigitaltMuseum': 'cadetblue',
-        'Industrimuseum': 'darkred',
-        'Kulturminnesøk': 'green',
-        'Naturbase': 'purple',
-        'Sentralt stedsnavnregister': 'darkgreen'
-    };
-
-    function pointToLayer(feature, latlng) {
-
-        var provider = feature.properties.abm_contentProvider;
-        var color = 'blue';
-        if (_.has(providerColors, provider)) {
-            color = providerColors[provider];
-        }
-
-        var faIcon = Norvegiana.iconForFeature(feature);
-
-        var icon = L.AwesomeMarkers.icon({
-            icon: faIcon,
-            markerColor: color,
-            prefix: 'fa'
-        });
-
-        return L.marker(latlng, {
-            icon: icon
-        });
-    }
-
     return {
         getWithin: getWithin,
         getBbox: getBbox,
-        datasets: function () {return _.extend({}, datasets); },
-        pointToLayer: pointToLayer
+        datasets: function () {return _.extend({}, datasets); }
     };
 };
