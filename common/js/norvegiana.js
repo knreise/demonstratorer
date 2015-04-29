@@ -132,7 +132,7 @@ var NorvegianaAPI = function () {
     };
     
 
-    function styleFunction(feature, latlng) {
+    function pointToLayer(feature, latlng) {
 
         var provider = feature.properties.abm_contentProvider;
         var color = 'blue';
@@ -161,6 +161,6 @@ var NorvegianaAPI = function () {
         getWithin: getWithin,
         getBbox: getBbox,
         datasets: function () {return _.extend({}, datasets);},
-        styleFunction: styleFunction
+        pointToLayer: pointToLayer
     };
 };

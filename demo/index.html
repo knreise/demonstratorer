@@ -92,11 +92,11 @@
                     };
                 }
 
-                function getGeoJsonImageLayer(styleFunction) {
+                function getGeoJsonImageLayer(pointToLayer) {
                     return L.geoJson(
                         null,
                         {
-                            pointToLayer: styleFunction,
+                            pointToLayer: pointToLayer,
                             onEachFeature: function (feature, layer) {
                                 var img = feature.properties.delving_thumbnail;
                                 if (_.isArray(img)) {
@@ -115,7 +115,7 @@
                 }
 
                 function MapClick(api, map, dataset) {
-                    var layer = getGeoJsonImageLayer(api.styleFunction);
+                    var layer = getGeoJsonImageLayer(api.pointToLayer);
                     var displayFunc = getDisplayFunc(layer);
                     var pos;
 
