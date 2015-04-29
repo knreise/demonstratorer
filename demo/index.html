@@ -4,15 +4,68 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="../bower_components/leaflet/dist/leaflet.css" rel="stylesheet"/>
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
+        
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
+        <style type="text/css">
+
+                #info {
+                    background: #fff;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    position: absolute;
+                    bottom: 20px;
+                    left: 10%;
+                    right: 10%;
+                    z-index: 3000;
+                    height: 100px;
+                }
+
+        </style>
     </head>
     <body>
         <div id="map"></div>
+        <div id="info">
+            <label for="dataset">Datasett:</label>
+            <select class="form-control" id="dataset">
+            </select>
+            <form id="type" autocomplete="off">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="click" value="click" checked>
+                        Klikk i kartet for å finne objekter innenfor radius
+                    </label>
+                </div>
+                <!--
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="pan" value="pan" >
+                        Oppdater objekter i kartet når du panorerer
+                    </label>
+                </div>
+            -->
+            </form>
+
+        </div>
+
+        <!-- templates -->
+        <script type="text/template" id="popup_template">
+            <h3><%= title %></h3>
+            <p><%= dataset %></p>
+            <% if (img) { %> 
+            <img width="400" src="<%=img %>" />
+            <% }%>
+            <p><%= desc %></p>
+        </script>
+        <!-- end templates -->
 
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
         <script src="../bower_components/underscore/underscore-min.js"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
 
         <script src="../common/js/L.TileLayer.Kartverket.js"></script>
         <script src="../common/js/norvegiana.js"></script>
@@ -21,8 +74,7 @@
             (function () {
                 'use strict';
 
-
-                var popupTemplate = _.template('<h3><%= title %></h3><img width="400" src="<%=img %>" /><p><%= desc %>');
+                var popupTemplate = _.template($('#popup_template').html());
 
                 var map = L.map('map');
 
@@ -32,31 +84,127 @@
 
                 var api = new NorvegianaAPI();
 
-                var layer;
-                function getWithin(pos) {
 
-                    api.getWithin('delving_spec:DiMu', pos, 5000, function (geoJson) {
-                        if (layer) {
-                            layer.clearLayers();
-                        }
-                        layer = L.geoJson(
-                            geoJson,
-                            {
-                                onEachFeature: function (feature, layer) {
-                                    layer.bindPopup(popupTemplate({
-                                        title: feature.properties.dc_title,
-                                        img: feature.properties.delving_thumbnail,
-                                        desc: feature.properties.dc_description
-                                    }), 
-                                    {maxWidth: 500});
-                                }
-                            }
-                        ).addTo(map);
-                    });
+                function getDisplayFunc(layer) {
+                    return function (geoJson) {
+                        layer.clearLayers();
+                        layer = layer.addData(geoJson);
+                    };
                 }
 
-                map.on('click', function (e) {
-                    getWithin(e.latlng);
+                function getGeoJsonImageLayer(styleFunction) {
+                    return L.geoJson(
+                        null,
+                        {
+                            pointToLayer: styleFunction,
+                            onEachFeature: function (feature, layer) {
+                                var img = feature.properties.delving_thumbnail;
+                                if (_.isArray(img)) {
+                                    img = img[0];
+                                }
+                                layer.bindPopup(popupTemplate({
+                                    title: feature.properties.dc_title,
+                                    img: img,
+                                    desc: feature.properties.dc_description,
+                                    dataset: feature.properties.europeana_collectionTitle
+                                }), 
+                                {maxWidth: 500});
+                            }
+                        }
+                    );
+                }
+
+                function MapClick(api, map, dataset) {
+                    var layer = getGeoJsonImageLayer(api.styleFunction);
+                    var displayFunc = getDisplayFunc(layer);
+                    var pos;
+
+                    function getData(pos, dataset) {
+                        console.log(pos);
+                        api.getWithin('delving_spec:' + dataset, pos, 5000, displayFunc);
+                    }
+
+                    function mapClicked (e) {
+                        pos = e.latlng;
+                        getData(pos, dataset);
+                    }
+
+                    function on () {
+                        layer.addTo(map);
+                        map.on('click', mapClicked);
+                    }
+
+                    function off() {
+                        map.off('click', mapClicked);
+                        map.removeLayer(layer);
+                        layer.clearLayers();
+                    }
+
+                    function setDataset(newDataset) {
+                        dataset = newDataset;
+                        if (pos) {
+                            getData(pos, dataset);
+                        }
+                    }
+
+                    return {
+                        setDataset: setDataset,
+                        on: on,
+                        off: off
+                    };
+                }
+                /*
+                var MapPan = function (dataset) {
+                    var layer = getGeoJsonImageLayer();
+                    var displayFunc = getDisplayFunc(layer);
+
+                    function mapMoved() {
+                        var bbox = map.getBounds().toBBoxString();
+                        console.log(bbox);
+                        api.getBbox('delving_spec:DiMu', bbox, displayFunc);
+                    }
+
+                    function on () {
+                        layer.addTo(map);
+                        map.on('moveend', mapMoved);
+                    }
+
+                    function off() {
+                        map.off('moveend', mapMoved);
+                        map.removeLayer(layer);
+                        layer.clearLayers();
+                    }
+
+                    return {
+                        on: on,
+                        off: off
+                    };
+                }
+                */
+                var selectedDataset = 'DiMu';
+                var clickFunc = new MapClick(api, map, selectedDataset);
+                //var panFunc = new MapPan(api, map);
+
+                var optionTemplate = _.template('<option value="<%=key%>" <% if(selected) {print("selected")} %>><%=value%></option>');
+                var options = _.map(api.datasets(), function (value, key) {
+                    return $(optionTemplate({key: key, value: value, selected: key === selectedDataset}));
+                });
+
+                $('#dataset').append(options).change(function() {
+                    clickFunc.setDataset($(this).val());
+                });
+
+                clickFunc.on();
+                $('#type').change(function (e) {
+                    var val = $('#type input[type="radio"]:checked').val();
+
+                    if (val === 'click') {
+                        clickFunc.on();
+                        panFunc.off();
+                    } else {
+                        clickFunc.off();
+                        panFunc.on();
+                    }
                 });
 
             }());

@@ -19,6 +19,8 @@
     "leaflet-sidebar": "~0.1.6",
     "leaflet-omnivore": "~0.3.2",
     "Leaflet.Photo": "https://github.com/turban/Leaflet.Photo.git",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3",
+    "bootstrap": "~3.3.4",
+    "Leaflet.awesome-markers": "~2.0.2"
   }
 }
