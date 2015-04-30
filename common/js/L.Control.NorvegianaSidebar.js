@@ -9,16 +9,16 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
     },
 
     showFeature: function (feature) {
-        var img = feature.properties.delving_thumbnail;
+        var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
         }
         this.setContent(this._template({
-            title: feature.properties.dc_title,
-            img: img,
-            desc: feature.properties.dc_description,
-            dataset: feature.properties.europeana_collectionTitle,
-            link: feature.properties.europeana_isShownAt
+            title: feature.properties.title,
+            image: img,
+            content: feature.properties.content,
+            dataset: feature.properties.dataset,
+            link: feature.properties.link
         }));
         this.show();
     },
@@ -29,7 +29,7 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
 
             var icon = KR.Util.iconForFeature(feature);
             var li = $(this.options.listElementTemplate({
-                title: feature.properties.dc_title,
+                title: feature.properties.title,
                 icon: icon
             }));
             li.on('click', _.bind(function (e) {

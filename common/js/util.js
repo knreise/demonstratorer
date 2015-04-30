@@ -52,7 +52,7 @@ KR.Util = {};
     };
 
     ns.iconForFeature = function (feature) {
-        var contentType = feature.properties.europeana_type;
+        var contentType = feature.properties.contentType;
         if (_.has(contentIcons, contentType)) {
             return contentIcons[contentType];
         }
@@ -73,7 +73,7 @@ KR.Util = {};
 
     ns.colorForFeature = function (feature, type) {
         type = type || 'name';
-        var provider = feature.properties.abm_contentProvider;
+        var provider = feature.properties.provider;
 
         if (_.has(providerColors, provider)) {
             return providerColors[provider][type];

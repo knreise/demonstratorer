@@ -58,11 +58,6 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     _onEachFeature: function (feature, layer) {
-        var img = feature.properties.delving_thumbnail;
-        if (_.isArray(img)) {
-            img = img[0];
-        }
-
         layer.on('click', _.bind(this._featureClick, this));
     },
 
@@ -79,7 +74,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _createClusterIcon: function (cluster) {
         var photos = _.filter(cluster.getAllChildMarkers(), function (marker) {
-            return marker.feature.properties.europeana_type === 'IMAGE';
+            return marker.feature.properties.contentType === 'IMAGE';
         });
         if (photos.length && this.options.thumbnails) {
 
@@ -88,7 +83,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
             var html = _.map(photos, function (photo, idx) {
                 var rotation = rotations[idx % rotations.length];
                 return template({
-                    thumbnail: photo.feature.properties.delving_thumbnail,
+                    thumbnail: photo.feature.properties.thumbnail,
                     rotation: rotation,
                     first: idx === 0,
                     color: KR.Util.colorForFeature(photo.feature, 'hex')
@@ -108,10 +103,10 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     _createFeatureIcon: function (feature) {
 
         var faIcon = KR.Util.iconForFeature(feature);
-        if (feature.properties.europeana_type === 'IMAGE' && this.options.thumbnails) {
+        if (feature.properties.contentType === 'IMAGE' && this.options.thumbnails) {
             var borderColor = KR.Util.colorForFeature(feature, 'hex');
             return L.divIcon({
-                html: '<div class="single" style="border-color: ' + borderColor + '; background-image: url(' + feature.properties.delving_thumbnail + ');"></div>​',
+                html: '<div class="single" style="border-color: ' + borderColor + '; background-image: url(' + feature.properties.thumbnail + ');"></div>​',
                 className: 'leaflet-marker-photo',
                 iconSize: [50, 50]
             });
@@ -127,7 +122,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     _pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {
             icon: this._createFeatureIcon(feature),
-            title: feature.properties.dc_title
+            title: feature.properties.title
         });
     }
 });

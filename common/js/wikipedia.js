@@ -79,14 +79,19 @@ KR.WikipediaAPI = function () {
     function _parseWikimediaItem(item, extdaDataDict) {
 
         var extraData = extdaDataDict[item.pageid];
+        var thumbnail;
+        if (_.has(extraData, 'thumbnail')) {
+            thumbnail = extraData.thumbnail.source;
+        }
         var params = {
-            dc_description: extraData.extract,
-            delving_thumbnail: _getWikimediaImageUrl(extraData.pageimage),
-            europeana_type: 'TEXT',
-            abm_contentProvider: 'Wikipedia',
-            europeana_collectionTitle: 'Wikipedia',
-            europeana_isShownAt: 'http://no.wikipedia.org/?curid=' + item.pageid,
-            dc_title: item.title
+            thumbnail: thumbnail,
+            images: [_getWikimediaImageUrl(extraData.pageimage)],
+            title: item.title,
+            content: extraData.extract,
+            link: 'http://no.wikipedia.org/?curid=' + item.pageid,
+            dataset: 'Wikipedia',
+            provider: 'Wikipedia',
+            contentType: 'TEXT'
         };
         return KR.Util.createGeoJSONFeature({lat: item.lat, lng: item.lon}, params);
     }

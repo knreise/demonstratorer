@@ -34,3 +34,16 @@ KR.API = function () {
     };
 
 };
+
+
+/*
+    properties:
+        thumbnail: string (full link to thumbnail-image),
+        images: string[] (full link to fullsize image),
+        title: string (title)
+        content: string (possibly HTML formatted content)
+        link: string (url to origin)
+        dataset: string (name of the dataset)
+        provider: string (name of dataset provider)
+        contentType: string (type of content)
+*/

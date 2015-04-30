@@ -1,5 +1,3 @@
-/*global KR: false */
-
 var KR = this.KR || {};
 
 KR.NorvegianaAPI = function () {
@@ -11,29 +9,40 @@ KR.NorvegianaAPI = function () {
         return latLng.lat + ',' + latLng.lng;
     }
 
-    function _arrOrvalue(value) {
-        if (value.length > 1) {
-            return value;
+    function _firstOrNull(arr) {
+        if (arr.length) {
+            return arr[0];
         }
-        return value[0];
+        return null;
     }
 
     function _parseNorvegianaItem(item) {
-        var params = _.chain(item.item.fields)
+        var allProperties = _.chain(item.item.fields)
             .pairs()
             .where(function (field) {
                 return field[0] !== 'abm_latLong';
             })
             .reduce(function (acc, field) {
-                acc[field[0]] = _arrOrvalue(field[1]);
+                acc[field[0]] = field[1];
                 return acc;
             }, {}).value();
         var pos = _.find(item.item.fields, function (value, key) {
             return key === 'abm_latLong';
         });
 
+        var properties = {
+            thumbnail: _firstOrNull(allProperties.delving_thumbnail),
+            images: allProperties.delving_thumbnail,
+            title: _firstOrNull(allProperties.dc_title),
+            content: _firstOrNull(allProperties.dc_description),
+            link: _firstOrNull(allProperties.europeana_isShownAt),
+            dataset: _firstOrNull(allProperties.europeana_collectionTitle),
+            provider: _firstOrNull(allProperties.abm_contentProvider),
+            contentType: _firstOrNull(allProperties.europeana_type)
+        };
+
         var parsedPos = _.map(pos[0].split(','), parseFloat);
-        var feature = KR.Util.createGeoJSONFeature({lat: parsedPos[0], lng: parsedPos[1]}, params);
+        var feature = KR.Util.createGeoJSONFeature({lat: parsedPos[0], lng: parsedPos[1]}, properties);
         return feature;
     }
 
