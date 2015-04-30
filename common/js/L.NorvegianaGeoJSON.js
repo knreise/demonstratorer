@@ -126,7 +126,8 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {
-            icon: this._createFeatureIcon(feature)
+            icon: this._createFeatureIcon(feature),
+            title: feature.properties.dc_title
         });
     }
 });
