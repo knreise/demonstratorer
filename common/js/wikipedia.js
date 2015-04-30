@@ -1,0 +1,130 @@
+/*global CryptoJS:false */
+
+var KR = this.KR || {};
+
+KR.WikipediaAPI = function () {
+    'use strict';
+
+    var WIKIMEDIA_BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
+
+    function _wikiquery(params, callback) {
+        var url = WIKIMEDIA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, function (response) {
+            response = JSON.parse(response);
+            callback(response);
+        });
+    }
+
+    function _wikiGeneratorQuery(params, finishedCallback) {
+
+        //the final storage of alle extraData
+        var pages = {};
+
+        function gotResponse(response) {
+
+            //store data: the API returns all pageIds for each request,
+            //but only sets the requested generator attributes on some
+            _.each(response.query.pages, function (page, key) {
+                if (_.has(pages, key)) {
+                    pages[key] = _.extend(pages[key], page);
+                } else {
+                    pages[key] = page;
+                }
+            });
+
+            //handle the continue flags
+            if (_.has(response, 'continue')) {
+                var cont = {};
+                if (_.has(response['continue'], 'picontinue')) {
+                    cont.picontinue = response['continue'].picontinue;
+                }
+                if (_.has(response['continue'], 'excontinue')) {
+                    cont.excontinue = response['continue'].excontinue;
+                }
+
+                //if api had "continue", we do so using recursion
+                var newparams = _.extend(cont, params);
+                _wikiquery(newparams, gotResponse);
+            } else {
+                finishedCallback(pages);
+            }
+
+        }
+        _wikiquery(params, gotResponse);
+    }
+
+    function _getWikimediaImageUrl(filename) {
+        var base = 'http://upload.wikimedia.org/wikipedia/commons/';
+        var hash = CryptoJS.MD5(filename).toString();
+        return base + hash.substr(0, 1) + '/' + hash.substr(0, 2) + '/' + filename;
+    }
+
+    function _getWikimediaDetails(pageIds, callback) {
+        //this is a bit strange, we use a genrator for extraxts and pageImages,
+        //but since the API limits response length we'll have to repeat it
+        //see wikiGeneratorQuery
+        var params = {
+            action: 'query',
+            prop: 'extracts|pageimages',
+            exlimit: 'max',
+            exintro: '',
+            pilimit: 'max',
+            pageids: pageIds,
+            format: 'json',
+            'continue': ''
+        };
+        _wikiGeneratorQuery(params, callback);
+    }
+
+    function _parseWikimediaItem(item, extdaDataDict) {
+
+        var extraData = extdaDataDict[item.pageid];
+        var params = {
+            dc_description: extraData.extract,
+            delving_thumbnail: _getWikimediaImageUrl(extraData.pageimage),
+            europeana_type: 'TEXT',
+            abm_contentProvider: 'Wikipedia',
+            europeana_collectionTitle: 'Wikipedia',
+            europeana_isShownAt: 'http://no.wikipedia.org/?curid=' + item.pageid,
+            dc_title: item.title
+        };
+        return KR.Util.createGeoJSONFeature({lat: item.lat, lng: item.lon}, params);
+    }
+
+    function _parseWikimediaItems(response, callback) {
+        response = JSON.parse(response);
+
+        //since the wikipedia API does not include details, we have to ask for 
+        //them seperately (based on page id), and then join them
+        var pageIds = _.pluck(response.query.geosearch, 'pageid').join('|');
+        _getWikimediaDetails(pageIds, function (pages) {
+            var features = _.map(response.query.geosearch, function (item) {
+                return _parseWikimediaItem(item, pages);
+            });
+            callback(KR.Util.CreateFeatureCollection(features));
+        });
+    }
+
+    /*
+        Get georeferenced Wikipedia articles within a radius of given point.
+        Maps data to format similar to norvegiana api.
+    */
+    function getWithin(latLng, distance, callback) {
+        var params = {
+            action: 'query',
+            list: 'geosearch',
+            gsradius: distance,
+            gscoord: latLng.lat + '|' + latLng.lng,
+            format: 'json',
+            gslimit: 50
+        };
+        var url = WIKIMEDIA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, function (response) {
+            _parseWikimediaItems(response, callback);
+        });
+    }
+
+    return {
+        getWithin: getWithin
+    };
+};

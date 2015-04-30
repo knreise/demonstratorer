@@ -26,8 +26,8 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
     showFeatures: function (features) {
         var list = $('<div class="list-group"></ul>');
         var elements = _.map(features, function (feature) {
-         
-            var icon = Norvegiana.iconForFeature(feature);
+
+            var icon = KR.Util.iconForFeature(feature);
             var li = $(this.options.listElementTemplate({
                 title: feature.properties.dc_title,
                 icon: icon

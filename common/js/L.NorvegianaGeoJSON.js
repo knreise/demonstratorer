@@ -1,4 +1,4 @@
-/*global L:false */
+/*global L:false, KR:false */
 'use strict';
 
 L.NorvegianaGeoJSON = L.GeoJSON.extend({
@@ -91,12 +91,12 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
                     thumbnail: photo.feature.properties.delving_thumbnail,
                     rotation: rotation,
                     first: idx === 0,
-                    color: Norvegiana.colorForFeature(photo.feature, 'hex')
+                    color: KR.Util.colorForFeature(photo.feature, 'hex')
                 });
             }).join('');
 
             return new L.DivIcon(L.extend({
-                className: 'leaflet-marker-photo', 
+                className: 'leaflet-marker-photo',
                 html: '<div class="outer">​' + html + '</div><b>' + cluster.getChildCount() + '</b>',
                 iconSize: [50, 50]
             }, this.icon));
@@ -106,17 +106,17 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     _createFeatureIcon: function (feature) {
-        var color = Norvegiana.colorForFeature(feature);
 
-        var faIcon = Norvegiana.iconForFeature(feature);
+        var faIcon = KR.Util.iconForFeature(feature);
         if (feature.properties.europeana_type === 'IMAGE' && this.options.thumbnails) {
-            var color = Norvegiana.colorForFeature(feature, 'hex');
+            var borderColor = KR.Util.colorForFeature(feature, 'hex');
             return L.divIcon({
-                html: '<div class="single" style="border-color: ' + color + '; background-image: url(' + feature.properties.delving_thumbnail + ');"></div>​',
+                html: '<div class="single" style="border-color: ' + borderColor + '; background-image: url(' + feature.properties.delving_thumbnail + ');"></div>​',
                 className: 'leaflet-marker-photo',
                 iconSize: [50, 50]
-            })
+            });
         }
+        var color = KR.Util.colorForFeature(feature);
         return L.AwesomeMarkers.icon({
             icon: faIcon,
             markerColor: color,

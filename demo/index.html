@@ -60,8 +60,11 @@
         <script src="../common/js/L.Control.MapClick.js"></script>
         <script src="../common/js/L.NorvegianaGeoJSON.js"></script>
         <script src="../common/js/L.Control.NorvegianaSidebar.js"></script>
-        
+
+        <script src="../common/js/util.js"></script>
+        <script src="../common/js/wikipedia.js"></script>
         <script src="../common/js/norvegiana.js"></script>
+        <script src="../common/js/api.js"></script>
 
         <script type="text/javascript">
 
@@ -82,7 +85,7 @@
                 map.setView(new L.LatLng(59.910586, 10.734329), 16);
 
                 //set up an instance of the Norvegiana API
-                var api = new Norvegiana.API();
+                var api = new KR.API();
 
                 //the sidebar, used for displaying information
                 var sidebar = L.control.norvegianaSidebar('sidebar', {
