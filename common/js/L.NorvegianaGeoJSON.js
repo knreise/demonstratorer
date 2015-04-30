@@ -4,7 +4,8 @@
 L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     options: {
-        cluster: true
+        cluster: true,
+        thumbnails: true
     },
 
     initialize: function (sidebar, options) {
@@ -77,14 +78,27 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     _createClusterIcon: function (cluster) {
-        var firstPhoto = _.find(cluster.getAllChildMarkers(), function (marker) {
+        var photos = _.filter(cluster.getAllChildMarkers(), function (marker) {
             return marker.feature.properties.europeana_type === 'IMAGE';
         });
-        if (firstPhoto) {
+        if (photos.length && this.options.thumbnails) {
+
+            var rotations = ['rotation1', 'rotation2', 'rotation3'];
+            var template = _.template('<div class="inner <%= rotation %><% if (first) {print(" first")}%>" style="border-color: <%= color %>;background-image: url(<%= thumbnail %>);"></div>');
+            var html = _.map(photos, function (photo, idx) {
+                var rotation = rotations[idx % rotations.length];
+                return template({
+                    thumbnail: photo.feature.properties.delving_thumbnail,
+                    rotation: rotation,
+                    first: idx === 0,
+                    color: Norvegiana.colorForFeature(photo.feature, 'hex')
+                });
+            }).join('');
+
             return new L.DivIcon(L.extend({
                 className: 'leaflet-marker-photo', 
-                html: '<div style="background-image: url(' + firstPhoto.feature.properties.delving_thumbnail + ');"></div>​<b>' + cluster.getChildCount() + '</b>',
-                iconSize: [40, 40]
+                html: '<div class="outer">​' + html + '</div><b>' + cluster.getChildCount() + '</b>',
+                iconSize: [50, 50]
             }, this.icon));
         }
 
@@ -95,11 +109,12 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         var color = Norvegiana.colorForFeature(feature);
 
         var faIcon = Norvegiana.iconForFeature(feature);
-        if (feature.properties.europeana_type === 'IMAGE') {
+        if (feature.properties.europeana_type === 'IMAGE' && this.options.thumbnails) {
+            var color = Norvegiana.colorForFeature(feature, 'hex');
             return L.divIcon({
-                html: '<div style="background-image: url(' + feature.properties.delving_thumbnail + ');"></div>​',
+                html: '<div class="single" style="border-color: ' + color + '; background-image: url(' + feature.properties.delving_thumbnail + ');"></div>​',
                 className: 'leaflet-marker-photo',
-                iconSize: [40, 40]
+                iconSize: [50, 50]
             })
         }
         return L.AwesomeMarkers.icon({

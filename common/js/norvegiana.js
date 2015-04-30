@@ -20,24 +20,25 @@ Norvegiana.iconForFeature = function (feature) {
 
 
 Norvegiana.providerColors = {
-    'Artsdatabanken': 'darkpuple',
-    'Digitalt fortalt': 'orange',
-    'DigitaltMuseum': 'cadetblue',
-    'Industrimuseum': 'darkred',
-    'Kulturminnesøk': 'green',
-    'Naturbase': 'purple',
-    'Sentralt stedsnavnregister': 'darkgreen',
-    'default': 'blue'
+    'Artsdatabanken': {name: 'darkpuple', hex: '#5B396B'},
+    'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
+    'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
+    'Industrimuseum': {name: 'darkred', hex: '#A23336'},
+    'Kulturminnesøk': {name: 'green', hex: '#72B026'},
+    'Naturbase': {name: 'purple', hex: '#D252B9'},
+    'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
+    'default': {name: 'blue', hex: '#38A9DC'}
 };
 
-Norvegiana.colorForFeature = function (feature) {
+Norvegiana.colorForFeature = function (feature, type) {
     'use strict';
+    type = type || 'name';
     var provider = feature.properties.abm_contentProvider;
     
     if (_.has(Norvegiana.providerColors, provider)) {
-        return Norvegiana.providerColors[provider];
+        return Norvegiana.providerColors[provider][type];
     }
-    return Norvegiana.providerColors['default'];
+    return Norvegiana.providerColors['default'][type];
 }
 
 
