@@ -21,6 +21,7 @@
     "Leaflet.Photo": "https://github.com/turban/Leaflet.Photo.git",
     "underscore": "~1.8.3",
     "bootstrap": "~3.3.4",
-    "Leaflet.awesome-markers": "~2.0.2"
+    "Leaflet.awesome-markers": "~2.0.2",
+    "CryptoJS": "~3.1.12"
   }
 }

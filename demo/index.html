@@ -33,9 +33,7 @@
             </a>
             <% }%>
             <p><%= desc %></p>
-            <% if (!img) { %>
             <a href="<%= link %>">Mer info</a>
-            <% }%>
         </script>
 
         <script type="text/template" id="list_item_template">
@@ -54,6 +52,9 @@
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+        <script src="../bower_components/CryptoJS/build/components/core.js"></script>
+        <script src="../bower_components/CryptoJS/build/components/md5.js"></script>
 
         <script src="../common/js/L.TileLayer.Kartverket.js"></script>
         <script src="../common/js/L.Control.DatasetChooser.js"></script>
@@ -94,7 +95,8 @@
 
                 var layer = L.norvegianaGeoJSON(sidebar, {cluster: true});
 
-                var selectedDataset = 'DiMu';
+                //var selectedDataset = 'delving_spec:DiMu';
+                var selectedDataset = 'wikipedia';
                 var clickFunc = L.control.mapClick(layer, api, selectedDataset)
                 map.addControl(clickFunc);
                 clickFunc.on();

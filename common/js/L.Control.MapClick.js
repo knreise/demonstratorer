@@ -19,9 +19,6 @@ L.Control.MapClick = L.Control.extend({
 
     _getData: function () {
         var dataset = this._dataset;
-        if (dataset !== '') {
-            dataset = 'delving_spec:' + dataset;
-        }
         this._api.getWithin(dataset, this._pos, 5000, _.bind(this._display, this));
     },
 
