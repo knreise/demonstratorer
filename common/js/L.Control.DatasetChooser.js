@@ -36,7 +36,7 @@ L.Control.DatasetChooser = L.Control.extend({
     _createOption: function (key) {
         var value = this.options.datasets[key];
         var option = L.DomUtil.create('option', '', this._select);
-        option.innerHTML = value;
+        option.innerHTML = value.name;
         option.value = key;
         if (key === this.options.initialDataset) {
             option.selected = true;

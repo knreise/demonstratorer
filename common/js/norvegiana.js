@@ -10,7 +10,7 @@ KR.NorvegianaAPI = function () {
     }
 
     function _firstOrNull(arr) {
-        if (arr.length) {
+        if (arr && arr.length) {
             return arr[0];
         }
         return null;
@@ -51,7 +51,10 @@ KR.NorvegianaAPI = function () {
         return KR.Util.CreateFeatureCollection(features);
     }
 
-    function getWithin(query, latLng, distance, callback) {
+    function getWithin(query, latLng, distance, isDataset, callback) {
+        if (isDataset) {
+            query = 'delving_spec:' + query;
+        }
         distance = distance / 1000; // convert to km
         var params = {
             query: query,
