@@ -6,3 +6,8 @@ i kartløsninger, samt å utvikle gjenbrukbare komponenter for å sette opp
 egne kartløsninger basert på Norvegiana-dataene. 
 
 Prosjektet er i oppstartsfasen, og ingenting er låst enda.
+
+
+Lisens
+------
+Apache Software License, Version 1.1, se LICENSE.md
