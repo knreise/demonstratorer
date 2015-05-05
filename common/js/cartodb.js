@@ -7,46 +7,25 @@ KR.CartodbAPI = function (user, apikey) {
 
     var CARTODB_BASE_URL = 'http://' + user + '.cartodb.com/api/v2/sql';
 
-    function _parseItems(response) {
-
-        var features = _.map(response.rows, function (row) {
-
-            var geom = JSON.parse(row.geom);
-            var properties = {
-                thumbnail: row.delving_thumbnail,
-                images: [row.delving_thumbnail],
-                title: row.dc_title,
-                content: row.dc_description,
-                link: row.europeana_isShownAt,
-                dataset: row.europeana_collectiontitle,
-                provider: row.abm_contentProvider,
-                contentType: row.europeana_type,
-                video: row.delving_landingpage
-            };
-            return {
-                'type': 'Feature',
-                'geometry': geom,
-                'properties': properties
-            };
-        });
-
-        return KR.Util.CreateFeatureCollection(features);
-    }
 
     function _createMapper(propertyMap) {
 
         return function (response) {
             var features = _.map(response.rows, function (row) {
                 var geom = JSON.parse(row.geom);
-                var properties = _.chain(row)
-                    .map(function (value, key) {
+                var properties = _.reduce(row, function (acc, value, key) {
                         if (_.has(propertyMap, key)) {
-                            return [propertyMap[key], value];
+                            var k = propertyMap[key];
+                            if (_.isArray(k)) {
+                                _.each(k, function (k) {
+                                    acc[k] = value;
+                                });
+                            } else {
+                                acc[k] = value;
+                            }
                         }
-                    })
-                    .compact()
-                    .object()
-                    .value();
+                        return acc;
+                    }, {});
                 return {
                     'type': 'Feature',
                     'geometry': geom,
@@ -57,14 +36,28 @@ KR.CartodbAPI = function (user, apikey) {
         };
     }
 
+
+
     var columns = {
+        'default': {
+            delving_thumbnail: ['images', 'thumbnail'],
+            dc_title: 'title',
+            dc_description: 'content',
+            europeana_isShownAt: 'link',
+            europeana_collectiontitle: 'dataset',
+            abm_contentProvider: 'provider',
+            europeana_type: 'contentType',
+            delving_landingpage: 'video'
+        },
         pilegrimsleden_dovre: {iid: 'id', name: 'name', omradenavn: 'omradenavn'}
     };
 
-    function mappers () {
+    var _parseItems = _createMapper(columns['default']);
+
+    function mappers() {
 
         return _.reduce(columns, function (acc, columns, dataset) {
-            acc[dataset] = _createMapper(columns)
+            acc[dataset] = _createMapper(columns);
             return acc;
         }, {});
     }
@@ -80,20 +73,8 @@ KR.CartodbAPI = function (user, apikey) {
     }
 
     function getWithin(dataset, latLng, distance, callback) {
-        var columns = [
-            'delving_thumbnail',
-            'dc_title',
-            'dc_description',
-            'europeana_collectiontitle',
-            'europeana_isshownat',
-            'abm_contentprovider',
-            'europeana_type',
-            'delving_landingpage',
-            'ST_AsGeoJSON(the_geom) as geom'
-        ];
-
-        var sql = 'SELECT ' + columns.join(', ') + ' FROM ' + dataset + ' WHERE ST_DWithin(the_geom::geography, \'POINT(' + latLng.lng + ' ' + latLng.lat + ')\'::geography, ' + distance + ');';
-
+        var select = _.keys(columns['default']).concat(['ST_AsGeoJSON(the_geom) as geom']).join(', ');
+        var sql = 'SELECT ' + select + ' FROM ' + dataset + ' WHERE ST_DWithin(the_geom::geography, \'POINT(' + latLng.lng + ' ' + latLng.lat + ')\'::geography, ' + distance + ');';
         _executeSQL(sql, _parseItems, callback);
     }
 
@@ -127,7 +108,7 @@ KR.CartodbAPI = function (user, apikey) {
         } else if (dataset.table) {
             var select = ['*'];
             if (_.has(columns, dataset.table)) {
-                select = _.keys(columns[dataset.table])
+                select = _.keys(columns[dataset.table]);
             }
             select.push('ST_AsGeoJSON(the_geom)');
             var sql = 'SELECT ' + select.join(', ') + ' as geom FROM ' + dataset.table;
