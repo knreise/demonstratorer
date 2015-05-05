@@ -49,9 +49,18 @@ KR.API = function (options) {
         }
     }
 
+    function getMunicipalityBounds(municipalities, callback) {
+        if (cartodbAPI) {
+            cartodbAPI.getMunicipalityBounds(municipalities, callback);
+            return;
+        }
+        throw new Error('CartoDB api not configured!');
+    }
+
     return {
         getWithin: getWithin,
-        datasets: function () {return _.extend({}, datasets); }
+        datasets: function () {return _.extend({}, datasets); },
+        getMunicipalityBounds: getMunicipalityBounds
     };
 
 };

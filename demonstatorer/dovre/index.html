@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../bower_components/leaflet/dist/leaflet.css" rel="stylesheet"/>
+        <link href='../../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <!--
+        <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
+        -->
+
+        <link href='../../common/css/fullscreenmap.css' rel='stylesheet' />
+        <!--
+        <link href='../common/css/L.Control.DatasetChooser.css' rel='stylesheet' />
+        <link href='../common/css/L.Control.NorvegianaSidebar.css' rel='stylesheet' />
+        -->
+    </head>
+    <body>
+        <div id="sidebar"></div>
+        <div id="map"></div>
+
+        <!-- templates -->
+        <!--
+        <script type="text/template" id="popup_template">
+            <h3><%= title %></h3>
+            <p><%= dataset %></p>
+            <% if (image) { %>
+            <a href="<%= link %>">
+                <img width="400" src="<%= image %>" />
+            </a>
+            <% }%>
+            <p><%= content %></p>
+            <a href="<%= link %>">Mer info</a>
+        </script>
+
+        <script type="text/template" id="list_item_template">
+            <a href="#" class="list-group-item">
+                <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
+                <%= title %>
+            </a>
+        </script>
+        -->
+        <!-- end templates -->
+
+        <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="../../bower_components/underscore/underscore-min.js"></script>
+        <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
+        <!--
+        <script src="../../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
+        <script src="../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
+        <script src="../../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+-->
+        <script src="../../bower_components/CryptoJS/build/components/core.js"></script>
+        <script src="../../bower_components/CryptoJS/build/components/md5.js"></script>
+
+        <script src="../../common/js/L.TileLayer.Kartverket.js"></script>
+<!--
+        <script src="../../common/js/L.Control.DatasetChooser.js"></script>
+        <script src="../../common/js/L.Control.MapClick.js"></script>
+        <script src="../../common/js/L.NorvegianaGeoJSON.js"></script>
+        <script src="../../common/js/L.Control.NorvegianaSidebar.js"></script>
+-->
+
+        <script src="../../common/js/util.js"></script>
+        <script src="../../common/js/wikipedia.js"></script>
+        <script src="../../common/js/norvegiana.js"></script>
+        <script src="../../common/js/cartodb.js"></script>
+        <script src="../../common/js/api.js"></script>
+
+        <script type="text/javascript">
+
+            (function () {
+                'use strict';
+
+                //template used for sidebar
+                /*
+                var popupTemplate = _.template($('#popup_template').html());
+                var listElementTemplate = _.template($('#list_item_template').html());
+                */
+                //create the map
+                var map = L.map('map');
+
+                //add a background layer from kartverket
+                L.tileLayer.kartverket('topo2graatone').addTo(map);
+
+                //set up an instance of the Norvegiana API
+                var api = new KR.API({
+                    cartodb: {
+                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+                        user: 'knreise'
+                    }
+                });
+
+                var dovre = 511;
+                api.getMunicipalityBounds(dovre, function (bbox) {
+                    var bounds = L.latLngBounds.fromBBoxString(bbox);
+                    map.setMaxBounds(bounds);
+                    map.fitBounds(bounds);
+                });
+            }());
+        </script>
+    </body>
+</html>

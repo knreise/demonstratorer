@@ -1,3 +1,5 @@
+/*global L:false */
+
 var KR = this.KR || {};
 
 KR.CartodbAPI = function (user, apikey) {
@@ -54,7 +56,38 @@ KR.CartodbAPI = function (user, apikey) {
         KR.Util.sendRequest(url, callback, _parseItems);
     }
 
+    if (typeof L !== "undefined") {
+        L.latLngBounds.fromBBoxString = function (bbox) {
+            bbox = bbox.split(',').map(parseFloat);
+            return new L.LatLngBounds(
+                new L.LatLng(bbox[1], bbox[0]),
+                new L.LatLng(bbox[3], bbox[2])
+            );
+        };
+    }
+
+    function _parseMunicipalities(response) {
+        var extent = response.rows[0].st_extent;
+        return extent.replace('BOX(', '').replace(')', '').replace(/ /g, ',');
+    }
+
+    function getMunicipalityBounds(municipalities, callback) {
+        if (!_.isArray(municipalities)) {
+            municipalities = [municipalities];
+        }
+
+        var sql = 'SELECT ST_Extent(the_geom) FROM kommuner where komm in (' + municipalities.join(', ') + ')';
+        var params = {
+            q: sql,
+            api_key: apikey
+        };
+
+        var url = CARTODB_BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, callback, _parseMunicipalities);
+    }
+
     return {
-        getWithin: getWithin
+        getWithin: getWithin,
+        getMunicipalityBounds: getMunicipalityBounds,
     };
 };
