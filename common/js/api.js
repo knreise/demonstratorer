@@ -39,6 +39,46 @@ KR.API = function (options) {
         throw new Error('Unknown dataset');
     }
 
+    function _toRad(value) {
+        return value * Math.PI / 180;
+    }
+
+    function _haversine(lat1, lon1, lat2, lon2) {
+        var R = 6371000; // metres
+        var φ1 = _toRad(lat1);
+        var φ2 = _toRad(lat2);
+        var Δφ = _toRad(lat2 - lat1);
+        var Δλ = _toRad(lon2 - lon1);
+
+        var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+
+    function _distanceFromBbox(api, dataset, bbox, callback) {
+        bbox = bbox.split(',').map(parseFloat);
+
+        var lng1 = bbox[0]; //southwest_lng
+        var lat1 = bbox[1]; //southwest_lat
+
+        var lng2 = bbox[2]; //northeast_lng
+        var lat2 = bbox[3]; //northeast_lat
+
+        var centerLng = (lng1 + lng2) / 2;
+        var centerLat = (lat1 + lat2) / 2;
+
+        var radius = _.max([
+            _haversine(lat1, lng1, centerLat, centerLng),
+            _haversine(lat2, lng2, centerLat, centerLng)
+        ]);
+        
+        var latLng = {lat: centerLat, lng: centerLng};
+        api.getWithin(dataset.dataset, latLng, radius, callback, true);
+    }
+
     function getWithin(query, latLng, distance, callback) {
         distance = distance || 5000;
         var dataset = getDatasetObj(query);
@@ -67,11 +107,25 @@ KR.API = function (options) {
         }
     }
 
+    function getBbox(dataset, bbox, callback) {
+        var api = apis[dataset.api];
+        if (api) {
+            if (_.has(api, 'getBbox')) {
+                api.getBbox(dataset, bbox, callback);
+            } else {
+                _distanceFromBbox(api, dataset, bbox, callback);
+            }
+        } else {
+            throw new Error('Unknown API');
+        }
+    }
+
     return {
         getWithin: getWithin,
         datasets: function () {return _.extend({}, datasets); },
         getMunicipalityBounds: getMunicipalityBounds,
-        getData: getData
+        getData: getData,
+        getBbox: getBbox
     };
 
 };

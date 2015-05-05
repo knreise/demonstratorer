@@ -61,14 +61,34 @@ KR.NorvegianaAPI = function () {
             pt: _formatLatLng(latLng),
             d: distance,
             format: 'json',
-            rows: 100
+            rows: 1000
         };
         var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         //var url = 'test.json';
         KR.Util.sendRequest(url, callback, _parseNorvegianaItems);
     }
 
+    /*
+    function getData(dataset, callback) {
+        console.log(dataset);
+        var query;
+        if (dataset.dataset) {
+            query = 'delving_spec:' + dataset.dataset;
+        }
+
+        var params = {
+            query: query,
+            format: 'json',
+            rows: 100
+        };
+        var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        //var url = 'test.json';
+        KR.Util.sendRequest(url, callback, _parseNorvegianaItems);
+    }
+    */
+
     return {
-        getWithin: getWithin
+        getWithin: getWithin,
+        //getData: getData
     };
 };

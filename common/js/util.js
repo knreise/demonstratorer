@@ -51,7 +51,17 @@ KR.Util = {};
         'default': 'file-o'
     };
 
+    var datasetIcons = {
+        'Artsdatabanken': 'paw'
+    };
+
     ns.iconForFeature = function (feature) {
+
+        var dataset = feature.properties.dataset;
+        if (_.has(datasetIcons, dataset)) {
+            return datasetIcons[dataset];
+        }
+
         var contentType = feature.properties.contentType;
         if (_.has(contentIcons, contentType)) {
             return contentIcons[contentType];
@@ -81,5 +91,15 @@ KR.Util = {};
         return providerColors['default'][type];
     };
 
+
+    ns.markerForFeature = function (feature) {
+        var faIcon = ns.iconForFeature(feature);
+        var color = ns.colorForFeature(feature);
+        return L.AwesomeMarkers.icon({
+            icon: faIcon,
+            markerColor: color,
+            prefix: 'fa'
+        });
+    };
 
 }(KR.Util));

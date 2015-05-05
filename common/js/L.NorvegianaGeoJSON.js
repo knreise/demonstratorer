@@ -59,7 +59,12 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     resetGeoJSON: function (geoJson) {
         this.clearLayers();
-        this.addGeoJSON(geoJson);
+        if (this.options.cluster) {
+            this._cluster.clearLayers();
+        }
+        if (geoJson) {
+            this.addGeoJSON(geoJson);
+        }
     },
 
     _onEachFeature: function (feature, layer) {
@@ -82,7 +87,8 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     _createClusterIcon: function (cluster) {
-        var photos = _.filter(cluster.getAllChildMarkers(), function (marker) {
+        var markers = cluster.getAllChildMarkers();
+        var photos = _.filter(markers, function (marker) {
             return marker.feature.properties.contentType === 'IMAGE';
         });
         if (photos.length && this.options.thumbnails) {
@@ -105,13 +111,19 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
                 iconSize: [50, 50]
             }, this.icon));
         }
-
+        if (this.options.smallMarker) {
+            var icon = KR.Util.iconForFeature(markers[0].feature);
+            return new L.DivIcon({
+                className: 'leaflet-marker-favicon',
+                html: '<div class="outer">​<i class="rot1 fa fa-' + icon + '"></i><i class="rot2 fa fa-' + icon + '"></i></div>',
+                iconSize: [12, 12]
+            });
+        }
         return L.MarkerClusterGroup.prototype._defaultIconCreateFunction(cluster);
     },
 
     _createFeatureIcon: function (feature) {
 
-        var faIcon = KR.Util.iconForFeature(feature);
         if (feature.properties.contentType === 'IMAGE' && this.options.thumbnails) {
             var borderColor = KR.Util.colorForFeature(feature, 'hex');
             return L.divIcon({
@@ -120,12 +132,15 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
                 iconSize: [50, 50]
             });
         }
-        var color = KR.Util.colorForFeature(feature);
-        return L.AwesomeMarkers.icon({
-            icon: faIcon,
-            markerColor: color,
-            prefix: 'fa'
-        });
+        if (this.options.smallMarker) {
+            var icon = KR.Util.iconForFeature(feature);
+            return new L.DivIcon({
+                className: 'leaflet-marker-favicon',
+                html: '<i class="fa fa-' + icon + '"></i>',
+                iconSize: [12, 12]
+            });
+        }
+        return KR.Util.markerForFeature(feature);
     },
 
     _pointToLayer: function (feature, latlng) {
