@@ -9,7 +9,15 @@ KR.API = function (options) {
     var cartodbAPI;
     if (_.has(options, 'cartodb')) {
         cartodbAPI = new KR.CartodbAPI(options.cartodb.user, options.cartodb.apikey);
+        _.extend(KR.API.mappers, cartodbAPI.mappers());
     }
+
+    var apis = {
+        norvegiana: norvegianaAPI,
+        wikipedia: wikipediaAPI,
+        cartodb: cartodbAPI
+    };
+
     var datasets = {
         //'delving_spec:*': 'Alle',
         'Artsdatabanken': {name: 'Artsdatabanken', api: 'norvegiana'},
@@ -24,28 +32,21 @@ KR.API = function (options) {
         'search_1': {name: 'Byantikvaren i Oslo', api: 'cartodb'}
     };
 
-    function getDataset(query) {
+    function getDatasetObj(query) {
         if (_.has(datasets, query)) {
             return datasets[query];
         }
-        return null;
+        throw new Error('Unknown dataset');
     }
 
     function getWithin(query, latLng, distance, callback) {
         distance = distance || 5000;
-        var dataset = getDataset(query);
-        if (dataset) {
-            if (dataset.api === 'norvegiana') {
-                norvegianaAPI.getWithin(query, latLng, distance, true, callback);
-            } else if (dataset.api === 'wikipedia') {
-                wikipediaAPI.getWithin(latLng, distance, callback);
-            } else if (dataset.api === 'cartodb' && cartodbAPI) {
-                cartodbAPI.getWithin(query, latLng, distance, callback);
-            } else {
-                throw new Error('Unknown dataset or api');
-            }
+        var dataset = getDatasetObj(query);
+        var api = apis[dataset.api];
+        if (api) {
+            api.getWithin(query, latLng, distance, callback, true);
         } else {
-            norvegianaAPI.getWithin(query, latLng, distance, false, callback);
+            throw new Error('Unknown API');
         }
     }
 
@@ -57,14 +58,25 @@ KR.API = function (options) {
         throw new Error('CartoDB api not configured!');
     }
 
+    function getData(dataset, callback) {
+        var api = apis[dataset.api];
+        if (api) {
+            api.getData(dataset, callback);
+        } else {
+            throw new Error('Unknown API');
+        }
+    }
+
     return {
         getWithin: getWithin,
         datasets: function () {return _.extend({}, datasets); },
-        getMunicipalityBounds: getMunicipalityBounds
+        getMunicipalityBounds: getMunicipalityBounds,
+        getData: getData
     };
 
 };
 
+KR.API.mappers = {};
 
 /*
     properties:

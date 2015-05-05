@@ -51,7 +51,7 @@ KR.NorvegianaAPI = function () {
         return KR.Util.CreateFeatureCollection(features);
     }
 
-    function getWithin(query, latLng, distance, isDataset, callback) {
+    function getWithin(query, latLng, distance, callback, isDataset) {
         if (isDataset) {
             query = 'delving_spec:' + query;
         }

@@ -114,7 +114,7 @@ KR.WikipediaAPI = function () {
         Get georeferenced Wikipedia articles within a radius of given point.
         Maps data to format similar to norvegiana api.
     */
-    function getWithin(latLng, distance, callback) {
+    function getWithin(query, latLng, distance, callback) {
         var params = {
             action: 'query',
             list: 'geosearch',

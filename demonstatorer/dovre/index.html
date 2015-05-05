@@ -54,8 +54,9 @@
         <!--
         <script src="../../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
         <script src="../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
-        <script src="../../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 -->
+        <script src="../../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
         <script src="../../bower_components/CryptoJS/build/components/core.js"></script>
         <script src="../../bower_components/CryptoJS/build/components/md5.js"></script>
 
@@ -63,7 +64,9 @@
 <!--
         <script src="../../common/js/L.Control.DatasetChooser.js"></script>
         <script src="../../common/js/L.Control.MapClick.js"></script>
+-->
         <script src="../../common/js/L.NorvegianaGeoJSON.js"></script>
+<!--
         <script src="../../common/js/L.Control.NorvegianaSidebar.js"></script>
 -->
 
@@ -87,7 +90,7 @@
                 var map = L.map('map');
 
                 //add a background layer from kartverket
-                L.tileLayer.kartverket('topo2graatone').addTo(map);
+                L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
 
                 //set up an instance of the Norvegiana API
                 var api = new KR.API({
@@ -97,11 +100,29 @@
                     }
                 });
 
+
+                var datasets = [
+                    {
+                        api: 'cartodb',
+                        table: 'pilegrimsleden_dovre',
+                        //query: 'SELECT *, st_asGeojson(the_geom_webmercator) FROM pilegrimsleden_dovre_new2',
+                        mapper: KR.API.mappers.pilegrimsleden_dovre,
+                        style: null,
+                        template: null
+                    }
+                ];
+
+                //get the are we are interested in
                 var dovre = 511;
                 api.getMunicipalityBounds(dovre, function (bbox) {
                     var bounds = L.latLngBounds.fromBBoxString(bbox);
                     map.setMaxBounds(bounds);
                     map.fitBounds(bounds);
+                    _.each(datasets, function (dataset) {
+                        api.getData(dataset, function (geoJson) {
+                            var layer = L.norvegianaGeoJSON(geoJson, null, {cluster: true}).addTo(map);
+                        });
+                    });
                 });
             }());
         </script>

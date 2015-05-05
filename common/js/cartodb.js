@@ -33,6 +33,52 @@ KR.CartodbAPI = function (user, apikey) {
         return KR.Util.CreateFeatureCollection(features);
     }
 
+    function _createMapper(propertyMap) {
+
+        return function (response) {
+            var features = _.map(response.rows, function (row) {
+                var geom = JSON.parse(row.geom);
+                var properties = _.chain(row)
+                    .map(function (value, key) {
+                        if (_.has(propertyMap, key)) {
+                            return [propertyMap[key], value];
+                        }
+                    })
+                    .compact()
+                    .object()
+                    .value();
+                return {
+                    'type': 'Feature',
+                    'geometry': geom,
+                    'properties': properties
+                };
+            });
+            return KR.Util.CreateFeatureCollection(features);
+        };
+    }
+
+    var columns = {
+        pilegrimsleden_dovre: {iid: 'id', name: 'name', omradenavn: 'omradenavn'}
+    };
+
+    function mappers () {
+
+        return _.reduce(columns, function (acc, columns, dataset) {
+            acc[dataset] = _createMapper(columns)
+            return acc;
+        }, {});
+    }
+
+
+    function _executeSQL(sql, mapper, callback) {
+        var params = {
+            q: sql,
+            api_key: apikey
+        };
+        var url = CARTODB_BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, callback, mapper);
+    }
+
     function getWithin(dataset, latLng, distance, callback) {
         var columns = [
             'delving_thumbnail',
@@ -47,13 +93,8 @@ KR.CartodbAPI = function (user, apikey) {
         ];
 
         var sql = 'SELECT ' + columns.join(', ') + ' FROM ' + dataset + ' WHERE ST_DWithin(the_geom::geography, \'POINT(' + latLng.lng + ' ' + latLng.lat + ')\'::geography, ' + distance + ');';
-        var params = {
-            q: sql,
-            api_key: apikey
-        };
 
-        var url = CARTODB_BASE_URL + '?' + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, callback, _parseItems);
+        _executeSQL(sql, _parseItems, callback);
     }
 
     if (typeof L !== "undefined") {
@@ -77,17 +118,27 @@ KR.CartodbAPI = function (user, apikey) {
         }
 
         var sql = 'SELECT ST_Extent(the_geom) FROM kommuner where komm in (' + municipalities.join(', ') + ')';
-        var params = {
-            q: sql,
-            api_key: apikey
-        };
+        _executeSQL(sql, _parseMunicipalities, callback);
+    }
 
-        var url = CARTODB_BASE_URL + '?' + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, callback, _parseMunicipalities);
+    function getData(dataset, callback) {
+        if (dataset.query) {
+            _executeSQL(dataset.query, dataset.mapper, callback);
+        } else if (dataset.table) {
+            var select = ['*'];
+            if (_.has(columns, dataset.table)) {
+                select = _.keys(columns[dataset.table])
+            }
+            select.push('ST_AsGeoJSON(the_geom)');
+            var sql = 'SELECT ' + select.join(', ') + ' as geom FROM ' + dataset.table;
+            _executeSQL(sql, dataset.mapper, callback);
+        }
     }
 
     return {
+        getData: getData,
         getWithin: getWithin,
         getMunicipalityBounds: getMunicipalityBounds,
+        mappers: mappers
     };
 };

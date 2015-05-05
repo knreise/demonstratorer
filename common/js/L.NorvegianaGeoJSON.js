@@ -8,7 +8,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         thumbnails: true
     },
 
-    initialize: function (sidebar, options) {
+    initialize: function (geoJson, sidebar, options) {
         options = options || {};
         L.setOptions(this, options);
         options = L.extend(
@@ -20,7 +20,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         );
         this._sidebar = sidebar;
 
-        L.GeoJSON.prototype.initialize.call(this, null, options);
+        L.GeoJSON.prototype.initialize.call(this, geoJson, options);
         if (this.options.cluster) {
             this._cluster = L.markerClusterGroup({
                 zoomToBoundsOnClick: false,
@@ -57,19 +57,28 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         L.GeoJSON.prototype.onAdd.call(this, map);
     },
 
+    resetGeoJSON: function (geoJson) {
+        this.clearLayers();
+        this.addGeoJSON(geoJson);
+    },
+
     _onEachFeature: function (feature, layer) {
         layer.on('click', _.bind(this._featureClick, this));
     },
 
     _featureClick: function (e) {
-        this._sidebar.showFeature(e.target.feature);
+        if (this._sidebar) {
+            this._sidebar.showFeature(e.target.feature);
+        }
     },
 
     _clusterClick: function (e) {
-        var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
-            return marker.feature;
-        });
-        this._sidebar.showFeatures(features);
+        if (this._sidebar) {
+            var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
+                return marker.feature;
+            });
+            this._sidebar.showFeatures(features);
+        }
     },
 
     _createClusterIcon: function (cluster) {
@@ -127,6 +136,6 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     }
 });
 
-L.norvegianaGeoJSON = function (sidebar, pointToLayer, options) {
-    return new L.NorvegianaGeoJSON(sidebar, pointToLayer, options);
+L.norvegianaGeoJSON = function (geoJson, sidebar, options) {
+    return new L.NorvegianaGeoJSON(geoJson, sidebar, options);
 };
