@@ -5,7 +5,8 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     options: {
         cluster: true,
-        thumbnails: true
+        thumbnails: true,
+        isStatic: true
     },
 
     initialize: function (geoJson, sidebar, options) {

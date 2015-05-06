@@ -138,7 +138,9 @@
         <script src="../../common/js/norvegiana.js"></script>
         <script src="../../common/js/cartodb.js"></script>
         <script src="../../common/js/api.js"></script>
+        <script src="../../common/js/DatasetLoader.js"></script>
         <script type="text/javascript">
+
 
             (function () {
                 'use strict';
@@ -173,121 +175,51 @@
 
                 var datasets = [
                     {
-                        name: 'Pilegrimsleden',
                         api: 'cartodb',
+                        name: 'Pilegrimsleden',
                         table: 'pilegrimsleden_dovre',
                         mapper: KR.API.mappers.pilegrimsleden_dovre,
                         style: function (feature) {
                             return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
                         },
-                        isStatic: true,
-                        bbox: false,
-                        cluster: false
+                        bbox: false
                     },
                     {
+                        api: 'norvegiana',
                         name: 'Digitalt fortalt',
-                        api: 'norvegiana',
                         dataset: 'difo',
-                        bbox: true,
-                        isStatic: true,
-                        cluster: true,
                         template: _.template($('#digitalt_fortalt_template').html())
-                        //minZoom: 14,
-                        //smallMarker: true
                     },
                     {
-                        name: 'Kulturminner',
                         api: 'norvegiana',
+                        name: 'Kulturminner',
                         dataset: 'Kulturminnesok',
-                        bbox: true,
-                        isStatic: true,
-                        cluster: true,
-                        //minZoom: 14,
                         smallMarker: true
                     },
-                    /*
                     {
-                        name: 'Verneområder',
-                        api: 'norvegiana',
-                        dataset: 'Naturbase',
-                        bbox: true,
-                        thumbnails: false,
-                        cluster: false,
-                        isStatic: true,
-                        //minZoom: 14,
-                        smallMarker: true,
-                        template: _.template($('#verneomraader_template').html())
-                    },
-                    */
-                    {
-                        isStatic: true,
-                        bbox: true,
+                        api: 'cartodb',
                         name: 'Verneområder',
                         table: 'naturvernomrader_utm33_2',
                         columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-                        api: 'cartodb',
                         mapper: KR.API.mappers.cartodb_general,
+                        template: _.template($('#verneomraader_template').html()),
                         style: function (feature) {
                             return {color: '#7570b3', weight: 1, fillColor: '#ff0000'};
                         },
-                        template: _.template($('#verneomraader_template').html()),
                         getFeatureData: function (feature, callback) {
                             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
                         }
                     },
                     {
-                        name: 'Artsobservasjoner',
                         api: 'norvegiana',
+                        name: 'Artsobservasjoner',
                         dataset: 'Artsdatabanken',
-                        bbox: true,
-                        cluster: true,
-                        minZoom: 14,
-                        smallMarker: true
+                        isStatic: false,
+                        smallMarker: true,
+                        minZoom: 14
                     }
                 ];
-
-                function addBboxDataset(api, map, dataset, sidebar) {
-                    var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
-                        .addTo(map);
-                    layer.visible = true;
-
-                    function reloadData () {
-                        var bounds = map.getBounds().toBBoxString();
-                        if (dataset.minZoom) {
-                            if (map.getZoom() >= dataset.minZoom && layer.visible) {
-                                api.getBbox(dataset, bounds, function (geoJson) {
-                                    layer.addGeoJSON(geoJson);
-                                });
-                            } else {
-                                layer.resetGeoJSON();
-                            }
-                        } else {
-                            if (layer.visible) {
-                                api.getBbox(dataset, bounds, function (geoJson) {
-                                    layer.addGeoJSON(geoJson);
-                                });
-                            } else {
-                                layer.resetGeoJSON();
-                            }
-                        }
-                    }
-
-                    layer.on('setVisible', reloadData);
-                    if (!dataset.isStatic) {
-                        map.on('moveend', reloadData);
-                    }
-                    reloadData();
-                    return layer;
-                }
-
-                function addFullDataset(api, map, dataset, sidebar) {
-                    var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
-                        .addTo(map);
-                    api.getData(dataset, function (geoJson) {
-                        layer.addGeoJSON(geoJson);
-                    });
-                    return layer;
-                }
+                var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
                 //get the are we are interested in
                 var dovre = 511;
@@ -295,13 +227,7 @@
                     var bounds = L.latLngBounds.fromBBoxString(bbox);
                     map.setMaxBounds(bounds);
                     map.fitBounds(bounds);
-                    var layers = _.map(datasets, function (dataset) {
-                        if (dataset.bbox) {
-                            return addBboxDataset(api, map, dataset, sidebar);
-                        } else {
-                            return addFullDataset(api, map, dataset, sidebar);
-                        }
-                    });
+                    var layers = datasetLoader.loadDatasets(datasets);
 
                     L.control.datasets(layers).addTo(map);
                 });
