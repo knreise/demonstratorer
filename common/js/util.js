@@ -55,11 +55,17 @@ KR.Util = {};
         'Artsdatabanken': 'paw'
     };
 
-    ns.iconForFeature = function (feature) {
-
-        var dataset = feature.properties.dataset;
+    ns.iconForDataset = function (dataset) {
         if (_.has(datasetIcons, dataset)) {
             return datasetIcons[dataset];
+        }
+    }
+
+    ns.iconForFeature = function (feature) {
+
+        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
+        if (datasetIcon) {
+            return datasetIcon;
         }
 
         var contentType = feature.properties.contentType;

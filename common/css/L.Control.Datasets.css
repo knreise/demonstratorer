@@ -1,0 +1,7 @@
+.leaflet-control-layers .layericon {
+    margin-left: 5px;
+}
+
+.leaflet-control-layers label.disabled {
+    color: #ddd;
+}

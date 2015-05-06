@@ -9,9 +9,9 @@
         <link href='../../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         
         <link href='../../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
-        <!--
-        <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
-        -->
+
+        <link href='../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+
         <link href='../../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
         <link href='../../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
         <!--
@@ -22,15 +22,17 @@
         <link href='../../common/css/markers.css' rel='stylesheet' />
         <!--
         <link href='../common/css/L.Control.DatasetChooser.css' rel='stylesheet' />
-        <link href='../common/css/L.Control.NorvegianaSidebar.css' rel='stylesheet' />
         -->
+        <link href='../../common/css/L.Control.NorvegianaSidebar.css' rel='stylesheet' />
+        <link href='../../common/css/L.Control.Datasets.css' rel='stylesheet' />
+
     </head>
     <body>
         <div id="sidebar"></div>
         <div id="map"></div>
 
         <!-- templates -->
-        <!--
+        
         <script type="text/template" id="popup_template">
             <h3><%= title %></h3>
             <p><%= dataset %></p>
@@ -49,7 +51,7 @@
                 <%= title %>
             </a>
         </script>
-        -->
+
         <!-- end templates -->
 
         <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
@@ -57,9 +59,9 @@
         <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
         
         <script src="../../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
-        <!--
+
         <script src="../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
--->
+
         <script src="../../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
         <script src="../../bower_components/CryptoJS/build/components/core.js"></script>
@@ -71,9 +73,11 @@
         <script src="../../common/js/L.Control.MapClick.js"></script>
 -->
         <script src="../../common/js/L.NorvegianaGeoJSON.js"></script>
-<!--
+
         <script src="../../common/js/L.Control.NorvegianaSidebar.js"></script>
--->
+        <script src="../../common/js/L.Control.Datasets.js"></script>
+        
+
 
         <script src="../../common/js/util.js"></script>
         <script src="../../common/js/wikipedia.js"></script>
@@ -87,10 +91,10 @@
                 'use strict';
 
                 //template used for sidebar
-                /*
+
                 var popupTemplate = _.template($('#popup_template').html());
                 var listElementTemplate = _.template($('#list_item_template').html());
-                */
+
                 //create the map
                 var map = L.map('map');
 
@@ -105,9 +109,18 @@
                     }
                 });
 
+                //the sidebar, used for displaying information
+                var sidebar = L.control.norvegianaSidebar('sidebar', {
+                    position: 'left',
+                    template: popupTemplate,
+                    listElementTemplate: listElementTemplate
+                });
+                map.addControl(sidebar);
+
 
                 var datasets = [
                     {
+                        name: 'Pilegrimsleden',
                         api: 'cartodb',
                         table: 'pilegrimsleden_dovre',
                         mapper: KR.API.mappers.pilegrimsleden_dovre,
@@ -118,6 +131,7 @@
                         cluster: false
                     },
                     {
+                        name: 'Artsobservasjoner',
                         api: 'norvegiana',
                         dataset: 'Artsdatabanken',
                         cluster: true,
@@ -127,32 +141,29 @@
                 ];
 
 
-                function addDynamicDataset(api, map, dataset) {
-                    var layer = L.norvegianaGeoJSON(null, null, dataset)
+                function addDynamicDataset(api, map, dataset, sidebar) {
+                    var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
                         .addTo(map);
-                    var bounds = map.getBounds().toBBoxString();
-                    if (dataset.minZoom && map.getZoom() >= dataset.minZoom) {
-                        api.getBbox(dataset, bounds, function (geoJson) {
-                            layer.addGeoJSON(geoJson);
-                        });
-                    }
 
-                    map.on('moveend', function (geoJson) {
-                        if (dataset.minZoom && map.getZoom() >= dataset.minZoom) {
+                    function reloadData () {
+                        if (dataset.minZoom && map.getZoom() >= dataset.minZoom && layer.visible) {
                         var bounds = map.getBounds().toBBoxString();
                             api.getBbox(dataset, bounds, function (geoJson) {
                                 layer.addGeoJSON(geoJson);
                             });
                         } else {
-                            console.log("!reset");
                             layer.resetGeoJSON();
                         }
-                    });
+                    }
+
+                    layer.on('setVisible', reloadData)
+                    map.on('moveend', reloadData);
+                    reloadData();
                     return layer;
                 }
 
-                function addStaticDataset(api, map, dataset) {
-                    var layer = L.norvegianaGeoJSON(null, null, dataset)
+                function addStaticDataset(api, map, dataset, sidebar) {
+                    var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
                         .addTo(map);
                     api.getData(dataset, function (geoJson) {
                         layer.addGeoJSON(geoJson);
@@ -166,14 +177,19 @@
                     var bounds = L.latLngBounds.fromBBoxString(bbox);
                     map.setMaxBounds(bounds);
                     map.fitBounds(bounds);
-                    console.log(map.getZoom());
-                    _.each(datasets, function (dataset) {
+                    var layers = _.map(datasets, function (dataset) {
                         if (dataset.isStatic) {
-                            addStaticDataset(api, map, dataset);
+                            
+                            return addStaticDataset(api, map, dataset, sidebar);
+
                         } else {
-                            addDynamicDataset(api, map, dataset);
+                            var layer = addDynamicDataset(api, map, dataset, sidebar);
+                            layer.visible = true;
+                            return layer;
                         }
                     });
+
+                    L.control.datasets(layers).addTo(map);
                 });
             }());
         </script>
