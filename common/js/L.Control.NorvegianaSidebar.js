@@ -8,10 +8,17 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         return L.Control.Sidebar.prototype.initialize.call(this, placeholder, options);
     },
 
-    showFeature: function (feature, template) {
+    showFeature: function (feature, template, getData) {
+
+        if (getData) {
+            var self = this;
+            getData(feature, function (feature) {
+                self.showFeature(feature, template);
+            });
+            return;
+        }
 
         template = template || this._template;
-        console.log(feature.properties);
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];

@@ -73,7 +73,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _featureClick: function (e) {
         if (this._sidebar) {
-            this._sidebar.showFeature(e.target.feature, this.options.template);
+            this._sidebar.showFeature(e.target.feature, this.options.template, this.options.getFeatureData);
         }
     },
 

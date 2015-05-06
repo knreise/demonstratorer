@@ -59,7 +59,20 @@ KR.CartodbAPI = function (user, apikey) {
         return _.reduce(columns, function (acc, columns, dataset) {
             acc[dataset] = _createMapper(columns);
             return acc;
-        }, {});
+        }, {
+            cartodb_general: function (response) {
+            var features = _.map(response.rows, function (row) {
+                var geom = JSON.parse(row.geom);
+                return {
+                    'type': 'Feature',
+                    'geometry': geom,
+                    'properties': _.omit(row, 'geom')
+                };
+            });
+            return KR.Util.CreateFeatureCollection(features);
+        }
+
+        });
     }
 
 
@@ -116,7 +129,15 @@ KR.CartodbAPI = function (user, apikey) {
         }
     }
 
+    function getBbox(dataset, bbox, callback) {
+        dataset.columns.push('ST_AsGeoJSON(the_geom) as geom');
+        var select = dataset.columns.join(', ');
+        var sql = 'SELECT ' + select + ' FROM ' + dataset.table + ' WHERE ST_Intersects(the_geom, ST_MakeEnvelope(' + bbox +', 4326))';
+        _executeSQL(sql, dataset.mapper, callback);
+    }
+
     return {
+        getBbox: getBbox,
         getData: getData,
         getWithin: getWithin,
         getMunicipalityBounds: getMunicipalityBounds,

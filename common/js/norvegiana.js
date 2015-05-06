@@ -82,6 +82,17 @@ KR.NorvegianaAPI = function () {
         KR.Util.sendRequest(url, callback, _parseNorvegianaItems);
     }
 
+    function getItem(id, callback) {
+        var params = {
+            id: id,
+            format: 'json'
+        };
+        var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, callback, function (response) {
+            return _parseNorvegianaItem(response.result);
+        });
+    }
+
     /*
     function getData(dataset, callback) {
         console.log(dataset);
@@ -103,6 +114,7 @@ KR.NorvegianaAPI = function () {
 
     return {
         getWithin: getWithin,
+        getItem: getItem
         //getData: getData
     };
 };

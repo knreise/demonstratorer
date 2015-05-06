@@ -205,6 +205,7 @@
                         //minZoom: 14,
                         smallMarker: true
                     },
+                    /*
                     {
                         name: 'Verneområder',
                         api: 'norvegiana',
@@ -216,6 +217,23 @@
                         //minZoom: 14,
                         smallMarker: true,
                         template: _.template($('#verneomraader_template').html())
+                    },
+                    */
+                    {
+                        isStatic: true,
+                        bbox: true,
+                        name: 'Verneområder',
+                        table: 'naturvernomrader_utm33_2',
+                        columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+                        api: 'cartodb',
+                        mapper: KR.API.mappers.cartodb_general,
+                        style: function (feature) {
+                            return {color: '#7570b3', weight: 1, fillColor: '#ff0000'};
+                        },
+                        template: _.template($('#verneomraader_template').html()),
+                        getFeatureData: function (feature, callback) {
+                            api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                        }
                     },
                     {
                         name: 'Artsobservasjoner',
@@ -270,7 +288,6 @@
                     });
                     return layer;
                 }
-
 
                 //get the are we are interested in
                 var dovre = 511;

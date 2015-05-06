@@ -125,7 +125,10 @@ KR.API = function (options) {
         datasets: function () {return _.extend({}, datasets); },
         getMunicipalityBounds: getMunicipalityBounds,
         getData: getData,
-        getBbox: getBbox
+        getBbox: getBbox,
+        getNorvegianaItem: function (item, callback) {
+            apis.norvegiana.getItem(item, callback);
+        }
     };
 
 };
