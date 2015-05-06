@@ -16,7 +16,7 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         if (_.isArray(img)) {
             img = img[0];
         }
-        this.setContent(template(feature.properties));
+        this.setContent(template(_.extend({image: null}, feature.properties)));
         if (typeof audiojs !== 'undefined') {
             audiojs.createAll();
         }
