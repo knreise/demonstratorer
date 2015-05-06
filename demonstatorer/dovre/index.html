@@ -59,6 +59,18 @@
             <a href="<%= link %>">Mer info</a>
         </script>
 
+        <script type="text/template" id="verneomraader_template">
+            <h3>Verneområde</h3>
+            <dl>
+              <dt>Navn</dt>
+              <dd><%= title %></dd>
+              <dt>Faktaark</dt>
+              <dd><a href="<%= link %>">naturbase.no</a></dd>
+              <dt>Beskrivelse</dt>
+              <dd><%= content %></dd>
+            </dl>
+        </script>
+
         <script type="text/template" id="digitalt_fortalt_template">
             <h3><%= title %></h3>
             <% if(contentType === 'VIDEO' && video) { %>
@@ -194,7 +206,7 @@
                         smallMarker: true
                     },
                     {
-                        name: 'Naturbase',
+                        name: 'Verneområder',
                         api: 'norvegiana',
                         dataset: 'Naturbase',
                         bbox: true,
@@ -202,7 +214,8 @@
                         cluster: false,
                         isStatic: true,
                         //minZoom: 14,
-                        smallMarker: true
+                        smallMarker: true,
+                        template: _.template($('#verneomraader_template').html())
                     },
                     {
                         name: 'Artsobservasjoner',
