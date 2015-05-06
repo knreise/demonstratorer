@@ -52,10 +52,11 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     onAdd: function (map) {
-        if (this.options.cluster) {
+        if (this._cluster) {
             map.addLayer(this._cluster);
+        } else {
+          L.GeoJSON.prototype.onAdd.call(this, map);
         }
-        L.GeoJSON.prototype.onAdd.call(this, map);
     },
 
     resetGeoJSON: function (geoJson) {
@@ -65,6 +66,13 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         }
         if (geoJson) {
             this.addGeoJSON(geoJson);
+        }
+    },
+
+    onRemove: function (map) {
+        L.GeoJSON.prototype.onRemove.call(this, map);
+        if (this._cluster) {
+            map.removeLayer(this._cluster);
         }
     },
 

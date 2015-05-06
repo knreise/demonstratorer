@@ -55,15 +55,14 @@ L.Control.Datasets = L.Control.Layers.extend({
         var input = e.target;
         this._handlingClick = true;
         if (input.checked) {
-            if (!this._map.hasLayer(obj.layer) && !obj.layer.options.bbox) {
+            if (!this._map.hasLayer(obj.layer) && obj.layer.options.isStatic) {
                 this._map.addLayer(obj.layer);
             } else {
                 obj.layer.visible = true;
                 obj.layer.fire('setVisible');
             }
-
         } else if (!input.checked && this._map.hasLayer(obj.layer)) {
-            if (!obj.layer.options.bbox) {
+            if (obj.layer.options.isStatic) {
                 this._map.removeLayer(obj.layer);
             } else {
                 obj.layer.visible = false;
