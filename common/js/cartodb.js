@@ -36,14 +36,12 @@ KR.CartodbAPI = function (user, apikey) {
         };
     }
 
-
-
-    var columns = {
+    var columnList = {
         'default': {
             delving_thumbnail: ['images', 'thumbnail'],
             dc_title: 'title',
             dc_description: 'content',
-            europeana_isShownAt: 'link',
+            europeana_isshownat: 'link',
             europeana_collectiontitle: 'dataset',
             abm_contentProvider: 'provider',
             europeana_type: 'contentType',
@@ -52,26 +50,25 @@ KR.CartodbAPI = function (user, apikey) {
         pilegrimsleden_dovre: {iid: 'id', name: 'name', omradenavn: 'omradenavn'}
     };
 
-    var _parseItems = _createMapper(columns['default']);
+    var _parseItems = _createMapper(columnList['default']);
 
     function mappers() {
 
-        return _.reduce(columns, function (acc, columns, dataset) {
+        return _.reduce(columnList, function (acc, columns, dataset) {
             acc[dataset] = _createMapper(columns);
             return acc;
         }, {
             cartodb_general: function (response) {
-            var features = _.map(response.rows, function (row) {
-                var geom = JSON.parse(row.geom);
-                return {
-                    'type': 'Feature',
-                    'geometry': geom,
-                    'properties': _.omit(row, 'geom')
-                };
-            });
-            return KR.Util.CreateFeatureCollection(features);
-        }
-
+                var features = _.map(response.rows, function (row) {
+                    var geom = JSON.parse(row.geom);
+                    return {
+                        'type': 'Feature',
+                        'geometry': geom,
+                        'properties': _.omit(row, 'geom')
+                    };
+                });
+                return KR.Util.CreateFeatureCollection(features);
+            }
         });
     }
 
@@ -86,7 +83,7 @@ KR.CartodbAPI = function (user, apikey) {
     }
 
     function getWithin(dataset, latLng, distance, callback) {
-        var select = _.keys(columns['default']).concat(['ST_AsGeoJSON(the_geom) as geom']).join(', ');
+        var select = _.keys(columnList['default']).concat(['ST_AsGeoJSON(the_geom) as geom']).join(', ');
         var sql = 'SELECT ' + select + ' FROM ' + dataset + ' WHERE ST_DWithin(the_geom::geography, \'POINT(' + latLng.lng + ' ' + latLng.lat + ')\'::geography, ' + distance + ');';
         _executeSQL(sql, _parseItems, callback);
     }
@@ -111,7 +108,7 @@ KR.CartodbAPI = function (user, apikey) {
             municipalities = [municipalities];
         }
 
-        var sql = 'SELECT ST_Extent(the_geom) FROM kommuner where komm in (' + municipalities.join(', ') + ')';
+        var sql = 'SELECT ST_Extent(the_geom) FROM kommuner WHERE komm in (' + municipalities.join(', ') + ')';
         _executeSQL(sql, _parseMunicipalities, callback);
     }
 
@@ -120,20 +117,28 @@ KR.CartodbAPI = function (user, apikey) {
             _executeSQL(dataset.query, dataset.mapper, callback);
         } else if (dataset.table) {
             var select = ['*'];
-            if (_.has(columns, dataset.table)) {
-                select = _.keys(columns[dataset.table]);
+            if (_.has(columnList, dataset.table)) {
+                select = _.keys(columnList[dataset.table]);
             }
-            select.push('ST_AsGeoJSON(the_geom)');
-            var sql = 'SELECT ' + select.join(', ') + ' as geom FROM ' + dataset.table;
+            select.push('ST_AsGeoJSON(the_geom) as geom');
+            var sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
             _executeSQL(sql, dataset.mapper, callback);
         }
     }
 
     function getBbox(dataset, bbox, callback) {
-        dataset.columns.push('ST_AsGeoJSON(the_geom) as geom');
-        var select = dataset.columns.join(', ');
-        var sql = 'SELECT ' + select + ' FROM ' + dataset.table + ' WHERE ST_Intersects(the_geom, ST_MakeEnvelope(' + bbox +', 4326))';
-        _executeSQL(sql, dataset.mapper, callback);
+        var columns = dataset.columns;
+        if (!columns) {
+            columns = ['*'];
+        }
+        columns.push('ST_AsGeoJSON(the_geom) as geom');
+        var select = columns.join(', ');
+        var sql = 'SELECT ' + select + ' FROM ' + dataset.table + ' WHERE ST_Intersects(the_geom, ST_MakeEnvelope(' + bbox + ', 4326))';
+        var mapper = dataset.mapper;
+        if (!mapper) {
+            mapper = mappers().cartodb_general;
+        }
+        _executeSQL(sql, mapper, callback);
     }
 
     return {

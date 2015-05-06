@@ -1,4 +1,4 @@
-/*global L:false */
+/*global L:false, KR: false, audiojs:false */
 'use strict';
 
 L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({

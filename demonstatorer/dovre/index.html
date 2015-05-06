@@ -172,7 +172,7 @@
                 });
                 map.addControl(sidebar);
 
-
+                //The datasets in use
                 var datasets = [
                     {
                         api: 'cartodb',
@@ -201,7 +201,6 @@
                         name: 'Verneområder',
                         table: 'naturvernomrader_utm33_2',
                         columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-                        mapper: KR.API.mappers.cartodb_general,
                         template: _.template($('#verneomraader_template').html()),
                         style: function (feature) {
                             return {color: '#7570b3', weight: 1, fillColor: '#ff0000'};

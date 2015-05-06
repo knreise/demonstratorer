@@ -1,4 +1,33 @@
+/*global L: false */
+
 var KR = this.KR || {};
+
+KR.Config = {
+    contentIcons: {
+        'IMAGE': 'camera-retro',
+        'VIDEO': 'file-video-o',
+        'SOUND': 'music',
+        'TEXT': 'file-text',
+        'default': 'file-o'
+    },
+
+    datasetIcons: {
+        'Artsdatabanken': 'paw',
+        'Kulturminnesok': 'archive',
+        'Naturbase': 'tree'
+    },
+
+    providerColors: {
+        'Artsdatabanken': {name: 'darkpuple', hex: '#5B396B'},
+        'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
+        'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
+        'Industrimuseum': {name: 'darkred', hex: '#A23336'},
+        'Kulturminnesøk': {name: 'green', hex: '#72B026'},
+        'Naturbase': {name: 'purple', hex: '#D252B9'},
+        'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
+        'default': {name: 'blue', hex: '#38A9DC'}
+    }
+};
 
 KR.Util = {};
 
@@ -43,25 +72,13 @@ KR.Util = {};
         };
     };
 
-    var contentIcons = {
-        'IMAGE': 'camera-retro',
-        'VIDEO': 'file-video-o',
-        'SOUND': 'music',
-        'TEXT': 'file-text',
-        'default': 'file-o'
-    };
 
-    var datasetIcons = {
-        'Artsdatabanken': 'paw',
-        'Kulturminnesok': 'archive',
-        'Naturbase': 'tree'
-    };
 
     ns.iconForDataset = function (dataset) {
-        if (_.has(datasetIcons, dataset)) {
-            return datasetIcons[dataset];
+        if (_.has(KR.Config.datasetIcons, dataset)) {
+            return KR.Config.datasetIcons[dataset];
         }
-    }
+    };
 
     ns.iconForFeature = function (feature) {
 
@@ -71,32 +88,21 @@ KR.Util = {};
         }
 
         var contentType = feature.properties.contentType;
-        if (_.has(contentIcons, contentType)) {
-            return contentIcons[contentType];
+        if (_.has(KR.Config.contentIcons, contentType)) {
+            return KR.Config.contentIcons[contentType];
         }
-        return contentIcons['default'];
+        return KR.Config.contentIcons['default'];
     };
 
-
-    var providerColors = {
-        'Artsdatabanken': {name: 'darkpuple', hex: '#5B396B'},
-        'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
-        'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
-        'Industrimuseum': {name: 'darkred', hex: '#A23336'},
-        'Kulturminnesøk': {name: 'green', hex: '#72B026'},
-        'Naturbase': {name: 'purple', hex: '#D252B9'},
-        'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
-        'default': {name: 'blue', hex: '#38A9DC'}
-    };
 
     ns.colorForFeature = function (feature, type) {
         type = type || 'name';
         var provider = feature.properties.provider;
 
-        if (_.has(providerColors, provider)) {
-            return providerColors[provider][type];
+        if (_.has(KR.Config.providerColors, provider)) {
+            return KR.Config.providerColors[provider][type];
         }
-        return providerColors['default'][type];
+        return KR.Config.providerColors['default'][type];
     };
 
 

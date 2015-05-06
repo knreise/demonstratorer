@@ -45,14 +45,14 @@ KR.API = function (options) {
 
     function _haversine(lat1, lon1, lat2, lon2) {
         var R = 6371000; // metres
-        var φ1 = _toRad(lat1);
-        var φ2 = _toRad(lat2);
-        var Δφ = _toRad(lat2 - lat1);
-        var Δλ = _toRad(lon2 - lon1);
+        var phi1 = _toRad(lat1);
+        var phi2 = _toRad(lat2);
+        var bDeltaPhi = _toRad(lat2 - lat1);
+        var bDeltaDelta = _toRad(lon2 - lon1);
 
-        var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        var a = Math.sin(bDeltaPhi / 2) * Math.sin(bDeltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(bDeltaDelta / 2) * Math.sin(bDeltaDelta / 2);
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
@@ -74,7 +74,7 @@ KR.API = function (options) {
             _haversine(lat1, lng1, centerLat, centerLng),
             _haversine(lat2, lng2, centerLat, centerLng)
         ]);
-        
+
         var latLng = {lat: centerLat, lng: centerLng};
         api.getWithin(dataset.dataset, latLng, radius, callback, true);
     }
