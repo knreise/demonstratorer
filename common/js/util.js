@@ -52,7 +52,8 @@ KR.Util = {};
     };
 
     var datasetIcons = {
-        'Artsdatabanken': 'paw'
+        'Artsdatabanken': 'paw',
+        'Kulturminnesok': 'archive'
     };
 
     ns.iconForDataset = function (dataset) {

@@ -128,12 +128,34 @@
                             return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
                         },
                         isStatic: true,
+                        bbox: false,
                         cluster: false
+                    },
+                    {
+                        name: 'Kulturminner',
+                        api: 'norvegiana',
+                        dataset: 'Kulturminnesok',
+                        bbox: true,
+                        isStatic: true,
+                        cluster: true,
+                        //minZoom: 14,
+                        smallMarker: true
+                    },
+                    {
+                        name: 'Naturbase',
+                        api: 'norvegiana',
+                        dataset: 'Naturbase',
+                        bbox: true,
+                        isStatic: true,
+                        cluster: true,
+                        //minZoom: 14,
+                        smallMarker: true
                     },
                     {
                         name: 'Artsobservasjoner',
                         api: 'norvegiana',
                         dataset: 'Artsdatabanken',
+                        bbox: true,
                         cluster: true,
                         minZoom: 14,
                         smallMarker: true
@@ -141,28 +163,41 @@
                 ];
 
 
-                function addDynamicDataset(api, map, dataset, sidebar) {
+                function addBboxDataset(api, map, dataset, sidebar) {
                     var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
                         .addTo(map);
+                    layer.visible = true;
 
                     function reloadData () {
-                        if (dataset.minZoom && map.getZoom() >= dataset.minZoom && layer.visible) {
                         var bounds = map.getBounds().toBBoxString();
-                            api.getBbox(dataset, bounds, function (geoJson) {
-                                layer.addGeoJSON(geoJson);
-                            });
+                        if (dataset.minZoom) {
+                            if (map.getZoom() >= dataset.minZoom && layer.visible) {
+                                api.getBbox(dataset, bounds, function (geoJson) {
+                                    layer.addGeoJSON(geoJson);
+                                });
+                            } else {
+                                layer.resetGeoJSON();
+                            }
                         } else {
-                            layer.resetGeoJSON();
+                            if (layer.visible) {
+                                api.getBbox(dataset, bounds, function (geoJson) {
+                                    layer.addGeoJSON(geoJson);
+                                });
+                            } else {
+                                layer.resetGeoJSON();
+                            }
                         }
                     }
 
-                    layer.on('setVisible', reloadData)
-                    map.on('moveend', reloadData);
+                    layer.on('setVisible', reloadData);
+                    if (!dataset.isStatic) {
+                        map.on('moveend', reloadData);
+                    }
                     reloadData();
                     return layer;
                 }
 
-                function addStaticDataset(api, map, dataset, sidebar) {
+                function addFullDataset(api, map, dataset, sidebar) {
                     var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
                         .addTo(map);
                     api.getData(dataset, function (geoJson) {
@@ -171,6 +206,7 @@
                     return layer;
                 }
 
+
                 //get the are we are interested in
                 var dovre = 511;
                 api.getMunicipalityBounds(dovre, function (bbox) {
@@ -178,14 +214,10 @@
                     map.setMaxBounds(bounds);
                     map.fitBounds(bounds);
                     var layers = _.map(datasets, function (dataset) {
-                        if (dataset.isStatic) {
-                            
-                            return addStaticDataset(api, map, dataset, sidebar);
-
+                        if (dataset.bbox) {
+                            return addBboxDataset(api, map, dataset, sidebar);
                         } else {
-                            var layer = addDynamicDataset(api, map, dataset, sidebar);
-                            layer.visible = true;
-                            return layer;
+                            return addFullDataset(api, map, dataset, sidebar);
                         }
                     });
 

@@ -59,7 +59,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     resetGeoJSON: function (geoJson) {
         this.clearLayers();
-        if (this.options.cluster) {
+        if (this._cluster) {
             this._cluster.clearLayers();
         }
         if (geoJson) {

@@ -61,7 +61,7 @@ L.Control.Datasets = L.Control.Layers.extend({
             obj = this._layers[input.layerId];
 
             if (input.checked) {
-                if (!this._map.hasLayer(obj.layer) && obj.layer.options.isStatic) {
+                if (!this._map.hasLayer(obj.layer) && !obj.layer.options.bbox) {
                     this._map.addLayer(obj.layer);
                 } else {
                     obj.layer.visible = true;
@@ -69,7 +69,7 @@ L.Control.Datasets = L.Control.Layers.extend({
                 }
 
             } else if (!input.checked && this._map.hasLayer(obj.layer)) {
-                if (obj.layer.options.isStatic) {
+                if (!obj.layer.options.bbox) {
                     this._map.removeLayer(obj.layer);
                 } else {
                     obj.layer.visible = false;
