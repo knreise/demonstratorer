@@ -53,7 +53,8 @@ KR.Util = {};
 
     var datasetIcons = {
         'Artsdatabanken': 'paw',
-        'Kulturminnesok': 'archive'
+        'Kulturminnesok': 'archive',
+        'Naturbase': 'tree'
     };
 
     ns.iconForDataset = function (dataset) {
