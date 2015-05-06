@@ -16,6 +16,16 @@ KR.NorvegianaAPI = function () {
         return null;
     }
 
+    function _parseVideo(link) {
+        if (!link) {
+            return link;
+        }
+        if (link.indexOf('www.youtube.com/watch') !== -1) {
+            return 'https://www.youtube.com/embed/' + link.substr(link.indexOf('watch?v=') + 8);
+        }
+        return link;
+    }
+
     function _parseNorvegianaItem(item) {
         var allProperties = _.chain(item.item.fields)
             .pairs()
@@ -38,7 +48,11 @@ KR.NorvegianaAPI = function () {
             link: _firstOrNull(allProperties.europeana_isShownAt),
             dataset: _firstOrNull(allProperties.europeana_collectionTitle),
             provider: _firstOrNull(allProperties.abm_contentProvider),
-            contentType: _firstOrNull(allProperties.europeana_type)
+            contentType: _firstOrNull(allProperties.europeana_type),
+            video: _firstOrNull(allProperties.abm_videoUri),
+            videoEmbed: _parseVideo(_firstOrNull(allProperties.abm_videoUri)),
+            sound: _firstOrNull(allProperties.abm_soundUri),
+            allProps: allProperties
         };
 
         var parsedPos = _.map(pos[0].split(','), parseFloat);

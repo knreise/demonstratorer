@@ -14,9 +14,9 @@
 
         <link href='../../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
         <link href='../../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
-        <!--
-        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
-        -->
+        <link href='../../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
+
+        <link href='../../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
 
         <link href='../../common/css/fullscreenmap.css' rel='stylesheet' />
         <link href='../../common/css/markers.css' rel='stylesheet' />
@@ -25,6 +25,20 @@
         -->
         <link href='../../common/css/L.Control.NorvegianaSidebar.css' rel='stylesheet' />
         <link href='../../common/css/L.Control.Datasets.css' rel='stylesheet' />
+
+        <style type="text/css">
+
+            .audiojs {
+                height: 22px;
+                width:400px;
+            }
+            .audiojs .play-pause { width: 30px; height: 20px; padding: 0px 8px 0px 0px; }
+            .audiojs p { width: 25px; height: 20px; margin: -3px 0px 0px -1px; }
+            .audiojs .scrubber { height:10px; width:230px; margin:5px; }
+            .audiojs .progress { height: 10px; width: 0px; }
+            .audiojs .loaded { height: 10px; }
+            .audiojs .time { float: left; height: 25px; line-height: 25px; }
+        </style>
 
     </head>
     <body>
@@ -43,6 +57,30 @@
             <% }%>
             <p><%= content %></p>
             <a href="<%= link %>">Mer info</a>
+        </script>
+
+        <script type="text/template" id="digitalt_fortalt_template">
+            <h3><%= title %></h3>
+            <% if(contentType === 'VIDEO' && video) { %>
+                <% if (video.indexOf('mp4') !== -1) { %>
+                    <video id="really-cool-video" class="video-js vjs-default-skin" controls
+                     preload="auto" width="400" height="315" poster="<%= images[0] %>"
+                     data-setup='{}'>
+                      <source src="<%= videoEmbed %>" type='video/mp4'>
+                    </video>
+                <% } else { %>
+                    <iframe width="400" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+                <% } %>
+                
+            <% } else if(contentType === 'SOUND' && sound) { %>
+                <audio src="<%= sound %>" preload="auto"></audio>
+            <% } else if(contentType === 'IMAGE' && images) { %>
+                <img width="400" src="<%= images[0] %>" />
+            <% } %>
+            <%= content %>
+
+            <a href="<%= link %>">Mer hos <%= provider %><a/>
+
         </script>
 
         <script type="text/template" id="list_item_template">
@@ -67,6 +105,10 @@
         <script src="../../bower_components/CryptoJS/build/components/core.js"></script>
         <script src="../../bower_components/CryptoJS/build/components/md5.js"></script>
 
+        <script src="../../bower_components/audiojs/audiojs/audio.min.js"></script>
+        <script src="../../bower_components/video.js/dist/video-js/video.js"></script>
+        
+
         <script src="../../common/js/L.TileLayer.Kartverket.js"></script>
 <!--
         <script src="../../common/js/L.Control.DatasetChooser.js"></script>
@@ -84,7 +126,6 @@
         <script src="../../common/js/norvegiana.js"></script>
         <script src="../../common/js/cartodb.js"></script>
         <script src="../../common/js/api.js"></script>
-
         <script type="text/javascript">
 
             (function () {
@@ -132,6 +173,17 @@
                         cluster: false
                     },
                     {
+                        name: 'Digitalt fortalt',
+                        api: 'norvegiana',
+                        dataset: 'difo',
+                        bbox: true,
+                        isStatic: true,
+                        cluster: true,
+                        template: _.template($('#digitalt_fortalt_template').html())
+                        //minZoom: 14,
+                        //smallMarker: true
+                    },
+                    {
                         name: 'Kulturminner',
                         api: 'norvegiana',
                         dataset: 'Kulturminnesok',
@@ -162,7 +214,6 @@
                         smallMarker: true
                     }
                 ];
-
 
                 function addBboxDataset(api, map, dataset, sidebar) {
                     var layer = L.norvegianaGeoJSON(null, sidebar, dataset)

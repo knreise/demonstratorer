@@ -49,35 +49,27 @@ L.Control.Datasets = L.Control.Layers.extend({
         }
     },
 
-    _onInputClick: function () {
-        var i, input, obj,
-            inputs = this._form.getElementsByTagName('input'),
-            inputsLen = inputs.length;
+    _onInputClick: function (e) {
 
+        var obj = this._layers[e.target.layerId];
+        var input = e.target;
         this._handlingClick = true;
+        if (input.checked) {
+            if (!this._map.hasLayer(obj.layer) && !obj.layer.options.bbox) {
+                this._map.addLayer(obj.layer);
+            } else {
+                obj.layer.visible = true;
+                obj.layer.fire('setVisible');
+            }
 
-        for (i = 0; i < inputsLen; i++) {
-            input = inputs[i];
-            obj = this._layers[input.layerId];
-
-            if (input.checked) {
-                if (!this._map.hasLayer(obj.layer) && !obj.layer.options.bbox) {
-                    this._map.addLayer(obj.layer);
-                } else {
-                    obj.layer.visible = true;
-                    obj.layer.fire('setVisible');
-                }
-
-            } else if (!input.checked && this._map.hasLayer(obj.layer)) {
-                if (!obj.layer.options.bbox) {
-                    this._map.removeLayer(obj.layer);
-                } else {
-                    obj.layer.visible = false;
-                    obj.layer.resetGeoJSON();
-                }
+        } else if (!input.checked && this._map.hasLayer(obj.layer)) {
+            if (!obj.layer.options.bbox) {
+                this._map.removeLayer(obj.layer);
+            } else {
+                obj.layer.visible = false;
+                obj.layer.resetGeoJSON();
             }
         }
-
         this._handlingClick = false;
 
         this._refocusOnMap();

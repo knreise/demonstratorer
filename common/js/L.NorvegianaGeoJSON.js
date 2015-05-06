@@ -73,7 +73,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _featureClick: function (e) {
         if (this._sidebar) {
-            this._sidebar.showFeature(e.target.feature);
+            this._sidebar.showFeature(e.target.feature, this.options.template);
         }
     },
 
@@ -82,14 +82,15 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
             var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
                 return marker.feature;
             });
-            this._sidebar.showFeatures(features);
+            this._sidebar.showFeatures(features, this.options.template);
         }
     },
 
     _createClusterIcon: function (cluster) {
         var markers = cluster.getAllChildMarkers();
         var photos = _.filter(markers, function (marker) {
-            return marker.feature.properties.contentType === 'IMAGE';
+            //return marker.feature.properties.contentType === 'IMAGE';
+            return marker.feature.properties.thumbnail;
         });
         if (photos.length && this.options.thumbnails) {
 
@@ -124,7 +125,8 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _createFeatureIcon: function (feature) {
 
-        if (feature.properties.contentType === 'IMAGE' && this.options.thumbnails) {
+        //if (feature.properties.contentType === 'IMAGE' && this.options.thumbnails) {
+        if (feature.properties.thumbnail && this.options.thumbnails) {
             var borderColor = KR.Util.colorForFeature(feature, 'hex');
             return L.divIcon({
                 html: '<div class="single" style="border-color: ' + borderColor + '; background-image: url(' + feature.properties.thumbnail + ');"></div>​',

@@ -8,22 +8,22 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         return L.Control.Sidebar.prototype.initialize.call(this, placeholder, options);
     },
 
-    showFeature: function (feature) {
+    showFeature: function (feature, template) {
+
+        template = template || this._template;
+        console.log(feature.properties);
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
         }
-        this.setContent(this._template({
-            title: feature.properties.title,
-            image: img,
-            content: feature.properties.content,
-            dataset: feature.properties.dataset,
-            link: feature.properties.link
-        }));
+        this.setContent(template(feature.properties));
+        if (typeof audiojs !== 'undefined') {
+            audiojs.createAll();
+        }
         this.show();
     },
 
-    showFeatures: function (features) {
+    showFeatures: function (features, template) {
         var list = $('<div class="list-group"></ul>');
         var elements = _.map(features, function (feature) {
 
@@ -34,7 +34,7 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
             }));
             li.on('click', _.bind(function (e) {
                 e.preventDefault();
-                this.showFeature(feature);
+                this.showFeature(feature, template);
                 return false;
             }, this));
             return li;

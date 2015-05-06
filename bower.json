@@ -22,6 +22,8 @@
     "underscore": "~1.8.3",
     "bootstrap": "~3.3.4",
     "Leaflet.awesome-markers": "~2.0.2",
-    "CryptoJS": "~3.1.12"
+    "CryptoJS": "~3.1.12",
+    "audiojs": "https://github.com/kolber/audiojs.git",
+    "video.js": "~4.12.5"
   }
 }
