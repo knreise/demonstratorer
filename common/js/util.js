@@ -14,7 +14,10 @@ KR.Config = {
     datasetIcons: {
         'Artsdatabanken': 'paw',
         'Kulturminnesok': 'archive',
-        'Naturbase': 'tree'
+        'Naturbase': 'tree',
+        'MUSIT_DiMu': 'flag',
+        'Musit': 'flag',
+        'DigitaltMuseum': 'flag'
     },
 
     providerColors: {
@@ -75,13 +78,15 @@ KR.Util = {};
 
 
     ns.iconForDataset = function (dataset) {
+        if (_.isArray(dataset)) {
+            dataset = dataset.join('_');
+        }
         if (_.has(KR.Config.datasetIcons, dataset)) {
             return KR.Config.datasetIcons[dataset];
         }
     };
 
     ns.iconForFeature = function (feature) {
-
         var datasetIcon = ns.iconForDataset(feature.properties.dataset);
         if (datasetIcon) {
             return datasetIcon;

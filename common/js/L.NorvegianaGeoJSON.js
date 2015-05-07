@@ -95,17 +95,23 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         }
     },
 
+    _getIconSize: function () {
+        if (this.options.smallMarker) {
+            return [20, 20];
+        }
+        return [50, 50];
+    },
+
     _createClusterIcon: function (cluster) {
         var markers = cluster.getAllChildMarkers();
         var photos = _.filter(markers, function (marker) {
-            //return marker.feature.properties.contentType === 'IMAGE';
             return marker.feature.properties.thumbnail;
         });
         if (photos.length && this.options.thumbnails) {
 
             var rotations = ['rotation1', 'rotation2', 'rotation3'];
             var template = _.template('<div class="inner <%= rotation %><% if (first) {print(" first")}%>" style="border-color: <%= color %>;background-image: url(<%= thumbnail %>);"></div>');
-            var html = _.map(photos, function (photo, idx) {
+            var html = _.map(photos.slice(0, 3), function (photo, idx) {
                 var rotation = rotations[idx % rotations.length];
                 return template({
                     thumbnail: photo.feature.properties.thumbnail,
@@ -118,7 +124,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
             return new L.DivIcon(L.extend({
                 className: 'leaflet-marker-photo',
                 html: '<div class="outer">​' + html + '</div><b>' + cluster.getChildCount() + '</b>',
-                iconSize: [50, 50]
+                iconSize: this._getIconSize()
             }, this.icon));
         }
         if (this.options.smallMarker) {
@@ -134,21 +140,13 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
 
     _createFeatureIcon: function (feature) {
 
-        //if (feature.properties.contentType === 'IMAGE' && this.options.thumbnails) {
         if (feature.properties.thumbnail && this.options.thumbnails) {
             var borderColor = KR.Util.colorForFeature(feature, 'hex');
+
             return L.divIcon({
                 html: '<div class="single" style="border-color: ' + borderColor + '; background-image: url(' + feature.properties.thumbnail + ');"></div>​',
                 className: 'leaflet-marker-photo',
-                iconSize: [50, 50]
-            });
-        }
-        if (this.options.smallMarker) {
-            var icon = KR.Util.iconForFeature(feature);
-            return new L.DivIcon({
-                className: 'leaflet-marker-favicon',
-                html: '<i class="fa fa-' + icon + '"></i>',
-                iconSize: [12, 12]
+                iconSize: this._getIconSize()
             });
         }
         return KR.Util.markerForFeature(feature);
