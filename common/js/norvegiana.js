@@ -67,7 +67,10 @@ KR.NorvegianaAPI = function () {
 
     function getWithin(query, latLng, distance, callback, isDataset) {
         if (isDataset) {
-            query = 'delving_spec:' + query;
+            if (!_.isArray(query))  {
+                query = [query];
+            }
+            query = _.map(query, function (q) {return 'delving_spec:' + q; }).join(' OR ');
         }
         distance = distance / 1000; // convert to km
         var params = {
