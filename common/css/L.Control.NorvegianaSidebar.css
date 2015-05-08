@@ -1,3 +1,8 @@
+#sidebar {
+    overflow: none;
+    padding: 50px 0 0 0;
+}
+
 #sidebar .list-group {
     margin-top: 50px;
 }
@@ -5,3 +10,43 @@
 #sidebar .fullwidth {
     width: 100%;
 }
+
+#sidebar .sidebar-content {
+    padding: 8px 24px;
+    height: 100%;
+    overflow: auto;
+}
+
+
+.leaflet-sidebar .prev {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 31px;
+    height: 31px;
+    color: #333;
+    font-size: 25pt;
+    line-height: 1em;
+    text-align: center;
+    background: white;
+    -webkit-border-radius: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    z-index: 8; }
+
+
+    .leaflet-sidebar .next {
+    position: absolute;
+    left: 50px;
+    top: 20px;
+    width: 31px;
+    height: 31px;
+    color: #333;
+    font-size: 25pt;
+    line-height: 1em;
+    text-align: center;
+    background: white;
+    -webkit-border-radius: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    z-index: 8; }
