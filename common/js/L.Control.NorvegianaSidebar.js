@@ -5,6 +5,7 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
         this._template = options.template;
+        this.on('hide', this._removeContent, this);
         return L.Control.Sidebar.prototype.initialize.call(this, placeholder, options);
     },
 
@@ -50,6 +51,10 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         list.append(elements);
         $(this.getContainer()).html(list);
         this.show();
+    },
+
+    _removeContent: function () {
+        $(this.getContainer()).html('');
     }
 });
 
