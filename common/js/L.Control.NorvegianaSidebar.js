@@ -4,9 +4,35 @@
 L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
+        L.setOptions(this, options);
+
         this._template = options.template;
+        // Find content container
+        var content =  L.DomUtil.get(placeholder);
+
+        // Remove the content container from its original parent
+        content.parentNode.removeChild(content);
+
+        this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);
+
         this.on('hide', this._removeContent, this);
-        return L.Control.Sidebar.prototype.initialize.call(this, placeholder, options);
+
+        var l = 'leaflet-';
+
+        // Create sidebar container
+        var container = this._container =
+            L.DomUtil.create('div', l + 'sidebar ' + this.options.position);
+
+        // Style and attach content container
+        L.DomUtil.addClass(content, l + 'control');
+        container.appendChild(content);
+
+        // Create close button and attach it if configured
+        if (this.options.closeButton) {
+            var close = this._closeButton =
+                L.DomUtil.create('a', 'close', container);
+            close.innerHTML = '&times;';
+        }
     },
 
     showFeature: function (feature, template, getData, callbacks) {
@@ -37,15 +63,15 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         this.setContent(content);
 
         if (callbacks && callbacks.prev) {
-            //content += '<a href="#">prev</a>';
-            var prev = L.DomUtil.create('a', '', this.getContainer());
-            prev.innerHTML = 'prev';
+        var prev = L.DomUtil.create('a', 'prev', this.getContainer());
+            prev.innerHTML = '&#8678;';
             L.DomEvent.on(prev, 'click', callbacks.prev);
 
         }
         if (callbacks && callbacks.next) {
-            var next = L.DomUtil.create('a', '', this.getContainer());
-            next.innerHTML = 'next';
+                    var next = L.DomUtil.create('a', 'next', this.getContainer());
+            next.innerHTML = '&#8680;';
+
             L.DomEvent.on(next, 'click', callbacks.next);
         }
 

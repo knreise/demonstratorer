@@ -12,10 +12,12 @@ L.Control.Sidebar = L.Control.extend({
         L.setOptions(this, options);
 
         // Find content container
-        var content = this._contentContainer = L.DomUtil.get(placeholder);
+        var content =  L.DomUtil.get(placeholder);
 
         // Remove the content container from its original parent
         content.parentNode.removeChild(content);
+
+        this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);
 
         var l = 'leaflet-';
 
