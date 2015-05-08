@@ -25,20 +25,7 @@
         -->
         <link href='../../common/css/L.Control.NorvegianaSidebar.css' rel='stylesheet' />
         <link href='../../common/css/L.Control.Datasets.css' rel='stylesheet' />
-
-        <style type="text/css">
-
-            .audiojs {
-                height: 22px;
-                width:400px;
-            }
-            .audiojs .play-pause { width: 30px; height: 20px; padding: 0px 8px 0px 0px; }
-            .audiojs p { width: 25px; height: 20px; margin: -3px 0px 0px -1px; }
-            .audiojs .scrubber { height:10px; width:230px; margin:5px; }
-            .audiojs .progress { height: 10px; width: 0px; }
-            .audiojs .loaded { height: 10px; }
-            .audiojs .time { float: left; height: 25px; line-height: 25px; }
-        </style>
+        <link href='../../common/css/audiojs.css' rel='stylesheet' />
 
     </head>
     <body>
@@ -52,7 +39,7 @@
             <p><%= dataset %></p>
             <% if (image) { %>
             <a href="<%= link %>">
-                <img width="400" src="<%= image %>" />
+                <img class="fullwidth" src="<%= image %>" />
             </a>
             <% }%>
             <p><%= content %></p>
@@ -76,18 +63,18 @@
             <% if(contentType === 'VIDEO' && video) { %>
                 <% if (video.indexOf('mp4') !== -1) { %>
                     <video id="really-cool-video" class="video-js vjs-default-skin" controls
-                     preload="auto" width="400" height="315" poster="<%= images[0] %>"
+                     preload="auto" class="fullwidth" height="315" poster="<%= images[0] %>"
                      data-setup='{}'>
                       <source src="<%= videoEmbed %>" type='video/mp4'>
                     </video>
                 <% } else { %>
-                    <iframe width="400" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+                    <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
                 <% } %>
                 
             <% } else if(contentType === 'SOUND' && sound) { %>
                 <audio src="<%= sound %>" preload="auto"></audio>
             <% } else if(contentType === 'IMAGE' && images) { %>
-                <img width="400" src="<%= images[0] %>" />
+                <img class="fullwidth" src="<%= images[0] %>" />
             <% } %>
             <%= content %>
 
