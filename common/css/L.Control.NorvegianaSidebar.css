@@ -3,10 +3,6 @@
     padding: 50px 0 0 0;
 }
 
-#sidebar .list-group {
-    margin-top: 50px;
-}
-
 #sidebar .fullwidth {
     width: 100%;
 }
@@ -16,7 +12,6 @@
     height: 100%;
     overflow: auto;
 }
-
 
 .leaflet-sidebar .prev {
     position: absolute;
@@ -32,10 +27,11 @@
     -webkit-border-radius: 16px;
     border-radius: 16px;
     cursor: pointer;
-    z-index: 8; }
+    z-index: 8;
+}
 
 
-    .leaflet-sidebar .next {
+.leaflet-sidebar .next {
     position: absolute;
     left: 50px;
     top: 20px;
@@ -49,4 +45,5 @@
     -webkit-border-radius: 16px;
     border-radius: 16px;
     cursor: pointer;
-    z-index: 8; }
+    z-index: 8;
+}

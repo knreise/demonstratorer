@@ -62,8 +62,8 @@
             <h3><%= title %></h3>
             <% if(contentType === 'VIDEO' && video) { %>
                 <% if (video.indexOf('mp4') !== -1) { %>
-                    <video id="really-cool-video" class="video-js vjs-default-skin" controls
-                     preload="auto" class="fullwidth" height="315" poster="<%= images[0] %>"
+                    <video class="video-js vjs-default-skin fullwidth" controls
+                     preload="auto" height="315" poster="<%= images[0] %>"
                      data-setup='{}'>
                       <source src="<%= videoEmbed %>" type='video/mp4'>
                     </video>
