@@ -35,8 +35,26 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         }
     },
 
-    showFeature: function (feature, template, getData, callbacks) {
+    _setupSwipe: function (callbacks) {
+        $(this.getContainer())
+            .swipe({
+                swipe: function(event, direction) {}
+            })
+            .off('swipeLeft')
+            .on('swipeLeft', function () {
+                if (callbacks.next) {
+                    callbacks.next();
+                }
+            })
+            .off('swipeRight')
+            .on('swipeRight', function () {
+                if (callbacks.prev) {
+                    callbacks.prev();
+                }
+            });
+    },
 
+    showFeature: function (feature, template, getData, callbacks) {
         if (getData) {
             var self = this;
             getData(feature, function (feature) {
@@ -61,17 +79,17 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
             }, this);
         }
         this.setContent(content);
+        this._setupSwipe(callbacks);
 
         if (callbacks && callbacks.prev) {
-        var prev = L.DomUtil.create('a', 'prev', this.getContainer());
+            var prev = L.DomUtil.create('a', 'prev', this.getContainer());
             prev.innerHTML = '&#8678;';
             L.DomEvent.on(prev, 'click', callbacks.prev);
 
         }
         if (callbacks && callbacks.next) {
-                    var next = L.DomUtil.create('a', 'next', this.getContainer());
+            var next = L.DomUtil.create('a', 'next', this.getContainer());
             next.innerHTML = '&#8680;';
-
             L.DomEvent.on(next, 'click', callbacks.next);
         }
 
@@ -85,7 +103,9 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         var prev;
         if (index > 0) {
             prev = _.bind(function (e) {
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
                 index = index - 1;
                 feature = features[index];
                 var callbacks = this._createListCallbacks(feature, index, template, getData, features);
@@ -95,7 +115,9 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
         var next;
         if (index < features.length - 1) {
             next = _.bind(function (e) {
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
                 index = index + 1;
                 feature = features[index];
                 var callbacks = this._createListCallbacks(feature, index, template, getData, features);
