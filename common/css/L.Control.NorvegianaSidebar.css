@@ -1,3 +1,7 @@
 #sidebar .list-group {
     margin-top: 50px;
 }
+
+#sidebar .fullwidth {
+    width: 100%;
+}
