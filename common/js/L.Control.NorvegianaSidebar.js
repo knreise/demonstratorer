@@ -36,9 +36,12 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
     },
 
     _setupSwipe: function (callbacks) {
+        if (!callbacks) {
+            return;
+        }
         $(this.getContainer())
             .swipe({
-                swipe: function(event, direction) {}
+                swipe: function () {}
             })
             .off('swipeLeft')
             .on('swipeLeft', function () {
