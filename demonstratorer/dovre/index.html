@@ -83,6 +83,54 @@
             </dl>
         </script>
 
+
+        <script type="text/template" id="museumsdata_template">
+            <h3>Museumsdata</h3>
+
+            <% if(images) { %>
+                <img class="fullwidth" src="<%= images[0] %>" />
+            <% } %>
+
+            <% if (dataset === 'Musit') { %>
+            <dl>
+                <dt>Artefakt</dt>
+                <dd><%= allProps.dc_subject %></dd>
+
+                <dt>Beskrivelse</dt>
+                <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
+
+                <dt>Funnsted</dt>
+                <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
+
+                <dt>Materiale</dt>
+                <dd><%= allProps.dcterms_medium %></dd>
+
+                <dt>Datering</dt>
+                <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
+
+                <dt>Museum</dt>
+                <dd><%= allProps.europeana_dataProvider %></dd>
+
+                <dt>Mer informasjon</dt>
+                <dd><a href="<%= link %>" target="_blank">link</a></dd>
+            </dl>
+            <% } if (dataset === 'DigitaltMuseum') { %>
+            <dl>
+                <dt>Navn</dt>
+                <dd><%= title %></dd>
+
+                <dt>Beskrivelse</dt>
+                <dd><%= allProps.delving_description.join('<br />') %></dd>
+
+                <dt>Kategori</dt>
+                <dd><%= allProps.europeana_dataProvider %></dd>
+
+                <dt>Mer informasjon</dt>
+                <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
+            </dl>
+            <% } %>
+        </script>
+
         <script type="text/template" id="digitalt_fortalt_template">
             <h3><%= title %></h3>
             <% if(contentType === 'VIDEO' && video) { %>
@@ -227,7 +275,8 @@
                         name: 'Museumsdata',
                         dataset: ['MUSIT', 'DiMu'],
                         isStatic: false,
-                        //thumbnails: false,
+                        template: _.template($('#museumsdata_template').html()),
+                        thumbnails: false,
                         smallMarker: true,
                         minZoom: 12
                     },
