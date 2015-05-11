@@ -51,10 +51,35 @@
             <dl>
               <dt>Navn</dt>
               <dd><%= title %></dd>
+
               <dt>Faktaark</dt>
               <dd><a href="<%= link %>">naturbase.no</a></dd>
+
               <dt>Beskrivelse</dt>
               <dd><%= content %></dd>
+            </dl>
+        </script>
+
+        <script type="text/template" id="kulturminne_template">
+            <h3>Kulturminne</h3>
+            <dl>
+              <dt>Navn</dt>
+              <dd><%= title %></dd>
+
+              <dt>Kategori</dt>
+              <dd><%= allProps.dc_subject[1] %></dd>
+
+              <dt>Type kulturminne</dt>
+              <dd><%= allProps.dc_subject[0] %></dd>
+
+              <dt>Vernestatus</dt>
+              <dd><%= allProps.dc_subject[2] %></dd>
+
+              <dt>Datering</dt>
+              <dd><%= allProps.dc_date %></dd>
+
+              <dt>Mer informasjon</dt>
+              <dd><a href="<%= link %>">kulturminnesok.no</a></dd>
             </dl>
         </script>
 
@@ -181,6 +206,7 @@
                         api: 'norvegiana',
                         name: 'Kulturminner',
                         dataset: 'Kulturminnesok',
+                        template: _.template($('#kulturminne_template').html()),
                         smallMarker: true
                     },
                     {
