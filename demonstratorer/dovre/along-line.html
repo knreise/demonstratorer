@@ -223,9 +223,6 @@
         <script type="text/javascript">
 
 
-
-
-
             (function () {
                 'use strict';
 
@@ -261,11 +258,12 @@
                 var locateFollow = L.easyButton(map, null, {icon: 'fa-user-times', title: 'Følg meg', toggle: true});
 
 
-                
-
-
-
-
+                KR.Config.templates = {
+                    'Kulturminnesok': _.template($('#kulturminne_template').html()),
+                    'DigitaltMuseum': _.template($('#museumsdata_template').html()),
+                    'Musit': _.template($('#museumsdata_template').html()),
+                    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
+                };
 
                 function getLocation (callback, error) {
                     if (navigator.geolocation) {
@@ -286,41 +284,22 @@
                         {
                         api: 'norvegiana',
                         name: 'Digitalt fortalt',
-                        dataset: 'difo',
-                        template: _.template($('#digitalt_fortalt_template').html())
+                        dataset: 'difo'
                     },
                     {
                         api: 'norvegiana',
                         name: 'Kulturminner',
-                        dataset: 'Kulturminnesok',
-                        template: _.template($('#kulturminne_template').html())
-                    },
-                    {
-                        api: 'cartodb',
-                        name: 'Verneområder',
-                        table: 'naturvernomrader_utm33_2',
-                        columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-                        template: _.template($('#verneomraader_template').html()),
-                        style: function (feature) {
-                            return {color: '#7570b3', weight: 1, fillColor: '#ff0000'};
-                        },
-                        getFeatureData: function (feature, callback) {
-                            api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-                        }
+                        dataset: 'Kulturminnesok'
                     },
                     {
                         api: 'norvegiana',
                         name: 'Museumsdata',
-                        dataset: ['MUSIT', 'DiMu'],
-                        isStatic: false,
-                        template: _.template($('#museumsdata_template').html())
-                     
+                        dataset: ['MUSIT', 'DiMu']
                     },
                     {
                         api: 'norvegiana',
                         name: 'Artsobservasjoner',
                         dataset: 'Artsdatabanken'
-                     
                     }
                 ];
 

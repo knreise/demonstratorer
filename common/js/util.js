@@ -29,7 +29,9 @@ KR.Config = {
         'Naturbase': {name: 'purple', hex: '#D252B9'},
         'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
         'default': {name: 'blue', hex: '#38A9DC'}
-    }
+    },
+
+    templates: {}
 };
 
 KR.Util = {};
@@ -76,6 +78,11 @@ KR.Util = {};
     };
 
 
+    ns.templateForDataset = function (dataset) {
+        if (_.has(KR.Config.templates, dataset)) {
+            return KR.Config.templates[dataset];
+        }
+    }
 
     ns.iconForDataset = function (dataset) {
         if (_.isArray(dataset)) {
