@@ -220,6 +220,8 @@
         <script src="../../common/js/norvegiana.js"></script>
         <script src="../../common/js/cartodb.js"></script>
         <script src="../../common/js/api.js"></script>
+
+        <script src="geolocatormock.js"></script>
         <script type="text/javascript">
 
 
@@ -353,7 +355,7 @@
 
                         var poller;
                         locateFollow.callback = function () {
-                            poller = initGeoLoc(1, showPoint);
+                            poller = initGeoLoc(5, showPoint);
                         }
 
                         locateFollow.offCallback = function () {
