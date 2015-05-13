@@ -65,21 +65,32 @@ KR.NorvegianaAPI = function () {
         return KR.Util.CreateFeatureCollection(features);
     }
 
-    function getWithin(query, latLng, distance, callback, isDataset) {
-        if (isDataset) {
-            if (!_.isArray(query))  {
-                query = [query];
-            }
-            query = _.map(query, function (q) {return 'delving_spec:' + q; }).join(' OR ');
+    function getWithin(params, latLng, distance, callback) {
+
+        var dataset, qf;
+        if (_.isArray(params) || _.isString(params)) {
+            dataset = params;
+        } else {
+            dataset = params.dataset;
+            qf = params.query;
         }
+
+        if (!_.isArray(dataset))  {
+            dataset = [dataset];
+        }
+        dataset = _.map(dataset, function (d) {return 'delving_spec:' + d; }).join(' OR ');
+
         distance = distance / 1000; // convert to km
         var params = {
-            query: query,
+            query: dataset,
             pt: _formatLatLng(latLng),
             d: distance,
             format: 'json',
             rows: 1000
         };
+        if (qf) {
+            params.qf = qf;
+        }
         var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         //var url = 'test.json';
         KR.Util.sendRequest(url, callback, _parseNorvegianaItems);
