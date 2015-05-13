@@ -17,7 +17,8 @@ KR.Config = {
         'Naturbase': 'tree',
         'MUSIT_DiMu': 'flag',
         'Musit': 'flag',
-        'DigitaltMuseum': 'flag'
+        'DigitaltMuseum': 'flag',
+        'fangstlokaliteter': 'circle'
     },
 
     providerColors: {
@@ -76,7 +77,6 @@ KR.Util = {};
             'features': features
         };
     };
-
 
     ns.templateForDataset = function (dataset) {
         if (_.has(KR.Config.templates, dataset)) {

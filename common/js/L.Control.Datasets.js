@@ -98,7 +98,12 @@ L.Control.Datasets = L.Control.Layers.extend({
         label.appendChild(input);
         label.appendChild(name);
 
-        var iconMarker = KR.Util.iconForDataset(obj.layer.options.dataset);
+        var datasetName = obj.layer.options.dataset;
+        if (obj.layer.options.dataset_name_override) {
+            datasetName = obj.layer.options.dataset_name_override;
+        }
+
+        var iconMarker = KR.Util.iconForDataset(datasetName);
         if (iconMarker) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa fa-' + iconMarker;
