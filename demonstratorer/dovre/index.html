@@ -32,8 +32,11 @@
         <div id="sidebar"></div>
         <div id="map"></div>
 
+
+
+
         <!-- templates -->
-        
+        <!--
         <script type="text/template" id="popup_template">
             <h3><%= title %></h3>
             <p><%= dataset %></p>
@@ -45,127 +48,44 @@
             <p><%= content %></p>
             <a href="<%= link %>">Mer info</a>
         </script>
-
+        -->
         <script type="text/template" id="verneomraader_template">
-            <h3>Verneområde</h3>
-            <dl>
-              <dt>Navn</dt>
-              <dd><%= title %></dd>
-
-              <dt>Faktaark</dt>
-              <dd><a href="<%= link %>">naturbase.no</a></dd>
-
-              <dt>Beskrivelse</dt>
-              <dd><%= content %></dd>
-            </dl>
+           
         </script>
 
         <script type="text/template" id="kulturminne_template">
-            <h3>Kulturminne</h3>
-            <dl>
-              <dt>Navn</dt>
-              <dd><%= title %></dd>
-
-              <dt>Kategori</dt>
-              <dd><%= allProps.dc_subject[1] %></dd>
-
-              <dt>Type kulturminne</dt>
-              <dd><%= allProps.dc_subject[0] %></dd>
-
-              <dt>Vernestatus</dt>
-              <dd><%= allProps.dc_subject[2] %></dd>
-
-              <dt>Datering</dt>
-              <dd><%= allProps.dc_date %></dd>
-
-              <dt>Mer informasjon</dt>
-              <dd><a href="<%= link %>" target="_blank">kulturminnesok.no</a></dd>
-            </dl>
+           
         </script>
 
 
         <script type="text/template" id="museumsdata_template">
-            <h3>Museumsdata</h3>
 
-            <% if(images) { %>
-                <img class="fullwidth" src="<%= images[0] %>" />
-            <% } %>
-
-            <% if (dataset === 'Musit') { %>
-            <dl>
-                <dt>Artefakt</dt>
-                <dd><%= allProps.dc_subject %></dd>
-
-                <dt>Beskrivelse</dt>
-                <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
-
-                <dt>Funnsted</dt>
-                <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
-
-                <dt>Materiale</dt>
-                <dd><%= allProps.dcterms_medium %></dd>
-
-                <dt>Datering</dt>
-                <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
-
-                <dt>Museum</dt>
-                <dd><%= allProps.europeana_dataProvider %></dd>
-
-                <dt>Mer informasjon</dt>
-                <dd><a href="<%= link %>" target="_blank">link</a></dd>
-            </dl>
-            <% } if (dataset === 'DigitaltMuseum') { %>
-            <dl>
-                <dt>Navn</dt>
-                <dd><%= title %></dd>
-
-                <dt>Beskrivelse</dt>
-                <dd><%= allProps.delving_description.join('<br />') %></dd>
-
-                <dt>Kategori</dt>
-                <dd><%= allProps.europeana_dataProvider %></dd>
-
-                <dt>Mer informasjon</dt>
-                <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
-            </dl>
-            <% } %>
         </script>
 
         <script type="text/template" id="digitalt_fortalt_template">
-            <h3><%= title %></h3>
-            <% if(contentType === 'VIDEO' && video) { %>
-                <% if (video.indexOf('mp4') !== -1) { %>
-                    <video class="video-js vjs-default-skin fullwidth" controls
-                     preload="auto" height="315" poster="<%= images[0] %>"
-                     data-setup='{}'>
-                      <source src="<%= videoEmbed %>" type='video/mp4'>
-                    </video>
-                <% } else { %>
-                    <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
-                <% } %>
-                
-            <% } else if(contentType === 'SOUND' && sound) { %>
-                <audio src="<%= sound %>" preload="auto"></audio>
-            <% } else if(contentType === 'IMAGE' && images) { %>
-                <img class="fullwidth" src="<%= images[0] %>" />
-            <% } %>
-            <%= content %>
-
-            <a href="<%= link %>">Mer hos <%= provider %><a/>
+ 
 
         </script>
 
-        <script type="text/template" id="list_item_template">
-            <a href="#" class="list-group-item">
-                <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
-                <%= title %>
-            </a>
+        <script type="text/template" id="_template">
+
         </script>
 
         <!-- end templates -->
 
         <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
         <script src="../../bower_components/underscore/underscore-min.js"></script>
+
+        <script src="../../common/js/template_loader.js"></script>
+        <script type="text/javascript">
+            require_template('popup');
+            require_template('verneomraader');
+            require_template('kulturminne');
+            require_template('museumsdata');
+            require_template('digitalt_fortalt');
+            require_template('list_item');
+        </script>
+
         <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
         
         <script src="../../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
