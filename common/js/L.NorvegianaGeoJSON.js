@@ -149,6 +149,15 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
                 iconSize: this._getIconSize()
             });
         }
+        if (this.options.smallMarker) {
+            var icon = KR.Util.iconForFeature(feature);
+            return new L.DivIcon({
+                className: 'leaflet-marker-favicon',
+                html: '<div class="outer"><i class="fa fa-' + icon + '"></i></div>',
+                iconSize: [12, 12]
+            });
+        }
+
         return KR.Util.markerForFeature(feature);
     },
 

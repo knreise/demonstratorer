@@ -11,7 +11,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
         smallMarker: false
     };
 
-    function _addBboxDataset(api, map, dataset) {
+    function _addBboxDataset(api, map, dataset, mapper) {
         var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
             .addTo(map);
         layer.visible = true;
@@ -21,7 +21,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
             if (dataset.minZoom) {
                 if (map.getZoom() >= dataset.minZoom && layer.visible) {
                     api.getBbox(dataset, bounds, function (geoJson) {
-                        layer.addGeoJSON(geoJson);
+                        layer.addGeoJSON(mapper(geoJson));
                     });
                 } else {
                     layer.resetGeoJSON();
@@ -29,7 +29,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
             } else {
                 if (layer.visible) {
                     api.getBbox(dataset, bounds, function (geoJson) {
-                        layer.addGeoJSON(geoJson);
+                        layer.addGeoJSON(mapper(geoJson));
                     });
                 } else {
                     layer.resetGeoJSON();
@@ -45,11 +45,22 @@ KR.DatasetLoader = function (api, map, sidebar) {
         return layer;
     }
 
-    function _addFullDataset(api, map, dataset) {
+    function _mapper(dataset) {
+        return function (features) {
+            if (dataset.dataset_name_override) {
+                _.each(features.features, function (feature) {
+                    feature.properties.dataset = dataset.dataset_name_override;
+                });
+            }
+            return features;
+        }
+    }
+
+    function _addFullDataset(api, map, dataset, mapper) {
         var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
             .addTo(map);
         api.getData(dataset, function (geoJson) {
-            layer.addGeoJSON(geoJson);
+            layer.addGeoJSON(mapper(geoJson));
         });
         return layer;
     }
@@ -58,9 +69,9 @@ KR.DatasetLoader = function (api, map, sidebar) {
         return _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
             if (dataset.bbox) {
-                return _addBboxDataset(api, map, dataset);
+                return _addBboxDataset(api, map, dataset, _mapper(dataset));
             }
-            return _addFullDataset(api, map, dataset);
+            return _addFullDataset(api, map, dataset, _mapper(dataset));
         });
     }
 
