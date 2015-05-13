@@ -61,8 +61,29 @@ KR.NorvegianaAPI = function () {
     }
 
     function _parseNorvegianaItems(response) {
+        var nextPage = null;
+        if (response.result.pagination.hasNext) {
+            nextPage = response.result.pagination.nextPage;
+        }
+
         var features = _.map(response.result.items, _parseNorvegianaItem);
-        return KR.Util.CreateFeatureCollection(features);
+        return {geoJSON: KR.Util.CreateFeatureCollection(features), nextPage: nextPage};
+    }
+
+    function _acc(url, originalCallback) {
+        var data = [];
+
+        return function callback(responseData) {
+            data.push(responseData.geoJSON);
+            if (responseData.nextPage) {
+                KR.Util.sendRequest(url + '&start=' + responseData.nextPage, callback, _parseNorvegianaItems);
+            } else {
+                var features = _.reduce(data, function (acc, featureCollection) {
+                    return acc.concat(featureCollection.features);
+                }, []);
+                originalCallback(KR.Util.CreateFeatureCollection(features));
+            }
+        }
     }
 
     function getWithin(params, latLng, distance, callback) {
@@ -92,8 +113,7 @@ KR.NorvegianaAPI = function () {
             params.qf = qf;
         }
         var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        //var url = 'test.json';
-        KR.Util.sendRequest(url, callback, _parseNorvegianaItems);
+        KR.Util.sendRequest(url, _acc(url, callback), _parseNorvegianaItems);
     }
 
     function getItem(id, callback) {
