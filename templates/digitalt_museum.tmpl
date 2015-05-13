@@ -1,0 +1,19 @@
+<h3>Digitalt Museum</h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<dl>
+    <dt>Navn</dt>
+    <dd><%= title %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= allProps.delving_description.join('<br />') %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= allProps.europeana_dataProvider %></dd>
+
+    <dt>Mer informasjon</dt>
+    <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
+</dl>

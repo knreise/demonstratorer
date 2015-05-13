@@ -40,8 +40,9 @@
             require_template('popup');
             require_template('verneomraader');
             require_template('kulturminne');
-            require_template('museumsdata');
+            require_template('musit');
             require_template('digitalt_fortalt');
+            require_template('digitalt_museum');
             require_template('list_item');
         </script>
 
@@ -111,6 +112,11 @@
                 });
                 map.addControl(sidebar);
 
+                KR.Config.templates = {
+                    'Musit': _.template($('#musit_template').html()),
+                    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
+                };
+
                 //The datasets in use
                 var datasets = [
                     {
@@ -154,7 +160,6 @@
                         name: 'Museumsdata',
                         dataset: ['MUSIT', 'DiMu'],
                         isStatic: false,
-                        template: _.template($('#museumsdata_template').html()),
                         thumbnails: false,
                         smallMarker: true,
                         minZoom: 12

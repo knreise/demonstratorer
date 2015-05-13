@@ -1,0 +1,28 @@
+<h3>MUSIT</h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<dl>
+    <dt>Artefakt</dt>
+    <dd><%= allProps.dc_subject %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
+
+    <dt>Funnsted</dt>
+    <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
+
+    <dt>Materiale</dt>
+    <dd><%= allProps.dcterms_medium %></dd>
+
+    <dt>Datering</dt>
+    <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
+
+    <dt>Museum</dt>
+    <dd><%= allProps.europeana_dataProvider %></dd>
+
+    <dt>Mer informasjon</dt>
+    <dd><a href="<%= link %>" target="_blank">link</a></dd>
+</dl>

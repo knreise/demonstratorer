@@ -33,8 +33,10 @@
             require_template('popup');
             require_template('verneomraader');
             require_template('kulturminne');
-            require_template('museumsdata');
+            require_template('musit');
             require_template('digitalt_fortalt');
+            require_template('digitalt_museum');
+            
             require_template('list_item');
         </script>
 
@@ -67,8 +69,8 @@
 
                 KR.Config.templates = {
                     'Kulturminnesok': _.template($('#kulturminne_template').html()),
-                    'DigitaltMuseum': _.template($('#museumsdata_template').html()),
-                    'Musit': _.template($('#museumsdata_template').html()),
+                    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
+                    'Musit': _.template($('#musit_template').html()),
                     'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
                 };
 
