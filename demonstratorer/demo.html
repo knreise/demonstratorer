@@ -23,30 +23,21 @@
         <div id="sidebar"></div>
         <div id="map"></div>
 
-        <!-- templates -->
-        <script type="text/template" id="popup_template">
-            <h3><%= title %></h3>
-            <p><%= dataset %></p>
-            <% if (image) { %>
-            <a href="<%= link %>">
-                <img width="400" src="<%= image %>" />
-            </a>
-            <% }%>
-            <p><%= content %></p>
-            <a href="<%= link %>">Mer info</a>
-        </script>
-
-        <script type="text/template" id="list_item_template">
-            <a href="#" class="list-group-item">
-                <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
-                <%= title %>
-            </a>
-        </script>
-
         <!-- end templates -->
 
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
         <script src="../bower_components/underscore/underscore-min.js"></script>
+
+        <script src="../../common/js/template_loader.js"></script>
+        <script type="text/javascript">
+            require_template('popup');
+            require_template('verneomraader');
+            require_template('kulturminne');
+            require_template('museumsdata');
+            require_template('digitalt_fortalt');
+            require_template('list_item');
+        </script>
+
         <script src="../bower_components/leaflet/dist/leaflet.js"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
@@ -73,6 +64,13 @@
 
             (function () {
                 'use strict';
+
+                KR.Config.templates = {
+                    'Kulturminnesok': _.template($('#kulturminne_template').html()),
+                    'DigitaltMuseum': _.template($('#museumsdata_template').html()),
+                    'Musit': _.template($('#museumsdata_template').html()),
+                    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
+                };
 
                 //template used for sidebar
                 var popupTemplate = _.template($('#popup_template').html());
@@ -106,7 +104,7 @@
                 var layer = L.norvegianaGeoJSON(null, sidebar, {cluster: true});
 
                 //var selectedDataset = 'delving_spec:DiMu';
-                var selectedDataset = 'wikipedia';
+                var selectedDataset = 'Industrimuseum';
                 var clickFunc = L.control.mapClick(layer, api, selectedDataset)
                 map.addControl(clickFunc);
                 clickFunc.on();
