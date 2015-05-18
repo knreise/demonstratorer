@@ -27,6 +27,7 @@
     "video.js": "~4.12.5",
     "jquery-touchswipe": "~1.6.8",
     "turf": "~2.0.2",
-    "L.EasyButton": "*"
+    "L.EasyButton": "*",
+    "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git"
   }
 }
