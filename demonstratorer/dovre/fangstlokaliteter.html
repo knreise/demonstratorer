@@ -120,7 +120,8 @@
                         dataset: {dataset: 'Kulturminnesok', query: 'delving_title:Fangstlokalitet'},
                         template: _.template($('#kulturminne_template').html()),
                         smallMarker: true,
-                        cluster: false
+                        cluster: false,
+                        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
                     }
                 ];
                 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);

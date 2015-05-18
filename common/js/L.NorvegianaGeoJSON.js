@@ -162,10 +162,15 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     _pointToLayer: function (feature, latlng) {
+        if (feature.properties.circle) {
+            return L.circleMarker(latlng, feature.properties.circle);
+        }
+
         return L.marker(latlng, {
             icon: this._createFeatureIcon(feature),
             title: feature.properties.title
         });
+
     }
 });
 

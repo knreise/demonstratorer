@@ -47,11 +47,14 @@ KR.DatasetLoader = function (api, map, sidebar) {
 
     function _mapper(dataset) {
         return function (features) {
-            if (dataset.dataset_name_override) {
-                _.each(features.features, function (feature) {
+            _.each(features.features, function (feature) {
+                if (_.has(dataset, 'dataset_name_override')) {
                     feature.properties.dataset = dataset.dataset_name_override;
-                });
-            }
+                }
+                if (_.has(dataset, 'circle')) {
+                    feature.properties.circle = dataset.circle;
+                }
+            });
             return features;
         }
     }
