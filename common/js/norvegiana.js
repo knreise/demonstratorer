@@ -3,6 +3,8 @@ var KR = this.KR || {};
 KR.NorvegianaAPI = function () {
     'use strict';
 
+    var requests = [];
+
     var NORVEGIANA_BASE_URL = 'http://kulturnett2.delving.org/api/search';
 
     function _formatLatLng(latLng) {
@@ -89,7 +91,6 @@ KR.NorvegianaAPI = function () {
     }
 
     function getWithin(params, latLng, distance, callback) {
-
         var dataset, qf;
         if (_.isArray(params) || _.isString(params)) {
             dataset = params;
@@ -104,6 +105,7 @@ KR.NorvegianaAPI = function () {
         dataset = _.map(dataset, function (d) {return 'delving_spec:' + d; }).join(' OR ');
 
         distance = distance / 1000; // convert to km
+        var id = dataset;
         var params = {
             query: dataset,
             pt: _formatLatLng(latLng),
@@ -113,14 +115,19 @@ KR.NorvegianaAPI = function () {
         };
         if (qf) {
             params.qf = qf;
+            id += qf;
         }
 
+        if (requests[id]) {
+            requests[id].abort();
+            requests[id] = null;
+        }
 
         var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         if (params.allPages) {
-            KR.Util.sendRequest(url, _acc(url, callback), _parseNorvegianaItems);
+            requests[id] = KR.Util.sendRequest(url, _acc(url, callback), _parseNorvegianaItems);
         } else {
-            KR.Util.sendRequest(url, function (res) { callback(res.geoJSON); }, _parseNorvegianaItems);
+            requests[id] = KR.Util.sendRequest(url, function (res) { callback(res.geoJSON); }, _parseNorvegianaItems);
         }
         
     }
