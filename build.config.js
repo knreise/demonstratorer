@@ -192,6 +192,34 @@ module.exports = {
           'list_item',
           'fangstgrop'
         ]
+    },
+    {
+        key: 'limit_api',
+        name: 'Alt eller ingenting',
+        scripts: [
+          'bower_components/jquery/dist/jquery.min.js',
+          'bower_components/underscore/underscore-min.js',
+          'bower_components/leaflet/dist/leaflet.js',
+          'common/js/L.TileLayer.Kartverket.js',
+          'common/js/L.NorvegianaGeoJSON.js',
+          'common/js/L.Control.Datasets.js',
+          'common/js/util.js',
+          'common/js/norvegiana.js',
+          'common/js/api.js',
+          'common/js/DatasetLoader.js'
+          
+        ],
+        css: [
+          'bower_components/leaflet/dist/leaflet.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/fullscreenmap.css',
+          'common/css/L.Control.Datasets.css',
+          'common/css/markers.css'
+        ],
+        templates: [
+          'popup',
+          'list_item'
+        ]
     }
   ]
 };

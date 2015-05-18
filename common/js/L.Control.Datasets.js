@@ -21,24 +21,42 @@ L.Control.Datasets = L.Control.Layers.extend({
         }
     },
 
+    _addLayer: function (layer, name, overlay) {
+        L.Control.Layers.prototype._addLayer.call(this, layer, name, overlay);
+        layer.on('reset', this._layerReset, this);
+    },
+
     onAdd: function (map) {
         map.on('zoomend', this._zoomEnd, this);
 
-        var container =  L.Control.Layers.prototype.onAdd.call(this, map);
+        var container = L.Control.Layers.prototype.onAdd.call(this, map);
         this._zoomEnd();
         return container;
     },
 
+    _layerReset: function (layer) {
+        this._zoomEnd();
+    },
+
     _zoomEnd: function () {
-        var i, input, obj,
+        var i, input, obj, shouldBeEnabled,
             inputs = this._form.getElementsByTagName('input'),
             inputsLen = inputs.length;
 
         for (i = 0; i < inputsLen; i++) {
             input = inputs[i];
             obj = this._layers[input.layerId];
-            if (obj.layer.options.minZoom) {
-                if (this._map.getZoom() >= obj.layer.options.minZoom) {
+            if (obj.layer.options.minZoom || obj.layer.options.minFeatures) {
+
+                if (obj.layer.options.minZoom) {
+                    shouldBeEnabled = this._map.getZoom() >= obj.layer.options.minZoom;
+                }
+
+                if (obj.layer.options.minFeatures) {
+                    shouldBeEnabled = obj.layer.getLayers().length > 0;
+                }
+
+                if (shouldBeEnabled) {
                     input.disabled = false;
                     input.parentNode.className = '';
                 } else {

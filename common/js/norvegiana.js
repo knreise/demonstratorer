@@ -67,7 +67,9 @@ KR.NorvegianaAPI = function () {
         }
 
         var features = _.map(response.result.items, _parseNorvegianaItem);
-        return {geoJSON: KR.Util.CreateFeatureCollection(features), nextPage: nextPage};
+        var geoJSON = KR.Util.CreateFeatureCollection(features);
+        geoJSON.numFound = response.result.pagination.numFound;
+        return {geoJSON: geoJSON, nextPage: nextPage};
     }
 
     function _acc(url, originalCallback) {
@@ -112,8 +114,15 @@ KR.NorvegianaAPI = function () {
         if (qf) {
             params.qf = qf;
         }
+
+
         var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, _acc(url, callback), _parseNorvegianaItems);
+        if (params.allPages) {
+            KR.Util.sendRequest(url, _acc(url, callback), _parseNorvegianaItems);
+        } else {
+            KR.Util.sendRequest(url, function (res) { callback(res.geoJSON); }, _parseNorvegianaItems);
+        }
+        
     }
 
     function getItem(id, callback) {

@@ -13,7 +13,7 @@
 
 {{= html }}
 
-{{= templates }}
+{{= template_markup }}
 
 {{ _.each(scripts, function (script) { }}
         <script src="../{{= script }}" type="text/javascript"></script>{{ }) }}
