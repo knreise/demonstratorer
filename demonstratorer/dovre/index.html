@@ -137,8 +137,19 @@
                     },
                     {
                         api: 'norvegiana',
+                        name: 'Fangstlokaliteter',
+                        dataset_name_override: 'fangstlokaliteter',
+                        dataset: {dataset: 'Kulturminnesok', query: 'delving_title:Fangstlokalitet'},
+                        template: _.template($('#kulturminne_template').html()),
+                        smallMarker: true,
+                        cluster: false,
+                        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
+                    },
+                    {
+                        api: 'norvegiana',
                         name: 'Kulturminner',
-                        dataset: 'Kulturminnesok',
+                        dataset_name_override: 'Kulturminnesok',
+                        dataset: {dataset: 'Kulturminnesok', query: '-delving_title:Fangstlokalitet'},
                         template: _.template($('#kulturminne_template').html()),
                         smallMarker: true
                     },
