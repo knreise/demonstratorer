@@ -1,0 +1,64 @@
+/*global L:false, toGeoJSON: false */
+
+var KR = this.KR || {};
+
+KR.ArcgisAPI = function (BASE_URL) {
+    'use strict';
+
+    function _parseBbox(bbox) {
+        bbox = bbox.split(',').map(parseFloat);
+        return JSON.stringify({
+            'xmin': bbox[0],
+            'ymin': bbox[1],
+            'xmax': bbox[2],
+            'ymax': bbox[3]
+        });
+    }
+
+    function _parseArcGisResponse(response, callback) {
+        response = JSON.parse(response);
+        if (_.has(response, 'error')) {
+            callback(KR.Util.CreateFeatureCollection([]));
+        }
+        toGeoJSON(response, function (err, data) {
+            if (!err) {
+                console.log(data);
+                callback(data);
+            } else {
+                callback(KR.Util.CreateFeatureCollection([]));
+            }
+        });
+    }
+
+    function getBbox(dataset, bbox, callback) {
+        console.log(dataset);
+        var params = {
+            'geometry': _parseBbox(bbox),
+            'geometryType': 'esriGeometryEnvelope',
+            'inSR': 4326,
+            'spatialRel': 'esriSpatialRelIntersects',
+            'outFields': '*',
+            'returnGeometry': true,
+            'outSR': 4326,
+            'returnIdsOnly': false,
+            'returnCountOnly': false,
+            'outStatistics': '',
+            'returnZ': false,
+            'returnM': false,
+            'returnDistinctValues': false,
+            'f': 'json'
+        };
+        if (dataset.dataset.query) {
+            params.where = dataset.dataset.query;
+        }
+        var layer = dataset.dataset.layer;
+        var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, function (response) {
+            _parseArcGisResponse(response, callback);
+        });
+    }
+
+    return {
+        getBbox: getBbox
+    };
+};

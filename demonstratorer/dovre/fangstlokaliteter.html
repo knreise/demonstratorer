@@ -43,6 +43,7 @@
             require_template('museumsdata');
             require_template('digitalt_fortalt');
             require_template('list_item');
+            require_template('fangstgrop');
         </script>
 
         <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
@@ -60,6 +61,8 @@
         <script src="../../bower_components/video.js/dist/video-js/video.js"></script>
         <script type="text/javascript" src="../../bower_components/jquery-touchswipe/jquery.touchSwipe.js"></script>
 
+        <script type="text/javascript" src="../../bower_components/esri2geo/esri2geo.js"></script>
+
         <script src="../../common/js/L.TileLayer.Kartverket.js"></script>
 <!--
         <script src="../../common/js/L.Control.DatasetChooser.js"></script>
@@ -73,6 +76,7 @@
 
 
         <script src="../../common/js/util.js"></script>
+        <script src="../../common/js/arcgis.js"></script>
         <script src="../../common/js/wikipedia.js"></script>
         <script src="../../common/js/norvegiana.js"></script>
         <script src="../../common/js/cartodb.js"></script>
@@ -114,22 +118,14 @@
                 //The datasets in use
                 var datasets = [
                     {
-                        api: 'norvegiana',
-                        name: 'Fangstlokaliteter',
+                        api: 'kulturminnedata',
+                        name: 'Fangstgroper',
                         dataset_name_override: 'fangstlokaliteter',
-                        dataset: {dataset: 'Kulturminnesok', query: 'delving_title:Fangstlokalitet'},
-                        template: _.template($('#kulturminne_template').html()),
+                        dataset: {query: "Navn='Fangstgrop'", layer: 0},
+                        template: _.template($('#fangstgrop_template').html()),
                         smallMarker: true,
                         cluster: false,
                         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
-                    },
-                    {
-                        api: 'norvegiana',
-                        name: 'Kulturminner',
-                        dataset: {dataset: 'Kulturminnesok', query: '-delving_title:Fangstlokalitet'},
-                        template: _.template($('#kulturminne_template').html()),
-                        smallMarker: true,
-                        cluster: false
                     }
                 ];
                 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
@@ -140,7 +136,7 @@
                     var bounds = L.latLngBounds.fromBBoxString(bbox);
                     map.setMaxBounds(bounds);
                     map.fitBounds(bounds);
-                    var layers = datasetLoader.loadDatasets(datasets);
+                    var layers = datasetLoader.loadDatasets(datasets, bbox);
 
                     L.control.datasets(layers).addTo(map);
                 });

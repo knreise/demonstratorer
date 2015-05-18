@@ -65,7 +65,6 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
             });
             return;
         }
-
         template = template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {

@@ -5,6 +5,10 @@ KR.API = function (options) {
 
     var norvegianaAPI = new KR.NorvegianaAPI();
     var wikipediaAPI = new KR.WikipediaAPI();
+    var kulturminnedataAPI;
+    if (KR.ArcgisAPI) {
+        kulturminnedataAPI = new KR.ArcgisAPI('http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/');
+    }
 
     var cartodbAPI;
     if (_.has(options, 'cartodb')) {
@@ -15,7 +19,8 @@ KR.API = function (options) {
     var apis = {
         norvegiana: norvegianaAPI,
         wikipedia: wikipediaAPI,
-        cartodb: cartodbAPI
+        cartodb: cartodbAPI,
+        kulturminnedata: kulturminnedataAPI
     };
 
     var datasets = {
