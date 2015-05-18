@@ -9,8 +9,8 @@ module.exports = function(grunt) {
 
     "file-creator": {
 
-      "index": {
-        'index2.html': function(fs, fd, done) {
+      "build-index": {
+        'index.html': function(fs, fd, done) {
             grunt.util._.templateSettings.interpolate = /\{\{=(.+?)\}\}/g;
             grunt.util._.templateSettings.evaluate =  /\{\{(.+?)\}\}/g;
             var t = grunt.util._.template(fs.readFileSync('grunt_templates/index.html.tpl', 'utf8'));
@@ -18,12 +18,11 @@ module.exports = function(grunt) {
             done(); 
           }
         },
-      
 
-      "conditional": {
+      "build-demos": {
         files: grunt.util._.map(userConfig.demonstrators, function (demonstrator) {
             return {
-              file: 'demo2/' + demonstrator.key + '.html',
+              file: 'demonstratorer/' + demonstrator.key + '.html',
               method: function(fs, fd, done) {
                   grunt.util._.templateSettings.interpolate = /\{\{=(.+?)\}\}/g;
                   grunt.util._.templateSettings.evaluate =  /\{\{(.+?)\}\}/g;
@@ -47,14 +46,9 @@ module.exports = function(grunt) {
     }
   };
 
-  grunt.template.addDelimiters('myDelimiters', '{%', '%}');
-  grunt.template.setDelimiters('myDelimiters')
   grunt.initConfig( grunt.util._.extend( taskConfig, userConfig ) );
 
-  
   grunt.loadNpmTasks('grunt-file-creator');
 
-  // Default task(s).
-  grunt.registerTask('default', ['file-creator:conditional', 'file-creator:index']);
-
+  grunt.registerTask('default', ['file-creator:build-demos', 'file-creator:build-index']);
 };

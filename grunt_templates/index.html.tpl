@@ -7,8 +7,8 @@
     <body>
         <h1>KNREISE - demonstratorer</h1>
         <ul>{{ _.each(demonstrators, function (demonstrator) { }}
-            <li><a href="demo2/{{= demonstrator.key }}.html">{{= demonstrator.name }}</a></li>{{ }) }}
-            <li><a href="demo2/style.html">Stiler</a></li>
+            <li><a href="demonstratorer/{{= demonstrator.key }}.html">{{= demonstrator.name }}</a></li>{{ }) }}
+            <li><a href="demonstratorer/style.html">Stiler</a></li>
         </ul>
     </body>
 </html>

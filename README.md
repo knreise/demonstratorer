@@ -27,3 +27,11 @@ Dette er et "work in progress", og det er planer om å dra ut de komponentene so
 - api.js: en wrapper over apiet fra Norvegiana, CartoDB og Wikipedia. Depender på underscore.js og jQuery
 - util.js: en rekke hjelpefunksjoner
 - En rekke Leaflet-pluins
+
+
+Bygging
+-------
+Koden under mappa ```demonstratorer``` er pre-generert med grunt. Installer 
+grunt (```npm install```) og kjør ```grunt``` for å bygge på nytt etter å ha 
+endret build.config.js eller filer i ```demonstrator_content/```
+
