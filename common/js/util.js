@@ -128,4 +128,13 @@ KR.Util = {};
         });
     };
 
+    ns.stamp = (function () {
+        var lastId = 0,
+            key = '_knreise_id';
+        return function (obj) {
+            obj[key] = obj[key] || ++lastId;
+            return obj[key];
+        };
+    }());
+
 }(KR.Util));
