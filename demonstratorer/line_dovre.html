@@ -252,22 +252,23 @@ var datasets = [
     {
         api: 'norvegiana',
         name: 'Digitalt fortalt',
-        dataset: 'difo'
+        dataset: {dataset: 'difo', allPages: true}
     },
     {
         api: 'norvegiana',
         name: 'Kulturminner',
-        dataset: 'Kulturminnesok'
+        dataset: {dataset: 'Kulturminnesok', allPages: true}
     },
     {
         api: 'norvegiana',
         name: 'Museumsdata',
-        dataset: ['MUSIT', 'DiMu']
+        dataset: {dataset: ['MUSIT', 'DiMu'], allPages: true}
     },
     {
         api: 'norvegiana',
         name: 'Artsobservasjoner',
-        dataset: 'Artsdatabanken'
+        dataset: {dataset: 'Artsdatabanken', allPages: true}
+        
     }
 ];
 

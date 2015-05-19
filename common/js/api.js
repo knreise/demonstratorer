@@ -4,7 +4,11 @@ KR.API = function (options) {
     'use strict';
 
     var norvegianaAPI = new KR.NorvegianaAPI();
-    var wikipediaAPI = new KR.WikipediaAPI();
+    var wikipediaAPI;
+    if (KR.WikipediaAPI) {
+        wikipediaAPI = new KR.WikipediaAPI();
+    }
+
     var kulturminnedataAPI;
     if (KR.ArcgisAPI) {
         kulturminnedataAPI = new KR.ArcgisAPI('http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/');

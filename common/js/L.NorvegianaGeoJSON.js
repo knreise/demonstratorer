@@ -22,7 +22,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         this._sidebar = sidebar;
 
         L.GeoJSON.prototype.initialize.call(this, geoJson, options);
-        if (this.options.cluster) {
+        if (this.options.cluster && L.markerClusterGroup) {
             this._cluster = L.markerClusterGroup({
                 zoomToBoundsOnClick: false,
                 spiderfyOnMaxZoom: false,
@@ -34,7 +34,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     },
 
     addLayer: function (layer) {
-        if (this.options.cluster) {
+        if (this._cluster) {
             var id = this.getLayerId(layer);
             this._layers[id] = layer;
             return this;
@@ -45,7 +45,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
     addGeoJSON: function (geojson) {
         this.addData(geojson);
 
-        if (this.options.cluster) {
+        if (this._cluster) {
             this._cluster.clearLayers();
             this._cluster.addLayers(this.getLayers());
         }
@@ -55,7 +55,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         if (this._cluster) {
             map.addLayer(this._cluster);
         } else {
-          L.GeoJSON.prototype.onAdd.call(this, map);
+            L.GeoJSON.prototype.onAdd.call(this, map);
         }
     },
 
@@ -67,6 +67,7 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
         if (geoJson) {
             this.addGeoJSON(geoJson);
         }
+        this.fire('reset', this);
     },
 
     onRemove: function (map) {

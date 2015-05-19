@@ -16,12 +16,19 @@ KR.DatasetLoader = function (api, map, sidebar) {
             .addTo(map);
         layer.visible = true;
 
-        function _reloadData(bbox) {
+        function checkData(geoJson) {
+            if (dataset.minFeatures && geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
+                return KR.Util.CreateFeatureCollection([]);
+            }
+            return geoJson;
+        }
+
+        function _reloadData(e, bbox) {
             var bounds = bbox || map.getBounds().toBBoxString();
             if (dataset.minZoom) {
                 if (map.getZoom() >= dataset.minZoom && layer.visible) {
                     api.getBbox(dataset, bounds, function (geoJson) {
-                        layer.addGeoJSON(mapper(geoJson));
+                        layer.resetGeoJSON(mapper(checkData(geoJson)));
                     });
                 } else {
                     layer.resetGeoJSON();
@@ -29,7 +36,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
             } else {
                 if (layer.visible) {
                     api.getBbox(dataset, bounds, function (geoJson) {
-                        layer.addGeoJSON(mapper(geoJson));
+                        layer.resetGeoJSON(mapper(checkData(geoJson)));
                     });
                 } else {
                     layer.resetGeoJSON();
@@ -41,12 +48,15 @@ KR.DatasetLoader = function (api, map, sidebar) {
         if (!dataset.isStatic) {
             map.on('moveend', _reloadData);
         }
-        _reloadData(bounds);
+        _reloadData(null, bounds);
         return layer;
     }
 
     function _mapper(dataset) {
         return function (features) {
+            if (!features || !features.features.length) {
+                return features;
+            }
             _.each(features.features, function (feature) {
                 if (_.has(dataset, 'dataset_name_override')) {
                     feature.properties.dataset = dataset.dataset_name_override;
@@ -56,7 +66,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
                 }
             });
             return features;
-        }
+        };
     }
 
     function _addFullDataset(api, map, dataset, mapper) {

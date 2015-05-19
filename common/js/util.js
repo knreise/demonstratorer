@@ -47,7 +47,7 @@ KR.Util = {};
     };
 
     ns.sendRequest = function (url, callback, parser) {
-        $.ajax({
+        return $.ajax({
             type: 'get',
             url: url,
             success: function (response) {
