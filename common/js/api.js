@@ -11,7 +11,9 @@ KR.API = function (options) {
 
     var kulturminnedataAPI;
     if (KR.ArcgisAPI) {
-        kulturminnedataAPI = new KR.ArcgisAPI('http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/');
+        kulturminnedataAPI = new KR.ArcgisAPI(
+            'http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'
+        );
     }
 
     var cartodbAPI;
@@ -28,7 +30,6 @@ KR.API = function (options) {
     };
 
     var datasets = {
-        //'delving_spec:*': 'Alle',
         'Artsdatabanken': {name: 'Artsdatabanken', dataset: {api: 'norvegiana', dataset: 'Artsdatabanken'}},
         'difo': {name: 'Digitalt fortalt', dataset: {api: 'norvegiana', dataset: 'difo'}},
         'DiMu': {name: 'DigitaltMuseum', dataset: {api: 'norvegiana', dataset: 'DiMu'}},
@@ -41,47 +42,20 @@ KR.API = function (options) {
         'search_1': {name: 'Byantikvaren i Oslo', dataset: {api: 'cartodb', table: 'search_1'}}
     };
 
-    function getDatasetObj(query) {
-        if (_.has(datasets, query)) {
-            return datasets[query];
-        }
-        throw new Error('Unknown dataset');
-    }
-
-    function _toRad(value) {
-        return value * Math.PI / 180;
-    }
-
-    function _haversine(lat1, lon1, lat2, lon2) {
-        var R = 6371000; // metres
-        var phi1 = _toRad(lat1);
-        var phi2 = _toRad(lat2);
-        var bDeltaPhi = _toRad(lat2 - lat1);
-        var bDeltaDelta = _toRad(lon2 - lon1);
-
-        var a = Math.sin(bDeltaPhi / 2) * Math.sin(bDeltaPhi / 2) +
-                Math.cos(phi1) * Math.cos(phi2) *
-                Math.sin(bDeltaDelta / 2) * Math.sin(bDeltaDelta / 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
-
-
     function _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options) {
-        bbox = bbox.split(',').map(parseFloat);
+        bbox = KR.Util.splitBbox(bbox);
 
-        var lng1 = bbox[0]; //southwest_lng
-        var lat1 = bbox[1]; //southwest_lat
-
-        var lng2 = bbox[2]; //northeast_lng
-        var lat2 = bbox[3]; //northeast_lat
+        var lng1 = bbox[0],
+            lat1 = bbox[1],
+            lng2 = bbox[2],
+            lat2 = bbox[3];
 
         var centerLng = (lng1 + lng2) / 2;
         var centerLat = (lat1 + lat2) / 2;
 
         var radius = _.max([
-            _haversine(lat1, lng1, centerLat, centerLng),
-            _haversine(lat2, lng2, centerLat, centerLng)
+            KR.Util.haversine(lat1, lng1, centerLat, centerLng),
+            KR.Util.haversine(lat2, lng2, centerLat, centerLng)
         ]);
 
         var latLng = {lat: centerLat, lng: centerLng};
@@ -108,7 +82,14 @@ KR.API = function (options) {
         if (_.has(api, 'getBbox')) {
             api.getBbox(dataset, bbox, callback, errorCallback, options);
         } else {
-            _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options);
+            _distanceFromBbox(
+                api,
+                dataset,
+                bbox,
+                callback,
+                errorCallback,
+                options
+            );
         }
     }
 
@@ -116,15 +97,25 @@ KR.API = function (options) {
         options = options || {};
         distance = distance || 5000;
         var api = _getAPI(dataset.api);
-        api.getWithin(dataset, latLng, distance, callback, errorCallback, options);
+        api.getWithin(
+            dataset,
+            latLng,
+            distance,
+            callback,
+            errorCallback,
+            options
+        );
     }
 
     function getMunicipalityBounds(municipalities, callback, errorCallback) {
-        if (cartodbAPI) {
-            cartodbAPI.getMunicipalityBounds(municipalities, callback, errorCallback);
-            return;
+        if (!cartodbAPI) {
+            throw new Error('CartoDB api not configured!');
         }
-        throw new Error('CartoDB api not configured!');
+        cartodbAPI.getMunicipalityBounds(
+            municipalities,
+            callback,
+            errorCallback
+        );
     }
 
     return {

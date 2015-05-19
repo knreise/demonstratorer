@@ -5,10 +5,10 @@ var KR = this.KR || {};
 KR.WikipediaAPI = function () {
     'use strict';
 
-    var WIKIMEDIA_BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
+    var BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
 
     function _wikiquery(params, callback) {
-        var url = WIKIMEDIA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
             response = JSON.parse(response);
             callback(response);
@@ -127,7 +127,7 @@ KR.WikipediaAPI = function () {
             format: 'json',
             gslimit: 50
         };
-        var url = WIKIMEDIA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
             _parseWikimediaItems(response, callback, errorCallback);
         }, errorCallback);

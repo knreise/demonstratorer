@@ -6,7 +6,7 @@ KR.ArcgisAPI = function (BASE_URL) {
     'use strict';
 
     function _parseBbox(bbox) {
-        bbox = bbox.split(',').map(parseFloat);
+        bbox = KR.Util.splitBbox(bbox);
         return JSON.stringify({
             'xmin': bbox[0],
             'ymin': bbox[1],
