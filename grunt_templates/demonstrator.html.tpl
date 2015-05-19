@@ -15,7 +15,7 @@
 
 {{= template_markup }}
 
-{{ _.each(scripts, function (script) { }}
+{{ _.each(scriptLinks, function (script) { }}
         <script src="../{{= script }}" type="text/javascript"></script>{{ }) }}
 
         <script type="text/javascript">

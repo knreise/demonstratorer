@@ -37,6 +37,9 @@ module.exports = function(grunt) {
 
                 demonstrator.html = fs.readFileSync('./demonstrator_content/' + demonstrator.key + '/html.html', 'utf8');
                 demonstrator.inline_js = fs.readFileSync('./demonstrator_content/' + demonstrator.key + '/inline.js', 'utf8');
+
+                demonstrator.scriptLinks = userConfig.commonScripts.concat(demonstrator.scripts);
+
                 fs.writeSync(fd, t(demonstrator));
                 done(); 
               }

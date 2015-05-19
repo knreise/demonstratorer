@@ -1,12 +1,21 @@
 module.exports = {
-  demonstrators : [
+  commonScripts: [
+    'bower_components/jquery/dist/jquery.min.js',
+    'bower_components/underscore/underscore-min.js',
+    'bower_components/leaflet/dist/leaflet.js',
+    'bower_components/esri2geo/esri2geo.js',
+    'common/js/util.js',
+    'common/js/arcgis.js',
+    'common/js/wikipedia.js',
+    'common/js/norvegiana.js',
+    'common/js/cartodb.js',
+    'common/js/api.js',
+  ],
+  demonstrators: [
     {
         key: 'dovre',
         name: 'Dovre',
         scripts: [
-          'bower_components/jquery/dist/jquery.min.js',
-          'bower_components/underscore/underscore-min.js',
-          'bower_components/leaflet/dist/leaflet.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
@@ -15,17 +24,10 @@ module.exports = {
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'bower_components/esri2geo/esri2geo.js',
           'common/js/L.TileLayer.Kartverket.js',
           'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
-          'common/js/util.js',
-          'common/js/arcgis.js',
-          'common/js/wikipedia.js',
-          'common/js/norvegiana.js',
-          'common/js/cartodb.js',
-          'common/js/api.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
@@ -58,22 +60,12 @@ module.exports = {
         key: 'fangstlokaliteter_dovre',
         name: 'Fangstlokaliteter, Dovre',
         scripts: [
-          'bower_components/jquery/dist/jquery.min.js',
-          'bower_components/underscore/underscore-min.js',
-          'bower_components/leaflet/dist/leaflet.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
-          'bower_components/esri2geo/esri2geo.js',
           'common/js/L.TileLayer.Kartverket.js',
           'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
-          'common/js/util.js',
-          'common/js/arcgis.js',
-          'common/js/wikipedia.js',
-          'common/js/norvegiana.js',
-          'common/js/cartodb.js',
-          'common/js/api.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
@@ -98,9 +90,6 @@ module.exports = {
         key: 'line_dovre',
         name: 'Pilegrimsleden, Dovre',
         scripts: [
-          'bower_components/jquery/dist/jquery.min.js',
-          'bower_components/underscore/underscore-min.js',
-          'bower_components/leaflet/dist/leaflet.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/turf/turf.min.js',
@@ -108,11 +97,6 @@ module.exports = {
           'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
-          'common/js/util.js',
-          'common/js/wikipedia.js',
-          'common/js/norvegiana.js',
-          'common/js/cartodb.js',
-          'common/js/api.js',
           'common/js/geolocatormock.js',
           'common/js/AlongLine.js'
         ],
@@ -141,9 +125,6 @@ module.exports = {
         key: 'general',
         name: 'Generell demo',
         scripts: [
-          'bower_components/jquery/dist/jquery.min.js',
-          'bower_components/underscore/underscore-min.js',
-          'bower_components/leaflet/dist/leaflet.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
@@ -152,17 +133,10 @@ module.exports = {
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'bower_components/esri2geo/esri2geo.js',
           'common/js/L.TileLayer.Kartverket.js',
           'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
-          'common/js/util.js',
-          'common/js/arcgis.js',
-          'common/js/wikipedia.js',
-          'common/js/norvegiana.js',
-          'common/js/cartodb.js',
-          'common/js/api.js',
           'common/js/L.Control.DatasetChooser.js',
           'common/js/L.Control.MapClick.js'
         ],
@@ -197,15 +171,9 @@ module.exports = {
         key: 'limit_api',
         name: 'Alt eller ingenting',
         scripts: [
-          'bower_components/jquery/dist/jquery.min.js',
-          'bower_components/underscore/underscore-min.js',
-          'bower_components/leaflet/dist/leaflet.js',
           'common/js/L.TileLayer.Kartverket.js',
           'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Control.Datasets.js',
-          'common/js/util.js',
-          'common/js/norvegiana.js',
-          'common/js/api.js',
           'common/js/DatasetLoader.js'
           
         ],
@@ -224,19 +192,7 @@ module.exports = {
     {
         key: 'api_example',
         name: 'API-eksempel',
-        scripts: [
-          'bower_components/jquery/dist/jquery.min.js',
-          'bower_components/underscore/underscore-min.js',
-          'bower_components/leaflet/dist/leaflet.js',
-          'bower_components/esri2geo/esri2geo.js',
-          'common/js/util.js',
-          'common/js/arcgis.js',
-          'common/js/wikipedia.js',
-          'common/js/norvegiana.js',
-          'common/js/cartodb.js',
-          'common/js/api.js'
-          
-        ],
+        scripts: [],
         css: [
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
         ],
