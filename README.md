@@ -35,3 +35,4 @@ Koden under mappa ```demonstratorer``` er pre-generert med grunt. Installer
 grunt (```npm install```) og kjør ```grunt``` for å bygge på nytt etter å ha 
 endret build.config.js eller filer i ```demonstrator_content/```
 
+For å kontinuerlig bygge på nytt når du endrer, kjør ```grunt watch```.
