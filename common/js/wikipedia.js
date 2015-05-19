@@ -5,11 +5,11 @@ var KR = this.KR || {};
 KR.WikipediaAPI = function () {
     'use strict';
 
-    var WIKIMEDIA_BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
+    var BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
 
     function _wikiquery(params, callback) {
-        var url = WIKIMEDIA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, function (response) {
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, null, function (response) {
             response = JSON.parse(response);
             callback(response);
         });
@@ -96,25 +96,29 @@ KR.WikipediaAPI = function () {
         return KR.Util.createGeoJSONFeature({lat: item.lat, lng: item.lon}, params);
     }
 
-    function _parseWikimediaItems(response, callback) {
+    function _parseWikimediaItems(response, callback, errorCallback) {
         response = JSON.parse(response);
 
-        //since the wikipedia API does not include details, we have to ask for 
-        //them seperately (based on page id), and then join them
-        var pageIds = _.pluck(response.query.geosearch, 'pageid').join('|');
-        _getWikimediaDetails(pageIds, function (pages) {
-            var features = _.map(response.query.geosearch, function (item) {
-                return _parseWikimediaItem(item, pages);
+        try {
+            //since the wikipedia API does not include details, we have to ask for 
+            //them seperately (based on page id), and then join them
+            var pageIds = _.pluck(response.query.geosearch, 'pageid').join('|');
+            _getWikimediaDetails(pageIds, function (pages) {
+                var features = _.map(response.query.geosearch, function (item) {
+                    return _parseWikimediaItem(item, pages);
+                });
+                callback(KR.Util.CreateFeatureCollection(features));
             });
-            callback(KR.Util.CreateFeatureCollection(features));
-        });
+        } catch (error) {
+            errorCallback(response);
+        }
     }
 
     /*
         Get georeferenced Wikipedia articles within a radius of given point.
         Maps data to format similar to norvegiana api.
     */
-    function getWithin(query, latLng, distance, callback) {
+    function getWithin(query, latLng, distance, callback, errorCallback) {
         var params = {
             action: 'query',
             list: 'geosearch',
@@ -123,10 +127,10 @@ KR.WikipediaAPI = function () {
             format: 'json',
             gslimit: 50
         };
-        var url = WIKIMEDIA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, function (response) {
-            _parseWikimediaItems(response, callback);
-        });
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, null, function (response) {
+            _parseWikimediaItems(response, callback, errorCallback);
+        }, errorCallback);
     }
 
     return {

@@ -5,7 +5,7 @@ KR.NorvegianaAPI = function () {
 
     var requests = [];
 
-    var NORVEGIANA_BASE_URL = 'http://kulturnett2.delving.org/api/search';
+    var BASE_URL = 'http://kulturnett2.delving.org/api/search';
 
     function _formatLatLng(latLng) {
         return latLng.lat + ',' + latLng.lng;
@@ -28,8 +28,8 @@ KR.NorvegianaAPI = function () {
         return link;
     }
 
-    function _parseNorvegianaItem(item) {
-        var allProperties = _.chain(item.item.fields)
+    function _getProperties(item) {
+        return _.chain(item.item.fields)
             .pairs()
             .where(function (field) {
                 return field[0] !== 'abm_latLong';
@@ -37,12 +37,12 @@ KR.NorvegianaAPI = function () {
             .reduce(function (acc, field) {
                 acc[field[0]] = field[1];
                 return acc;
-            }, {}).value();
-        var pos = _.find(item.item.fields, function (value, key) {
-            return key === 'abm_latLong';
-        });
+            }, {})
+            .value();
+    }
 
-        var properties = {
+    function _createProperties(allProperties) {
+        return {
             thumbnail: _firstOrNull(allProperties.delving_thumbnail),
             images: allProperties.delving_thumbnail,
             title: _firstOrNull(allProperties.dc_title),
@@ -56,14 +56,28 @@ KR.NorvegianaAPI = function () {
             sound: _firstOrNull(allProperties.abm_soundUri),
             allProps: allProperties
         };
+    }
 
-        var parsedPos = _.map(pos[0].split(','), parseFloat);
-        var feature = KR.Util.createGeoJSONFeature({lat: parsedPos[0], lng: parsedPos[1]}, properties);
+    function _parseNorvegianaItem(item) {
+        var allProperties = _getProperties(item);
+
+        var properties = _createProperties(allProperties);
+        var position = _.map(
+            item.item.fields.abm_latLong[0].split(','),
+            parseFloat
+        );
+        var feature = KR.Util.createGeoJSONFeature(
+            {
+                lat: position[0],
+                lng: position[1]
+            },
+            properties
+        );
         return feature;
     }
 
     function _parseNorvegianaItems(response) {
-        var nextPage = null;
+        var nextPage;
         if (response.result.pagination.hasNext) {
             nextPage = response.result.pagination.nextPage;
         }
@@ -74,60 +88,86 @@ KR.NorvegianaAPI = function () {
         return {geoJSON: geoJSON, nextPage: nextPage};
     }
 
-    function _acc(url, originalCallback) {
+    function _acc(url, originalCallback, errorCallback) {
         var data = [];
-
         return function callback(responseData) {
             data.push(responseData.geoJSON);
             if (responseData.nextPage) {
-                KR.Util.sendRequest(url + '&start=' + responseData.nextPage, callback, _parseNorvegianaItems);
-            } else {
-                var features = _.reduce(data, function (acc, featureCollection) {
-                    return acc.concat(featureCollection.features);
-                }, []);
-                originalCallback(KR.Util.CreateFeatureCollection(features));
+                KR.Util.sendRequest(
+                    url + '&start=' + responseData.nextPage,
+                    _parseNorvegianaItems,
+                    callback,
+                    errorCallback
+                );
+                return
             }
+            var features = _.reduce(data, function (acc, featureCollection) {
+                return acc.concat(featureCollection.features);
+            }, []);
+            originalCallback(KR.Util.CreateFeatureCollection(features));
         };
     }
 
-    function getWithin(parameters, latLng, distance, callback) {
+    function _fixDataset(dataset) {
+        dataset = _.isArray(dataset)
+            ? dataset
+            : [dataset];
 
-        var dataset, qf;
-        if (_.isArray(parameters) || _.isString(parameters)) {
-            dataset = parameters;
-        } else {
-            dataset = parameters.dataset;
-            qf = parameters.query;
+        return _.map(dataset, function (d) {
+            return 'delving_spec:' + d;
+        }).join(' OR ');
+    }
+
+    function _checkCancel(requestId) {
+        if (requests[requestId]) {
+            requests[requestId].abort();
+            requests[requestId] = null;
         }
+    }
 
-        if (!_.isArray(dataset)) {
-            dataset = [dataset];
-        }
-        dataset = _.map(dataset, function (d) {return 'delving_spec:' + d; }).join(' OR ');
+    function _getFirstPage(url, callback, errorCallback) {
+        return KR.Util.sendRequest(
+            url,
+            _parseNorvegianaItems,
+            function (res) {
+                callback(res.geoJSON);
+            },
+            errorCallback
+        );
+    }
 
-        distance = distance / 1000; // convert to km
-        var id = dataset;
+    function _getAllPages(url, callback, errorCallback) {
+        return KR.Util.sendRequest(
+            url,
+            _parseNorvegianaItems,
+            _acc(url, callback, errorCallback),
+            errorCallback
+        );
+    }
+
+    function getWithin(parameters, latLng, distance, callback, errorCallback, options) {
+        var dataset = _fixDataset(parameters.dataset);
+
         var params = {
             query: dataset,
             pt: _formatLatLng(latLng),
-            d: distance,
+            d: distance / 1000, // convert to km
             format: 'json',
             rows: 1000
         };
-        if (qf) {
-            params.qf = qf;
-            id += qf;
-        }
 
-        if (requests[id]) {
-            requests[id].abort();
-            requests[id] = null;
+        var requestId = dataset;
+        if (parameters.query) {
+            params.qf = parameters.query;
+            requestId += parameters.query;
         }
-        var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        if (parameters.allPages) {
-            requests[id] = KR.Util.sendRequest(url, _acc(url, callback), _parseNorvegianaItems);
+        _checkCancel(requestId);
+
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        if (options.allPages) {
+            requests[requestId] = _getAllPages(url, callback, errorCallback);
         } else {
-            requests[id] = KR.Util.sendRequest(url, function (res) { callback(res.geoJSON); }, _parseNorvegianaItems);
+            requests[requestId] = _getFirstPage(url, callback, errorCallback);
         }
     }
 
@@ -136,34 +176,18 @@ KR.NorvegianaAPI = function () {
             id: id,
             format: 'json'
         };
-        var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, callback, function (response) {
-            return _parseNorvegianaItem(response.result);
-        });
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(
+            url,
+            function (response) {
+                return _parseNorvegianaItem(response.result);
+            },
+            callback
+        );
     }
-
-    /*
-    function getData(dataset, callback) {
-        console.log(dataset);
-        var query;
-        if (dataset.dataset) {
-            query = 'delving_spec:' + dataset.dataset;
-        }
-
-        var params = {
-            query: query,
-            format: 'json',
-            rows: 100
-        };
-        var url = NORVEGIANA_BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        //var url = 'test.json';
-        KR.Util.sendRequest(url, callback, _parseNorvegianaItems);
-    }
-    */
 
     return {
         getWithin: getWithin,
         getItem: getItem
-        //getData: getData
     };
 };

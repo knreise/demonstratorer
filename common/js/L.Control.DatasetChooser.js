@@ -45,7 +45,8 @@ L.Control.DatasetChooser = L.Control.extend({
 
     _datasetChanged: function () {
         var selected = this._select.options[this._select.selectedIndex].value;
-        this.options.datasetSelected(selected);
+        var dataset = this.options.datasets[selected];
+        this.options.datasetSelected(dataset);
     }
 });
 

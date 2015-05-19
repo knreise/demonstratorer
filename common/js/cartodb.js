@@ -5,7 +5,7 @@ var KR = this.KR || {};
 KR.CartodbAPI = function (user, apikey) {
     'use strict';
 
-    var CARTODB_BASE_URL = 'http://' + user + '.cartodb.com/api/v2/sql';
+    var BASE_URL = 'http://' + user + '.cartodb.com/api/v2/sql';
 
 
     function _createMapper(propertyMap) {
@@ -47,7 +47,11 @@ KR.CartodbAPI = function (user, apikey) {
             europeana_type: 'contentType',
             delving_landingpage: 'video'
         },
-        pilegrimsleden_dovre: {iid: 'id', name: 'name', omradenavn: 'omradenavn'}
+        pilegrimsleden_dovre: {
+            iid: 'id',
+            name: 'name',
+            omradenavn: 'omradenavn'
+        }
     };
 
     var _parseItems = _createMapper(columnList['default']);
@@ -72,30 +76,13 @@ KR.CartodbAPI = function (user, apikey) {
         });
     }
 
-
-    function _executeSQL(sql, mapper, callback) {
+    function _executeSQL(sql, mapper, callback, errorCallback) {
         var params = {
             q: sql,
             api_key: apikey
         };
-        var url = CARTODB_BASE_URL + '?' + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, callback, mapper);
-    }
-
-    function getWithin(dataset, latLng, distance, callback) {
-        var select = _.keys(columnList['default']).concat(['ST_AsGeoJSON(the_geom) as geom']).join(', ');
-        var sql = 'SELECT ' + select + ' FROM ' + dataset + ' WHERE ST_DWithin(the_geom::geography, \'POINT(' + latLng.lng + ' ' + latLng.lat + ')\'::geography, ' + distance + ');';
-        _executeSQL(sql, _parseItems, callback);
-    }
-
-    if (typeof L !== "undefined") {
-        L.latLngBounds.fromBBoxString = function (bbox) {
-            bbox = bbox.split(',').map(parseFloat);
-            return new L.LatLngBounds(
-                new L.LatLng(bbox[1], bbox[0]),
-                new L.LatLng(bbox[3], bbox[2])
-            );
-        };
+        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, mapper, callback, errorCallback);
     }
 
     function _parseMunicipalities(response) {
@@ -103,18 +90,43 @@ KR.CartodbAPI = function (user, apikey) {
         return extent.replace('BOX(', '').replace(')', '').replace(/ /g, ',');
     }
 
-    function getMunicipalityBounds(municipalities, callback) {
+
+    function _createSelect(select, from, where) {
+        var sql = [
+            'SELECT ' + select,
+            'FROM ' + from
+        ];
+        if (where) {
+            sql.push('WHERE ' + where);
+        }
+        return sql.join(' ');
+    }
+
+    function _dwithin(latLng, distance) {
+        return 'ST_DWithin(' +
+               'the_geom::geography,' +
+               '\'POINT(' + latLng.lng + ' ' + latLng.lat + ')\'::geography, ' +
+               distance + ');';
+    }
+
+
+    function getMunicipalityBounds(municipalities, callback, errorCallback) {
         if (!_.isArray(municipalities)) {
             municipalities = [municipalities];
         }
 
-        var sql = 'SELECT ST_Extent(the_geom) FROM kommuner WHERE komm in (' + municipalities.join(', ') + ')';
-        _executeSQL(sql, _parseMunicipalities, callback);
+        var sql = _createSelect(
+            'ST_Extent(the_geom)',
+            'kommuner',
+            'komm in (' + municipalities.join(', ') + ')'
+        );
+
+        _executeSQL(sql, _parseMunicipalities, callback, errorCallback);
     }
 
-    function getData(dataset, callback) {
+    function getData(dataset, callback, errorCallback) {
         if (dataset.query) {
-            _executeSQL(dataset.query, dataset.mapper, callback);
+            _executeSQL(dataset.query, dataset.mapper, callback, errorCallback);
         } else if (dataset.table) {
             var select = ['*'];
             if (_.has(columnList, dataset.table)) {
@@ -122,23 +134,41 @@ KR.CartodbAPI = function (user, apikey) {
             }
             select.push('ST_AsGeoJSON(the_geom) as geom');
             var sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
-            _executeSQL(sql, dataset.mapper, callback);
+            _executeSQL(sql, dataset.mapper, callback, errorCallback);
         }
     }
 
-    function getBbox(dataset, bbox, callback) {
+    function getBbox(dataset, bbox, callback, errorCallback) {
         var columns = dataset.columns;
         if (!columns) {
             columns = ['*'];
         }
         columns.push('ST_AsGeoJSON(the_geom) as geom');
-        var select = columns.join(', ');
-        var sql = 'SELECT ' + select + ' FROM ' + dataset.table + ' WHERE ST_Intersects(the_geom, ST_MakeEnvelope(' + bbox + ', 4326))';
+
+        var sql = _createSelect(
+            columns.join(', '),
+            dataset.table,
+            'ST_Intersects(the_geom, ST_MakeEnvelope(' + bbox + ', 4326))'
+        );
+
         var mapper = dataset.mapper;
         if (!mapper) {
             mapper = mappers().cartodb_general;
         }
-        _executeSQL(sql, mapper, callback);
+        _executeSQL(sql, mapper, callback, errorCallback);
+    }
+
+    function getWithin(dataset, latLng, distance, callback, errorCallback) {
+        var select = _.keys(columnList['default']).concat(
+            ['ST_AsGeoJSON(the_geom) as geom']
+        ).join(', ');
+
+        var sql = _createSelect(
+            select,
+            dataset.table,
+            _dwithin(latLng, distance)
+        );
+        _executeSQL(sql, _parseItems, callback, errorCallback);
     }
 
     return {

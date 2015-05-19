@@ -250,25 +250,25 @@ function initGeoLoc(interval, callback, error) {
 
 var datasets = [
     {
-        api: 'norvegiana',
         name: 'Digitalt fortalt',
-        dataset: {dataset: 'difo', allPages: true}
+        dataset: {dataset: 'difo', api: 'norvegiana'},
+        options: {allPages: true}
     },
     {
-        api: 'norvegiana',
         name: 'Kulturminner',
-        dataset: {dataset: 'Kulturminnesok', allPages: true}
+        dataset: {dataset: 'Kulturminnesok', api: 'norvegiana'},
+        options: {allPages: true}
     },
     {
-        api: 'norvegiana',
-        name: 'Museumsdata',
-        dataset: {dataset: ['MUSIT', 'DiMu'], allPages: true}
-    },
-    {
-        api: 'norvegiana',
-        name: 'Artsobservasjoner',
-        dataset: {dataset: 'Artsdatabanken', allPages: true}
         
+        name: 'Museumsdata',
+        dataset: {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
+        options: {allPages: true}
+    },
+    {
+        name: 'Artsobservasjoner',
+        dataset: {dataset: 'Artsdatabanken', api: 'norvegiana'},
+        options: {allPages: true}
     }
 ];
 

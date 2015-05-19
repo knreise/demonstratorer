@@ -33,44 +33,54 @@ KR.Config.templates = {
 //The datasets in use
 var datasets = [
     {
-        api: 'cartodb',
+        dataset: {
+            api: 'cartodb',
+            table: 'pilegrimsleden_dovre',
+            mapper: KR.API.mappers.pilegrimsleden_dovre
+        },
         name: 'Pilegrimsleden',
-        table: 'pilegrimsleden_dovre',
-        mapper: KR.API.mappers.pilegrimsleden_dovre,
         style: function (feature) {
             return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
         },
         bbox: false
     },
     {
-        api: 'norvegiana',
         name: 'Digitalt fortalt',
-        dataset: 'difo',
+        dataset: {dataset: 'difo', api: 'norvegiana'},
         template: _.template($('#digitalt_fortalt_template').html())
     },
     {
-        api: 'norvegiana',
         name: 'Fangstlokaliteter',
         dataset_name_override: 'fangstlokaliteter',
-        dataset: {dataset: 'Kulturminnesok', query: 'delving_title:Fangstlokalitet'},
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'Kulturminnesok',
+            query: 'delving_title:Fangstlokalitet'
+        },
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true,
         cluster: false,
         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
-        api: 'norvegiana',
+        
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
-        dataset: {dataset: 'Kulturminnesok', query: '-delving_title:Fangstlokalitet'},
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'Kulturminnesok',
+            query: '-delving_title:Fangstlokalitet'
+        },
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true
     },
     {
-        api: 'cartodb',
+        dataset: {
+            api: 'cartodb',
+            table: 'naturvernomrader_utm33_2',
+            columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+        },
         name: 'Verneområder',
-        table: 'naturvernomrader_utm33_2',
-        columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
         template: _.template($('#verneomraader_template').html()),
         style: function (feature) {
             return {color: '#7570b3', weight: 1, fillColor: '#ff0000'};
@@ -80,18 +90,23 @@ var datasets = [
         }
     },
     {
-        api: 'norvegiana',
+        
         name: 'Museumsdata',
-        dataset: ['MUSIT', 'DiMu'],
+        dataset: {
+            api: 'norvegiana',
+            dataset: ['MUSIT', 'DiMu']
+        },
         isStatic: false,
         thumbnails: false,
         smallMarker: true,
         minZoom: 12
-    }
-,                    {
-        api: 'norvegiana',
+    },
+    {
         name: 'Artsobservasjoner',
-        dataset: 'Artsdatabanken',
+        dataset: {
+            api: 'norvegiana',
+            dataset:'Artsdatabanken'
+        },
         isStatic: false,
         smallMarker: true,
         minZoom: 14

@@ -11,7 +11,9 @@ KR.API = function (options) {
 
     var kulturminnedataAPI;
     if (KR.ArcgisAPI) {
-        kulturminnedataAPI = new KR.ArcgisAPI('http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/');
+        kulturminnedataAPI = new KR.ArcgisAPI(
+            'http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'
+        );
     }
 
     var cartodbAPI;
@@ -28,105 +30,92 @@ KR.API = function (options) {
     };
 
     var datasets = {
-        //'delving_spec:*': 'Alle',
-        'Artsdatabanken': {name: 'Artsdatabanken', api: 'norvegiana'},
-        'difo': {name: 'Digitalt fortalt', api: 'norvegiana'},
-        'DiMu': {name: 'DigitaltMuseum', api: 'norvegiana'},
-        'Industrimuseum': {name: 'Industrimuseum', api: 'norvegiana'},
-        'Kulturminnesøk': {name: 'Kulturminnesøk', api: 'norvegiana'},
-        'MUSIT': {name: 'Universitetsmuseene', api: 'norvegiana'},
-        'Naturbase': {name: 'Naturbase', api: 'norvegiana'},
-        'Stedsnavn': {name: 'Stedsnavn', api: 'norvegiana'},
-        'wikipedia': {name: 'Wikipedia', api: 'wikipedia'},
-        'search_1': {name: 'Byantikvaren i Oslo', api: 'cartodb'}
+        'Artsdatabanken': {name: 'Artsdatabanken', dataset: {api: 'norvegiana', dataset: 'Artsdatabanken'}},
+        'difo': {name: 'Digitalt fortalt', dataset: {api: 'norvegiana', dataset: 'difo'}},
+        'DiMu': {name: 'DigitaltMuseum', dataset: {api: 'norvegiana', dataset: 'DiMu'}},
+        'Industrimuseum': {name: 'Industrimuseum', dataset: {api: 'norvegiana', dataset: 'Industrimuseum'}},
+        'Kulturminnesøk': {name: 'Kulturminnesøk', dataset: {api: 'norvegiana', dataset: 'Kulturminnesøk'}},
+        'MUSIT': {name: 'Universitetsmuseene', dataset: {api: 'norvegiana', dataset: 'MUSIT'}},
+        'Naturbase': {name: 'Naturbase', dataset: {api: 'norvegiana', dataset: 'Naturbase'}},
+        'Stedsnavn': {name: 'Stedsnavn', dataset: {api: 'norvegiana', dataset: 'Stedsnavn'}},
+        'wikipedia': {name: 'Wikipedia', dataset: {api: 'wikipedia'}},
+        'search_1': {name: 'Byantikvaren i Oslo', dataset: {api: 'cartodb', table: 'search_1'}}
     };
 
-    function getDatasetObj(query) {
-        if (_.has(datasets, query)) {
-            return datasets[query];
-        }
-        throw new Error('Unknown dataset');
-    }
+    function _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options) {
+        bbox = KR.Util.splitBbox(bbox);
 
-    function _toRad(value) {
-        return value * Math.PI / 180;
-    }
-
-    function _haversine(lat1, lon1, lat2, lon2) {
-        var R = 6371000; // metres
-        var phi1 = _toRad(lat1);
-        var phi2 = _toRad(lat2);
-        var bDeltaPhi = _toRad(lat2 - lat1);
-        var bDeltaDelta = _toRad(lon2 - lon1);
-
-        var a = Math.sin(bDeltaPhi / 2) * Math.sin(bDeltaPhi / 2) +
-                Math.cos(phi1) * Math.cos(phi2) *
-                Math.sin(bDeltaDelta / 2) * Math.sin(bDeltaDelta / 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
-
-
-    function _distanceFromBbox(api, dataset, bbox, callback) {
-        bbox = bbox.split(',').map(parseFloat);
-
-        var lng1 = bbox[0]; //southwest_lng
-        var lat1 = bbox[1]; //southwest_lat
-
-        var lng2 = bbox[2]; //northeast_lng
-        var lat2 = bbox[3]; //northeast_lat
+        var lng1 = bbox[0],
+            lat1 = bbox[1],
+            lng2 = bbox[2],
+            lat2 = bbox[3];
 
         var centerLng = (lng1 + lng2) / 2;
         var centerLat = (lat1 + lat2) / 2;
 
         var radius = _.max([
-            _haversine(lat1, lng1, centerLat, centerLng),
-            _haversine(lat2, lng2, centerLat, centerLng)
+            KR.Util.haversine(lat1, lng1, centerLat, centerLng),
+            KR.Util.haversine(lat2, lng2, centerLat, centerLng)
         ]);
 
         var latLng = {lat: centerLat, lng: centerLng};
-        api.getWithin(dataset.dataset, latLng, radius, callback, true);
+        api.getWithin(dataset, latLng, radius, callback, errorCallback, options);
     }
 
-    function getWithin(query, latLng, distance, callback) {
+    function _getAPI(apiName) {
+        var api = apis[apiName];
+        if (api) {
+            return api;
+        }
+        throw new Error('Unknown API');
+    }
+
+    function getData(dataset, callback, errorCallback, options) {
+        options = options || {};
+        var api = _getAPI(dataset.api);
+        api.getData(dataset, callback, errorCallback, options);
+    }
+
+    function getBbox(dataset, bbox, callback, errorCallback, options) {
+        options = options || {};
+        var api = _getAPI(dataset.api);
+        if (_.has(api, 'getBbox')) {
+            api.getBbox(dataset, bbox, callback, errorCallback, options);
+        } else {
+            _distanceFromBbox(
+                api,
+                dataset,
+                bbox,
+                callback,
+                errorCallback,
+                options
+            );
+        }
+    }
+
+    function getWithin(dataset, latLng, distance, callback, errorCallback, options) {
+        options = options || {};
         distance = distance || 5000;
-        var dataset = getDatasetObj(query);
-        var api = apis[dataset.api];
-        if (api) {
-            api.getWithin(query, latLng, distance, callback, true);
-        } else {
-            throw new Error('Unknown API');
-        }
+        var api = _getAPI(dataset.api);
+        api.getWithin(
+            dataset,
+            latLng,
+            distance,
+            callback,
+            errorCallback,
+            options
+        );
     }
 
-    function getMunicipalityBounds(municipalities, callback) {
-        if (cartodbAPI) {
-            cartodbAPI.getMunicipalityBounds(municipalities, callback);
-            return;
+    function getMunicipalityBounds(municipalities, callback, errorCallback) {
+        if (!cartodbAPI) {
+            throw new Error('CartoDB api not configured!');
         }
-        throw new Error('CartoDB api not configured!');
-    }
-
-    function getData(dataset, callback) {
-        var api = apis[dataset.api];
-        if (api) {
-            api.getData(dataset, callback);
-        } else {
-            throw new Error('Unknown API');
-        }
-    }
-
-    function getBbox(dataset, bbox, callback) {
-        var api = apis[dataset.api];
-        if (api) {
-            if (_.has(api, 'getBbox')) {
-                api.getBbox(dataset, bbox, callback);
-            } else {
-                _distanceFromBbox(api, dataset, bbox, callback);
-            }
-        } else {
-            throw new Error('Unknown API');
-        }
+        cartodbAPI.getMunicipalityBounds(
+            municipalities,
+            callback,
+            errorCallback
+        );
     }
 
     return {
