@@ -220,6 +220,27 @@ module.exports = {
           'popup',
           'list_item'
         ]
+    },
+    {
+        key: 'api_example',
+        name: 'API-eksempel',
+        scripts: [
+          'bower_components/jquery/dist/jquery.min.js',
+          'bower_components/underscore/underscore-min.js',
+          'bower_components/leaflet/dist/leaflet.js',
+          'bower_components/esri2geo/esri2geo.js',
+          'common/js/util.js',
+          'common/js/arcgis.js',
+          'common/js/wikipedia.js',
+          'common/js/norvegiana.js',
+          'common/js/cartodb.js',
+          'common/js/api.js'
+          
+        ],
+        css: [
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+        ],
+        templates: []
     }
   ]
 };

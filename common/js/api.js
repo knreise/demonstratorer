@@ -29,16 +29,16 @@ KR.API = function (options) {
 
     var datasets = {
         //'delving_spec:*': 'Alle',
-        'Artsdatabanken': {name: 'Artsdatabanken', api: 'norvegiana'},
-        'difo': {name: 'Digitalt fortalt', api: 'norvegiana'},
-        'DiMu': {name: 'DigitaltMuseum', api: 'norvegiana'},
-        'Industrimuseum': {name: 'Industrimuseum', api: 'norvegiana'},
-        'Kulturminnesøk': {name: 'Kulturminnesøk', api: 'norvegiana'},
-        'MUSIT': {name: 'Universitetsmuseene', api: 'norvegiana'},
-        'Naturbase': {name: 'Naturbase', api: 'norvegiana'},
-        'Stedsnavn': {name: 'Stedsnavn', api: 'norvegiana'},
-        'wikipedia': {name: 'Wikipedia', api: 'wikipedia'},
-        'search_1': {name: 'Byantikvaren i Oslo', api: 'cartodb'}
+        'Artsdatabanken': {name: 'Artsdatabanken', dataset: {api: 'norvegiana', dataset: 'Artsdatabanken'}},
+        'difo': {name: 'Digitalt fortalt', dataset: {api: 'norvegiana', dataset: 'difo'}},
+        'DiMu': {name: 'DigitaltMuseum', dataset: {api: 'norvegiana', dataset: 'DiMu'}},
+        'Industrimuseum': {name: 'Industrimuseum', dataset: {api: 'norvegiana', dataset: 'Industrimuseum'}},
+        'Kulturminnesøk': {name: 'Kulturminnesøk', dataset: {api: 'norvegiana', dataset: 'Kulturminnesøk'}},
+        'MUSIT': {name: 'Universitetsmuseene', dataset: {api: 'norvegiana', dataset: 'MUSIT'}},
+        'Naturbase': {name: 'Naturbase', dataset: {api: 'norvegiana', dataset: 'Naturbase'}},
+        'Stedsnavn': {name: 'Stedsnavn', dataset: {api: 'norvegiana', dataset: 'Stedsnavn'}},
+        'wikipedia': {name: 'Wikipedia', dataset: {api: 'wikipedia'}},
+        'search_1': {name: 'Byantikvaren i Oslo', dataset: {api: 'cartodb', table: 'search_1'}}
     };
 
     function getDatasetObj(query) {
@@ -67,7 +67,7 @@ KR.API = function (options) {
     }
 
 
-    function _distanceFromBbox(api, dataset, bbox, callback) {
+    function _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options) {
         bbox = bbox.split(',').map(parseFloat);
 
         var lng1 = bbox[0]; //southwest_lng
@@ -85,48 +85,46 @@ KR.API = function (options) {
         ]);
 
         var latLng = {lat: centerLat, lng: centerLng};
-        api.getWithin(dataset.dataset, latLng, radius, callback, true);
+        api.getWithin(dataset, latLng, radius, callback, errorCallback, options);
     }
 
-    function getWithin(query, latLng, distance, callback) {
-        distance = distance || 5000;
-        var dataset = getDatasetObj(query);
-        var api = apis[dataset.api];
+    function _getAPI(apiName) {
+        var api = apis[apiName];
         if (api) {
-            api.getWithin(query, latLng, distance, callback, true);
+            return api;
+        }
+        throw new Error('Unknown API');
+    }
+
+    function getData(dataset, callback, errorCallback, options) {
+        options = options || {};
+        var api = _getAPI(dataset.api);
+        api.getData(dataset, callback, errorCallback, options);
+    }
+
+    function getBbox(dataset, bbox, callback, errorCallback, options) {
+        options = options || {};
+        var api = _getAPI(dataset.api);
+        if (_.has(api, 'getBbox')) {
+            api.getBbox(dataset, bbox, callback, errorCallback, options);
         } else {
-            throw new Error('Unknown API');
+            _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options);
         }
     }
 
-    function getMunicipalityBounds(municipalities, callback) {
+    function getWithin(dataset, latLng, distance, callback, errorCallback, options) {
+        options = options || {};
+        distance = distance || 5000;
+        var api = _getAPI(dataset.api);
+        api.getWithin(dataset, latLng, distance, callback, errorCallback, options);
+    }
+
+    function getMunicipalityBounds(municipalities, callback, errorCallback) {
         if (cartodbAPI) {
-            cartodbAPI.getMunicipalityBounds(municipalities, callback);
+            cartodbAPI.getMunicipalityBounds(municipalities, callback, errorCallback);
             return;
         }
         throw new Error('CartoDB api not configured!');
-    }
-
-    function getData(dataset, callback) {
-        var api = apis[dataset.api];
-        if (api) {
-            api.getData(dataset, callback);
-        } else {
-            throw new Error('Unknown API');
-        }
-    }
-
-    function getBbox(dataset, bbox, callback) {
-        var api = apis[dataset.api];
-        if (api) {
-            if (_.has(api, 'getBbox')) {
-                api.getBbox(dataset, bbox, callback);
-            } else {
-                _distanceFromBbox(api, dataset, bbox, callback);
-            }
-        } else {
-            throw new Error('Unknown API');
-        }
     }
 
     return {

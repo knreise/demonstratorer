@@ -28,10 +28,13 @@ map.addControl(sidebar);
 //The datasets in use
 var datasets = [
     {
-        api: 'kulturminnedata',
         name: 'Fangstgroper',
         dataset_name_override: 'fangstlokaliteter',
-        dataset: {query: "Navn='Fangstgrop'", layer: 0},
+        dataset: {
+            query: "Navn='Fangstgrop'",
+            layer: 0,
+            api: 'kulturminnedata'
+        },
         template: _.template($('#fangstgrop_template').html()),
         smallMarker: true,
         cluster: false,

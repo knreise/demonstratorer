@@ -241,15 +241,16 @@ map.addControl(sidebar);
 
 var layer = L.norvegianaGeoJSON(null, sidebar, {cluster: true});
 
+var datasets = api.datasets();
 //var selectedDataset = 'delving_spec:DiMu';
-var selectedDataset = 'Industrimuseum';
-var clickFunc = L.control.mapClick(layer, api, selectedDataset)
+var selectedDataset = 'Artsdatabanken';
+var clickFunc = L.control.mapClick(layer, api, datasets[selectedDataset]);
 map.addControl(clickFunc);
 clickFunc.on();
 
 //simple control to choose datasets
 var datasetChooser = L.control.datasetChooser({
-    datasets: api.datasets(),
+    datasets: datasets,
     initialDataset: selectedDataset,
     datasetSelected: function (dataset) {
         clickFunc.setDataset(dataset);

@@ -27,7 +27,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
             var bounds = bbox || map.getBounds().toBBoxString();
             if (dataset.minZoom) {
                 if (map.getZoom() >= dataset.minZoom && layer.visible) {
-                    api.getBbox(dataset, bounds, function (geoJson) {
+                    api.getBbox(dataset.dataset, bounds, function (geoJson) {
                         layer.resetGeoJSON(mapper(checkData(geoJson)));
                     });
                 } else {
@@ -35,7 +35,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
                 }
             } else {
                 if (layer.visible) {
-                    api.getBbox(dataset, bounds, function (geoJson) {
+                    api.getBbox(dataset.dataset, bounds, function (geoJson) {
                         layer.resetGeoJSON(mapper(checkData(geoJson)));
                     });
                 } else {
@@ -72,7 +72,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
     function _addFullDataset(api, map, dataset, mapper) {
         var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
             .addTo(map);
-        api.getData(dataset, function (geoJson) {
+        api.getData(dataset.dataset, function (geoJson) {
             layer.addGeoJSON(mapper(geoJson));
         });
         return layer;

@@ -46,7 +46,7 @@ KR.Util = {};
         }).join('&');
     };
 
-    ns.sendRequest = function (url, callback, parser) {
+    ns.sendRequest = function (url, parser, callback, errorCallback) {
         return $.ajax({
             type: 'get',
             url: url,
@@ -56,7 +56,8 @@ KR.Util = {};
                 } else {
                     callback(response);
                 }
-            }
+            },
+            error: errorCallback
         });
     };
 
