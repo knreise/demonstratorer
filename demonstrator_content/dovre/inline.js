@@ -90,6 +90,7 @@ var datasets = [
         }
     }*/,
     {
+
         datasets: [
             {
                 name: 'MUSIT',
@@ -115,6 +116,7 @@ var datasets = [
     }
 
     /*,
+
     {
         name: 'Artsobservasjoner',
         dataset: {

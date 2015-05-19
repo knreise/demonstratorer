@@ -46,7 +46,7 @@ KR.Util = {};
         }).join('&');
     };
 
-    ns.sendRequest = function (url, callback, parser) {
+    ns.sendRequest = function (url, parser, callback, errorCallback) {
         return $.ajax({
             type: 'get',
             url: url,
@@ -56,7 +56,8 @@ KR.Util = {};
                 } else {
                     callback(response);
                 }
-            }
+            },
+            error: errorCallback
         });
     };
 
@@ -82,7 +83,7 @@ KR.Util = {};
         if (_.has(KR.Config.templates, dataset)) {
             return KR.Config.templates[dataset];
         }
-    }
+    };
 
     ns.iconForDataset = function (dataset) {
         if (_.isArray(dataset)) {
@@ -136,5 +137,37 @@ KR.Util = {};
             return obj[key];
         };
     }());
+
+    function _toRad(value) {
+        return value * Math.PI / 180;
+    }
+
+    ns.haversine = function (lat1, lon1, lat2, lon2) {
+        var R = 6371000; // metres
+        var phi1 = _toRad(lat1);
+        var phi2 = _toRad(lat2);
+        var bDeltaPhi = _toRad(lat2 - lat1);
+        var bDeltaDelta = _toRad(lon2 - lon1);
+
+        var a = Math.sin(bDeltaPhi / 2) * Math.sin(bDeltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(bDeltaDelta / 2) * Math.sin(bDeltaDelta / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
+    ns.splitBbox = function (bbox) {
+        return bbox.split(',').map(parseFloat);
+    };
+
+    if (typeof L !== 'undefined') {
+        L.latLngBounds.fromBBoxString = function (bbox) {
+            bbox = KR.Util.splitBbox(bbox);
+            return new L.LatLngBounds(
+                new L.LatLng(bbox[1], bbox[0]),
+                new L.LatLng(bbox[3], bbox[2])
+            );
+        };
+    }
 
 }(KR.Util));

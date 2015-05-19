@@ -18,10 +18,16 @@ var AlongLine = function (api) {
         });
 
         _.each(datasets, function (dataset) {
-            api.getBbox(dataset, bbox,  function (geoJson) {
-                results.push(geoJson);
-                finished();
-            });
+            api.getBbox(
+                dataset.dataset,
+                bbox,
+                function (geoJson) {
+                    results.push(geoJson);
+                    finished();
+                },
+                null,
+                dataset.options
+            );
         });
     }
 

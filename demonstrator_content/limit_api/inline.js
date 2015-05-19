@@ -13,9 +13,11 @@ var datasetLoader = new KR.DatasetLoader(api, map);
 
 var datasets = [
     {
-        api: 'norvegiana',
         name: 'Museumsdata',
-        dataset: ['MUSIT', 'DiMu'],
+        dataset: {
+            api: 'norvegiana',
+            dataset: ['MUSIT', 'DiMu']
+        },
         isStatic: false,
         bbox: true,
         thumbnails: false,

@@ -6,7 +6,7 @@ KR.ArcgisAPI = function (BASE_URL) {
     'use strict';
 
     function _parseBbox(bbox) {
-        bbox = bbox.split(',').map(parseFloat);
+        bbox = KR.Util.splitBbox(bbox);
         return JSON.stringify({
             'xmin': bbox[0],
             'ymin': bbox[1],
@@ -22,7 +22,6 @@ KR.ArcgisAPI = function (BASE_URL) {
         }
         toGeoJSON(response, function (err, data) {
             if (!err) {
-                console.log(data);
                 callback(data);
             } else {
                 callback(KR.Util.CreateFeatureCollection([]));
@@ -30,8 +29,7 @@ KR.ArcgisAPI = function (BASE_URL) {
         });
     }
 
-    function getBbox(dataset, bbox, callback) {
-        console.log(dataset);
+    function getBbox(dataset, bbox, callback, errorCallback) {
         var params = {
             'geometry': _parseBbox(bbox),
             'geometryType': 'esriGeometryEnvelope',
@@ -48,14 +46,14 @@ KR.ArcgisAPI = function (BASE_URL) {
             'returnDistinctValues': false,
             'f': 'json'
         };
-        if (dataset.dataset.query) {
-            params.where = dataset.dataset.query;
+        if (dataset.query) {
+            params.where = dataset.query;
         }
-        var layer = dataset.dataset.layer;
+        var layer = dataset.layer;
         var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, function (response) {
+        KR.Util.sendRequest(url, null, function (response) {
             _parseArcGisResponse(response, callback);
-        });
+        }, errorCallback);
     }
 
     return {

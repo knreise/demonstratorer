@@ -16,7 +16,7 @@ L.Control.MapClick = L.Control.extend({
 
     _getData: function () {
         var dataset = this._dataset;
-        this._api.getWithin(dataset, this._pos, 5000, _.bind(this._display, this));
+        this._api.getWithin(dataset.dataset, this._pos, 5000, _.bind(this._display, this));
     },
 
     _mapClicked: function (e) {
@@ -33,7 +33,7 @@ L.Control.MapClick = L.Control.extend({
     setDataset: function (newDataset) {
         this._dataset = newDataset;
         if (this._pos) {
-            this._getData(this._pos, this._dataset);
+            this._getData();
         }
     },
 
