@@ -24,10 +24,10 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
 
         function _reloadData(e, bbox) {
-            var bounds = bbox || map.getBounds().toBBoxString();
+            var newBounds = bbox || map.getBounds().toBBoxString();
             if (dataset.minZoom) {
                 if (map.getZoom() >= dataset.minZoom && layer.visible) {
-                    api.getBbox(dataset.dataset, bounds, function (geoJson) {
+                    api.getBbox(dataset.dataset, newBounds, function (geoJson) {
                         layer.resetGeoJSON(mapper(checkData(geoJson)));
                     });
                 } else {
@@ -35,7 +35,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
                 }
             } else {
                 if (layer.visible) {
-                    api.getBbox(dataset.dataset, bounds, function (geoJson) {
+                    api.getBbox(dataset.dataset, newBounds, function (geoJson) {
                         layer.resetGeoJSON(mapper(checkData(geoJson)));
                     });
                 } else {
