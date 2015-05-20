@@ -171,7 +171,6 @@ L.NorvegianaGeoJSON = L.GeoJSON.extend({
             icon: this._createFeatureIcon(feature),
             title: feature.properties.title
         });
-
     }
 });
 

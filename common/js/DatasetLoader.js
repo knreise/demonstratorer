@@ -8,21 +8,89 @@ KR.DatasetLoader = function (api, map, sidebar) {
         isStatic: true,
         bbox: true,
         cluster: true,
-        smallMarker: false
+        smallMarker: false,
+        thumbnails: true
     };
 
+    function _getTemplateForFeature(feature, dataset) {
+        if (dataset.datasets) {
+            var d = _.find(dataset.datasets, function (dataset) {
+                return (dataset._knreise_id === feature.properties.datasetID);
+            });
+            return d.template;
+        }
+        return dataset.template;
+    }
 
-    function getData(api, dataset, newBounds, cluster, mapper, checkData) {
-        api.getBbox(dataset.dataset, newBounds, function (geoJson) {
-            var data = mapper(checkData(geoJson));
-            var geoJSONLayer = L.geoJson(data);
-            cluster.addLayers(geoJSONLayer.getLayers());
+    function _addClusterClick(clusterLayer, dataset) {
+        clusterLayer.on('clusterclick', function (e) {
+            var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
+                var feature = marker.feature;
+                feature.template = _getTemplateForFeature(feature, dataset);
+                return feature;
+            });
+            sidebar.showFeatures(features);
         });
+    }
+
+    function _addFeatureClick(layer, feature, dataset) {
+        layer.on('click', function () {
+            sidebar.showFeature(
+                feature,
+                dataset.template,
+                dataset.getFeatureData
+            );
+        });
+    }
+
+    function _mapper(dataset) {
+        var id = KR.Util.stamp(dataset);
+        return function (features) {
+            if (!features || !features.features.length) {
+                return features;
+            }
+            _.each(features.features, function (feature) {
+                feature.properties.datasetID = id;
+                if (_.has(dataset, 'circle')) {
+                    feature.properties.circle = dataset.circle;
+                }
+            });
+            return features;
+        };
+    }
+
+    function _copyProperties(dataset) {
+        var params = _.reduce(_.without(_.keys(dataset), 'datasets'), function (acc, key) {
+            acc[key] = dataset[key];
+            return acc;
+        }, {});
+        _.each(dataset.datasets, function (dataset) {
+            _.extend(dataset, params);
+        });
+        return dataset;
+    }
+
+    function _createGeoJSONLayer(geoJson, dataset) {
+        return L.geoJson2(
+            geoJson,
+            {
+                dataset: dataset,
+                onEachFeature: function (feature, layer) {
+                    _addFeatureClick(layer, feature, dataset);
+                }
+            }
+        );
     }
 
     function _addBboxDataset(api, map, dataset, initBounds) {
 
-        var cluster = new L.MarkerClusterGroup({dataset: dataset}).addTo(map);
+        var cluster = new L.MarkerClusterGroup2({dataset: dataset}).addTo(map);
+        _addClusterClick(cluster, dataset);
+
+        //copy properties from parent
+        if (dataset.datasets) {
+            _copyProperties(dataset);
+        }
 
         function checkData(geoJson) {
             if (dataset.minFeatures && geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
@@ -52,8 +120,10 @@ KR.DatasetLoader = function (api, map, sidebar) {
             _.each(toLoad, function (dataset) {
                 var mapper = _mapper(dataset);
                 api.getBbox(dataset.dataset, newBounds, function (geoJson) {
-                    var data = mapper(checkData(geoJson));
-                    var geoJSONLayer = L.geoJson(data);
+                    var geoJSONLayer = _createGeoJSONLayer(
+                        mapper(checkData(geoJson)),
+                        dataset
+                    );
                     dataset.geoJSONLayer = geoJSONLayer;
                     loadedData.push(geoJSONLayer);
                     finished();
@@ -68,91 +138,23 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
 
         return cluster;
-
-        /*
-
-
-        var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
-            .addTo(map);
-        layer.visible = true;
-
-
-        console.log(dataset);
-
-        function checkData(geoJson) {
-            if (dataset.minFeatures && geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
-                return KR.Util.CreateFeatureCollection([]);
-            }
-            return geoJson;
-        }
-
-        function _reloadData(e, bbox) {
-            var newBounds = bbox || map.getBounds().toBBoxString();
-            if (dataset.minZoom) {
-                if (map.getZoom() >= dataset.minZoom && layer.visible) {
-                    api.getBbox(dataset.dataset, newBounds, function (geoJson) {
-                        layer.resetGeoJSON(mapper(checkData(geoJson)));
-                    });
-                } else {
-                    layer.resetGeoJSON();
-                }
-            } else {
-                if (layer.visible) {
-                    api.getBbox(dataset.dataset, newBounds, function (geoJson) {
-                        layer.resetGeoJSON(mapper(checkData(geoJson)));
-                    });
-                } else {
-                    layer.resetGeoJSON();
-                }
-            }
-        }
-
-        layer.on('setVisible', _reloadData);
-        if (!dataset.isStatic) {
-            map.on('moveend', _reloadData);
-        }
-        _reloadData(null, bounds);
-        return layer;
-        */
-    }
-
-    function _mapper(dataset) {
-        var id = KR.Util.stamp(dataset)
-        return function (features) {
-            if (!features || !features.features.length) {
-                return features;
-            }
-            _.each(features.features, function (feature) {
-                //if (_.has(dataset, 'dataset_name_override')) {
-                    feature.properties.datasetID = id;
-                //}
-                if (_.has(dataset, 'circle')) {
-                    feature.properties.circle = dataset.circle;
-                }
-            });
-            return features;
-        };
     }
 
     function _addFullDataset(api, map, dataset) {
         var mapper = _mapper(dataset);
-        var cluster = new L.MarkerClusterGroup({dataset: dataset}).addTo(map);
+        var cluster = new L.MarkerClusterGroup({
+            dataset: dataset
+        }).addTo(map);
+
         api.getData(dataset.dataset, function (geoJson) {
-            var data = mapper(geoJson);
-            var geoJSONLayer = L.geoJson(data);
+            var geoJSONLayer = _createGeoJSONLayer(
+                mapper(geoJson),
+                dataset
+            );
             cluster.clearLayers();
             cluster.addLayers(geoJSONLayer.getLayers());
         });
         return cluster;
-
-        /*
-        var layer = L.norvegianaGeoJSON(null, sidebar, dataset)
-            .addTo(map);
-        api.getData(dataset.dataset, function (geoJson) {
-            layer.addGeoJSON(mapper(geoJson));
-        });
-        return layer;
-        */
     }
 
     function loadDatasets(datasets, bounds) {

@@ -186,6 +186,8 @@
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
+        <script src="../common/js/L.MarkerCluster2.js" type="text/javascript"></script>
+        <script src="../common/js/L.GeoJSON2.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
         <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
@@ -301,9 +303,7 @@ var datasets = [
                     api: 'norvegiana',
                     dataset: 'MUSIT'
                 },
-                isStatic: true,
-                thumbnails: false,
-                smallMarker: true
+                template: _.template($('#musit_template').html())
             },
             {
                 name: 'DiMu',
@@ -311,14 +311,13 @@ var datasets = [
                     api: 'norvegiana',
                     dataset: 'DiMu'
                 },
-                isStatic: true,
-                thumbnails: false,
-                smallMarker: true
+                template: _.template($('#digitalt_museum_template').html())
             }
-        ]
-    }
-
-    /*,
+        ],
+        isStatic: true,
+        thumbnails: false,
+        smallMarker: true
+    }/*,
 
     {
         name: 'Artsobservasjoner',

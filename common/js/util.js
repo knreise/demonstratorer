@@ -26,6 +26,7 @@ KR.Config = {
         'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
         'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
         'Industrimuseum': {name: 'darkred', hex: '#A23336'},
+        'MUSIT': {name: 'darkred', hex: '#A23336'},
         'Kulturminnesøk': {name: 'green', hex: '#72B026'},
         'Naturbase': {name: 'purple', hex: '#D252B9'},
         'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
@@ -81,7 +82,7 @@ KR.Util = {};
 
     ns.templateForDataset = function (dataset) {
         if (_.has(KR.Config.templates, dataset)) {
-            return KR.Config.templates[dataset];
+            //return KR.Config.templates[dataset];
         }
     };
 

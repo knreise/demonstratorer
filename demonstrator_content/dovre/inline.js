@@ -98,9 +98,7 @@ var datasets = [
                     api: 'norvegiana',
                     dataset: 'MUSIT'
                 },
-                isStatic: true,
-                thumbnails: false,
-                smallMarker: true
+                template: _.template($('#musit_template').html())
             },
             {
                 name: 'DiMu',
@@ -108,14 +106,13 @@ var datasets = [
                     api: 'norvegiana',
                     dataset: 'DiMu'
                 },
-                isStatic: true,
-                thumbnails: false,
-                smallMarker: true
+                template: _.template($('#digitalt_museum_template').html())
             }
-        ]
-    }
-
-    /*,
+        ],
+        isStatic: true,
+        thumbnails: false,
+        smallMarker: true
+    }/*,
 
     {
         name: 'Artsobservasjoner',
