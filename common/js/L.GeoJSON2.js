@@ -42,11 +42,10 @@ L.GeoJSON2 = L.GeoJSON.extend({
     },
 
     _pointToLayer: function (feature, latlng) {
-        /*
-        if (feature.properties.circle) {
-            return L.circleMarker(latlng, feature.properties.circle);
+
+        if (this.options.dataset.circle) {
+            return L.circleMarker(latlng, this.options.dataset.circle);
         }
-        */
 
         return L.marker(latlng, {
             icon: this._createFeatureIcon(feature),

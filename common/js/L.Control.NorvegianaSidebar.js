@@ -59,6 +59,7 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
 
     showFeature: function (feature, template, getData, callbacks) {
         if (getData) {
+            this.setContent('');
             var self = this;
             getData(feature, function (feature) {
                 self.showFeature(feature, template);

@@ -82,7 +82,7 @@ KR.Util = {};
 
     ns.templateForDataset = function (dataset) {
         if (_.has(KR.Config.templates, dataset)) {
-            //return KR.Config.templates[dataset];
+            return KR.Config.templates[dataset];
         }
     };
 

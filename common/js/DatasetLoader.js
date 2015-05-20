@@ -71,21 +71,81 @@ KR.DatasetLoader = function (api, map, sidebar) {
     }
 
     function _createGeoJSONLayer(geoJson, dataset) {
-        return L.geoJson2(
-            geoJson,
-            {
-                dataset: dataset,
-                onEachFeature: function (feature, layer) {
-                    _addFeatureClick(layer, feature, dataset);
-                }
+        var options = {
+            dataset: dataset,
+            onEachFeature: function (feature, layer) {
+                _addFeatureClick(layer, feature, dataset);
             }
-        );
+        };
+        if (dataset.style) {
+            options.style = dataset.style;
+        }
+        return L.geoJson2(geoJson, options);
     }
 
-    function _addBboxDataset(api, map, dataset, initBounds) {
+    function _resetDataGeoJson(layer, featurecollections) {
+        layer.clearLayers();
+        var features = _.reduce(featurecollections, function (acc, data) {
+            return acc.concat(data.toGeoJSON().features);
+        }, []);
+        layer.addData(KR.Util.CreateFeatureCollection(features));
+    }
 
-        var cluster = new L.MarkerClusterGroup2({dataset: dataset}).addTo(map);
-        _addClusterClick(cluster, dataset);
+    function _resetClusterData(clusterLayer, featurecollections) {
+        clusterLayer.clearLayers();
+        var layers = _.reduce(featurecollections, function (acc, geoJSONLayer) {
+            return acc.concat(geoJSONLayer.getLayers());
+        }, []);
+        clusterLayer.addLayers(layers);
+    }
+
+    function _setupToggle(layer, reloadFunc) {
+        layer.on('hide', function () {
+            layer.clearLayers();
+        });
+
+        layer.on('show', function () {
+            reloadFunc();
+        });
+    }
+
+    function _createVectorLayer(dataset, map) {
+        var vectorLayer;
+        if (dataset.cluster) {
+            vectorLayer = new L.MarkerClusterGroup2({dataset: dataset}).addTo(map);
+            _addClusterClick(vectorLayer, dataset);
+        } else {
+            vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
+        }
+
+        vectorLayer.enabled = true;
+        return vectorLayer;
+    }
+
+
+    function _checkShouldLoad(dataset, vectorLayer) {
+
+        if (!dataset.minZoom) {
+            return true;
+        }
+        if (map.getZoom() < dataset.minZoom) {
+            vectorLayer.clearLayers();
+            if (vectorLayer.enabled) {
+                vectorLayer.enabled = false;
+                vectorLayer.fire('changeEnabled');
+            }
+            return false;
+        }
+        if (!vectorLayer.enabled) {
+            vectorLayer.enabled = true;
+            vectorLayer.fire('changeEnabled');
+        }
+        return true;
+    }
+
+
+    function _addBboxDataset(api, map, dataset, initBounds) {
+        var vectorLayer = _createVectorLayer(dataset, map);
 
         //copy properties from parent
         if (dataset.datasets) {
@@ -100,9 +160,12 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
 
         function _reloadData(e, bbox) {
+            var shouldLoad = _checkShouldLoad(dataset, vectorLayer);
+            if (!shouldLoad) {
+                return;
+            }
 
             var newBounds = bbox || map.getBounds().toBBoxString();
-
             var toLoad;
             if (dataset.datasets) {
                 toLoad = dataset.datasets;
@@ -110,22 +173,28 @@ KR.DatasetLoader = function (api, map, sidebar) {
                 toLoad = [dataset];
             }
 
-            var loadedData = [];
+            var featurecollections = [];
             var finished = _.after(toLoad.length, function () {
-                cluster.clearLayers();
-                _.each(loadedData, function (geoJSONLayer) {
-                    cluster.addLayers(geoJSONLayer.getLayers());
-                });
+                if (dataset.cluster) {
+                    _resetClusterData(vectorLayer, featurecollections);
+                } else {
+                    _resetDataGeoJson(vectorLayer, featurecollections);
+                }
             });
             _.each(toLoad, function (dataset) {
                 var mapper = _mapper(dataset);
                 api.getBbox(dataset.dataset, newBounds, function (geoJson) {
-                    var geoJSONLayer = _createGeoJSONLayer(
-                        mapper(checkData(geoJson)),
-                        dataset
-                    );
-                    dataset.geoJSONLayer = geoJSONLayer;
-                    loadedData.push(geoJSONLayer);
+                    var geoJSONLayer;
+                    if (dataset.cluster) {
+                        geoJSONLayer = _createGeoJSONLayer(
+                            mapper(checkData(geoJson)),
+                            dataset
+                        );
+                        dataset.geoJSONLayer = geoJSONLayer;
+                    } else {
+                        geoJSONLayer = L.geoJson(geoJson);
+                    }
+                    featurecollections.push(geoJSONLayer);
                     finished();
                 });
             });
@@ -137,24 +206,24 @@ KR.DatasetLoader = function (api, map, sidebar) {
             map.on('moveend', _reloadData);
         }
 
-        return cluster;
+        _setupToggle(vectorLayer, _reloadData);
+
+        return vectorLayer;
     }
 
     function _addFullDataset(api, map, dataset) {
         var mapper = _mapper(dataset);
-        var cluster = new L.MarkerClusterGroup({
-            dataset: dataset
-        }).addTo(map);
+        var vectorLayer = _createVectorLayer(dataset, map);
 
         api.getData(dataset.dataset, function (geoJson) {
             var geoJSONLayer = _createGeoJSONLayer(
                 mapper(geoJson),
                 dataset
             );
-            cluster.clearLayers();
-            cluster.addLayers(geoJSONLayer.getLayers());
+            vectorLayer.clearLayers();
+            vectorLayer.addLayers(geoJSONLayer.getLayers());
         });
-        return cluster;
+        return vectorLayer;
     }
 
     function loadDatasets(datasets, bounds) {

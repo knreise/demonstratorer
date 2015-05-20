@@ -33,9 +33,9 @@ L.Control.Datasets = L.Control.extend({
         }
     },
 
-    _addDataset: function (dataset, layer, multi)  {
+    _addDataset: function (dataset, layer, multi) {
         var id = L.stamp(dataset);
-
+        layer.on('changeEnabled', this._enabledChanged, this);
         this._datasets[id] = {
             layer: layer,
             dataset: dataset,
@@ -46,13 +46,11 @@ L.Control.Datasets = L.Control.extend({
     onAdd: function (map) {
         this._initLayout();
         this._update();
-
-        /*
-        map
-            .on('layeradd', this._onLayerChange, this)
-            .on('layerremove', this._onLayerChange, this);
-        */
         return this._container;
+    },
+
+    _enabledChanged: function () {
+        this._update();
     },
 
     _update: function () {
@@ -69,6 +67,7 @@ L.Control.Datasets = L.Control.extend({
     },
 
     _toggleStaticDataset: function (visible, obj) {
+
         if (obj.multi) {
             if (visible && !obj.dataset.visible) {
                 obj.layer.addLayers(obj.dataset.geoJSONLayer.getLayers());
@@ -77,7 +76,7 @@ L.Control.Datasets = L.Control.extend({
                 var id = KR.Util.stamp(obj.dataset);
                 obj.layer.eachLayer(function (layer) {
                     if (layer.feature.properties.datasetID === id) {
-                        obj.layer.removeLayer(layer)
+                        obj.layer.removeLayer(layer);
                     }
                 });
                 obj.dataset.visible = false;
@@ -91,7 +90,7 @@ L.Control.Datasets = L.Control.extend({
         }
     },
 
-    _onInputClick: function (e) {
+    _onInputClick: function () {
         var i, input, obj,
             inputs = this._form.getElementsByTagName('input'),
             inputsLen = inputs.length;
@@ -104,7 +103,11 @@ L.Control.Datasets = L.Control.extend({
             if (obj.dataset.isStatic) {
                 this._toggleStaticDataset(input.checked, obj);
             } else {
-                console.log("non-static!");
+                if (input.checked) {
+                    obj.layer.fire('show');
+                } else {
+                    obj.layer.fire('hide');
+                }
             }
         }
 
@@ -122,22 +125,26 @@ L.Control.Datasets = L.Control.extend({
 
         input.datasetId = L.stamp(obj.dataset);
         L.DomEvent.on(input, 'click', this._onInputClick, this);
-
         var name = document.createElement('span');
         name.innerHTML = ' ' + obj.dataset.name;
 
         label.appendChild(input);
         label.appendChild(name);
 
-        var iconMarker = KR.Util.iconForDataset(datasetName);
+        var datasetName = obj.dataset.dataset.dataset;
+        var iconMarker = KR.Util.iconForDataset(obj.dataset.dataset_name_override || datasetName);
         if (iconMarker) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa fa-' + iconMarker;
             label.appendChild(icon);
         }
-        var datasetName = obj.dataset;
-        
+
         this._overlaysList.appendChild(label);
+
+        if (!obj.layer.enabled) {
+            input.disabled = true;
+            label.className = 'disabled';
+        }
 
         return label;
     },
@@ -173,8 +180,7 @@ L.Control.Datasets = L.Control.extend({
                 L.DomEvent
                     .on(link, 'click', L.DomEvent.stop)
                     .on(link, 'click', this._expand, this);
-            }
-            else {
+            } else {
                 L.DomEvent.on(link, 'focus', this._expand, this);
             }
             //Work around for Firefox android issue https://github.com/Leaflet/Leaflet/issues/2033
