@@ -117,11 +117,21 @@ KR.DatasetLoader = function (api, map, sidebar) {
         } else {
             vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
         }
-
-        vectorLayer.enabled = true;
+        var enabled = true
+        if (dataset.minFeatures) {
+            enabled = false;
+        }
+        vectorLayer.enabled = enabled;
         return vectorLayer;
     }
 
+    function _toggleEnabled(vectorLayer, enabled) {
+
+        if (vectorLayer.enabled !== enabled) {
+            vectorLayer.enabled = enabled;
+            vectorLayer.fire('changeEnabled');
+        }
+    }
 
     function _checkShouldLoad(dataset, vectorLayer) {
 
@@ -152,9 +162,13 @@ KR.DatasetLoader = function (api, map, sidebar) {
             _copyProperties(dataset);
         }
 
-        function checkData(geoJson) {
-            if (dataset.minFeatures && geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
-                return KR.Util.CreateFeatureCollection([]);
+        function checkData(geoJson, vectorLayer) {
+            if (dataset.minFeatures) {
+                if(geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
+                    _toggleEnabled(vectorLayer, false);
+                    return KR.Util.CreateFeatureCollection([]);
+                }
+                _toggleEnabled(vectorLayer, true);
             }
             return geoJson;
         }
@@ -187,12 +201,12 @@ KR.DatasetLoader = function (api, map, sidebar) {
                     var geoJSONLayer;
                     if (dataset.cluster) {
                         geoJSONLayer = _createGeoJSONLayer(
-                            mapper(checkData(geoJson)),
+                            mapper(checkData(geoJson, vectorLayer)),
                             dataset
                         );
                         dataset.geoJSONLayer = geoJSONLayer;
                     } else {
-                        geoJSONLayer = L.geoJson(geoJson);
+                        geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
                     }
                     featurecollections.push(geoJSONLayer);
                     finished();
