@@ -12,9 +12,11 @@ KR.DatasetLoader = function (api, map, sidebar) {
         thumbnails: true
     };
 
-    var _addClusterClick = KR.Util.clusterClick(sidebar);
-
-    var _addFeatureClick = KR.Util.featureClick(sidebar);
+    var _addClusterClick, _addFeatureClick;
+    if (sidebar) {
+        _addClusterClick = KR.Util.clusterClick(sidebar);
+        _addFeatureClick = KR.Util.featureClick(sidebar);
+    }
 
     function _mapper(dataset) {
         var id = KR.Util.stamp(dataset);
@@ -47,7 +49,9 @@ KR.DatasetLoader = function (api, map, sidebar) {
         var options = {
             dataset: dataset,
             onEachFeature: function (feature, layer) {
-                _addFeatureClick(feature, layer, dataset);
+                if (_addFeatureClick) {
+                    _addFeatureClick(feature, layer, dataset);
+                }
             }
         };
         if (dataset.style) {
@@ -86,11 +90,13 @@ KR.DatasetLoader = function (api, map, sidebar) {
         var vectorLayer;
         if (dataset.cluster) {
             vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
-            _addClusterClick(vectorLayer, dataset);
+            if (_addClusterClick) {
+                _addClusterClick(vectorLayer, dataset);
+            }
         } else {
             vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
         }
-        var enabled = true
+        var enabled = true;
         if (dataset.minFeatures) {
             enabled = false;
         }
@@ -137,7 +143,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
 
         function checkData(geoJson, vectorLayer) {
             if (dataset.minFeatures) {
-                if(geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
+                if (geoJson.numFound && dataset.minFeatures < geoJson.numFound) {
                     _toggleEnabled(vectorLayer, false);
                     return KR.Util.CreateFeatureCollection([]);
                 }
