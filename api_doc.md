@@ -175,5 +175,5 @@ The DatasetWrapper passed to the DatasetLoader is a wrapper around the Dataset o
 | style          | function | null          | no        | style-function as pr L.geoJson                                                                                                            |
 | getFeatureData | function | null          | no        | If provided, called with a feature and a calback to display info in sidebar                                                               |
 | template       | function | null          | no        | A function that can be called like underscore.js template() and return html, describing the feature. Called with the features properties. |
-| circle         | Object   | null          | no        |                                                                                                                                           |
+| circle         | Object   | null          | no        | If provided, this object is passed as options to L.circleMarker in PointToLayer                                                           |
 |                |          |               |           |                                                                                                                                           |
