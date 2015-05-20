@@ -161,6 +161,45 @@ KR.Util = {};
         return bbox.split(',').map(parseFloat);
     };
 
+    ns.featureClick = function (sidebar) {
+        return function _addFeatureClick(feature, layer, dataset) {
+            layer.on('click', function () {
+                if (dataset) {
+                    sidebar.showFeature(
+                        feature,
+                        dataset.template,
+                        dataset.getFeatureData
+                    );
+                } else {
+                    sidebar.showFeature(feature);
+                }
+            });
+        };
+    };
+
+    function _getTemplateForFeature(feature, dataset) {
+        if (dataset.datasets) {
+            var d = _.find(dataset.datasets, function (dataset) {
+                return (dataset._knreise_id === feature.properties.datasetID);
+            });
+            return d.template;
+        }
+        return dataset.template;
+    }
+
+    ns.clusterClick = function (sidebar) {
+        return function _addClusterClick(clusterLayer, dataset) {
+            clusterLayer.on('clusterclick', function (e) {
+                var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
+                    var feature = marker.feature;
+                    feature.template = _getTemplateForFeature(feature, dataset);
+                    return feature;
+                });
+                sidebar.showFeatures(features);
+            });
+        };
+    };
+
     if (typeof L !== 'undefined') {
         L.latLngBounds.fromBBoxString = function (bbox) {
             bbox = KR.Util.splitBbox(bbox);

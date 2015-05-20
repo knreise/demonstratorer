@@ -12,36 +12,9 @@ KR.DatasetLoader = function (api, map, sidebar) {
         thumbnails: true
     };
 
-    function _getTemplateForFeature(feature, dataset) {
-        if (dataset.datasets) {
-            var d = _.find(dataset.datasets, function (dataset) {
-                return (dataset._knreise_id === feature.properties.datasetID);
-            });
-            return d.template;
-        }
-        return dataset.template;
-    }
+    var _addClusterClick = KR.Util.clusterClick(sidebar);
 
-    function _addClusterClick(clusterLayer, dataset) {
-        clusterLayer.on('clusterclick', function (e) {
-            var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
-                var feature = marker.feature;
-                feature.template = _getTemplateForFeature(feature, dataset);
-                return feature;
-            });
-            sidebar.showFeatures(features);
-        });
-    }
-
-    function _addFeatureClick(layer, feature, dataset) {
-        layer.on('click', function () {
-            sidebar.showFeature(
-                feature,
-                dataset.template,
-                dataset.getFeatureData
-            );
-        });
-    }
+    var _addFeatureClick = KR.Util.featureClick(sidebar);
 
     function _mapper(dataset) {
         var id = KR.Util.stamp(dataset);
@@ -74,7 +47,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
         var options = {
             dataset: dataset,
             onEachFeature: function (feature, layer) {
-                _addFeatureClick(layer, feature, dataset);
+                _addFeatureClick(feature, layer, dataset);
             }
         };
         if (dataset.style) {
