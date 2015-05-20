@@ -111,7 +111,6 @@ var datasets = [
             }
         ],
         minZoom: 12,
-        isStatic: true,
         thumbnails: true,
         smallMarker: true
     },
@@ -121,7 +120,6 @@ var datasets = [
             api: 'norvegiana',
             dataset:'Artsdatabanken'
         },
-        isStatic: false,
         smallMarker: true,
         minZoom: 14
     }
