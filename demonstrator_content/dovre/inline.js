@@ -110,6 +110,7 @@ var datasets = [
                 template: _.template($('#digitalt_museum_template').html())
             }
         ],
+        minZoom: 12,
         isStatic: true,
         thumbnails: true,
         smallMarker: true

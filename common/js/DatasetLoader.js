@@ -202,7 +202,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
 
         _reloadData(null, initBounds);
 
-        if (!dataset.isStatic) {
+        if (!dataset.isStatic || dataset.minZoom) {
             map.on('moveend', _reloadData);
         }
 
