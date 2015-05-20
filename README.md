@@ -8,7 +8,7 @@ egne kartløsninger basert på Norvegiana-dataene.
 Prosjektet er i oppstartsfasen, og ingenting er låst enda.
 
 
-For utviklingsnotater, se https://www.evernote.com/shard/s26/sh/00391d0e-2827-47b1-bbcd-cf06a5c73c18/09862cb8f9a5ed90
+For utviklingsnotater, se https://www.evernote.com/shard/s314/sh/e525b518-c431-43d7-8fcb-7263fee568e3/cd5751ded0d168fc
 
 
 For live demo, se http://development.atlefren-kulturraadet.divshot.io/
