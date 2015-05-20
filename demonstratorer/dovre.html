@@ -335,7 +335,6 @@ var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 var dovre = 511;
 api.getMunicipalityBounds(dovre, function (bbox) {
     var bounds = L.latLngBounds.fromBBoxString(bbox);
-    map.setMaxBounds(bounds);
     map.fitBounds(bounds);
     var layers = datasetLoader.loadDatasets(datasets);
 
