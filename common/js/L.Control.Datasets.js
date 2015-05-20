@@ -56,7 +56,6 @@ L.Control.Datasets = L.Control.extend({
     },
 
     _update: function () {
-        console.log("_update");
         if (!this._container) {
             return;
         }
@@ -72,23 +71,20 @@ L.Control.Datasets = L.Control.extend({
     _toggleStaticDataset: function (visible, obj) {
         if (obj.multi) {
             if (visible && !obj.dataset.visible) {
-                console.log("show", obj.dataset);
+                obj.layer.addLayers(obj.dataset.geoJSONLayer.getLayers());
                 obj.dataset.visible = true;
             } else if (!visible && obj.dataset.visible) {
                 var id = KR.Util.stamp(obj.dataset);
-                console.log("hide", obj.dataset);
-
                 obj.layer.eachLayer(function (layer) {
-                    console.log(layer.feature.properties.datasetID === id, layer.feature.properties.datasetID, id);
-                })
-
+                    if (layer.feature.properties.datasetID === id) {
+                        obj.layer.removeLayer(layer)
+                    }
+                });
                 obj.dataset.visible = false;
             }
-
         } else {
             if (visible && !this._map.hasLayer(obj.layer)) {
                 this._map.addLayer(obj.layer);
-
             } else if (!visible && this._map.hasLayer(obj.layer)) {
                 this._map.removeLayer(obj.layer);
             }

@@ -16,7 +16,6 @@ KR.DatasetLoader = function (api, map, sidebar) {
         api.getBbox(dataset.dataset, newBounds, function (geoJson) {
             var data = mapper(checkData(geoJson));
             var geoJSONLayer = L.geoJson(data);
-            cluster.clearLayers();
             cluster.addLayers(geoJSONLayer.getLayers());
         });
     }
@@ -33,16 +32,33 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
 
         function _reloadData(e, bbox) {
+
             var newBounds = bbox || map.getBounds().toBBoxString();
+
+            var toLoad;
             if (dataset.datasets) {
-                _.each(dataset.datasets, function (dataset) {
-                    var mapper = _mapper(dataset);
-                    getData(api, dataset, newBounds, cluster, mapper, checkData);
-                });
+                toLoad = dataset.datasets;
             } else {
-                var mapper = _mapper(dataset);
-                getData(api, dataset, newBounds, cluster, mapper, checkData);
+                toLoad = [dataset];
             }
+
+            var loadedData = [];
+            var finished = _.after(toLoad.length, function () {
+                cluster.clearLayers();
+                _.each(loadedData, function (geoJSONLayer) {
+                    cluster.addLayers(geoJSONLayer.getLayers());
+                });
+            });
+            _.each(toLoad, function (dataset) {
+                var mapper = _mapper(dataset);
+                api.getBbox(dataset.dataset, newBounds, function (geoJson) {
+                    var data = mapper(checkData(geoJson));
+                    var geoJSONLayer = L.geoJson(data);
+                    dataset.geoJSONLayer = geoJSONLayer;
+                    loadedData.push(geoJSONLayer);
+                    finished();
+                });
+            });
         }
 
         _reloadData(null, initBounds);
@@ -102,7 +118,6 @@ KR.DatasetLoader = function (api, map, sidebar) {
 
     function _mapper(dataset) {
         var id = KR.Util.stamp(dataset)
-        console.log("ddataset", dataset, id)
         return function (features) {
             if (!features || !features.features.length) {
                 return features;
@@ -143,7 +158,6 @@ KR.DatasetLoader = function (api, map, sidebar) {
     function loadDatasets(datasets, bounds) {
         return _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
-            console.log(dataset);
             if (dataset.bbox) {
                 return _addBboxDataset(api, map, dataset, bounds);
             }

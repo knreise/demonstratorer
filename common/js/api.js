@@ -77,6 +77,7 @@ KR.API = function (options) {
     }
 
     function getBbox(dataset, bbox, callback, errorCallback, options) {
+        console.log(dataset);
         options = options || {};
         var api = _getAPI(dataset.api);
         if (_.has(api, 'getBbox')) {
