@@ -1,4 +1,5 @@
-L.GeoJSON2 = L.GeoJSON.extend({
+L.Knreise = L.Knreise || {};
+L.Knreise.GeoJSON = L.GeoJSON.extend({
 
     initialize: function (geojson, options) {
         L.setOptions(this, options);
@@ -56,6 +57,6 @@ L.GeoJSON2 = L.GeoJSON.extend({
 });
 
 
-L.geoJson2 = function (geojson, options) {
-    return new L.GeoJSON2(geojson, options);
+L.Knreise.geoJson = function (geojson, options) {
+    return new L.Knreise.GeoJSON(geojson, options);
 };

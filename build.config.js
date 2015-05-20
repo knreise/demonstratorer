@@ -19,8 +19,8 @@ module.exports = {
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
-          'common/js/L.MarkerCluster2.js',
-          'common/js/L.GeoJSON2.js',
+          'common/js/L.Knreise.MarkerClusterGroup.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'bower_components/CryptoJS/build/components/core.js',
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/audiojs/audiojs/audio.min.js',
@@ -65,7 +65,8 @@ module.exports = {
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
           'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.NorvegianaGeoJSON.js',
+          'common/js/L.Knreise.MarkerClusterGroup.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
           'common/js/DatasetLoader.js'
@@ -174,7 +175,7 @@ module.exports = {
         name: 'Alt eller ingenting',
         scripts: [
           'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.NorvegianaGeoJSON.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Control.Datasets.js',
           'common/js/DatasetLoader.js'
           

@@ -1,4 +1,5 @@
-L.MarkerClusterGroup2 = L.MarkerClusterGroup.extend({
+L.Knreise = L.Knreise || {};
+L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
     options: {
         zoomToBoundsOnClick: false,
@@ -73,7 +74,6 @@ L.MarkerClusterGroup2 = L.MarkerClusterGroup.extend({
 
 });
 
-
-L.markerClusterGroup2 = function (options) {
-    return new L.MarkerClusterGroup2(options);
+L.Knreise.markerClusterGroup = function (options) {
+    return new L.Knreise.MarkerClusterGroup(options);
 };

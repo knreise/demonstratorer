@@ -80,7 +80,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
         if (dataset.style) {
             options.style = dataset.style;
         }
-        return L.geoJson2(geoJson, options);
+        return L.Knreise.geoJson(geoJson, options);
     }
 
     function _resetDataGeoJson(layer, featurecollections) {
@@ -112,7 +112,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
     function _createVectorLayer(dataset, map) {
         var vectorLayer;
         if (dataset.cluster) {
-            vectorLayer = new L.MarkerClusterGroup2({dataset: dataset}).addTo(map);
+            vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
             _addClusterClick(vectorLayer, dataset);
         } else {
             vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
