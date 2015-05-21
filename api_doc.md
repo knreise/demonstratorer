@@ -143,7 +143,7 @@ To use this integration, initialize a KR.DatasetLoader:
 ####Parameters
 * **api**: a KR.API instance
 * **map**: A Leaflet map instance
-* **sidebar**: A  L.Control.NorvegianaSidebar instance (optional)
+* **sidebar**: A  L.Knreise.Control.Sidebar instance (optional)
 
 #### Methods
 

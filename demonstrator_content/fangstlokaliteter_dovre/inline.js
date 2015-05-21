@@ -18,7 +18,7 @@ var api = new KR.API({
 });
 
 //the sidebar, used for displaying information
-var sidebar = L.control.norvegianaSidebar('sidebar', {
+var sidebar = L.Knreise.Control.sidebar('sidebar', {
     position: 'left',
     template: popupTemplate,
     listElementTemplate: listElementTemplate

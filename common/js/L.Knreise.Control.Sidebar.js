@@ -1,7 +1,10 @@
 /*global L:false, KR: false, audiojs:false */
 'use strict';
 
-L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
+L.Knreise = L.Knreise || {};
+L.Knreise.Control = L.Knreise.Control || {};
+
+L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
         L.setOptions(this, options);
@@ -169,6 +172,6 @@ L.Control.NorvegianaSidebar = L.Control.Sidebar.extend({
     }
 });
 
-L.control.norvegianaSidebar = function (placeholder, options) {
-    return new L.Control.NorvegianaSidebar(placeholder, options);
+L.Knreise.Control.sidebar = function (placeholder, options) {
+    return new L.Knreise.Control.Sidebar(placeholder, options);
 };
