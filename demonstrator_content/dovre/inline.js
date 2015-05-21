@@ -90,16 +90,29 @@ var datasets = [
         }
     },
     {
-        
-        name: 'Museumsdata',
-        dataset: {
-            api: 'norvegiana',
-            dataset: ['MUSIT', 'DiMu']
-        },
-        isStatic: false,
-        thumbnails: false,
-        smallMarker: true,
-        minZoom: 12
+
+        datasets: [
+            {
+                name: 'MUSIT',
+                dataset: {
+                    api: 'norvegiana',
+                    dataset: 'MUSIT'
+                },
+                template: _.template($('#musit_template').html())
+            },
+            {
+                name: 'DiMu',
+
+                dataset: {
+                    api: 'norvegiana',
+                    dataset: 'DiMu'
+                },
+                template: _.template($('#digitalt_museum_template').html())
+            }
+        ],
+        minZoom: 12,
+        thumbnails: true,
+        smallMarker: true
     },
     {
         name: 'Artsobservasjoner',
@@ -107,7 +120,6 @@ var datasets = [
             api: 'norvegiana',
             dataset:'Artsdatabanken'
         },
-        isStatic: false,
         smallMarker: true,
         minZoom: 14
     }

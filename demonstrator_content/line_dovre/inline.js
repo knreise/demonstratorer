@@ -108,17 +108,24 @@ function getShowPointFunc(map, data, clickCallback) {
     };
 }
 
+var addFeatureClick = KR.Util.featureClick(sidebar);
+
 var alongLine = new AlongLine(api);
 
 alongLine.getLine(pilegrimsleden_dovre, function (data) {
     data.line.addTo(map);
     map.fitBounds(data.bounds);
     alongLine.fetchDatasets(datasets, function (data) {
-        L.norvegianaGeoJSON(data, sidebar, {
-            thumbnails: true,
-            cluster: false,
-            smallMarker: true
-        }).addTo(map);
+        L.Knreise.geoJson(
+            data,
+            {
+                dataset:  {
+                    thumbnails: true,
+                    smallMarker: true
+                },
+                onEachFeature: addFeatureClick
+            }
+        ).addTo(map);
         var showPoint = getShowPointFunc(map, data, _.bind(sidebar.showFeature, sidebar));
 
         locate.callback = function () {

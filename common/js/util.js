@@ -26,6 +26,7 @@ KR.Config = {
         'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
         'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
         'Industrimuseum': {name: 'darkred', hex: '#A23336'},
+        'MUSIT': {name: 'darkred', hex: '#A23336'},
         'Kulturminnesøk': {name: 'green', hex: '#72B026'},
         'Naturbase': {name: 'purple', hex: '#D252B9'},
         'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
@@ -129,6 +130,15 @@ KR.Util = {};
         });
     };
 
+    ns.stamp = (function () {
+        var lastId = 0,
+            key = '_knreise_id';
+        return function (obj) {
+            obj[key] = obj[key] || ++lastId;
+            return obj[key];
+        };
+    }());
+
     function _toRad(value) {
         return value * Math.PI / 180;
     }
@@ -149,6 +159,45 @@ KR.Util = {};
 
     ns.splitBbox = function (bbox) {
         return bbox.split(',').map(parseFloat);
+    };
+
+    ns.featureClick = function (sidebar) {
+        return function _addFeatureClick(feature, layer, dataset) {
+            layer.on('click', function () {
+                if (dataset) {
+                    sidebar.showFeature(
+                        feature,
+                        dataset.template,
+                        dataset.getFeatureData
+                    );
+                } else {
+                    sidebar.showFeature(feature);
+                }
+            });
+        };
+    };
+
+    function _getTemplateForFeature(feature, dataset) {
+        if (dataset.datasets) {
+            var d = _.find(dataset.datasets, function (dataset) {
+                return (dataset._knreise_id === feature.properties.datasetID);
+            });
+            return d.template;
+        }
+        return dataset.template;
+    }
+
+    ns.clusterClick = function (sidebar) {
+        return function _addClusterClick(clusterLayer, dataset) {
+            clusterLayer.on('clusterclick', function (e) {
+                var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
+                    var feature = marker.feature;
+                    feature.template = _getTemplateForFeature(feature, dataset);
+                    return feature;
+                });
+                sidebar.showFeatures(features);
+            });
+        };
     };
 
     if (typeof L !== 'undefined') {

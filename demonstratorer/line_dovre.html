@@ -8,7 +8,7 @@
 
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
-        <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
         <link href='../common/css/markers.css' rel='stylesheet' />
@@ -185,7 +185,7 @@
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
         <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
         <script src="../common/js/L.TileLayer.Kartverket.js" type="text/javascript"></script>
-        <script src="../common/js/L.NorvegianaGeoJSON.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
         <script src="../common/js/L.Control.NorvegianaSidebar.js" type="text/javascript"></script>
         <script src="../common/js/L.Control.Datasets.js" type="text/javascript"></script>
         <script src="../common/js/geolocatormock.js" type="text/javascript"></script>
@@ -305,17 +305,24 @@ function getShowPointFunc(map, data, clickCallback) {
     };
 }
 
+var addFeatureClick = KR.Util.featureClick(sidebar);
+
 var alongLine = new AlongLine(api);
 
 alongLine.getLine(pilegrimsleden_dovre, function (data) {
     data.line.addTo(map);
     map.fitBounds(data.bounds);
     alongLine.fetchDatasets(datasets, function (data) {
-        L.norvegianaGeoJSON(data, sidebar, {
-            thumbnails: true,
-            cluster: false,
-            smallMarker: true
-        }).addTo(map);
+        L.Knreise.geoJson(
+            data,
+            {
+                dataset:  {
+                    thumbnails: true,
+                    smallMarker: true
+                },
+                onEachFeature: addFeatureClick
+            }
+        ).addTo(map);
         var showPoint = getShowPointFunc(map, data, _.bind(sidebar.showFeature, sidebar));
 
         locate.callback = function () {

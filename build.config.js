@@ -19,13 +19,14 @@ module.exports = {
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
+          'common/js/L.Knreise.MarkerClusterGroup.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'bower_components/CryptoJS/build/components/core.js',
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
           'common/js/DatasetLoader.js'
@@ -63,7 +64,8 @@ module.exports = {
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
           'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.NorvegianaGeoJSON.js',
+          'common/js/L.Knreise.MarkerClusterGroup.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
           'common/js/DatasetLoader.js'
@@ -94,7 +96,7 @@ module.exports = {
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/turf/turf.min.js',
           'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.NorvegianaGeoJSON.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Control.NorvegianaSidebar.js',
           'common/js/L.Control.Datasets.js',
           'common/js/geolocatormock.js',
@@ -103,7 +105,7 @@ module.exports = {
         css: [
           'bower_components/leaflet/dist/leaflet.css',
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
-          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
@@ -172,7 +174,7 @@ module.exports = {
         name: 'Alt eller ingenting',
         scripts: [
           'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.NorvegianaGeoJSON.js',
+          'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Control.Datasets.js',
           'common/js/DatasetLoader.js'
           
