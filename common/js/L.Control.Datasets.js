@@ -83,6 +83,7 @@ L.Control.Datasets = L.Control.extend({
                 obj.dataset.visible = false;
             }
         } else {
+            obj.dataset.visible = visible;
             if (visible && !this._map.hasLayer(obj.layer)) {
                 this._map.addLayer(obj.layer);
             } else if (!visible && this._map.hasLayer(obj.layer)) {
