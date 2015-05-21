@@ -99,7 +99,7 @@ KR.NorvegianaAPI = function () {
                     callback,
                     errorCallback
                 );
-                return
+                return;
             }
             var features = _.reduce(data, function (acc, featureCollection) {
                 return acc.concat(featureCollection.features);
@@ -145,16 +145,14 @@ KR.NorvegianaAPI = function () {
         );
     }
 
-    function getWithin(parameters, latLng, distance, callback, errorCallback, options) {
+    function _get(params, parameters, callback, errorCallback, options) {
         var dataset = _fixDataset(parameters.dataset);
 
-        var params = {
+        params = _.extend({
             query: dataset,
-            pt: _formatLatLng(latLng),
-            d: distance / 1000, // convert to km
             format: 'json',
-            rows: 1000
-        };
+            rows: 1000,
+        }, params);
 
         var requestId = dataset;
         if (parameters.query) {
@@ -171,12 +169,44 @@ KR.NorvegianaAPI = function () {
         }
     }
 
+    function getBbox(parameters, bbox, callback, errorCallback, options) {
+        bbox = KR.Util.splitBbox(bbox);
+
+        var lng1 = bbox[0],
+            lat1 = bbox[1],
+            lng2 = bbox[2],
+            lat2 = bbox[3];
+        var centerLng = (lng1 + lng2) / 2;
+        var centerLat = (lat1 + lat2) / 2;
+
+        var radius = _.max([
+            KR.Util.haversine(lat2, centerLng, centerLat, centerLng),
+            KR.Util.haversine(centerLat, lng1, centerLat, centerLng)
+        ]);
+
+        var params = {
+            pt: _formatLatLng({lat: centerLat, lng: centerLng}),
+            d: radius / 1000, // convert to km
+            geoType: 'bbox'
+        };
+        _get(params, parameters, callback, errorCallback, options);
+    }
+
+    function getWithin(parameters, latLng, distance, callback, errorCallback, options) {
+
+        var params = {
+            pt: _formatLatLng(latLng),
+            d: distance / 1000 // convert to km
+        };
+        _get(params, parameters, callback, errorCallback, options);
+    }
+
     function getItem(id, callback) {
         var params = {
             id: id,
             format: 'json'
         };
-        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(
             url,
             function (response) {
@@ -188,6 +218,7 @@ KR.NorvegianaAPI = function () {
 
     return {
         getWithin: getWithin,
-        getItem: getItem
+        getItem: getItem,
+        getBbox: getBbox
     };
 };
