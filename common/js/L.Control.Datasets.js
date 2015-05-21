@@ -69,6 +69,7 @@ L.Control.Datasets = L.Control.extend({
     _toggleStaticDataset: function (visible, obj) {
 
         if (obj.multi) {
+            //TODO: Move
             if (visible && !obj.dataset.visible) {
                 obj.layer.addLayers(obj.dataset.geoJSONLayer.getLayers());
                 obj.dataset.visible = true;
@@ -100,14 +101,19 @@ L.Control.Datasets = L.Control.extend({
         for (i = 0; i < inputsLen; i++) {
             input = inputs[i];
             obj = this._datasets[input.datasetId];
-            obj.dataset.visible = input.checked;
+            //obj.dataset.visible = input.checked;
             if (obj.dataset.isStatic) {
                 this._toggleStaticDataset(input.checked, obj);
             } else {
-                if (input.checked) {
-                    obj.layer.fire('show');
-                } else {
-                    obj.layer.fire('hide');
+                if (input.checked !== obj.dataset.visible) {
+                    obj.dataset.visible = input.checked;
+                    if (input.checked) {
+
+                        obj.layer.fire('show');
+                    } else {
+
+                        obj.layer.fire('hide');
+                    }
                 }
             }
         }
