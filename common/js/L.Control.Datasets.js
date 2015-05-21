@@ -100,6 +100,7 @@ L.Control.Datasets = L.Control.extend({
         for (i = 0; i < inputsLen; i++) {
             input = inputs[i];
             obj = this._datasets[input.datasetId];
+            obj.dataset.visible = input.checked;
             if (obj.dataset.isStatic) {
                 this._toggleStaticDataset(input.checked, obj);
             } else {
@@ -116,7 +117,9 @@ L.Control.Datasets = L.Control.extend({
 
     _addItem: function (obj) {
         var label = document.createElement('label');
-        obj.dataset.visible = true;
+        if (_.isUndefined(obj.dataset.visible)) {
+            obj.dataset.visible = true;
+        }
 
         var input = document.createElement('input');
         input.type = 'checkbox';
