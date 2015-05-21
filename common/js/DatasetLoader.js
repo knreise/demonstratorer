@@ -148,7 +148,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
     }
 
 
-    function _addBboxDataset(api, map, dataset, initBounds) {
+    function _addBboxDataset(dataset, initBounds) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
         //copy properties from parent
@@ -225,7 +225,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
         return vectorLayer;
     }
 
-    function _addFullDataset(api, map, dataset) {
+    function _addFullDataset(dataset) {
         var mapper = _mapper(dataset);
         var vectorLayer = _createVectorLayer(dataset, map);
 
@@ -247,9 +247,9 @@ KR.DatasetLoader = function (api, map, sidebar) {
                 dataset.isStatic = false;
             }
             if (dataset.bbox) {
-                return _addBboxDataset(api, map, dataset, bounds);
+                return _addBboxDataset(dataset, bounds);
             }
-            return _addFullDataset(api, map, dataset);
+            return _addFullDataset(dataset);
         });
     }
 
