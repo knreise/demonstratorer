@@ -22,11 +22,21 @@ Apache Software License, Version 1.1, se LICENSE.md
 Kodestruktur
 ------------
 
-Dette er et "work in progress", og det er planer om å dra ut de komponentene som lages til egne GitHub-repositories, slik at disse kan gjenbrukes. Pr i dag ligger disse i ```/common/js``` og ```/common/css```, og inkluderer:
+Dette repositoriet inneholder en rekke demoer, samt en del Leaflet-plugins og 
+hjelpefunksjoner. Disse hjelpefunksjonene befinner seg i ``/common/js``, og inkluderer:
 
-- api.js: en wrapper over apiet fra Norvegiana, CartoDB og Wikipedia. Depender på underscore.js og jQuery
-- util.js: en rekke hjelpefunksjoner
-- En rekke Leaflet-pluins
+- AlongLine.js: Funksjonalitet for å vise data langs en linje
+- DatasetLoader.js: Se api_doc.md, under oversikriften "Leaflet Layer Integration"
+- L.Control.DatasetChooser.js: 
+- L.Knreise.Control.Datasets.js: Bygger på L.Control.Layers.js og viser datasett
+- L.Knreise.Control.Sidebar.js: Bygger på L.Sidebar og viser informasjon i sidebar
+- L.Knreise.GeoJSON og L.Knreise.MarkerClusterGroup: brukes av DatasetLoader.js
+
+I tillegg ligger kode for å snakke med diverse APIer i et eget repository: [KNreiseAPI][KNreiseAPI]
+
+
+[KNreiseAPI]: https://github.com/knreise/KNReiseAPI
+
 
 
 Bygging
