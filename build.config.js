@@ -194,6 +194,19 @@ module.exports = {
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
         ],
         templates: []
+    },
+    {
+        key: 'cesium_base',
+        name: 'Cesium base example',
+        scripts: [
+          'bower_components/Cesium-1.9/Build/Cesium/Cesium.js',
+          'common/js/DatasetLoader.js'
+        ],
+        css: [
+            'common/css/cesium_base.css'
+        ],
+        templates: [
+        ]
     }
   ]
 };
