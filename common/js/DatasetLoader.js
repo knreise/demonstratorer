@@ -9,7 +9,8 @@ KR.DatasetLoader = function (api, map, sidebar) {
         bbox: true,
         cluster: true,
         smallMarker: false,
-        thumbnails: true
+        thumbnails: true,
+        visible: true
     };
 
     var _addClusterClick, _addFeatureClick;
@@ -78,7 +79,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
 
     function _setupToggle(layer, reloadFunc) {
         layer.on('hide', function () {
-            layer.clearLayers();
+            reloadFunc();
         });
 
         layer.on('show', function () {
@@ -112,28 +113,42 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
     }
 
-    function _checkShouldLoad(dataset, vectorLayer) {
+    function _getvisible(dataset) {
+        if (dataset.datasets) {
+            var numVisible = _.filter(dataset.datasets, function (d) {
+                return d.visible;
+            }).length;
+            return (numVisible > 0);
+        }
 
+        return dataset.visible;
+    }
+
+    function _checkShouldLoad(dataset) {
+
+        if (!dataset.minZoom) {
+            return _getvisible(dataset);
+        }
+
+        if (map.getZoom() < dataset.minZoom) {
+            return false;
+        }
+        return _getvisible(dataset);
+    }
+
+    function _checkEnabled(dataset) {
         if (!dataset.minZoom) {
             return true;
         }
+
         if (map.getZoom() < dataset.minZoom) {
-            vectorLayer.clearLayers();
-            if (vectorLayer.enabled) {
-                vectorLayer.enabled = false;
-                vectorLayer.fire('changeEnabled');
-            }
             return false;
-        }
-        if (!vectorLayer.enabled) {
-            vectorLayer.enabled = true;
-            vectorLayer.fire('changeEnabled');
         }
         return true;
     }
 
 
-    function _addBboxDataset(api, map, dataset, initBounds) {
+    function _addBboxDataset(dataset, initBounds) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
         //copy properties from parent
@@ -153,15 +168,21 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
 
         function _reloadData(e, bbox) {
-            var shouldLoad = _checkShouldLoad(dataset, vectorLayer);
+
+            vectorLayer.enabled = _checkEnabled(dataset);
+            vectorLayer.fire('changeEnabled');
+            var shouldLoad = _checkShouldLoad(dataset);
             if (!shouldLoad) {
+                vectorLayer.clearLayers();
                 return;
             }
 
             var newBounds = bbox || map.getBounds().toBBoxString();
             var toLoad;
             if (dataset.datasets) {
-                toLoad = dataset.datasets;
+                toLoad = _.filter(dataset.datasets, function (d) {
+                    return d.visible;
+                });
             } else {
                 toLoad = [dataset];
             }
@@ -204,7 +225,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
         return vectorLayer;
     }
 
-    function _addFullDataset(api, map, dataset) {
+    function _addFullDataset(dataset) {
         var mapper = _mapper(dataset);
         var vectorLayer = _createVectorLayer(dataset, map);
 
@@ -222,10 +243,13 @@ KR.DatasetLoader = function (api, map, sidebar) {
     function loadDatasets(datasets, bounds) {
         return _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
-            if (dataset.bbox) {
-                return _addBboxDataset(api, map, dataset, bounds);
+            if (dataset.minZoom && dataset.bbox) {
+                dataset.isStatic = false;
             }
-            return _addFullDataset(api, map, dataset);
+            if (dataset.bbox) {
+                return _addBboxDataset(dataset, bounds);
+            }
+            return _addFullDataset(dataset);
         });
     }
 
