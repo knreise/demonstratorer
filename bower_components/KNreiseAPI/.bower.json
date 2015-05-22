@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
@@ -17,17 +17,18 @@
     "underscore": "~1.8.3",
     "jquery": "~2.1.4",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
-    "CryptoJS": "~3.1.12"
+    "CryptoJS": "~3.1.12",
+    "togeojson": "~0.11.1"
   },
   "homepage": "https://github.com/knreise/KNReiseAPI",
-  "_release": "1.0.0",
+  "_release": "1.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "1.0.0",
-    "commit": "2c0063a86495a354bcb16b3443fb49ecef650b55"
+    "tag": "1.1.0",
+    "commit": "a0e27153f85334dc2aa069a43fbfb2e38fbdc01e"
   },
   "_source": "git://github.com/knreise/KNReiseAPI.git",
-  "_target": "~1.0.0",
+  "_target": "~1.1.0",
   "_originalSource": "KNreiseAPI",
   "_direct": true
 }

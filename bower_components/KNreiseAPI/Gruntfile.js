@@ -14,6 +14,7 @@ module.exports = function(grunt) {
           'src/cartodb.js',
           'src/norvegiana.js',
           'src/wikipedia.js',
+          'src/utno.js',
           'src/api.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
@@ -27,6 +28,15 @@ module.exports = function(grunt) {
         src: 'dist/<%= pkg.name %>.js',
         dest: 'dist/<%= pkg.name %>.min.js'
       }
+    },
+    watch: {
+      scripts: {
+        files: ['./src/**/*.*'],
+        tasks: ['default'],
+        options: {
+          spawn: true,
+        }
+      }
     }
   });
 
@@ -35,6 +45,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-bump-build-git');
 
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify']);

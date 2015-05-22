@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
@@ -17,6 +17,7 @@
     "underscore": "~1.8.3",
     "jquery": "~2.1.4",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
-    "CryptoJS": "~3.1.12"
+    "CryptoJS": "~3.1.12",
+    "togeojson": "~0.11.1"
   }
 }

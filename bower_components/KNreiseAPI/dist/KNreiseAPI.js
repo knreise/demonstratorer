@@ -822,6 +822,25 @@ KR.WikipediaAPI = function () {
     };
 };
 
+/*global toGeoJSON: false */
+var KR = this.KR || {};
+
+KR.UtnoAPI = function () {
+    'use strict';
+
+    function getData(dataset, callback, errorCallback) {
+        if (dataset.type === 'gpx') {
+            var url = 'http://ut.no/tur/' + dataset.id + '/gpx/';
+            KR.Util.sendRequest(url, toGeoJSON.gpx, callback, errorCallback);
+        } else {
+            errorCallback('unknown type');
+        }
+    }
+
+    return {
+        getData: getData
+    };
+};
 var KR = this.KR || {};
 
 KR.API = function (options) {
@@ -846,11 +865,17 @@ KR.API = function (options) {
         _.extend(KR.API.mappers, cartodbAPI.mappers());
     }
 
+    var utnoAPI;
+    if (KR.UtnoAPI) {
+        utnoAPI = new KR.UtnoAPI();
+    }
+
     var apis = {
         norvegiana: norvegianaAPI,
         wikipedia: wikipediaAPI,
         cartodb: cartodbAPI,
-        kulturminnedata: kulturminnedataAPI
+        kulturminnedata: kulturminnedataAPI,
+        utno: utnoAPI
     };
 
     var datasets = {
