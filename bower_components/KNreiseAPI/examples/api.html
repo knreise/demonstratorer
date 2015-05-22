@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+        <style type="text/css">
+            textarea, .map {
+                width: 500px;
+                height: 300px;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <h1>KNreise API - examples</h1>
+
+        <h2>Norvegiana, dataset by bbox</h2>
+        <button id="get_norvegiana1">Get data</button>
+        <table>
+            <tr>
+                <td>
+                    <textarea id="norvegiana1"></textarea>
+                </td>
+                <td><div id="norvegiana1_map" class="map"></div></td>
+            </tr>
+        </table>
+
+        <h2>Wikipedia, dataset by bbox</h2>
+        <button id="get_wikipedia">Get data</button>
+        <table>
+            <tr>
+                <td>
+                    <textarea id="wikipedia"></textarea>
+                </td>
+                <td><div id="wikipedia_map" class="map"></div></td>
+            </tr>
+        </table>
+
+        <h2>Kulturminnedata (ArcGIS REST), dataset by bbox</h2>
+        <button id="get_kulturminnedata">Get data</button>
+        <table>
+            <tr>
+                <td>
+                    <textarea id="kulturminnedata"></textarea>
+                </td>
+                <td><div id="kulturminnedata_map" class="map"></div></td>
+            </tr>
+        </table>
+
+        <h2>Verneområder (CartoDB), dataset by bbox</h2>
+        <button id="get_verneomraader">Get data</button>
+        <table>
+            <tr>
+                <td>
+                    <textarea id="verneomraader"></textarea>
+                </td>
+                <td><div id="verneomraader_map" class="map"></div></td>
+            </tr>
+        </table>
+
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+        <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="../bower_components/underscore/underscore-min.js"></script>
+        <script src="../bower_components/esri2geo/esri2geo.js"></script>
+        <script src="../bower_components/CryptoJS/build/components/core.js"></script>
+        <script src="../bower_components/CryptoJS/build/components/md5.js"></script>
+        <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+
+        <script src="../dist/KNreiseAPI.min.js"></script>
+
+        <script type="text/javascript">
+
+            function getMap(div) {
+                var map = L.map(div);
+                L.tileLayer('http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo2graatone&zoom={z}&x={x}&y={y}', {attribution: '&copy; <a href="http://kartverket.no">Kartverket</a>̈́'}).addTo(map);
+                return map;
+            }
+
+            (function (argument) {
+                'use strict';
+
+                var api = new KR.API({
+                    cartodb: {
+                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+                        user: 'knreise'
+                    }
+                });
+                var map = getMap('norvegiana1_map');
+
+                var bbox = '9.312543869018555,62.227315990693896,9.387989044189453,62.25362062502279';
+
+                var digitaltFortalt = {
+                    api: 'norvegiana',
+                    dataset: 'MUSIT'
+                };
+                $('#get_norvegiana1').on('click', function () {
+                    api.getBbox(digitaltFortalt, bbox, function (res) {
+                        $('#norvegiana1').html(JSON.stringify(res, null, 4));
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                    });
+                });
+            }());
+
+            (function (argument) {
+            'use strict';
+
+                var api = new KR.API({
+                    cartodb: {
+                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+                        user: 'knreise'
+                    }
+                });
+                var map = getMap('wikipedia_map');
+                var bbox = '9.312543869018555,62.227315990693896,9.387989044189453,62.25362062502279';
+
+                var wikipedia = {
+                    api: 'wikipedia'
+                };
+                $('#get_wikipedia').on('click', function () {
+                    api.getBbox(wikipedia, bbox, function (res) {
+                        $('#wikipedia').html(JSON.stringify(res, null, 4));
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                    });
+                });
+            }());
+
+            (function (argument) {
+            'use strict';
+
+                var api = new KR.API({
+                    cartodb: {
+                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+                        user: 'knreise'
+                    }
+                });
+                var map = getMap('kulturminnedata_map');
+                var bbox = '9.312543869018555,62.227315990693896,9.387989044189453,62.25362062502279';
+
+                var fangstgroper = {
+                    api: 'kulturminnedata',
+                    query: "Navn='Fangstgrop'",
+                    layer: 0
+                };
+                $('#get_kulturminnedata').on('click', function () {
+                    api.getBbox(fangstgroper, bbox, function (res) {
+                        $('#kulturminnedata').html(JSON.stringify(res, null, 4));
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                    });
+                });
+            }());
+
+            (function (argument) {
+            'use strict';
+
+                var api = new KR.API({
+                    cartodb: {
+                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+                        user: 'knreise'
+                    }
+                });
+                var map = getMap('verneomraader_map');
+                var bbox = '9.010277,61.886299,9.9282,62.343127';
+                var verneomraader = {
+                    api: 'cartodb',
+                    table: 'naturvernomrader_utm33_2',
+                    columns: ['iid', 'omradenavn', 'vernef_id', 'verneform']
+                };
+                $('#get_verneomraader').on('click', function () {
+                    api.getBbox(verneomraader, bbox, function (res) {
+                        $('#verneomraader').html(JSON.stringify(res, null, 4));
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                    });
+                });
+            }());
+
+        </script>
+    </body>
+</html>
