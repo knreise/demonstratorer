@@ -4,12 +4,7 @@ module.exports = {
     'bower_components/underscore/underscore-min.js',
     'bower_components/leaflet/dist/leaflet.js',
     'bower_components/esri2geo/esri2geo.js',
-    'common/js/util.js',
-    'common/js/arcgis.js',
-    'common/js/wikipedia.js',
-    'common/js/norvegiana.js',
-    'common/js/cartodb.js',
-    'common/js/api.js',
+    'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js'
   ],
   demonstrators: [
     {
@@ -26,9 +21,9 @@ module.exports = {
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'common/js/L.TileLayer.Kartverket.js',
-          'common/js/L.Control.NorvegianaSidebar.js',
-          'common/js/L.Control.Datasets.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Datasets.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
@@ -42,8 +37,8 @@ module.exports = {
           'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/L.Control.NorvegianaSidebar.css',
-          'common/css/L.Control.Datasets.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Datasets.css',
           'common/css/audiojs.css'
         ],
         templates: [
@@ -63,11 +58,11 @@ module.exports = {
         scripts: [
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
-          'common/js/L.TileLayer.Kartverket.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.Knreise.MarkerClusterGroup.js',
           'common/js/L.Knreise.GeoJSON.js',
-          'common/js/L.Control.NorvegianaSidebar.js',
-          'common/js/L.Control.Datasets.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Datasets.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
@@ -79,8 +74,8 @@ module.exports = {
           'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/L.Control.NorvegianaSidebar.css',
-          'common/css/L.Control.Datasets.css'
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Datasets.css'
         ],
         templates: [
           'popup',
@@ -95,10 +90,10 @@ module.exports = {
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/turf/turf.min.js',
-          'common/js/L.TileLayer.Kartverket.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.Knreise.GeoJSON.js',
-          'common/js/L.Control.NorvegianaSidebar.js',
-          'common/js/L.Control.Datasets.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Datasets.js',
           'common/js/geolocatormock.js',
           'common/js/AlongLine.js'
         ],
@@ -109,7 +104,7 @@ module.exports = {
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/L.Control.NorvegianaSidebar.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
           'common/css/along-line.css'
         ],
         templates: [
@@ -135,10 +130,10 @@ module.exports = {
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'common/js/L.TileLayer.Kartverket.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.NorvegianaGeoJSON.js',
-          'common/js/L.Control.NorvegianaSidebar.js',
-          'common/js/L.Control.Datasets.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Datasets.js',
           'common/js/L.Control.DatasetChooser.js',
           'common/js/L.Control.MapClick.js'
         ],
@@ -153,8 +148,8 @@ module.exports = {
           'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/L.Control.NorvegianaSidebar.css',
-          'common/css/L.Control.Datasets.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Datasets.css',
           'common/css/audiojs.css',
           'common/css/L.Control.DatasetChooser.css'
         ],
@@ -173,9 +168,9 @@ module.exports = {
         key: 'limit_api',
         name: 'Alt eller ingenting',
         scripts: [
-          'common/js/L.TileLayer.Kartverket.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.Knreise.GeoJSON.js',
-          'common/js/L.Control.Datasets.js',
+          'common/js/L.Knreise.Control.Datasets.js',
           'common/js/DatasetLoader.js'
           
         ],
@@ -183,7 +178,7 @@ module.exports = {
           'bower_components/leaflet/dist/leaflet.css',
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'common/css/fullscreenmap.css',
-          'common/css/L.Control.Datasets.css',
+          'common/css/L.Knreise.Control.Datasets.css',
           'common/css/markers.css'
         ],
         templates: [

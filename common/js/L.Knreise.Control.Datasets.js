@@ -2,6 +2,9 @@
 
 'use strict';
 
+L.Knreise = L.Knreise || {};
+L.Knreise.Control = L.Knreise.Control || {};
+
 L.Control.Datasets = L.Control.extend({
     options: {
         collapsed: false

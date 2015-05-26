@@ -22,11 +22,17 @@ KR.API = function (options) {
         _.extend(KR.API.mappers, cartodbAPI.mappers());
     }
 
+    var utnoAPI;
+    if (KR.UtnoAPI) {
+        utnoAPI = new KR.UtnoAPI();
+    }
+
     var apis = {
         norvegiana: norvegianaAPI,
         wikipedia: wikipediaAPI,
         cartodb: cartodbAPI,
-        kulturminnedata: kulturminnedataAPI
+        kulturminnedata: kulturminnedataAPI,
+        utno: utnoAPI
     };
 
     var datasets = {

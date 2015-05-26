@@ -1,0 +1,32 @@
+{
+  "name": "L.TileLayer.Kartverket",
+  "main": "L.TileLayer.Kartverket.js",
+  "version": "1.0.0",
+  "authors": [
+    "Atle Frenvik Sveen <atle.sveen@norkart.no>"
+  ],
+  "description": "\"Leaflet plugin for easy adding of tiles from Kartverket\"",
+  "keywords": [
+    "Leaflet",
+    "Tiles"
+  ],
+  "license": "Apache 1.1",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "homepage": "https://github.com/knreise/L.TileLayer.Kartverket",
+  "_release": "1.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.0",
+    "commit": "2acb6564421b64d95363e437bac1a2136360470a"
+  },
+  "_source": "git://github.com/knreise/L.TileLayer.Kartverket.git",
+  "_target": "~1.0.0",
+  "_originalSource": "L.TileLayer.Kartverket",
+  "_direct": true
+}

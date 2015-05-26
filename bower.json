@@ -28,6 +28,11 @@
     "jquery-touchswipe": "~1.6.8",
     "turf": "~2.0.2",
     "L.EasyButton": "*",
-    "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git"
+    "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
+    "L.TileLayer.Kartverket": "~1.0.0",
+    "KNreiseAPI": "~1.1.0"
+  },
+  "resolutions": {
+    "KNreiseAPI": "~1.1.0"
   }
 }

@@ -12,7 +12,7 @@ var api = new KR.API({
     }
 });
 
-var sidebar = L.control.norvegianaSidebar('sidebar', {
+var sidebar = L.Knreise.Control.sidebar('sidebar', {
     position: 'left',
     template: popupTemplate,
     listElementTemplate: listElementTemplate
