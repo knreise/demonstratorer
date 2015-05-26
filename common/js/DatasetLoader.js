@@ -243,6 +243,9 @@ KR.DatasetLoader = function (api, map, sidebar) {
     function loadDatasets(datasets, bounds) {
         return _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
+            if (!dataset.visible) {
+                dataset.notLoaded = true;
+            }
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }

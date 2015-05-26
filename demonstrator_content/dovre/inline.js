@@ -60,6 +60,7 @@ var datasets = [
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true,
         cluster: false,
+        visible: false,
         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
@@ -90,7 +91,6 @@ var datasets = [
         }
     },
     {
-
         datasets: [
             {
                 name: 'MUSIT',
