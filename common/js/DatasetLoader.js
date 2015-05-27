@@ -4,6 +4,8 @@ var KR = this.KR || {};
 KR.DatasetLoader = function (api, map, sidebar) {
     'use strict';
 
+    var reloads = [];
+
     var _defaults = {
         isStatic: true,
         bbox: true,
@@ -173,11 +175,11 @@ KR.DatasetLoader = function (api, map, sidebar) {
             return geoJson;
         }
 
-        function _reloadData(e, bbox) {
+        var _reloadData = function (e, bbox, forceVisible) {
 
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
-            var shouldLoad = _checkShouldLoad(dataset);
+            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
             if (!shouldLoad) {
                 vectorLayer.clearLayers();
                 return;
@@ -218,7 +220,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
                     finished();
                 });
             });
-        }
+        };
 
         _reloadData(null, initBounds);
 
@@ -227,8 +229,14 @@ KR.DatasetLoader = function (api, map, sidebar) {
         }
 
         _setupToggle(vectorLayer, _reloadData);
+        //reload = _reloadData;
+        return {layer: vectorLayer, reload: _reloadData};
+    }
 
-        return vectorLayer;
+    function reload(setVisible) {
+        _.each(reloads, function (reload) {
+            reload(null, null, setVisible);
+        });
     }
 
     function _addFullDataset(dataset) {
@@ -247,7 +255,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
     }
 
     function loadDatasets(datasets, bounds) {
-        return _.map(datasets, function (dataset) {
+        var res = _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
             if (!dataset.visible) {
                 dataset.notLoaded = true;
@@ -258,11 +266,14 @@ KR.DatasetLoader = function (api, map, sidebar) {
             if (dataset.bbox) {
                 return _addBboxDataset(dataset, bounds);
             }
-            return _addFullDataset(dataset);
+            return {layer: _addFullDataset(dataset)};
         });
+        reloads = _.pluck(res, 'reload');
+        return _.pluck(res, 'layer');
     }
 
     return {
-        loadDatasets: loadDatasets
+        loadDatasets: loadDatasets,
+        reload: reload
     };
 };
