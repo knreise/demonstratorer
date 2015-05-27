@@ -36,7 +36,7 @@ KR.Config = {
     templates: {}
 };
 
-KR.Util = {};
+KR.Util = KR.Util || {};
 
 (function (ns) {
     'use strict';
@@ -70,14 +70,17 @@ KR.Util = {};
     };
 
 
-    ns.colorForFeature = function (feature, type) {
+    ns.colorForProvider = function (provider, type) {
         type = type || 'name';
-        var provider = feature.properties.provider;
-
         if (_.has(KR.Config.providerColors, provider)) {
             return KR.Config.providerColors[provider][type];
         }
         return KR.Config.providerColors['default'][type];
+    };
+
+
+    ns.colorForFeature = function (feature, type) {
+        return ns.colorForProvider(feature.properties.provider, type);
     };
 
 

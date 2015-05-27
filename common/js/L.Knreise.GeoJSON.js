@@ -1,3 +1,6 @@
+/*global L: false, KR: false */
+'use strict';
+
 L.Knreise = L.Knreise || {};
 L.Knreise.GeoJSON = L.GeoJSON.extend({
 
@@ -48,7 +51,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _zoomend: function () {
-        var removedTemp = [];
+        var removedTemp = [],
+            feature,
+            i;
 
         this.eachLayer(function (feature) {
             if (this._map.getZoom() <= feature.zoomThreshold) {
@@ -58,8 +63,8 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             }
         }, this);
 
-        for (var i = 0; i < this.removedPaths.length; i++) {
-            var feature = this.removedPaths[i];
+        for (i = 0; i < this.removedPaths.length; i++) {
+            feature = this.removedPaths[i];
             if (this._map.getZoom() > feature.zoomThreshold) {
                 this.removeLayer(feature.marker);
                 this.addLayer(feature);
@@ -76,7 +81,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             var zoomThreshold = this.getZoomThreshold(feature);
             var marker = L.marker(
                 feature.getBounds().getCenter(),
-                this._createFeatureIcon(feature.feature)
+                {icon: this._createFeatureIcon(feature.feature)}
             );
             marker.on('click', function (e) {
                 feature.fire('click', e);
@@ -110,7 +115,6 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _createFeatureIcon: function (feature) {
-        console.log(this.options.dataset);
         if (feature.properties.thumbnail && (this.options.dataset && this.options.dataset.thumbnails)) {
             var borderColor = KR.Util.colorForFeature(feature, 'hex');
 
@@ -128,7 +132,6 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 iconSize: [12, 12]
             });
         }
-
         return KR.Util.markerForFeature(feature);
     },
 

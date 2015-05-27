@@ -74,6 +74,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (_.isArray(img)) {
             img = img[0];
         }
+        console.log(feature)
         var content = template(_.extend({image: null}, feature.properties));
 
         if (callbacks && callbacks.close) {
