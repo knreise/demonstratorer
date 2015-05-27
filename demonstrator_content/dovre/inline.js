@@ -32,6 +32,7 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
+    /*
     {
         dataset: {
             api: 'cartodb',
@@ -74,7 +75,7 @@ var datasets = [
         },
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true
-    },
+    },*/
     {
         dataset: {
             api: 'cartodb',
@@ -88,8 +89,10 @@ var datasets = [
         },
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-        }
-    },
+        },
+        toPoint: 20,
+        cluster: false
+    }/*,
     {
         datasets: [
             {
@@ -122,7 +125,20 @@ var datasets = [
         },
         smallMarker: true,
         minZoom: 14
+    },
+    
+        {
+        name: 'Kulturminnedata, lokaliteter',
+        dataset_name_override: 'kulturminnedata_lok',
+        dataset: {
+            //query: "Navn='Fangstgrop'",
+            layer: 4,
+            api: 'kulturminnedata'
+        },
+        //toPoint: 20,
+        cluster: false
     }
+    */
 ];
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
