@@ -175,7 +175,7 @@ KR.DatasetLoader = function (api, map, sidebar) {
             return geoJson;
         }
 
-        var _reloadData = function (e, bbox, forceVisible) {
+        var _reloadData = function (e, bbox, forceVisible, callback) {
 
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
@@ -201,6 +201,9 @@ KR.DatasetLoader = function (api, map, sidebar) {
                     _resetClusterData(vectorLayer, featurecollections);
                 } else {
                     _resetDataGeoJson(vectorLayer, featurecollections);
+                }
+                if (callback) {
+                    callback();
                 }
             });
             _.each(toLoad, function (dataset) {
@@ -233,9 +236,16 @@ KR.DatasetLoader = function (api, map, sidebar) {
         return {layer: vectorLayer, reload: _reloadData};
     }
 
-    function reload(setVisible) {
+    function reload(setVisible, callback) {
+
+        var finished = _.after(reloads.length, function () {
+            if (callback) {
+                callback();
+            }
+        });
+
         _.each(reloads, function (reload) {
-            reload(null, null, setVisible);
+            reload(null, null, setVisible, finished);
         });
     }
 

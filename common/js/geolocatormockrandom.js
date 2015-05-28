@@ -9,8 +9,10 @@
     var bbox = KR.Util.splitBbox(bounds);
     navigator.geolocation.getCurrentPosition = function (callback) {
         var coords = {
-                latitude: getRandomArbitrary(bbox[1], bbox[3]),
-                longitude: getRandomArbitrary(bbox[0], bbox[2]),
+                //latitude: getRandomArbitrary(bbox[1], bbox[3]),
+                //longitude: getRandomArbitrary(bbox[0], bbox[2]),
+                latitude: 62.01974827913604,
+                longitude: 9.20424884061961,
                 accuracy: 1
             };
         callback({

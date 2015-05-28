@@ -12,6 +12,49 @@ var api = new KR.API({
 });
 
 
+//toggles
+
+function setupToggle(strip) {
+
+    var leftBtn = strip.find('.js-left');
+    var rightBtn = strip.find('.js-right');
+
+    function checkLeft() {
+        if (strip.find('.panel.hidden').length > 0) {
+
+            leftBtn.removeClass('hidden');
+        } else {
+            leftBtn.addClass('hidden');
+        }
+    }
+
+    function checkRight() {
+        if (strip.find('.panel').not('.hidden').length < 2) {
+            rightBtn.addClass('hidden');
+        } else {
+            rightBtn.removeClass('hidden');
+        }
+    }
+
+    checkLeft();
+
+    rightBtn.on('click', function () {
+        strip.find('.panel').not('.hidden').first().addClass('hidden');
+        checkLeft();
+        checkRight();
+    });
+    leftBtn.on('click', function () {
+        strip.find('.panel.hidden').last().removeClass('hidden');
+        checkLeft();
+        checkRight();
+    });
+}
+
+setupToggle($('#strip'));
+
+$('#strip').find('.js-close').on('click', function () {
+    $('#strip').addClass('hidden');
+});
 
 function setupLocate(map, callback) {
     var icon = L.icon({
@@ -44,24 +87,12 @@ function setupLocate(map, callback) {
 var datasets = [
     {
         name: 'Digitalt fortalt',
-        dataset: {dataset: 'difo', api: 'norvegiana'},
-        template: _.template($('#digitalt_fortalt_template').html()),
+        dataset: {
+            dataset: 'difo',
+            api: 'norvegiana'
+        },
         visible: false,
         cluster: false
-    },
-    {
-        name: 'Fangstlokaliteter',
-        dataset_name_override: 'fangstlokaliteter',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: 'delving_title:Fangstlokalitet'
-        },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true,
-        cluster: false,
-        visible: false,
-        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
         name: 'Kulturminner',
@@ -71,37 +102,16 @@ var datasets = [
             dataset: 'Kulturminnesok',
             query: '-delving_title:Fangstlokalitet'
         },
-        template: _.template($('#kulturminne_template').html()),
         smallMarker: true,
         visible: false,
         cluster: false
-    },
-    {
-        dataset: {
-            api: 'cartodb',
-            table: 'naturvernomrader_utm33_2',
-            columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-        },
-        provider: 'Naturbase',
-        name: 'Verneområder',
-        template: _.template($('#verneomraader_template').html()),
-        style: function (feature) {
-            return {color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
-        },
-        getFeatureData: function (feature, callback) {
-            api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-        },
-        toPoint: 20,
-        cluster: false,
-        visible: false
-    },
+    }/*,
     {
         name: 'MUSIT',
         dataset: {
             api: 'norvegiana',
             dataset: 'MUSIT'
         },
-        template: _.template($('#musit_template').html()),
         visible: false,
         thumbnails: true,
         smallMarker: true,
@@ -113,7 +123,6 @@ var datasets = [
             api: 'norvegiana',
             dataset: 'DiMu'
         },
-        template: _.template($('#digitalt_museum_template').html()),
         visible: false,
         thumbnails: true,
         smallMarker: true,
@@ -121,6 +130,7 @@ var datasets = [
     },
     {
         name: 'Artsobservasjoner',
+        dataset_name_override: 'artsobservasjon',
         dataset: {
             api: 'norvegiana',
             dataset:'Artsdatabanken'
@@ -128,14 +138,40 @@ var datasets = [
         smallMarker: true,
         visible: false,
         cluster: false
-    }
+    }*/
 ];
 
+/*
+KR.Config.templates = {
+    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html()),
+    'Kulturminnesok': _.template($('#kulturminne_template').html()),
+    'Musit': _.template($('#musit_template').html()),
+    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
+    'artsobservasjon': _.template($('#artsobservasjon_template').html()),
+};
+*/
 
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+var layers = [];
+var datasetLoader = new KR.DatasetLoader(api, map);
+
+
+var panelTemplate = _.template($('#panel_template').html());
 
 setupLocate(map, function (e) {
-    datasetLoader.reload(true);
+    $('#strip').addClass('hidden');
+    $('#strip').find('.strip-container').html('');
+    datasetLoader.reload(true, function () {
+        var features = _.flatten(_.map(layers, function (layer) {return layer.getLayers();}));
+        
+        var panels = _.map(features, function (feature) {
+            console.log(feature.feature.properties.contentType);
+            var el = $(panelTemplate(feature.feature.properties));
+            return el;
+        });
+        $('#strip').find('.strip-container').html(panels);
+        $('#strip').removeClass('hidden');
+
+    });
 });
 
 
@@ -146,7 +182,5 @@ var dovre = 511;
 api.getMunicipalityBounds(dovre, function (bbox) {
     var bounds = L.latLngBounds.fromBBoxString(bbox);
     map.fitBounds(bounds);
-
-    var layers = datasetLoader.loadDatasets(datasets);
-    //L.control.datasets(layers).addTo(map);
+    layers = layers.concat(datasetLoader.loadDatasets(datasets));
 });

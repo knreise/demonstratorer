@@ -274,6 +274,7 @@ module.exports = {
           'common/css/fullscreenmap.css',
           
           'common/css/markers.css',
+          'common/css/strip.css'
           /*
           'common/css/L.Knreise.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Datasets.css',
@@ -282,13 +283,14 @@ module.exports = {
         ],
         templates: [
           'popup',
-          'verneomraader',
+          'digitalt_fortalt',
           'kulturminne',
           'musit',
           'digitalt_museum',
           'digitalt_fortalt',
           'list_item',
-          'fangstgrop'
+          'fangstgrop',
+          'artsobservasjon'
         ]
     }
   ]

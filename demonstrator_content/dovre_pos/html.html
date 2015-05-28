@@ -1,2 +1,28 @@
-<div id="sidebar"></div>
 <div id="map"></div>
+<div id="strip" class="hidden">
+
+
+    <div class="arrow left js-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></div>
+    <div class="strip-container"></div>
+    <div class="arrow right js-right">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </div>
+    <button type="button" class="close js-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+</div>
+
+<script type="text/template" id="panel_template">
+    <div class="panel panel-default panel-horizontal">
+        <div class="panel-heading"><h3 class="panel-title"><%= title %></h3></div>
+        <div class="panel-body">
+        <% if (contentType === 'IMAGE') { %>
+            <img src="<%= thumbnail %>" />
+        <%}%>
+        <% if (contentType === 'TEXT') { %>
+            <div class="text-box">
+                <p><%= content %></p>
+                <p class="text-fade"></p>
+            </div>
+        <%}%>
+      </div>
+    </div>
+</script>
