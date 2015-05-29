@@ -39,7 +39,36 @@
     float: left;
     height: 100%;
     margin-right: 5px;
+    cursor: pointer;
 }
+
+#strip .panel-heading {
+    padding: 0;
+    position: relative;
+}
+
+#strip .panel-heading .header-text{ 
+    position: absolute;
+    left: 0;
+    right: 40px;
+    top: 0;
+    bottom: 0;
+    padding: 10px;
+}
+
+#strip .panel-heading .header-box{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    border-left: 1px solid #ddd;
+
+    padding: 2px;
+
+
+}
+
 
 #strip .panel-horizontal img {
     padding: 0;
@@ -70,10 +99,12 @@
 
 #strip .text-box {
     max-height: 90%;
+    height: 90%;
     overflow: hidden;
     position: relative;
     padding-left: 3px;
     padding-right: 3px;
+    padding-top: 3px;
 }
 
 #strip .text-box .text-fade {
@@ -92,4 +123,20 @@
     top: 10px;
     right: 10px;
     z-index: 3000;
+}
+
+#strip .image {
+    height: 100%;
+    width: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#strip .spinner {
+    width: 60px;
+    margin-top: 50px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }

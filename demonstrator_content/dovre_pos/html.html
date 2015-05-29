@@ -1,5 +1,5 @@
 <div id="map"></div>
-<div id="strip" class="hidden">
+<div id="strip" class="">
 
 
     <div class="arrow left js-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></div>
@@ -12,17 +12,30 @@
 
 <script type="text/template" id="panel_template">
     <div class="panel panel-default panel-horizontal">
-        <div class="panel-heading"><h3 class="panel-title"><%= title %></h3></div>
+        <div class="panel-heading">
+            <span class="header-text"><%= title %></span>
+            <span class="header-box">
+                <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
+                <% if (distance) { %><div><%=distance %> km</div><% } %>
+            </span>
+        </div>
         <div class="panel-body">
-        <% if (contentType === 'IMAGE') { %>
-            <img src="<%= thumbnail %>" />
-        <%}%>
-        <% if (contentType === 'TEXT') { %>
+        <% if (thumbnail) { %>
+            <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
+        <%} else if (contentType === 'TEXT') { %>
             <div class="text-box">
-                <p><%= content %></p>
+                <p><% print(content ? content : 'Ingen tekst') %></p>
                 <p class="text-fade"></p>
             </div>
-        <%}%>
+        <%} else { %>
+            n/a
+        <% } %>
       </div>
+    </div>
+</script>
+
+<script type="text/template" id="spinner_template">
+    <div class="spinner">
+    <i class="fa fa-cog fa-spin fa-5x"></i>
     </div>
 </script>

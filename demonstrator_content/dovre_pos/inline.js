@@ -13,15 +13,11 @@ var api = new KR.API({
 
 
 //toggles
-
 function setupToggle(strip) {
-
     var leftBtn = strip.find('.js-left');
     var rightBtn = strip.find('.js-right');
-
     function checkLeft() {
         if (strip.find('.panel.hidden').length > 0) {
-
             leftBtn.removeClass('hidden');
         } else {
             leftBtn.addClass('hidden');
@@ -92,18 +88,8 @@ var datasets = [
             api: 'norvegiana'
         },
         visible: false,
-        cluster: false
-    },
-    {
-        name: 'Kulturminner',
-        dataset_name_override: 'Kulturminnesok',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: '-delving_title:Fangstlokalitet'
-        },
+        thumbnails: false,
         smallMarker: true,
-        visible: false,
         cluster: false
     }/*,
     {
@@ -113,7 +99,7 @@ var datasets = [
             dataset: 'MUSIT'
         },
         visible: false,
-        thumbnails: true,
+        thumbnails: false,
         smallMarker: true,
         cluster: false
     },
@@ -124,22 +110,15 @@ var datasets = [
             dataset: 'DiMu'
         },
         visible: false,
-        thumbnails: true,
+        thumbnails: false,
         smallMarker: true,
-        cluster: false
-    },
-    {
-        name: 'Artsobservasjoner',
-        dataset_name_override: 'artsobservasjon',
-        dataset: {
-            api: 'norvegiana',
-            dataset:'Artsdatabanken'
-        },
-        smallMarker: true,
-        visible: false,
         cluster: false
     }*/
 ];
+
+_.each(datasets, function (dataset) {
+    dataset.visible = false;
+});
 
 /*
 KR.Config.templates = {
@@ -151,27 +130,78 @@ KR.Config.templates = {
 };
 */
 
-var layers = [];
+function showFeature(feature) {
+    //map.panTo(feature.getLatLng());
+    console.log(feature);
+}
+
+
 var datasetLoader = new KR.DatasetLoader(api, map);
 
 
 var panelTemplate = _.template($('#panel_template').html());
 
-setupLocate(map, function (e) {
-    $('#strip').addClass('hidden');
-    $('#strip').find('.strip-container').html('');
-    datasetLoader.reload(true, function () {
-        var features = _.flatten(_.map(layers, function (layer) {return layer.getLayers();}));
-        
-        var panels = _.map(features, function (feature) {
-            console.log(feature.feature.properties.contentType);
-            var el = $(panelTemplate(feature.feature.properties));
-            return el;
-        });
-        $('#strip').find('.strip-container').html(panels);
-        $('#strip').removeClass('hidden');
 
+map.on('movestart', function () {
+    $('#strip').find('.strip-container').html($('#spinner_template').html());
+});
+
+
+function formatDistance(meters) {
+    var km = meters / 1000;
+    return Math.round(km * 10) / 10;
+}
+
+
+
+var position;
+var layers = [];
+function dataReloaded() {
+
+    var features = _.flatten(_.map(layers, function (layer) {
+        return layer.getLayers();
+    }));
+
+
+    if (position) {
+        features = _.map(features, function (feature) {
+            feature.feature.properties.distance = feature.getLatLng().distanceTo(position);
+            return feature;
+        });
+        features = features.sort(function (a, b) {
+            if (a.feature.properties.distance < b.feature.properties.distance) {
+                return -1;
+            }
+            if (a.feature.properties.distance > b.feature.properties.distance) {
+                return 1;
+            }
+            return 0;
+        });
+    }
+
+    var panels = _.map(features, function (feature) {
+        feature.feature.properties.icon = KR.Util.iconForContentType(feature.feature);
+        feature.feature.properties.distance = formatDistance(feature.feature.properties.distance) || null;
+        var el = $(panelTemplate(feature.feature.properties));
+        el.on('click', function () {
+            showFeature(feature);
+        });
+        return el;
     });
+
+    $('#strip').find('.strip-container').html(panels);
+    $('#strip').removeClass('hidden');
+}
+
+map.on('moveend', function () {
+    //$('#strip').addClass('hidden');
+    datasetLoader.reload(true, dataReloaded);
+});
+
+
+setupLocate(map, function (e) {
+    position = e.latlng;
+    dataReloaded();
 });
 
 
@@ -182,5 +212,10 @@ var dovre = 511;
 api.getMunicipalityBounds(dovre, function (bbox) {
     var bounds = L.latLngBounds.fromBBoxString(bbox);
     map.fitBounds(bounds);
-    layers = layers.concat(datasetLoader.loadDatasets(datasets));
+
+    //TODO callback here
+    layers = datasetLoader.loadDatasets(datasets);
+    dataReloaded();
+
+    datasetLoader.reload(true, dataReloaded);
 });

@@ -56,17 +56,20 @@ KR.Util = KR.Util || {};
         }
     };
 
-    ns.iconForFeature = function (feature) {
-        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
-        if (datasetIcon) {
-            return datasetIcon;
-        }
-
+    ns.iconForContentType = function (feature) {
         var contentType = feature.properties.contentType;
         if (_.has(KR.Config.contentIcons, contentType)) {
             return KR.Config.contentIcons[contentType];
         }
         return KR.Config.contentIcons['default'];
+    };
+
+    ns.iconForFeature = function (feature) {
+        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
+        if (datasetIcon) {
+            return datasetIcon;
+        }
+        return ns.iconForContentType(feature);
     };
 
 
