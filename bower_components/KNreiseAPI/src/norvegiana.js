@@ -83,7 +83,7 @@ KR.NorvegianaAPI = function () {
         }
 
         var features = _.map(response.result.items, _parseNorvegianaItem);
-        var geoJSON = KR.Util.CreateFeatureCollection(features);
+        var geoJSON = KR.Util.createFeatureCollection(features);
         geoJSON.numFound = response.result.pagination.numFound;
         return {geoJSON: geoJSON, nextPage: nextPage};
     }
@@ -104,7 +104,7 @@ KR.NorvegianaAPI = function () {
             var features = _.reduce(data, function (acc, featureCollection) {
                 return acc.concat(featureCollection.features);
             }, []);
-            originalCallback(KR.Util.CreateFeatureCollection(features));
+            originalCallback(KR.Util.createFeatureCollection(features));
         };
     }
 

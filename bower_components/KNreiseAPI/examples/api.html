@@ -27,6 +27,7 @@
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
         <script src="../bower_components/underscore/underscore-min.js"></script>
         <script src="../bower_components/esri2geo/esri2geo.js"></script>
+        
         <script src="../bower_components/CryptoJS/build/components/core.js"></script>
         <script src="../bower_components/CryptoJS/build/components/md5.js"></script>
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -44,18 +45,18 @@
                     </div>
                 </div>
                 <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                         <h3>Code</h3>
                         <pre>
                             <code class="javascript" id="<%= id %>_code">
                             </code>
                         </pre>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <h3>Returned data on map</h3>
                         <div id="<%= id %>_map" class="map"></div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <h3>Returned data (GeoJSON)</h3>
                         <textarea id="<%= id %>_data"></textarea>
                     </div>
@@ -65,41 +66,47 @@
 
 
         <script type="text/test" id="norvegiana1_code_template">
-                var api = new KR.API({
-                    cartodb: {
-                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-                        user: 'knreise'
-                    }
-                });
+                //create an API instance
+                var api = new KR.API();
+
+                //setup a map
                 var map = getMap('norvegiana1_map');
 
+                //define a bounding box
                 var bbox = '9.312543869018555,62.227315990693896,9.387989044189453,62.25362062502279';
 
+                //create the dataset object
                 var digitaltFortalt = {
                     api: 'norvegiana',
                     dataset: 'MUSIT'
                 };
+
                 $('#get_norvegiana1').on('click', function () {
-                    api.getBbox(digitaltFortalt, bbox, function (res) {
-                        $('#norvegiana1_data').html(JSON.stringify(res, null, 4));
-                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+
+                    //when button is clicked, call getBbox
+                    api.getBbox(digitaltFortalt, bbox, function (geoJSON) {
+
+                        //show data
+                        $('#norvegiana1_data').html(JSON.stringify(geoJSON, null, 4));
+
+                        //show map
+                        map.fitBounds(L.geoJson(geoJSON).addTo(map).getBounds());
+
                     });
+
                 });
         </script>
 
         <script type="text/test" id="wikipedia_code_template">
-                var api = new KR.API({
-                    cartodb: {
-                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-                        user: 'knreise'
-                    }
-                });
+                var api = new KR.API();
                 var map = getMap('wikipedia_map');
+
                 var bbox = '9.312543869018555,62.227315990693896,9.387989044189453,62.25362062502279';
 
                 var wikipedia = {
                     api: 'wikipedia'
                 };
+
                 $('#get_wikipedia').on('click', function () {
                     api.getBbox(wikipedia, bbox, function (res) {
                         $('#wikipedia_data').html(JSON.stringify(res, null, 4));
@@ -109,12 +116,7 @@
         </script>
 
         <script type="text/test" id="kulturminnedata_code_template">
-                var api = new KR.API({
-                    cartodb: {
-                        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-                        user: 'knreise'
-                    }
-                });
+                var api = new KR.API();
                 var map = getMap('kulturminnedata_map');
                 var bbox = '9.312543869018555,62.227315990693896,9.387989044189453,62.25362062502279';
 
@@ -123,6 +125,7 @@
                     query: "Navn='Fangstgrop'",
                     layer: 0
                 };
+
                 $('#get_kulturminnedata').on('click', function () {
                     api.getBbox(fangstgroper, bbox, function (res) {
                         $('#kulturminnedata_data').html(JSON.stringify(res, null, 4));

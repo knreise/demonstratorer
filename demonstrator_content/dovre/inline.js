@@ -60,6 +60,7 @@ var datasets = [
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true,
         cluster: false,
+        visible: false,
         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
@@ -80,17 +81,19 @@ var datasets = [
             table: 'naturvernomrader_utm33_2',
             columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
         },
+        provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
         style: function (feature) {
-            return {color: '#7570b3', weight: 1, fillColor: '#ff0000'};
+            return {color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
         },
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-        }
+        },
+        toPoint: 20,
+        cluster: false
     },
     {
-
         datasets: [
             {
                 name: 'MUSIT',

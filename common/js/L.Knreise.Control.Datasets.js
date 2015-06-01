@@ -91,6 +91,9 @@ L.Control.Datasets = L.Control.extend({
                 this._map.addLayer(obj.layer);
             } else if (!visible && this._map.hasLayer(obj.layer)) {
                 this._map.removeLayer(obj.layer);
+            } else if (obj.dataset.notLoaded) {
+                obj.dataset.notLoaded = false;
+                obj.layer.fire('show');
             }
         }
     },
