@@ -47,3 +47,7 @@
     cursor: pointer;
     z-index: 8;
 }
+
+.leaflet-sidebar .awesome-marker {
+    position: relative;
+}

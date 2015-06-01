@@ -142,10 +142,14 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     _createListElement: function (feature, index, template, getData, features) {
+
         var icon = KR.Util.iconForFeature(feature);
+        var color = KR.Util.colorForFeature(feature);
+        var marker = this.options.markerTemplate({icon: icon, color: color});
+
         var li = $(this.options.listElementTemplate({
             title: feature.properties.title,
-            icon: icon
+            marker: marker
         }));
 
         li.on('click', _.bind(function (e) {

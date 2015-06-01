@@ -157,8 +157,14 @@
 
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
-    <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
-    <%= title %>
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+</div>
 </a>
 </script>
 
