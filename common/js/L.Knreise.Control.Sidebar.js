@@ -172,11 +172,13 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     showFeatures: function (features, template, getData) {
-        var list = $('<div class="list-group"></ul>');
+        var list = $(this.options.listTemplate({count: features.length}));
+        console.log(list);
         var elements = _.map(features, function (feature, index) {
             return this._createListElement(feature, index, template, getData, features);
         }, this);
-        list.append(elements);
+        console.log(list.find('.list-group'))
+        list.find('.list-group').append(elements);
         $(this.getContainer()).html(list);
         this.show();
     },

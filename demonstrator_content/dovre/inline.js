@@ -4,6 +4,9 @@ var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
 var markerTemplate = _.template($('#marker_template').html());
 var thumbnailTemplate = _.template($('#thumbnail_template').html());
+var listTemplate = _.template($('#sidebarlist_template').html());
+
+console.log(listTemplate)
 
 //create the map
 var map = L.map('map');
@@ -25,7 +28,8 @@ var sidebar = L.Knreise.Control.sidebar('sidebar', {
     template: popupTemplate,
     listElementTemplate: listElementTemplate,
     markerTemplate: markerTemplate,
-    thumbnailTemplate: thumbnailTemplate
+    thumbnailTemplate: thumbnailTemplate,
+    listTemplate: listTemplate
 });
 map.addControl(sidebar);
 

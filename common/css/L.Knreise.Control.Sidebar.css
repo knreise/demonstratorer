@@ -57,3 +57,23 @@
     padding: 0;
     border-width: 2px;
 }
+
+.leaflet-sidebar .top {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+
+span.circle {
+    background-color: #ddd;
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px #888888;
+    color: black;
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    width: 30px;
+}
