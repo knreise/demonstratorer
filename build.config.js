@@ -51,7 +51,8 @@ module.exports = {
           'digitalt_fortalt',
           'list_item',
           'fangstgrop',
-          'marker'
+          'marker',
+          'thumbnail'
         ]
     },
     {

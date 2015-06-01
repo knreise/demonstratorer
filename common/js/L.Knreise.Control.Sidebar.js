@@ -143,9 +143,18 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     _createListElement: function (feature, index, template, getData, features) {
 
-        var icon = KR.Util.iconForFeature(feature);
-        var color = KR.Util.colorForFeature(feature);
-        var marker = this.options.markerTemplate({icon: icon, color: color});
+        var marker;
+        if (feature.properties.thumbnail) {
+            marker = this.options.thumbnailTemplate({
+                thumbnail: feature.properties.thumbnail,
+                color: KR.Util.colorForFeature(feature, 'hex')
+            });
+        } else {
+            marker = this.options.markerTemplate({
+                icon: KR.Util.iconForFeature(feature),
+                color: KR.Util.colorForFeature(feature)
+            });
+        }
 
         var li = $(this.options.listElementTemplate({
             title: feature.properties.title,
