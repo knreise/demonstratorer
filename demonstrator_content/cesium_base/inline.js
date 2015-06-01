@@ -1,24 +1,20 @@
 
 
-var viewer = new Cesium.Viewer('cesium', {timeline: false, baseLayerPicker: false, geocoder : false, infoBox: false, animation: false} );
+var config = {
     
-var stryn = viewer.entities.add({
-  name : 'Stryn',
-  polygon : {
-    hierarchy : Cesium.Cartesian3.fromDegreesArray([
-      6.86339933569173,61.9377705837496,
-      6.86064458723271,61.9406402731954,
-      6.8571895811401,61.9441772873158,
-      6.86087979967812,61.9447979617182,
-      6.86344624795662,61.9423909615729,
-      6.86447518088584,61.942406380056]),
-    material : Cesium.Color.RED.withAlpha(0.5),
-    outline : true,
-    outlineColor : Cesium.Color.BLACK
-  }
-});
- 
-viewer.zoomTo(stryn);
+    cesiumViewerOpts : {
+        timeline: false, 
+        baseLayerPicker: false, 
+        geocoder : false, 
+        infoBox: false, 
+        animation: false,
+        orderIndependentTranslucency: false
+    }
+    
+}
+
+var viewer = new Cesium.Viewer('cesium', config.cesiumViewerOpts);
+    
 
 
 // Add the terrain provider (AGI)
@@ -50,20 +46,166 @@ var api = new KR.API({
     }
 });
 
+console.log(api);
+
 var dataset = {
     api: 'norvegiana',
     dataset: 'Kulturminnesok'
 };
 
-api.getData(dataset, function(e) {
-    console.log(e); 
-    }, function(e) {
-    console.log(e); 
-    },{}
-    
-    );
 
+
+var mouseHandler = new Cesium.ScreenSpaceEventHandler(viewer.canvas); 
+mouseHandler.setInputAction( function(movement){ 
+    console.log(movement);
+    },Cesium.ScreenSpaceEventType.LEFT_CLICK);  
+
+
+var stryn = viewer.entities.add({
+  name : 'Stryn',
+  polygon : {
+    hierarchy : Cesium.Cartesian3.fromDegreesArray([
+      6.86339933569173,61.9377705837496,
+      6.86064458723271,61.9406402731954,
+      6.8571895811401,61.9441772873158,
+      6.86087979967812,61.9447979617182,
+      6.86344624795662,61.9423909615729,
+      6.86447518088584,61.942406380056]),
+    material : Cesium.Color.RED.withAlpha(0.5),
+    outline : true,
+    outlineColor : Cesium.Color.BLACK
+  }
+});
+
+
+/*
+function getHeight(cartographicPosition) {
+    var samples = Cesium.sampleTerrain(viewer.terrainProvider, 9, [certographicPosition]) {
+        console.log(samples);
+    return samples[0];
+}
+
+var addMouseHandler = function(scene) {
+
+        var animation;
+        var handler = new EventHandler(scene.getCanvas());
+        var pickedObject;
+
+        handler.setMouseAction(
+
+            function(movement) {
+
+                    console.log("scene=" + scene); // exists
+                    pickedObject = scene.pick(movement.endPosition);  // fails here as this will in turn call Scene.prototype.pick()
+                    console.log("pickedObject=" + pickedObject);
+                    console.log("pickedObject.isBillboard=" + pickedObject.isPlatform)
+                    if ((pickedObject) && !pickedObject.isPlatform && !pickedObject.highlighted) {
+                        
+                    }
+                    
+            }
+            
+}
+
+*/
+
+/*
+function addMarker(lon, lat) {
     
+    var position = Cesium.Cartographic.fromDegrees(lon, lat);
+    var entity = viewer.entities.add({
+        position : position,
+        label : false,
+        billboard : {
+            image : '../common/img/marker-icon-green.png',
+            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+        }
+    });
+        
+        
+    var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, [position]);
+
+    Cesium.when(promise, function(updatedPositions) {
+        console.log(updatedPositions);
+        console.log(position);
+        // positions[0].height and positions[1].height have been updated.
+        // updatedPositions is just a reference to positions.
+    });
+
+
+ addMarker(6.86339933569173,61.9377705837496);
     
+}
+*/
+
+
+
+
+
+var addMarker(lon, lat) {
+    
+    var positions = [
+        Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
+    ];
+    
+    var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, positions);
+    promise.id = 123;
+    
+    var markerPos = Cesium.Cartesian3.fromDegrees(lon, lat);
+        
+        
+    
+    var entity = viewer.entities.add({
+        position : markerPos,
+        label : false,
+        billboard : {
+            image : '../common/img/marker-icon-green.png',
+            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+        }
+    });
+    
+}
+
+
+
+var markerPos = Cesium.Cartesian3.fromDegrees(6.86339933569173,61.9377705837496);
+var entity = viewer.entities.add({
+        position : markerPos,
+        label : false,
+        billboard : {
+            image : '../common/img/marker-icon-green.png',
+            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+        }
+    });
+    
+
+var positions = [
+    Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
+];
+var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, positions);
+Cesium.when(promise, function(updatedPositions) {
+    
+    console.log(markerPos.height);
+    console.log(updatedPositions);
+    
+    entity.height = updatedPositions[0].height;
+    console.log(updatedPositions[0].height);
+    
+    console.log(markerPos.height);
+    // positions[0].height and positions[1].height have been updated.
+    // updatedPositions is just a reference to positions.
+});
+
+
+
+
+
+
+
+
+
+
+
+viewer.zoomTo(stryn);
 
     
