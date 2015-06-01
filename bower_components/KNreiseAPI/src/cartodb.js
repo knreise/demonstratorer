@@ -32,7 +32,7 @@ KR.CartodbAPI = function (user, apikey) {
                     'properties': properties
                 };
             });
-            return KR.Util.CreateFeatureCollection(features);
+            return KR.Util.createFeatureCollection(features);
         };
     }
 
@@ -71,7 +71,7 @@ KR.CartodbAPI = function (user, apikey) {
                         'properties': _.omit(row, 'geom')
                     };
                 });
-                return KR.Util.CreateFeatureCollection(features);
+                return KR.Util.createFeatureCollection(features);
             }
         });
     }
