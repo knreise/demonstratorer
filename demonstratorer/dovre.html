@@ -192,7 +192,6 @@
 <script type="text/template" id="sidebarlist_template">
 <div>
     <div class="top"><span class="circle"><%= count %></span></div>
-    <div class="list-group"></ul>
 </div>
 </script>
 
@@ -231,8 +230,6 @@ var listElementTemplate = _.template($('#list_item_template').html());
 var markerTemplate = _.template($('#marker_template').html());
 var thumbnailTemplate = _.template($('#thumbnail_template').html());
 var listTemplate = _.template($('#sidebarlist_template').html());
-
-console.log(listTemplate)
 
 //create the map
 var map = L.map('map');

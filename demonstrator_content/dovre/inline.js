@@ -6,8 +6,6 @@ var markerTemplate = _.template($('#marker_template').html());
 var thumbnailTemplate = _.template($('#thumbnail_template').html());
 var listTemplate = _.template($('#sidebarlist_template').html());
 
-console.log(listTemplate)
-
 //create the map
 var map = L.map('map');
 
