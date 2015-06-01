@@ -49,7 +49,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['./demonstrator_content/**/*.*', './build.config.js'],
+        files: ['./demonstrator_content/**/*.*', './templates/**/*.*', './build.config.js'],
         tasks: ['default'],
         options: {
           spawn: true,

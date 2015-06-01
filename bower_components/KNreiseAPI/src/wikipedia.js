@@ -107,7 +107,7 @@ KR.WikipediaAPI = function () {
                 var features = _.map(response.query.geosearch, function (item) {
                     return _parseWikimediaItem(item, pages);
                 });
-                callback(KR.Util.CreateFeatureCollection(features));
+                callback(KR.Util.createFeatureCollection(features));
             });
         } catch (error) {
             errorCallback(response);

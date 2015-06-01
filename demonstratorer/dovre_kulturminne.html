@@ -19,7 +19,6 @@
         <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
         <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
         <link href='../common/css/audiojs.css' rel='stylesheet' />
-        <link href='../common/css/L.Control.DatasetChooser.css' rel='stylesheet' />
 
     </head>
     <body>
@@ -40,124 +39,6 @@
 </script>
 
 
-<script type="text/template" id="verneomraader_template">
-<h3>Verneområde</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
-
-    <dt>Faktaark</dt>
-    <dd><a href="<%= link %>">naturbase.no</a></dd>
-
-    <dt>Beskrivelse</dt>
-    <dd><%= content %></dd>
-</dl>
-</script>
-
-
-<script type="text/template" id="kulturminne_template">
-<h3>Kulturminne</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
-
-    <dt>Kategori</dt>
-    <dd><%= allProps.dc_subject[1] %></dd>
-
-    <dt>Type kulturminne</dt>
-    <dd><%= allProps.dc_subject[0] %></dd>
-
-    <dt>Vernestatus</dt>
-    <dd><%= allProps.dc_subject[2] %></dd>
-
-    <dt>Datering</dt>
-    <dd><%= allProps.dc_date %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">kulturminnesok.no</a></dd>
-</dl>
-</script>
-
-
-<script type="text/template" id="musit_template">
-<h3>MUSIT</h3>
-
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-
-<dl>
-    <dt>Artefakt</dt>
-    <dd><%= allProps.dc_subject %></dd>
-
-    <dt>Beskrivelse</dt>
-    <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
-
-    <dt>Funnsted</dt>
-    <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
-
-    <dt>Materiale</dt>
-    <dd><%= allProps.dcterms_medium %></dd>
-
-    <dt>Datering</dt>
-    <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
-
-    <dt>Museum</dt>
-    <dd><%= allProps.europeana_dataProvider %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">link</a></dd>
-</dl>
-</script>
-
-
-<script type="text/template" id="digitalt_museum_template">
-<h3>Digitalt Museum</h3>
-
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
-
-    <dt>Beskrivelse</dt>
-    <dd><%= allProps.delving_description.join('<br />') %></dd>
-
-    <dt>Kategori</dt>
-    <dd><%= allProps.europeana_dataProvider %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
-</dl>
-</script>
-
-
-<script type="text/template" id="digitalt_fortalt_template">
-<h3><%= title %></h3>
-<% if(contentType === 'VIDEO' && video) { %>
-    <% if (video.indexOf('mp4') !== -1) { %>
-        <video class="video-js vjs-default-skin fullwidth" controls
-         preload="auto" height="315" poster="<%= images[0] %>"
-         data-setup='{}'>
-          <source src="<%= videoEmbed %>" type='video/mp4'>
-        </video>
-    <% } else { %>
-        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
-    <% } %>
-    
-<% } else if(contentType === 'SOUND' && sound) { %>
-    <audio src="<%= sound %>" preload="auto"></audio>
-<% } else if(contentType === 'IMAGE' && images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-<%= content %>
-
-<a href="<%= link %>">Mer hos <%= provider %><a/>
-</script>
-
-
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
     <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
@@ -166,9 +47,22 @@
 </script>
 
 
-<script type="text/template" id="fangstgrop_template">
-<h3>Fangstgrop</h3>
+<script type="text/template" id="kulturminne2_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= LokalitetNavn %></dd>
 
+    <dt>Kategori</dt>
+    <dd><%= Kategori %></dd>
+
+    <dt>Vernestatus</dt>
+    <dd><%= Vernestatus %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= Beskrivelse %></dd>
+
+</dl>
 </script>
 
 
@@ -183,41 +77,32 @@
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.MarkerClusterGroup.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
         <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
         <script src="../bower_components/video.js/dist/video-js/video.js" type="text/javascript"></script>
         <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
-        <script src="../common/js/L.NorvegianaGeoJSON.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
-        <script src="../common/js/L.Control.DatasetChooser.js" type="text/javascript"></script>
-        <script src="../common/js/L.Control.MapClick.js" type="text/javascript"></script>
+        <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
                 'use strict';
 
-                KR.Config.templates = {
-    'Kulturminnesok': _.template($('#kulturminne_template').html()),
-    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
-    'Musit': _.template($('#musit_template').html()),
-    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
-};
+                //template used for sidebar
 
-//template used for sidebar
 var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
+
 //create the map
 var map = L.map('map');
 
 //add a background layer from kartverket
-L.tileLayer.kartverket('topo2graatone').addTo(map);
-
-
-//initialize the map in oslo
-map.setView(new L.LatLng(59.910586, 10.734329), 16);
+L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
 
 //set up an instance of the Norvegiana API
 var api = new KR.API({
@@ -235,25 +120,37 @@ var sidebar = L.Knreise.Control.sidebar('sidebar', {
 });
 map.addControl(sidebar);
 
-var layer = L.norvegianaGeoJSON(null, sidebar, {cluster: true});
 
-var datasets = api.datasets();
-//var selectedDataset = 'delving_spec:DiMu';
-var selectedDataset = 'Artsdatabanken';
-var clickFunc = L.control.mapClick(layer, api, datasets[selectedDataset]);
-map.addControl(clickFunc);
-clickFunc.on();
-
-//simple control to choose datasets
-var datasetChooser = L.control.datasetChooser({
-    datasets: datasets,
-    initialDataset: selectedDataset,
-    datasetSelected: function (dataset) {
-        clickFunc.setDataset(dataset);
+//The datasets in use
+var datasets = [
+    {
+        name: 'Kulturminnedata, lokaliteter',
+        dataset_name_override: 'Kulturminnesok',
+        provider: 'Kulturminnesøk',
+        dataset: {
+            layer: 4,
+            api: 'kulturminnedata'
+        },
+        toPoint: 10,
+        cluster: false,
+        template: _.template($('#kulturminne2_template').html()),
+        style: function (feature) {
+            return {color: '#7570b3', weight: 1, fillOpacity: 0.7, fillColor: KR.Util.colorForProvider('Kulturminnesøk', 'hex')};
+        },
     }
-});
-map.addControl(datasetChooser);
+    
+];
+var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
+//get the are we are interested in
+var dovre = 511;
+api.getMunicipalityBounds(dovre, function (bbox) {
+    var bounds = L.latLngBounds.fromBBoxString(bbox);
+    map.fitBounds(bounds);
+    var layers = datasetLoader.loadDatasets(datasets);
+
+    L.control.datasets(layers).addTo(map);
+});
             }());
         </script>
     </body>
