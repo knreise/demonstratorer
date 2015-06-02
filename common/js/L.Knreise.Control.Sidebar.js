@@ -77,7 +77,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (_.isArray(img)) {
             img = img[0];
         }
-        console.log(feature)
         var content = template(_.extend({image: null}, feature.properties));
 
         if (callbacks && callbacks.close) {
@@ -91,16 +90,21 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.setContent(content);
         this._setupSwipe(callbacks);
 
-        if (callbacks && callbacks.prev) {
-            var prev = L.DomUtil.create('a', 'prev', this.getContainer());
-            prev.innerHTML = '&#8678;';
-            L.DomEvent.on(prev, 'click', callbacks.prev);
+        this._top.innerHTML = '';
+        if (callbacks) {
+            var prev = L.DomUtil.create('a', 'prev circle pull-left', this._top);
+            prev.innerHTML = '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
+            if (callbacks.prev) {
+                L.DomEvent.on(prev, 'click', callbacks.prev);
+                L.DomUtil.addClass(prev, 'active');
+            }
 
-        }
-        if (callbacks && callbacks.next) {
-            var next = L.DomUtil.create('a', 'next', this.getContainer());
-            next.innerHTML = '&#8680;';
-            L.DomEvent.on(next, 'click', callbacks.next);
+            var next = L.DomUtil.create('a', 'next circle pull-left', this._top);
+            next.innerHTML = '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
+            if (callbacks.next) {
+                L.DomEvent.on(next, 'click', callbacks.next);
+                L.DomUtil.addClass(next, 'active');
+            }
         }
 
         if (typeof audiojs !== 'undefined') {
@@ -175,7 +179,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     showFeatures: function (features, template, getData) {
-        //var el = $(this.options.listTemplate({count: features.length}));
         var count = $('<span class="circle">' + features.length + '</span>');
         $(this._top).html(count);
 
