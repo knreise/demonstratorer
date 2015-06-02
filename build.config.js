@@ -2,7 +2,7 @@ module.exports = {
   commonScripts: [
     'bower_components/jquery/dist/jquery.min.js',
     'bower_components/underscore/underscore-min.js',
-    'bower_components/leaflet/dist/leaflet-src.js',
+    'bower_components/leaflet/dist/leaflet.js',
     'bower_components/esri2geo/esri2geo.js',
     'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
     'common/js/util.js'
