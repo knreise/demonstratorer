@@ -50,7 +50,10 @@ module.exports = {
           'digitalt_museum',
           'digitalt_fortalt',
           'list_item',
-          'fangstgrop'
+          'fangstgrop',
+          'marker',
+          'thumbnail',
+          'footer'
         ]
     },
     {

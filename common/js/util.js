@@ -56,6 +56,12 @@ KR.Util = KR.Util || {};
         }
     };
 
+    ns.createStyleString = function (styleDict) {
+        return _.map(styleDict, function (value, key) {
+            return key + ': ' + value;
+        }).join(';');
+    };
+
     ns.iconForFeature = function (feature) {
         var datasetIcon = ns.iconForDataset(feature.properties.dataset);
         if (datasetIcon) {
@@ -84,9 +90,12 @@ KR.Util = KR.Util || {};
     };
 
 
-    ns.markerForFeature = function (feature) {
+    ns.markerForFeature = function (feature, selected) {
         var faIcon = ns.iconForFeature(feature);
-        var color = ns.colorForFeature(feature);
+        var color = selected
+                    ? 'blue'
+                    : ns.colorForFeature(feature);
+
         return L.AwesomeMarkers.icon({
             icon: faIcon,
             markerColor: color,

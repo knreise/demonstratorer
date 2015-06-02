@@ -2,6 +2,9 @@
 
 var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
+var markerTemplate = _.template($('#marker_template').html());
+var thumbnailTemplate = _.template($('#thumbnail_template').html());
+var footerTemplate = _.template($('#footer_template').html());
 
 //create the map
 var map = L.map('map');
@@ -21,7 +24,10 @@ var api = new KR.API({
 var sidebar = L.Knreise.Control.sidebar('sidebar', {
     position: 'left',
     template: popupTemplate,
-    listElementTemplate: listElementTemplate
+    listElementTemplate: listElementTemplate,
+    markerTemplate: markerTemplate,
+    thumbnailTemplate: thumbnailTemplate,
+    footerTemplate: footerTemplate
 });
 map.addControl(sidebar);
 
@@ -64,7 +70,6 @@ var datasets = [
         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
-        
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
         dataset: {
@@ -85,7 +90,10 @@ var datasets = [
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
         style: function (feature) {
-            return {color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
+            return {fillOpacity: 0.2, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
+        },
+        selectedStyle: function (feature) {
+            return {fillOpacity: 0.6, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
         },
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
@@ -127,6 +135,7 @@ var datasets = [
         minZoom: 14
     }
 ];
+
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
 //get the are we are interested in
