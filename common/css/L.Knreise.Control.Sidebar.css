@@ -67,7 +67,7 @@
     margin-top: 10px;
 }
 
-.leaflet-sidebar h5 {
+.leaflet-sidebar .providertext {
     color: #666;
     font-size: 12px;
     font-weight: bold;
@@ -90,4 +90,22 @@
     margin-top: 10px;
     top: 0;
     right: 0;
+}
+
+.leaflet-sidebar .sidebar-content h3 {
+    margin-top: 0;
+}
+
+.leaflet-sidebar .sidebar-link {
+    color: #333;
+}
+
+.leaflet-sidebar .sidebar-table {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.leaflet-sidebar .sidebar-table tr td:first-child {
+    font-weight: bold;
+    padding-right: 10px;
 }

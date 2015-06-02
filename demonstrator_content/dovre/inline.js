@@ -4,7 +4,7 @@ var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
 var markerTemplate = _.template($('#marker_template').html());
 var thumbnailTemplate = _.template($('#thumbnail_template').html());
-
+var footerTemplate = _.template($('#footer_template').html());
 
 //create the map
 var map = L.map('map');
@@ -26,7 +26,8 @@ var sidebar = L.Knreise.Control.sidebar('sidebar', {
     template: popupTemplate,
     listElementTemplate: listElementTemplate,
     markerTemplate: markerTemplate,
-    thumbnailTemplate: thumbnailTemplate
+    thumbnailTemplate: thumbnailTemplate,
+    footerTemplate: footerTemplate
 });
 map.addControl(sidebar);
 
@@ -37,29 +38,7 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-        {
-        datasets: [
-            {
-                name: 'Digitalt fortalt',
-                dataset: {dataset: 'difo', api: 'norvegiana'},
-                template: _.template($('#digitalt_fortalt_template').html())
-            },
-            {
-                name: 'Kulturminner',
-                dataset_name_override: 'Kulturminnesok',
-                dataset: {
-                    api: 'norvegiana',
-                    dataset: 'Kulturminnesok',
-                    query: '-delving_title:Fangstlokalitet'
-                },
-                template: _.template($('#kulturminne_template').html()),
-                smallMarker: true
-            }
-        ],
-        thumbnails: true
-    },
-
-    /*{
+    {
         dataset: {
             api: 'cartodb',
             table: 'pilegrimsleden_dovre',
@@ -153,7 +132,6 @@ var datasets = [
         smallMarker: true,
         minZoom: 14
     }
-    */
 ];
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 

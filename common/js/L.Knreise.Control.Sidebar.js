@@ -77,7 +77,12 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (_.isArray(img)) {
             img = img[0];
         }
-        var content = template(_.extend({image: null}, feature.properties));
+        var content = '<span class="providertext">' + feature.properties.provider + '</span>' +
+            template(_.extend({image: null}, feature.properties));
+
+        if (this.options.footerTemplate) {
+            content += this.options.footerTemplate(feature.properties);
+        }
 
         if (callbacks && callbacks.close) {
             L.DomEvent.off(this._closeButton, 'click', this.hide, this);
@@ -203,7 +208,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 }, this);
                 
                 list.append(elements);
-                wrapper.append('<h5>' + key + '</h5>');
+                wrapper.append('<h5 class="providertext">' + key + '</h5>');
                 wrapper.append(list);
                 return wrapper;
             }, this).value()
