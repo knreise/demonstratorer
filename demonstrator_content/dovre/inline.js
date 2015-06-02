@@ -70,7 +70,6 @@ var datasets = [
         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
-        
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
         dataset: {
@@ -91,7 +90,10 @@ var datasets = [
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
         style: function (feature) {
-            return {color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
+            return {fillOpacity: 0.2, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
+        },
+        selectedStyle: function (feature) {
+            return {fillOpacity: 0.6, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
         },
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
@@ -133,6 +135,7 @@ var datasets = [
         minZoom: 14
     }
 ];
+
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
 //get the are we are interested in
