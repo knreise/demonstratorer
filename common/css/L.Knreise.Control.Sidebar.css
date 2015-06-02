@@ -1,6 +1,7 @@
 #sidebar {
     overflow: none;
-    padding: 50px 0 0 0;
+    padding: 0;
+    position: relative;
 }
 
 #sidebar .fullwidth {
@@ -8,9 +9,11 @@
 }
 
 #sidebar .sidebar-content {
-    padding: 8px 24px;
-    height: 100%;
+    bottom: 0;
     overflow: auto;
+    padding: 8px 24px;
+    position: absolute;
+    top: 50px;
 }
 
 .leaflet-sidebar .prev {
@@ -58,13 +61,7 @@
     border-width: 2px;
 }
 
-.leaflet-sidebar .top {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-}
-
-span.circle {
+.leaflet-sidebar .circle {
     background-color: #ddd;
     border-radius: 15px;
     box-shadow: 1px 1px 5px #888888;
@@ -76,6 +73,8 @@ span.circle {
     line-height: 30px;
     text-align: center;
     width: 30px;
+    margin-left: 10px;
+    margin-top: 10px;
 }
 
 .leaflet-sidebar h5 {
@@ -83,4 +82,22 @@ span.circle {
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+.leaflet-sidebar .top-menu {
+    background: white none repeat scroll 0 0;
+    height: 50px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 5000;
+}
+
+.leaflet-sidebar .close {
+    position: relative;
+    margin-right: 10px;
+    margin-top: 10px;
+    top: 0;
+    right: 0;
 }

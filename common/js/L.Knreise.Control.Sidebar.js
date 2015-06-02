@@ -16,6 +16,8 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         // Remove the content container from its original parent
         content.parentNode.removeChild(content);
 
+
+        var top = L.DomUtil.create('div', 'top-menu', content);
         this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);
 
         this.on('hide', this._removeContent, this);
@@ -26,16 +28,17 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var container = this._container =
             L.DomUtil.create('div', l + 'sidebar ' + this.options.position);
 
-        // Style and attach content container
-        L.DomUtil.addClass(content, l + 'control');
-        container.appendChild(content);
-
         // Create close button and attach it if configured
         if (this.options.closeButton) {
             var close = this._closeButton =
-                L.DomUtil.create('a', 'close', container);
+                L.DomUtil.create('a', 'close pull-right', top);
             close.innerHTML = '&times;';
         }
+        this._top = L.DomUtil.create('span', '', top);
+
+        // Style and attach content container
+        L.DomUtil.addClass(content, l + 'control');
+        container.appendChild(content);
     },
 
     _setupSwipe: function (callbacks) {
@@ -172,8 +175,9 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     showFeatures: function (features, template, getData) {
-        var el = $(this.options.listTemplate({count: features.length}));
-
+        //var el = $(this.options.listTemplate({count: features.length}));
+        var count = $('<span class="circle">' + features.length + '</span>');
+        $(this._top).html(count);
 
         var grouped = _.chain(features)
             .groupBy(function (feature) {
@@ -191,8 +195,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 wrapper.append(list);
                 return wrapper;
             }, this).value()
-        el.append(grouped);
-        $(this.getContainer()).html(el);
+        $(this.getContainer()).html(grouped);
         this.show();
     },
 
