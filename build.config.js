@@ -132,6 +132,7 @@ module.exports = {
         name: 'Pilegrimsleden, Dovre',
         scripts: [
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/turf/turf.min.js',
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
@@ -144,6 +145,7 @@ module.exports = {
         css: [
           'bower_components/leaflet/dist/leaflet.css',
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/Leaflet.Photo/Leaflet.Photo.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'common/css/fullscreenmap.css',
@@ -205,7 +207,10 @@ module.exports = {
           'digitalt_museum',
           'digitalt_fortalt',
           'list_item',
-          'fangstgrop'
+          'fangstgrop',
+          'marker',
+          'thumbnail',
+          'footer'
         ]
     },
     {
@@ -213,6 +218,7 @@ module.exports = {
         name: 'Alt eller ingenting',
         scripts: [
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Knreise.Control.Datasets.js',
           'common/js/DatasetLoader.js'

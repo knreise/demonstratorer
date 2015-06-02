@@ -38,7 +38,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 layer.setIcon(this._createFeatureIcon(layer.feature, false));
                 layer.setZIndexOffset(0);
             }
-            if (layer.setStyle) {
+            if (layer.setStyle && this.options.dataset.style) {
                 layer.setStyle(this.options.dataset.style());
             }
             this._selectedLayer = null;
