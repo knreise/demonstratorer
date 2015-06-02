@@ -15,15 +15,18 @@ var config = {
 
 var viewer = new Cesium.Viewer('cesium', config.cesiumViewerOpts);
     
-
-
+    
 // Add the terrain provider (AGI)
-var cesiumTerrainProviderMeshes = new Cesium.CesiumTerrainProvider({
+var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
     url : '//assets.agi.com/stk-terrain/world',
-    requestWaterMask : true,
     requestVertexNormals : true
 });
-viewer.terrainProvider = cesiumTerrainProviderMeshes;
+
+var scene = viewer.scene;
+var globe = scene.globe;
+globe.depthTestAgainstTerrain = true;
+
+
 
 
 // Add kartverket WMTS
@@ -37,7 +40,6 @@ var kartverketTopo2 = new Cesium.WebMapTileServiceImageryProvider({
     maximumLevel: 19
 });
 
-viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
 var api = new KR.API({
     cartodb: {
@@ -77,8 +79,8 @@ var stryn = viewer.entities.add({
   }
 });
 
-
 /*
+
 function getHeight(cartographicPosition) {
     var samples = Cesium.sampleTerrain(viewer.terrainProvider, 9, [certographicPosition]) {
         console.log(samples);
@@ -107,84 +109,13 @@ var addMouseHandler = function(scene) {
             
 }
 
-*/
-
-/*
-function addMarker(lon, lat) {
-    
-    var position = Cesium.Cartographic.fromDegrees(lon, lat);
-    var entity = viewer.entities.add({
-        position : position,
-        label : false,
-        billboard : {
-            image : '../common/img/marker-icon-green.png',
-            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-        }
-    });
-        
-        
-    var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, [position]);
-
-    Cesium.when(promise, function(updatedPositions) {
-        console.log(updatedPositions);
-        console.log(position);
-        // positions[0].height and positions[1].height have been updated.
-        // updatedPositions is just a reference to positions.
-    });
-
-
- addMarker(6.86339933569173,61.9377705837496);
-    
-}
-*/
-
-
-
-
-
-var addMarker(lon, lat) {
-    
-    var positions = [
-        Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
-    ];
-    
-    var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, positions);
-    promise.id = 123;
-    
-    var markerPos = Cesium.Cartesian3.fromDegrees(lon, lat);
-        
-        
-    
-    var entity = viewer.entities.add({
-        position : markerPos,
-        label : false,
-        billboard : {
-            image : '../common/img/marker-icon-green.png',
-            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-        }
-    });
-    
-}
-
-
-
-var markerPos = Cesium.Cartesian3.fromDegrees(6.86339933569173,61.9377705837496);
-var entity = viewer.entities.add({
-        position : markerPos,
-        label : false,
-        billboard : {
-            image : '../common/img/marker-icon-green.png',
-            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-        }
-    });
-    
 
 var positions = [
     Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
 ];
 var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, positions);
 Cesium.when(promise, function(updatedPositions) {
-    
+    console.log('test');
     console.log(markerPos.height);
     console.log(updatedPositions);
     
@@ -196,6 +127,9 @@ Cesium.when(promise, function(updatedPositions) {
     // updatedPositions is just a reference to positions.
 });
 
+/**
+addMarker(6.86339933569173,61.9377705837496);
+*/
 
 
 
@@ -203,9 +137,135 @@ Cesium.when(promise, function(updatedPositions) {
 
 
 
+var stryn;
+
+
+var positions = 
+[
+      Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496),
+      Cesium.Cartographic.fromDegrees(6.86064458723271,61.9406402731954),
+      Cesium.Cartographic.fromDegrees(6.8571895811401,61.9441772873158),
+      Cesium.Cartographic.fromDegrees(6.86087979967812,61.9447979617182),
+      Cesium.Cartographic.fromDegrees(6.86344624795662,61.9423909615729),
+      Cesium.Cartographic.fromDegrees(6.86447518088584,61.942406380056)
+              
+  ];
+  
+  function cartoToCartesian(positions) {
+      var pos = [];
+      for (coor in positions) {
+          pos.push(coor.longitude)
+          pos.push(coor.latitude);
+          pos.push(222);
+      }
+      
+      return pos;
+      
+  }
+  
+  
+
+var orangePolygon = viewer.entities.add({
+    name : 'Orange polygon with per-position heights and outline',
+    polygon : {
+        hierarchy : Cesium.Cartesian3.fromDegreesArrayHeights([6.86339933569173,61.9377705837496, 600,
+                                                               6.86064458723271,61.9406402731954, 600,
+                                                               6.8571895811401,61.9441772873158, 600,
+                                                               6.86087979967812,61.9447979617182, 300]),
+        extrudedHeight: 0,
+        perPositionHeight : true,
+        material : Cesium.Color.ORANGE,
+        outline : true,
+        outlineColor : Cesium.Color.BLACK
+    }
+});
+
+              
+var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 11, positions);
+Cesium.when(promise, function(updatedPositions) {
+    console.log(updatedPositions);
+    console.log('re');
+    
+    var pos = Cartesian3.fromDegreesArrayHeights();
+            
+        console.log(cartoToCartesian(udatedPositions));
+        stryn = viewer.entities.add({
+          name : 'Stryn',
+          polygon : {
+            hierarchy : cartoToCartesian(udatedPositions),
+            material : Cesium.Color.RED.withAlpha(0.5),
+            outline : true,
+            outlineColor : Cesium.Color.BLACK
+          }
+        });
+
+
+
+
+    // positions[0].height and positions[1].height have been updated.
+    // updatedPositions is just a reference to positions.
+});
 
 
 
 viewer.zoomTo(stryn);
+
+
+var positions = [
+    Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496),
+];
+
+viewer.terrainProvider = cesiumTerrainProvider;
+viewer.imageryLayers.addImageryProvider(kartverketTopo2);
+
+      
+      /*
+
+
+var positions = [
+    Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
+];
+var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 11, positions);
+Cesium.when(promise, function(updatedPositions) {
+    console.log(updatedPositions);
+    console.log('re');
+    // positions[0].height and positions[1].height have been updated.
+    // updatedPositions is just a reference to positions.
+});
+
+viewer.zoomTo(stryn);
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
