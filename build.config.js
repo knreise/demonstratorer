@@ -52,8 +52,7 @@ module.exports = {
           'list_item',
           'fangstgrop',
           'marker',
-          'thumbnail',
-          'sidebarlist'
+          'thumbnail'
         ]
     },
     {
