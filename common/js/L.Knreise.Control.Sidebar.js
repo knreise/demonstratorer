@@ -63,15 +63,16 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
     },
 
-    showFeature: function (feature, template, getData, callbacks) {
+    showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
             this.setContent('');
             var self = this;
             getData(feature, function (feature) {
-                self.showFeature(feature, template);
+                self.showFeature(feature, template, null, callbacks, index, numFeatures);
             });
             return;
         }
+        console.log(index, numFeatures);
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
@@ -99,6 +100,12 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 L.DomUtil.addClass(prev, 'active');
             }
 
+            var indexLabel = L.DomUtil.create('span', 'headertext pull-left', this._top);
+            indexLabel.innerHTML = index + 1 +' av';
+
+            var countLabel = L.DomUtil.create('span', 'circle pull-left', this._top);
+            countLabel.innerHTML = numFeatures;
+
             var next = L.DomUtil.create('a', 'next circle pull-left', this._top);
             next.innerHTML = '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
             if (callbacks.next) {
@@ -123,7 +130,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 index = index - 1;
                 feature = features[index];
                 var callbacks = this._createListCallbacks(feature, index, template, getData, features);
-                this.showFeature(feature, template, getData, callbacks);
+                this.showFeature(feature, template, getData, callbacks, index, features.length);
             }, this);
         }
         var next;
@@ -135,7 +142,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 index = index + 1;
                 feature = features[index];
                 var callbacks = this._createListCallbacks(feature, index, template, getData, features);
-                this.showFeature(feature, template, getData, callbacks);
+                this.showFeature(feature, template, getData, callbacks, index, features.length);
             }, this);
         }
 
@@ -172,7 +179,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             e.preventDefault();
             var callbacks = this._createListCallbacks(feature, index, template, getData, features);
 
-            this.showFeature(feature, template, getData, callbacks);
+            this.showFeature(feature, template, getData, callbacks, index, features.length);
             return false;
         }, this));
         return li;
@@ -186,10 +193,13 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             .groupBy(function (feature) {
                 return feature.properties.provider;
             })
-            .map(function (features, key) {
+            .map(function (featuresInGroup, key) {
                 var wrapper = $('<div></div>');
                 var list = $('<div class="list-group"></ul>');
-                var elements = _.map(features, function (feature, index) {
+                var elements = _.map(featuresInGroup, function (feature) {
+                    var index = _.findIndex(features, function (a) {
+                        return a === feature;
+                    });
                     return this._createListElement(feature, index, template, getData, features);
                 }, this);
                 
