@@ -77,3 +77,10 @@ span.circle {
     text-align: center;
     width: 30px;
 }
+
+.leaflet-sidebar h5 {
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}

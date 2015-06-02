@@ -173,13 +173,25 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     showFeatures: function (features, template, getData) {
         var el = $(this.options.listTemplate({count: features.length}));
-        var list = $('<div class="list-group"></ul>');
-        var elements = _.map(features, function (feature, index) {
-            return this._createListElement(feature, index, template, getData, features);
-        }, this);
-        
-        list.append(elements);
-        el.append(list);
+
+
+        var grouped = _.chain(features)
+            .groupBy(function (feature) {
+                return feature.properties.provider;
+            })
+            .map(function (features, key) {
+                var wrapper = $('<div></div>');
+                var list = $('<div class="list-group"></ul>');
+                var elements = _.map(features, function (feature, index) {
+                    return this._createListElement(feature, index, template, getData, features);
+                }, this);
+                
+                list.append(elements);
+                wrapper.append('<h5>' + key + '</h5>');
+                wrapper.append(list);
+                return wrapper;
+            }, this).value()
+        el.append(grouped);
         $(this.getContainer()).html(el);
         this.show();
     },
