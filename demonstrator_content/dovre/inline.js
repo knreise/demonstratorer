@@ -97,7 +97,11 @@ var datasets = [
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
-        toPoint: 20,
+        toPoint: {
+            minSize: 20,
+            circle: KR.Util.getVerneomrCircleStyle(),
+            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
+        },
         cluster: false
     }/*,
     {
