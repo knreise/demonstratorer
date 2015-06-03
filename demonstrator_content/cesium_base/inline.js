@@ -18,11 +18,14 @@ var viewer = new Cesium.Viewer('cesium', config.cesiumViewerOpts);
 // Add the terrain provider (AGI)
 var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
     url : '//assets.agi.com/stk-terrain/world',
-    requestVertexNormals : true
+    requestVertexNormals : true,
+    requestWaterMask: false
 });
 
 var scene = viewer.scene;
 var globe = scene.globe;
+
+globe.enableLighting = true;
 
 // Depth test: If this isn't on, objects will be visible through the terrain.
 globe.depthTestAgainstTerrain = true;
@@ -80,33 +83,32 @@ var strynBuilding = viewer.entities.add({
         outlineColor : Cesium.Color.BLACK
     }
 });
-
-
-
-
-
-viewer.zoomTo(strynBuilding);
-      
-/*
-var positions = [
-    Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
-];
+  /*
 var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 11, positions);
 Cesium.when(promise, function(updatedPositions) {
     console.log(updatedPositions);
     console.log('re');
-    // positions[0].height and positions[1].height have been updated.
-    // updatedPositions is just a reference to positions.
+    
+    var pos = Cartesian3.fromDegreesArrayHeights();
+            
+        console.log(cartoToCartesian(udatedPositions));
+        stryn = viewer.entities.add({
+          name : 'Stryn',
+          polygon : {
+            hierarchy : cartoToCartesian(udatedPositions),
+            material : Cesium.Color.RED.withAlpha(0.5),
+            outline : true,
+            outlineColor : Cesium.Color.BLACK
+          }
+        });
 });
-
-viewer.zoomTo(stryn);
 */
 
+viewer.terrainProvider = cesiumTerrainProvider;
+viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
 
-
-
-
+viewer.zoomTo(strynBuilding);
 
 
 
