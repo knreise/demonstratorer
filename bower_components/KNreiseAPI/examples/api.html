@@ -21,6 +21,15 @@
         <div id="demos" class="container-fluid"></div>
 
         <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+        <script type="text/javascript">
+            L.latLngBounds.fromBBoxString = function (bbox) {
+                bbox = KR.Util.splitBbox(bbox);
+                return new L.LatLngBounds(
+                    new L.LatLng(bbox[1], bbox[0]),
+                    new L.LatLng(bbox[3], bbox[2])
+                );
+            };
+        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/languages/javascript.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/languages/json.min.js"></script>
@@ -32,6 +41,8 @@
         <script src="../bower_components/CryptoJS/build/components/md5.js"></script>
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
         <script src="../bower_components/togeojson/togeojson.js"></script>
+        <script src="../bower_components/wellknown/wellknown.js"></script>
+        <script src="../bower_components/proj4/dist/proj4.js"></script>
 
         <script src="../dist/KNreiseAPI.min.js"></script>
 
@@ -174,7 +185,7 @@
 
                         //zoom the map to the returned bbox
                         map.fitBounds(L.latLngBounds.fromBBoxString(bbox));
-                    })
+                    });
                 });
         </script>
 
@@ -193,8 +204,69 @@
                         $('#utno_data').html(JSON.stringify(res, null, 4));
 
                         map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                    });
+                });
+        </script>
+
+
+        <script type="text/test" id="folketelling_code_template">
+                var map = getMap('folketelling_map');
+                map.setView([63.429722, 10.393333], 14);
+                var api = new KR.API();
+
+                var folketelling = {
+                    api: 'folketelling',
+                    dataset: 'property',
+                    limit: 10
+                };
+
+                var bbox = map.getBounds().toBBoxString();
+                $('#get_folketelling').on('click', function () {
+                    api.getBbox(folketelling, bbox, function (geoJson) {
+                        $('#folketelling_data').html(JSON.stringify(geoJson, null, 4));
+                        L.geoJson(geoJson).addTo(map);
+                    });
+                });
+        </script>
+
+        <script type="text/test" id="sparql_point_code_template">
+                var api = new KR.API();
+                var map = getMap('sparql_point_map');
+
+                var sparql = {
+                    limit: 100,
+                    api: 'kulturminnedataSparql',
+                    fylke: '08'
+                };
+
+                $('#get_sparql_point').on('click', function () {
+                    api.getData(sparql, function (res) {
+                        $('#sparql_point_data').html(JSON.stringify(res, null, 4));
+
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
                     })
                 });
+        </script>
+
+        <script type="text/test" id="sparql_polygon_code_template">
+                var api = new KR.API();
+                var map = getMap('sparql_polygon_map');
+
+                var sparql = {
+                    limit: 100,
+                    api: 'kulturminnedataSparql',
+                    fylke: '08',
+                    geomType: 'polygon'
+                };
+
+                $('#get_sparql_polygon').on('click', function () {
+                    api.getData(sparql, function (res) {
+                        $('#sparql_polygon_data').html(JSON.stringify(res, null, 4));
+
+                        map.fitBounds(L.geoJson(res).addTo(map).getBounds());
+                    })
+                });
+
         </script>
 
         <script type="text/javascript">
@@ -225,7 +297,10 @@
                     {id: 'kulturminnedata', title: 'Kulturminnedata (ArcGIS REST), dataset by bbox'},
                     {id: 'verneomraader', title: 'Verneområder (CartoDB), dataset by bbox'},
                     {id: 'bbox', 'title': 'Get bounding box for municipality'},
-                    {id: 'utno', 'title': 'Get GPX file (from ut.no)'}
+                    {id: 'utno', 'title': 'Get GPX file (from ut.no)'},
+                    {id: 'folketelling', 'title': 'Folketelling, properties by bbox'},
+                    {id: 'sparql_point', 'title': 'Kulturminnedata, SPARQL, point'},
+                    {id: 'sparql_polygon', 'title': 'Kulturminnedata, SPARQL, polygon'}
                 ];
 
                 var examples = _.map(demos, function (demo) {

@@ -12,13 +12,25 @@ KR.Util = {};
         }).join('&');
     };
 
+    ns.handleError = function (errorCallback, error) {
+        if (errorCallback) {
+            errorCallback({'error': error});
+            return;
+        }
+        throw new Error(error);
+    };
+
     ns.sendRequest = function (url, parser, callback, errorCallback) {
         return $.ajax({
             type: 'get',
             url: url,
             success: function (response) {
                 if (parser) {
-                    callback(parser(response));
+                    try {
+                        callback(parser(response));
+                    } catch (e) {
+                        ns.handleError(errorCallback, {error: e.message, data: response});
+                    }
                 } else {
                     callback(response);
                 }
@@ -34,6 +46,14 @@ KR.Util = {};
                 'type': 'Point',
                 'coordinates': [latLng.lng, latLng.lat]
             },
+            'properties': properties
+        };
+    };
+
+    ns.createGeoJSONFeatureFromGeom = function (geom, properties) {
+        return {
+            'type': 'Feature',
+            'geometry': geom,
             'properties': properties
         };
     };
@@ -557,6 +577,8 @@ KR.WikipediaAPI = function () {
 
     var BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
 
+    var MAX_RADIUS = 10000;
+
     function _wikiquery(params, callback) {
         var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
@@ -660,7 +682,7 @@ KR.WikipediaAPI = function () {
                 callback(KR.Util.createFeatureCollection(features));
             });
         } catch (error) {
-            errorCallback(response);
+            KR.Util.handleError(errorCallback, response.error.info);
         }
     }
 
@@ -669,6 +691,12 @@ KR.WikipediaAPI = function () {
         Maps data to format similar to norvegiana api.
     */
     function getWithin(query, latLng, distance, callback, errorCallback) {
+
+        if (distance > MAX_RADIUS) {
+            KR.Util.handleError(errorCallback, 'to wide search radius (max is ' + MAX_RADIUS + ')');
+            return;
+        }
+
         var params = {
             action: 'query',
             list: 'geosearch',
@@ -707,6 +735,194 @@ KR.UtnoAPI = function () {
         getData: getData
     };
 };
+/*global L:false, esri2geo: false*/
+
+var KR = this.KR || {};
+
+KR.FolketellingAPI = function () {
+    'use strict';
+
+    var BASE_URL = 'http://api.digitalarkivet.arkivverket.no/v1/census/1910/';
+
+    var MAX_DISTANCE = 5000;
+
+    function _dictWithout(dict) {
+        var keys = _.without(_.keys(dict), Array.prototype.slice.call(arguments, 1));
+        return _.reduce(keys, function (acc, key) {
+            acc[key] = dict[key];
+            return acc;
+        }, {});
+    }
+
+    function _parser(response) {
+        var features = _.map(response.results, function (item) {
+            var properties = _dictWithout(item, 'latitude', 'longitude');
+            return KR.Util.createGeoJSONFeature({lat: item.latitude, lng: item.longitude}, properties);
+        });
+        return KR.Util.createFeatureCollection(features);
+    }
+
+    function getWithin(dataset, latLng, distance, callback, errorCallback, options) {
+        var limit = dataset.limit || 1000;
+
+        if (dataset.dataset !== 'property') {
+            KR.Util.handleError(errorCallback, 'unknown dataset ' + dataset.dataset);
+            return;
+        }
+
+        if (distance > MAX_DISTANCE) {
+            KR.Util.handleError(errorCallback, 'to wide search radius');
+            return;
+        }
+        var params = {
+            latitude: latLng.lat,
+            longitude: latLng.lng,
+            precision: distance,
+            limit: limit
+        };
+
+        var url = BASE_URL +  'search_property_geo?' + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, _parser, callback, errorCallback);
+    }
+
+    return {
+        getWithin: getWithin
+    };
+};
+/*global proj4:false, wellknown:false */
+var KR = this.KR || {};
+
+KR.SparqlAPI = function (BASE_URL) {
+    'use strict';
+
+    if (typeof proj4 !== 'undefined') {
+        proj4.defs([
+            [
+                'EPSG:32633',
+                '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs'
+            ]
+        ]);
+    }
+
+    function _transform(coordinates) {
+        if (typeof proj4 === 'undefined') {
+            throw new Error('Proj4js not found!');
+        }
+        return proj4('EPSG:32633', 'EPSG:4326', coordinates);
+    }
+
+    function _parseGeom(geom) {
+        geom = wellknown.parse(geom.value);
+        if (geom.type === 'Point') {
+            geom.coordinates = _transform(geom.coordinates);
+        }
+        if (geom.type === 'Polygon') {
+
+            geom.coordinates = _.map(geom.coordinates, function (ring) {
+                return _.map(ring, _transform);
+            });
+        }
+
+        return geom;
+    }
+
+    function _parseResponse(response) {
+
+        response = JSON.parse(response);
+        var features = _.map(response.results.bindings, function (item) {
+            var keys = _.without(_.keys(item), 'punkt', 'omraade');
+            var attrs = _.reduce(keys, function (acc, key) {
+                acc[key] = item[key].value;
+                return acc;
+            }, {});
+            if (_.has(item, 'punkt')) {
+                return KR.Util.createGeoJSONFeatureFromGeom(
+                    _parseGeom(item.punkt),
+                    attrs
+                );
+            }
+            if (_.has(item, 'omraade')) {
+                return KR.Util.createGeoJSONFeatureFromGeom(
+                    _parseGeom(item.omraade),
+                    attrs
+                );
+            }
+            return null;
+        });
+        return KR.Util.createFeatureCollection(_.compact(features));
+    }
+
+    function _createQuery(dataset) {
+        var filter;
+        if (dataset.filter) {
+            filter = dataset.filter;
+        } else if (dataset.fylke) {
+            filter = 'regex(?kommune, "^.*' + dataset.fylke + '[1-9]{2}")';
+        } else {
+            throw new Error('not enough parameters to api!');
+        }
+
+
+        var fields = [
+            '?lokid',
+            '?label',
+            '?beskrivelse',
+            '?loklab',
+            '?lokimg'
+        ];
+
+        var where = [
+            '?lok a <https://data.kulturminne.no/askeladden/schema/Lokalitet> .',
+            '?lok <http://www.w3.org/2000/01/rdf-schema#label> ?label .',
+            '?lok <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .',
+            '?lok <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse .',
+            '?lok <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori.'
+        ];
+
+        if (dataset.geomType === 'point') {
+            fields.push('?punkt');
+            where.push('?lok <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt .');
+        } else if (dataset.geomType === 'polygon') {
+            fields.push('?omraade');
+            where.push('?lok <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?omraade .');
+        } else {
+            throw new Error('Invalid geomType: ' + dataset.geomType);
+        }
+
+        var query = 'SELECT ' + fields.join(' ') +
+                    ' where {' +
+                    where.join('\n') +
+                    '?lokalitetskategori rdfs:label ?loklab .' +
+                    'FILTER ' + filter +
+                    'BIND(REPLACE(STR(?kommune), "http://psi.datanav.info/difi/geo/kommune/", "") AS ?kommuneid)' +
+                    'BIND(REPLACE(STR(?lok), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+                    'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg)' +
+                    '}';
+        if (dataset.limit) {
+            query += 'LIMIT ' + dataset.limit;
+        }
+        return query;
+    }
+
+    function getData(dataset, callback, errorCallback, options) {
+        dataset = _.extend({}, {geomType: 'point'}, dataset);
+        var params = {
+            'default-graph-uri': '',
+            'query': _createQuery(dataset),
+            'format': 'application/sparql-results+json',
+            'timeout': 0,
+            'debug': 'off'
+        };
+
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, _parseResponse, callback, errorCallback);
+    }
+
+    return {
+        getData: getData
+    };
+};
+
 var KR = this.KR || {};
 
 KR.API = function (options) {
@@ -725,6 +941,13 @@ KR.API = function (options) {
         );
     }
 
+    var kulturminnedataSparqlAPI;
+    if (KR.SparqlAPI) {
+        kulturminnedataSparqlAPI = new KR.SparqlAPI(
+            'http://crossorigin.me/https://sparql.kulturminne.no/'
+        );
+    }
+
     var cartodbAPI;
     if (_.has(options, 'cartodb')) {
         cartodbAPI = new KR.CartodbAPI(options.cartodb.user, options.cartodb.apikey);
@@ -736,12 +959,19 @@ KR.API = function (options) {
         utnoAPI = new KR.UtnoAPI();
     }
 
+    var folketellingAPI;
+    if (KR.FolketellingAPI) {
+        folketellingAPI = new KR.FolketellingAPI();
+    }
+
     var apis = {
         norvegiana: norvegianaAPI,
         wikipedia: wikipediaAPI,
         cartodb: cartodbAPI,
         kulturminnedata: kulturminnedataAPI,
-        utno: utnoAPI
+        kulturminnedataSparql: kulturminnedataSparqlAPI,
+        utno: utnoAPI,
+        folketelling: folketellingAPI
     };
 
     var datasets = {
