@@ -39,7 +39,8 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 layer.setZIndexOffset(0);
             }
             if (layer.setStyle && this.options.dataset.style) {
-                layer.setStyle(this.options.dataset.style());
+                var parent = this.getParentLayer(layer._leaflet_id);
+                layer.setStyle(this.options.dataset.style(parent.feature));
             }
             this._selectedLayer = null;
         }
@@ -53,11 +54,29 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             layer.setZIndexOffset(1000);
         }
         if (layer.setStyle && this.options.dataset.selectedStyle) {
-            layer.setStyle(this.options.dataset.selectedStyle());
+            var parent = this.getParentLayer(layer._leaflet_id);
+            layer.setStyle(this.options.dataset.selectedStyle(parent.feature));
         }
-
-        layer.selected = true;
         this._selectedLayer = layer;
+    },
+
+    getParentLayer: function (id) {
+        var l = this._layers[id];
+        if (l) {
+            return l;
+        }
+        var key, layer, found;
+        for (key in this._layers) {
+            if (this._layers.hasOwnProperty(key)) {
+                layer = this._layers[key];
+                if (layer.getLayer) {
+                    found = layer.getLayer(id);
+                    if (found) {
+                        return layer;
+                    }
+                }
+            }
+        }
     },
 
     getZoomThreshold: function (path) {
@@ -107,25 +126,27 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _layeradd: function (event) {
-        var feature = event.layer;
-        if (feature.getBounds && !feature.zoomThreshold && !feature.marker) {
-            var zoomThreshold = this.getZoomThreshold(feature);
-            var marker = L.marker(
-                feature.getBounds().getCenter(),
-                {icon: this._createFeatureIcon(feature.feature)}
-            );
-            marker.feature = feature.feature;
-            marker.on('click', function (e) {
-                feature.fire('click', e);
-            });
+        if (this.options.dataset.toPoint) {
+            var feature = event.layer;
+            if (feature.getBounds && !feature.zoomThreshold && !feature.marker) {
+                var zoomThreshold = this.getZoomThreshold(feature);
+                var marker = L.marker(
+                    feature.getBounds().getCenter(),
+                    {icon: this._createFeatureIcon(feature.feature)}
+                );
+                marker.feature = feature.feature;
+                marker.on('click', function (e) {
+                    feature.fire('click', e);
+                });
 
-            feature.zoomThreshold = zoomThreshold;
-            this.removedPaths.push(feature);
-            feature.marker = marker;
+                feature.zoomThreshold = zoomThreshold;
+                this.removedPaths.push(feature);
+                feature.marker = marker;
 
-            if (this._map.getZoom() <= zoomThreshold) {
-                this.removeLayer(feature);
-                this.addLayer(feature.marker);
+                if (this._map.getZoom() <= zoomThreshold) {
+                    this.removeLayer(feature);
+                    this.addLayer(feature.marker);
+                }
             }
         }
     },

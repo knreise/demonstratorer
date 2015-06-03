@@ -3712,6 +3712,7 @@ L.Marker = L.Class.extend({
 	},
 
 	_onMouseClick: function (e) {
+		console.log("!!")
 		var wasDragged = this.dragging && this.dragging.moved();
 
 		if (this.hasEventListeners(e.type) || wasDragged) {
@@ -4472,6 +4473,9 @@ L.FeatureGroup = L.LayerGroup.extend({
 			layer: e.target,
 			target: this
 		}, e);
+		if (e.type === 'click') {
+			console.log(e)
+		}
 		this.fire(e.type, e);
 	}
 });
@@ -5173,6 +5177,7 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 
 	_onClick: function (e) {
 		if (this._containsPoint(e.layerPoint)) {
+			console.log("!!!!!!");
 			this.fire('click', e);
 		}
 	},
@@ -6132,6 +6137,7 @@ L.GeoJSON = L.FeatureGroup.extend({
 		if (options.filter && !options.filter(geojson)) { return; }
 
 		var layer = L.GeoJSON.geometryToLayer(geojson, options.pointToLayer, options.coordsToLatLng, options);
+
 		layer.feature = L.GeoJSON.asFeature(geojson);
 
 		layer.defaultOptions = layer.options;

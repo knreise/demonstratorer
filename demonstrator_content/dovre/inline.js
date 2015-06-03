@@ -36,9 +36,12 @@ KR.Config.templates = {
     'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
 };
 
+
+
+
 //The datasets in use
 var datasets = [
-    {
+    /*{
         dataset: {
             api: 'cartodb',
             table: 'pilegrimsleden_dovre',
@@ -79,7 +82,7 @@ var datasets = [
         },
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true
-    },
+    },*/
     {
         dataset: {
             api: 'cartodb',
@@ -89,18 +92,14 @@ var datasets = [
         provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
-        style: function (feature) {
-            return {fillOpacity: 0.2, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
-        },
-        selectedStyle: function (feature) {
-            return {fillOpacity: 0.6, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
-        },
+        style: KR.Util.getVerneomrStyle(0.2),
+        selectedStyle: KR.Util.getVerneomrStyle(0.5),
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
         toPoint: 20,
         cluster: false
-    },
+    }/*,
     {
         datasets: [
             {
@@ -133,7 +132,7 @@ var datasets = [
         },
         smallMarker: true,
         minZoom: 14
-    }
+    }*/
 ];
 
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
