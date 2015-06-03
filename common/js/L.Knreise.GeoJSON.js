@@ -20,7 +20,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     removedPaths: [],
 
     isCollapsed: function (path, zoom) {
-        var minSize = this.options.dataset.toPoint.minSize;
+        var minSize = this.options.dataset.toPoint.minSize || 20;
         var bounds = path.getBounds();
 
         var ne_px = this._map.project(bounds.getNorthEast(), zoom);
