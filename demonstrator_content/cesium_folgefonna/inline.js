@@ -44,6 +44,8 @@ var kartverketTopo2 = new Cesium.WebMapTileServiceImageryProvider({
 
 viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
+
+
 var api = new KR.API({
     cartodb: {
         apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
@@ -51,10 +53,11 @@ var api = new KR.API({
     }
 });
 
-var tur = {
-    api: 'utno',
-    id: '2.8158',
-    type: 'gpx'
+console.log(api);
+
+var dataset = {
+    api: 'norvegiana',
+    dataset: 'Kulturminnesok'
 };
 
     

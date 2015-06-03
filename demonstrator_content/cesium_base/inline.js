@@ -1,7 +1,7 @@
 
 
+// config object removing timeline and other elements that are on by default
 var config = {
-    
     cesiumViewerOpts : {
         timeline: false, 
         baseLayerPicker: false, 
@@ -10,7 +10,6 @@ var config = {
         animation: false,
         orderIndependentTranslucency: false
     }
-    
 }
 
 var viewer = new Cesium.Viewer('cesium', config.cesiumViewerOpts);
@@ -24,9 +23,9 @@ var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
 
 var scene = viewer.scene;
 var globe = scene.globe;
+
+// Depth test: If this isn't on, objects will be visible through the terrain.
 globe.depthTestAgainstTerrain = true;
-
-
 
 
 // Add kartverket WMTS
@@ -40,188 +39,55 @@ var kartverketTopo2 = new Cesium.WebMapTileServiceImageryProvider({
     maximumLevel: 19
 });
 
-
-var api = new KR.API({
-    cartodb: {
-        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-        user: 'knreise'
-    }
-});
-
-console.log(api);
-
-var dataset = {
-    api: 'norvegiana',
-    dataset: 'Kulturminnesok'
-};
+viewer.terrainProvider = cesiumTerrainProvider;
+viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
 
 
-var mouseHandler = new Cesium.ScreenSpaceEventHandler(viewer.canvas); 
-mouseHandler.setInputAction( function(movement){ 
-    console.log(movement);
-    },Cesium.ScreenSpaceEventType.LEFT_CLICK);  
 
-
-var stryn = viewer.entities.add({
-  name : 'Stryn',
-  polygon : {
-    hierarchy : Cesium.Cartesian3.fromDegreesArray([
-      6.86339933569173,61.9377705837496,
-      6.86064458723271,61.9406402731954,
-      6.8571895811401,61.9441772873158,
-      6.86087979967812,61.9447979617182,
-      6.86344624795662,61.9423909615729,
-      6.86447518088584,61.942406380056]),
-    material : Cesium.Color.RED.withAlpha(0.5),
-    outline : true,
-    outlineColor : Cesium.Color.BLACK
+var strynMarker = viewer.entities.add({
+  position : Cesium.Cartesian3.fromDegrees(6.719534397125244, 61.903449584557976, 80),
+  billboard : {
+        image : '../common/img/marker-icon-green.png',
+        show : true, // default
+        heightReference: 2,
+        verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+        scale : 1
+  },
+  label : {
+	text : 'Stryn',
+    font : '14pt monospace',
+    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+    outlineWidth : 2,
+    verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+    pixelOffset : new Cesium.Cartesian2(0, 32)
   }
 });
 
-/*
-
-function getHeight(cartographicPosition) {
-    var samples = Cesium.sampleTerrain(viewer.terrainProvider, 9, [certographicPosition]) {
-        console.log(samples);
-    return samples[0];
-}
-
-var addMouseHandler = function(scene) {
-
-        var animation;
-        var handler = new EventHandler(scene.getCanvas());
-        var pickedObject;
-
-        handler.setMouseAction(
-
-            function(movement) {
-
-                    console.log("scene=" + scene); // exists
-                    pickedObject = scene.pick(movement.endPosition);  // fails here as this will in turn call Scene.prototype.pick()
-                    console.log("pickedObject=" + pickedObject);
-                    console.log("pickedObject.isBillboard=" + pickedObject.isPlatform)
-                    if ((pickedObject) && !pickedObject.isPlatform && !pickedObject.highlighted) {
-                        
-                    }
-                    
-            }
-            
-}
 
 
-var positions = [
-    Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
-];
-var promise = Cesium.sampleTerrain(viewer.terrainProvider, 11, positions);
-Cesium.when(promise, function(updatedPositions) {
-    console.log('test');
-    console.log(markerPos.height);
-    console.log(updatedPositions);
-    
-    entity.height = updatedPositions[0].height;
-    console.log(updatedPositions[0].height);
-    
-    console.log(markerPos.height);
-    // positions[0].height and positions[1].height have been updated.
-    // updatedPositions is just a reference to positions.
-});
-
-/**
-addMarker(6.86339933569173,61.9377705837496);
-*/
-
-
-
-
-
-
-
-var stryn;
-
-
-var positions = 
-[
-      Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496),
-      Cesium.Cartographic.fromDegrees(6.86064458723271,61.9406402731954),
-      Cesium.Cartographic.fromDegrees(6.8571895811401,61.9441772873158),
-      Cesium.Cartographic.fromDegrees(6.86087979967812,61.9447979617182),
-      Cesium.Cartographic.fromDegrees(6.86344624795662,61.9423909615729),
-      Cesium.Cartographic.fromDegrees(6.86447518088584,61.942406380056)
-              
-  ];
-  
-  function cartoToCartesian(positions) {
-      var pos = [];
-      for (coor in positions) {
-          pos.push(coor.longitude)
-          pos.push(coor.latitude);
-          pos.push(222);
-      }
-      
-      return pos;
-      
-  }
+var building = [6.715291142463684, 61.900781568986325, 60, 6.715092658996582, 61.90066281667221, 60, 6.714212894439697, 61.900442997342445, 60, 6.714287996292114, 61.90037983057622, 60, 6.713864207267761, 61.90027371011537, 60, 6.713837385177612, 61.90031161032221, 60, 6.713719367980957, 61.90028381684177, 60, 6.713773012161255, 61.90024591660051, 60, 6.713740825653076, 61.90020801631225, 60, 6.7128986120224, 61.90001346076016, 60, 6.712764501571655, 61.90015495582985, 60, 6.71289324760437, 61.90019285618381, 60, 6.712791323661804, 61.90029392356487, 60, 6.712930798530579, 61.90032677039183, 60, 6.712914705276489, 61.90036214385832, 60, 6.712968349456787, 61.900374777229295, 60, 6.71288788318634, 61.90046573734636, 60, 6.712566018104553, 61.90038741059507, 60, 6.712077856063843, 61.90082452183749, 60, 6.712362170219421, 61.9009053740996, 60, 6.712292432785034, 61.90096095990585, 60, 6.7127376794815055, 61.90107718444708, 60, 6.7129576206207275, 61.90089021431674, 60, 6.712828874588013, 61.90084726155781, 60, 6.713005900382995, 61.90070829633634, 60, 6.713719367980957, 61.900885161054106, 60, 6.713864207267761, 61.900738616074854, 60, 6.714009046554565, 61.900781568986325, 60, 6.713515520095825, 61.90121109478409, 60, 6.714266538619995, 61.90140816930827, 60, 6.714969277381897, 61.900789148905616, 60, 6.715237498283386, 61.90085484146084, 60, 6.715291142463684, 61.900781568986325, 60];
   
   
-
-var orangePolygon = viewer.entities.add({
-    name : 'Orange polygon with per-position heights and outline',
+var strynBuilding = viewer.entities.add({
+    name : 'Stryn Building',
     polygon : {
-        hierarchy : Cesium.Cartesian3.fromDegreesArrayHeights([6.86339933569173,61.9377705837496, 600,
-                                                               6.86064458723271,61.9406402731954, 600,
-                                                               6.8571895811401,61.9441772873158, 600,
-                                                               6.86087979967812,61.9447979617182, 300]),
+        hierarchy : Cesium.Cartesian3.fromDegreesArrayHeights(building),
         extrudedHeight: 0,
         perPositionHeight : true,
-        material : Cesium.Color.ORANGE,
+        material : Cesium.Color.BLUE,
         outline : true,
         outlineColor : Cesium.Color.BLACK
     }
 });
 
-              
-var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 11, positions);
-Cesium.when(promise, function(updatedPositions) {
-    console.log(updatedPositions);
-    console.log('re');
-    
-    var pos = Cartesian3.fromDegreesArrayHeights();
-            
-        console.log(cartoToCartesian(udatedPositions));
-        stryn = viewer.entities.add({
-          name : 'Stryn',
-          polygon : {
-            hierarchy : cartoToCartesian(udatedPositions),
-            material : Cesium.Color.RED.withAlpha(0.5),
-            outline : true,
-            outlineColor : Cesium.Color.BLACK
-          }
-        });
 
 
 
 
-    // positions[0].height and positions[1].height have been updated.
-    // updatedPositions is just a reference to positions.
-});
-
-
-
-viewer.zoomTo(stryn);
-
-
-var positions = [
-    Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496),
-];
-
-viewer.terrainProvider = cesiumTerrainProvider;
-viewer.imageryLayers.addImageryProvider(kartverketTopo2);
-
+viewer.zoomTo(strynBuilding);
       
-      /*
-
-
+/*
 var positions = [
     Cesium.Cartographic.fromDegrees(6.86339933569173,61.9377705837496)
 ];

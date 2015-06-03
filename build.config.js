@@ -241,6 +241,7 @@ module.exports = {
         name: 'Cesium base example',
         scripts: [
           'bower_components/Cesium-1.9/Build/Cesium/Cesium.js',
+          'bower_components/togeojson/togeojson.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
