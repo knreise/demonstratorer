@@ -40,11 +40,11 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             }
             if (layer.setStyle && this.options.dataset.style) {
                 var feature = layer.feature;
-                if (feature) {
+                if (!feature) {
                     var parent = this.getParentLayer(layer._leaflet_id);
                     feature = parent.feature;
                 }
-                if (this.options.dataset.toPoint) {
+                if (this.options.dataset.toPoint && this.options.dataset.toPoint.circle) {
                     layer.setStyle(this.options.dataset.toPoint.circle(feature));
                 } else {
                     layer.setStyle(this.options.dataset.style(feature));
@@ -55,7 +55,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _featureClicked: function (e) {
-        if (e.parent) {
+        if (e.parent && this.options.dataset.toPoint.stopPolyClick) {
             return;
         }
         e.layer._map.fire('layerSelected');
@@ -66,12 +66,12 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         }
         if (layer.setStyle) {
             var feature = layer.feature;
-            if (feature) {
+            if (!feature) {
                 var parent = this.getParentLayer(layer._leaflet_id);
                 feature = parent.feature;
             }
             if (this.options.dataset.selectedStyle) {
-                if (this.options.dataset.toPoint) {
+                if (this.options.dataset.toPoint && this.options.dataset.toPoint.circleSelected) {
                     layer.setStyle(this.options.dataset.toPoint.circleSelected(feature));
                 } else {
                     layer.setStyle(this.options.dataset.selectedStyle(feature));
@@ -122,6 +122,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _zoomend: function () {
+        if (!this.options.dataset.toPoint) {
+            return;
+        }
         var removedTemp = [],
             feature,
             i;
@@ -129,7 +132,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         this.eachLayer(function (feature) {
             if (this._map.getZoom() <= feature.zoomThreshold) {
                 this.removeLayer(feature);
-                //this.addLayer(feature.marker);
+                if (!this.options.dataset.toPoint.showAlways) {
+                    this.addLayer(feature.marker);
+                }
                 removedTemp.push(feature);
             }
         }, this);
@@ -137,7 +142,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         for (i = 0; i < this.removedPaths.length; i++) {
             feature = this.removedPaths[i];
             if (this._map.getZoom() > feature.zoomThreshold) {
-                //this.removeLayer(feature.marker);
+                if (!this.options.dataset.toPoint.showAlways) {
+                    this.removeLayer(feature.marker);
+                }
                 this.addLayer(feature);
                 this.removedPaths.splice(i, 1);
                 i = i - 1;
@@ -182,8 +189,13 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 feature.marker.isMarker = true;
                 if (this._map.getZoom() <= zoomThreshold) {
                     this.removeLayer(feature);
+                    if (!this.options.dataset.toPoint.showAlways) {
+                        this.addLayer(feature.marker);
+                    }
                 }
-                this.addLayer(feature.marker);
+                if (this.options.dataset.toPoint.showAlways) {
+                    this.addLayer(feature.marker);
+                }
             }
         }
     },

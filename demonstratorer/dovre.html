@@ -349,6 +349,8 @@ var datasets = [
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
         toPoint: {
+            showAlways: true,
+            stopPolyClick: true,
             minSize: 20,
             circle: KR.Util.getVerneomrCircleStyle(),
             circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
