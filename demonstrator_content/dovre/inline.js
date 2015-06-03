@@ -41,7 +41,7 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-    /*{
+    {
         dataset: {
             api: 'cartodb',
             table: 'pilegrimsleden_dovre',
@@ -82,7 +82,7 @@ var datasets = [
         },
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true
-    },*/
+    },
     {
         dataset: {
             api: 'cartodb',
@@ -105,7 +105,7 @@ var datasets = [
             circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
         },
         cluster: false
-    }/*,
+    },
     {
         datasets: [
             {
@@ -138,7 +138,7 @@ var datasets = [
         },
         smallMarker: true,
         minZoom: 14
-    }*/
+    }
 ];
 
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
