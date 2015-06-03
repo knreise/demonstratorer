@@ -77,6 +77,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                     layer.setStyle(this.options.dataset.selectedStyle(feature));
                 }
             }
+            layer.bringToFront();
         }
         this._selectedLayer = layer;
     },
