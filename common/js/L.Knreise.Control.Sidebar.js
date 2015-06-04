@@ -54,7 +54,8 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         }
         $(this.getContainer())
             .swipe({
-                swipe: function () {}
+                swipe: function () {},
+                allowPageScroll: 'vertical'
             })
             .off('swipeLeft')
             .on('swipeLeft', function () {
