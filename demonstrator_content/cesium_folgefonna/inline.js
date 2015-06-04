@@ -2,11 +2,17 @@
 // config object removing timeline and other elements that are on by default
 var config = {
     cesiumViewerOpts : {
-        timeline: false, 
+        animation: false,  
         baseLayerPicker: false, 
-        geocoder : false, 
+        fullscreenButton: false, 
+        geocoder: false, 
+        homeButton: false, 
         infoBox: false, 
-        animation: false,
+        sceneModePicker: false, 
+        selectionIndicator: false, 
+        timeline: false, 
+        navigationHelpButton: false, 
+        navigationInstructionsInitiallyVisible: false, 
         orderIndependentTranslucency: false
     }
 }
@@ -35,18 +41,6 @@ var kartverketTopo2 = new Cesium.WebMapTileServiceImageryProvider({
 });
 //viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
-
-var kartverketNorgeIBilder = new Cesium.WebMapServiceImageryProvider({
-    url : 'http://wms.geonorge.no/skwms1/wms.norgeibilder?service=wms',
-    layer : 'matrikkel_bakgrunn',
-    style : 'default',
-    version : "1.0.0",
-    format : 'image/png',
-    tileMatrixSetID : 'EPSG:3857',
-    maximumLevel: 19
-});
-
-http://wms.geonorge.no/skwms1/wms.norgeibilder?service=wms&request=getcapabilities
 
 var scene = viewer.scene;
 var globe = scene.globe;
@@ -124,6 +118,12 @@ function buildFolgefonna3D(geojson) {
 }
 
 
+function showSidebar() {
+    $('#').show();
+
+}
+
+
 
 
 function getBbox(geojson) {
@@ -148,17 +148,7 @@ function getBbox(geojson) {
     return bbox;
 }
 
-
-
-function addGeojson() {
-    
-}
-
-
-
 // getting kulturminner in areas
-
-
 function loadFangstgroper(bbox) {
         console.log('load');
     var norvegiana_kulturminnesok = {
@@ -176,9 +166,9 @@ function loadFangstgroper(bbox) {
     
     
     var sparql = {
-        limit: 100,
+        limit: 6100,
         api: 'kulturminnedataSparql',
-        fylke: '08'
+        fylke: '12'
     };
 
     
@@ -193,5 +183,3 @@ function loadFangstgroper(bbox) {
         });
 
 }
-
-

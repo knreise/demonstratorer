@@ -8,7 +8,7 @@ Usage
 
 Either install using bower:
 
-    bower install KNReiseAPI -S
+    bower install KNreiseAPI -S
 
 or, download manually.
 
