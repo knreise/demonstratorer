@@ -30,9 +30,9 @@
     "L.EasyButton": "*",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
     "L.TileLayer.Kartverket": "~1.0.0",
-    "KNreiseAPI": "~1.1.0"
+    "KNreiseAPI": "1.2.5"
   },
   "resolutions": {
-    "KNreiseAPI": "~1.1.0"
+    "KNreiseAPI": "1.2.5"
   }
 }

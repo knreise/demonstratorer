@@ -141,7 +141,12 @@ var datasets = [
     }
 ];
 
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+
+
+var errorHandler = KR.errorHandler($('#error_template').html());
+
+
+var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
 
 //get the are we are interested in
 var dovre = 511;

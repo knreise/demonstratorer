@@ -1,0 +1,22 @@
+{
+  "name": "wellknown",
+  "description": "convert wkt to geojson",
+  "version": "0.3.1",
+  "license": "BSD",
+  "keywords": [
+    "wkt",
+    "geojson",
+    "maps"
+  ],
+  "main": "index.js",
+  "homepage": "https://github.com/mapbox/wellknown",
+  "_release": "0.3.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.1",
+    "commit": "3650cb55efae734c84c8c8dda0d33493a4de0dac"
+  },
+  "_source": "https://github.com/mapbox/wellknown.git",
+  "_target": "~0.3.1",
+  "_originalSource": "https://github.com/mapbox/wellknown.git"
+}
