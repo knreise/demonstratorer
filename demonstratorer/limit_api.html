@@ -33,8 +33,14 @@
 
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
-    <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
-    <%= title %>
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
 </a>
 </script>
 
@@ -48,6 +54,7 @@
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>

@@ -1,6 +1,7 @@
 #sidebar {
     overflow: none;
-    padding: 50px 0 0 0;
+    padding: 0;
+    position: relative;
 }
 
 #sidebar .fullwidth {
@@ -8,42 +9,103 @@
 }
 
 #sidebar .sidebar-content {
-    padding: 8px 24px;
-    height: 100%;
+    bottom: 0;
     overflow: auto;
+    padding: 8px 24px;
+    position: absolute;
+    top: 50px;
 }
 
 .leaflet-sidebar .prev {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    width: 31px;
-    height: 31px;
-    color: #333;
-    font-size: 25pt;
-    line-height: 1em;
-    text-align: center;
-    background: white;
-    -webkit-border-radius: 16px;
-    border-radius: 16px;
-    cursor: pointer;
-    z-index: 8;
+    color: white !important;
 }
 
 
 .leaflet-sidebar .next {
-    position: absolute;
-    left: 50px;
-    top: 20px;
-    width: 31px;
-    height: 31px;
-    color: #333;
-    font-size: 25pt;
-    line-height: 1em;
-    text-align: center;
-    background: white;
-    -webkit-border-radius: 16px;
-    border-radius: 16px;
+    color: white !important;
+}
+
+.leaflet-sidebar .next.active, .leaflet-sidebar .prev.active {
+    background-color: #A5A5A5;
     cursor: pointer;
-    z-index: 8;
+}
+
+.leaflet-sidebar .awesome-marker {
+    position: relative;
+}
+
+.leaflet-sidebar .thumbnail {
+    margin-bottom: 0;
+    padding: 0;
+    border-width: 2px;
+}
+
+.leaflet-sidebar .circle {
+    background-color: #ddd;
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px #888888;
+    color: black;
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    width: 30px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.leaflet-sidebar .headertext {
+    color: black;
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.leaflet-sidebar .providertext {
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.leaflet-sidebar .top-menu {
+    background: white none repeat scroll 0 0;
+    height: 50px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 5000;
+}
+
+.leaflet-sidebar .close {
+    position: relative;
+    margin-right: 10px;
+    margin-top: 10px;
+    top: 0;
+    right: 0;
+}
+
+.leaflet-sidebar .sidebar-content h3 {
+    margin-top: 0;
+}
+
+.leaflet-sidebar .sidebar-link {
+    color: #333;
+}
+
+.leaflet-sidebar .sidebar-table {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.leaflet-sidebar .sidebar-table tr td:first-child {
+    font-weight: bold;
+    padding-right: 10px;
 }

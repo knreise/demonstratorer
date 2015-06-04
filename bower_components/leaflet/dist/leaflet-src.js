@@ -3550,7 +3550,6 @@ L.Marker = L.Class.extend({
 	},
 
 	setIcon: function (icon) {
-
 		this.options.icon = icon;
 
 		if (this._map) {

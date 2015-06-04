@@ -13,6 +13,8 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         if (geojson) {
             this.addData(geojson);
         }
+        this.on('click', this._featureClicked, this);
+        this._selectedLayer = null;
     },
 
     removedPaths: [],
@@ -27,6 +29,35 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         var width = ne_px.x - sw_px.x;
         var height = sw_px.y - ne_px.y;
         return (height < minSize || width < minSize);
+    },
+
+    _deselectAll: function () {
+        if (this._selectedLayer) {
+            var layer = this._selectedLayer;
+            if (layer.setIcon) {
+                layer.setIcon(this._createFeatureIcon(layer.feature, false));
+                layer.setZIndexOffset(0);
+            }
+            if (layer.setStyle && this.options.dataset.style) {
+                layer.setStyle(this.options.dataset.style());
+            }
+            this._selectedLayer = null;
+        }
+    },
+
+    _featureClicked: function (e) {
+        e.layer._map.fire('layerSelected');
+        var layer = e.layer;
+        if (layer.setIcon) {
+            layer.setIcon(this._createFeatureIcon(layer.feature, true));
+            layer.setZIndexOffset(1000);
+        }
+        if (layer.setStyle && this.options.dataset.selectedStyle) {
+            layer.setStyle(this.options.dataset.selectedStyle());
+        }
+
+        layer.selected = true;
+        this._selectedLayer = layer;
     },
 
     getZoomThreshold: function (path) {
@@ -83,6 +114,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 feature.getBounds().getCenter(),
                 {icon: this._createFeatureIcon(feature.feature)}
             );
+            marker.feature = feature.feature;
             marker.on('click', function (e) {
                 feature.fire('click', e);
             });
@@ -99,12 +131,14 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     onAdd: function (map) {
+
         L.GeoJSON.prototype.onAdd.apply(this, arguments);
         if (this.options.dataset.toPoint) {
             this._zoomend();
             map.on('zoomend', this._zoomend, this);
             this.on('layeradd', this._layeradd, this);
         }
+        map.on('layerSelected', this._deselectAll, this);
     },
 
     _getIconSize: function () {
@@ -114,17 +148,27 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         return [50, 50];
     },
 
-    _createFeatureIcon: function (feature) {
+    _createFeatureIcon: function (feature, selected) {
         if (feature.properties.thumbnail && (this.options.dataset && this.options.dataset.thumbnails)) {
             var borderColor = KR.Util.colorForFeature(feature, 'hex');
 
+
+            var styleDict = {
+                'border-color': borderColor,
+                'background-image': 'url(' + feature.properties.thumbnail + ')'
+            };
+            if (selected) {
+                styleDict['border-width'] = '3px';
+                styleDict['border-color'] = '#38A9DC';
+            }
+
             return L.divIcon({
-                html: '<div class="single" style="border-color: ' + borderColor + '; background-image: url(' + feature.properties.thumbnail + ');"></div>​',
+                html: '<div class="single" style="' + KR.Util.createStyleString(styleDict) + '"></div>​',
                 className: 'leaflet-marker-photo',
                 iconSize: this._getIconSize()
             });
         }
-        if (this.options.dataset && this.options.dataset.smallMarker) {
+        if (this.options.dataset && this.options.dataset.smallMarker && !selected) {
             var icon = KR.Util.iconForFeature(feature);
             return new L.DivIcon({
                 className: 'leaflet-marker-favicon',
@@ -132,7 +176,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 iconSize: [12, 12]
             });
         }
-        return KR.Util.markerForFeature(feature);
+        return KR.Util.markerForFeature(feature, selected);
     },
 
     _pointToLayer: function (feature, latlng) {
