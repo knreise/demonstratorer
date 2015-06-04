@@ -23,7 +23,6 @@ var viewer = new Cesium.Viewer('cesium', config.cesiumViewerOpts);
 // Add the terrain provider (AGI)
 var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
     url : '//assets.agi.com/stk-terrain/world',
-    requestWaterMask : true,
     requestVertexNormals : true
 });
 viewer.terrainProvider = cesiumTerrainProvider;
@@ -47,6 +46,10 @@ var globe = scene.globe;
 
 // Depth test: If this isn't on, objects will be visible through the terrain.
 globe.depthTestAgainstTerrain = true;
+
+
+var $sidebar = $('#sidebar');
+var $loader = $('.spinner-wrapper');
 
     
 // Setting up API and retrieving the Folgefonna geojson
@@ -72,6 +75,8 @@ api.getData(tur, function (res) {
 
 // Adding folgefonna to Cesium
 
+var sparqlKulturminneTemplate = _.template($('#cesium_sparql_kulturminne_template').html());
+var arcKulturminneTemplate = _.template($('#cesium_arc_kulturminne_template').html());
 var folgefonna;
 
 function addFolgefonna2D(geojson) {
@@ -94,6 +99,7 @@ function addFolgefonna2D(geojson) {
 }
 
 function buildFolgefonna3D(geojson) {
+    
     var coordinates = geojson.features[0].geometry.coordinates;
     var folgefonnaPos = _.map(coordinates, function(coordinatePair) {
         return new Cesium.Cartographic.fromDegrees(coordinatePair[0], coordinatePair[1]);
@@ -114,15 +120,21 @@ function buildFolgefonna3D(geojson) {
             }
         });
         viewer.zoomTo(folgefonna);
+        stopLoading();
+        
     });
 }
 
 
 function showSidebar() {
-    $('#').show();
+    $sidebar.show();
 
 }
 
+function stopLoading() {    
+    console.log('hide');
+    $loader.delay(3000).fadeOut({duration: 5000});    
+}
 
 
 
@@ -135,21 +147,123 @@ function getBbox(geojson) {
     maxLat = coordinates[0][1];
     _.each(coordinates, function(coordinatePair) {
         if (coordinatePair[0] < minLon) {
-            minLon = coordinatePair[0]-1;
+            minLon = coordinatePair[0]-0.2;
         } else if (coordinatePair[1] < minLat) {
-            minLat = coordinatePair[1]-1;
+            minLat = coordinatePair[1]-0.2;
         } else if (coordinatePair[0] > maxLon) {
-            maxLon = coordinatePair[0]+1;
+            maxLon = coordinatePair[0]+0.2;
         } else if (coordinatePair[1] > minLat) {
-            maxLat = coordinatePair[1]+1;
+            maxLat = coordinatePair[1]+0.2;
         }
     });
     var bbox = minLon + ',' + minLat + ','  + maxLon + ',' + maxLat;
     return bbox;
 }
 
+
+function loadKulturminner(bbox) {
+    
+
+    var kulturminner = {
+        api: 'kulturminnedata',
+        layer: 0
+    };
+
+        api.getBbox(kulturminner, bbox, function (res) {
+            
+
+        });
+
+    
+    
+    var folgefonnaPos = _.map(coordinates, function(coordinatePair) {
+        return new Cesium.Cartographic.fromDegrees(coordinatePair[0], coordinatePair[1]);
+    });
+    
+    var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 14, folgefonnaPos);
+    Cesium.when(promise, function(updatedPositions) {
+        var heightCurve = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(updatedPositions);
+
+        folgefonna = viewer.entities.add({
+            polyline : {
+                positions : heightCurve,
+                width : 10.0,
+                material : new Cesium.PolylineGlowMaterialProperty({
+                    color : Cesium.Color.BLUE,
+                    glowPower : 0.25
+                })
+            }
+        });
+        
+        
+        console.log(folgefonna);
+    });
+    
+}
+/*
+function addHeightsToFeatureCollection(geojson, callback) {
+        _.map(geojson.features, function(feature) {
+            
+            console.log(feature);
+            
+            var featureCoordinates = _.map(feature.coordinates, function(coordinatePair) {
+                return new Cesium.Cartographic.fromDegrees(coordinatePair[0], coordinatePair[1]);
+            });
+            
+            var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 14, folgefonnaPos);
+            
+            Cesium.when(promise, function(updatedPositions) {
+                var heightCurve = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(updatedPositions);
+
+                folgefonna = viewer.entities.add({
+                    polyline : {
+                        positions : heightCurve,
+                        width : 10.0,
+                        material : new Cesium.PolylineGlowMaterialProperty({
+                            color : Cesium.Color.BLUE,
+                            glowPower : 0.25
+                        })
+                    }
+                });
+                viewer.zoomTo(folgefonna);
+            });
+            
+        }
+        
+        
+        
+}
+
+*/
+
 // getting kulturminner in areas
 function loadFangstgroper(bbox) {
+    var fangstgroper = {
+        api: 'kulturminnedata',
+        layer: 0
+    };
+
+        api.getBbox(fangstgroper, bbox, function (res) {
+                
+            console.log(res);
+            
+                            
+            
+            var dataSource = Cesium.GeoJsonDataSource.load(res);
+            viewer.dataSources.add(dataSource);
+            
+            
+
+        });
+
+
+    sethandler();
+
+
+
+
+    /*
+    
         console.log('load');
     var norvegiana_kulturminnesok = {
         api: 'norvegiana',
@@ -166,7 +280,7 @@ function loadFangstgroper(bbox) {
     
     
     var sparql = {
-        limit: 6100,
+        limit: 100,
         api: 'kulturminnedataSparql',
         fylke: '12'
     };
@@ -179,7 +293,50 @@ function loadFangstgroper(bbox) {
         viewer.dataSources.add(dataSource);
         viewer.zoomTo(dataSource);
 
+        sethandler();
         
         });
+*/
+}
 
+
+
+var handler;
+
+function sethandler() {
+    var pickedEntities = new Cesium.EntityCollection();
+    
+    handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction(function(movement) {
+        console.log(movement);
+        // get an array of all primitives at the mouse position
+        var pickedObjects = scene.drillPick(movement.position);
+                
+        var pickedObject = scene.pick(movement.position);
+        
+        
+
+        
+        if (Cesium.defined(pickedObjects)) {
+            //Update the collection of picked entities.
+            pickedEntities.removeAll();
+            for (var i = 0; i < pickedObjects.length; ++i) {
+                var entity = pickedObjects[i].id;
+                pickedEntities.add(entity);
+                show(entity.properties);
+                console.log(folgefonna);
+                console.log(entity.properties);
+            }
+        }
+        
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
+
+
+
+function show(properties) {
+    $('#sidebar').show();
+    console.log(properties);
+    $('#sidebar').html($(arcKulturminneTemplate(properties)));
+    
 }

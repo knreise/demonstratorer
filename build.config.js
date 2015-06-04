@@ -273,6 +273,8 @@ module.exports = {
             'common/css/cesium_base.css'
         ],
         templates: [
+          'cesium_sparql_kulturminne',
+          'cesium_arc_kulturminne'
         ]
     }
   ]
