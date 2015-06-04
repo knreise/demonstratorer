@@ -24,7 +24,7 @@
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
-        <script src="../bower_components/Cesium-1.9/Build/Cesium/Cesium.js" type="text/javascript"></script>
+        <script src="../bower_components/cesium1.9/Build/Cesium/Cesium.js" type="text/javascript"></script>
         <script src="../bower_components/togeojson/togeojson.js" type="text/javascript"></script>
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
 
@@ -47,24 +47,6 @@ var config = {
 
 var viewer = new Cesium.Viewer('cesium', config.cesiumViewerOpts);
     
-    
-    
-// Setting up API and retrieving the Folgefonna 
-
-var api = new KR.API();
-
-var tur = {
-    api: 'utno',
-    id: '2.8158',
-    type: 'gpx'
-};
-var folgefonnaCoords;
-
-api.getData(tur, function (res) {
-    console.log(res);
-    buildFolgefonna(res);
-});
-
 
 // Add the terrain provider (AGI)
 var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
@@ -85,26 +67,59 @@ var kartverketTopo2 = new Cesium.WebMapTileServiceImageryProvider({
     tileMatrixSetID : 'EPSG:3857',
     maximumLevel: 19
 });
-
-
-viewer.terrainProvider = cesiumTerrainProvider;
 //viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
 
-function buildFolgefonna(geojson) {
+var kartverketNorgeIBilder = new Cesium.WebMapServiceImageryProvider({
+    url : 'http://wms.geonorge.no/skwms1/wms.norgeibilder?service=wms',
+    layer : 'matrikkel_bakgrunn',
+    style : 'default',
+    version : "1.0.0",
+    format : 'image/png',
+    tileMatrixSetID : 'EPSG:3857',
+    maximumLevel: 19
+});
+
+http://wms.geonorge.no/skwms1/wms.norgeibilder?service=wms&request=getcapabilities
+
+var scene = viewer.scene;
+var globe = scene.globe;
+
+// Depth test: If this isn't on, objects will be visible through the terrain.
+globe.depthTestAgainstTerrain = true;
+
+    
+// Setting up API and retrieving the Folgefonna geojson
+var api = new KR.API();4
+
+var tur = {
+    api: 'utno',
+    id: '2.8158',
+    type: 'gpx'
+};
+var folgefonnaGeojson;
+
+api.getData(tur, function (res) {
+    folgefonnaGeojson = res;
+    
+    //addFolgefonna2D(folgefonnaGeojson);
+    buildFolgefonna3D(folgefonnaGeojson);
+    
+    loadFangstgroper( getBbox(folgefonnaGeojson));
+});
+
+
+
+// Adding folgefonna to Cesium
+
+var folgefonna;
+
+function addFolgefonna2D(geojson) {
     var coordinates = geojson.features[0].geometry.coordinates;
     var folgefonnaPos = _.map(coordinates, function(coordinatePair) {
         return Cesium.Cartesian3.fromDegrees(coordinatePair[0], coordinatePair[1]);
     });
-    console.log(folgefonnaPos);
-    //folgefonnaCoords = _.flatten(geojson.features[0].geometry.coordiantes);
-       
-   /*
-    var stripeMaterial = new Cesium.StripeMaterialProperty({
-        evenColor : Cesium.Color.WHITE.withAlpha(0.5),
-        oddColor : Cesium.Color.BLUE.withAlpha(0.5),
-        repeat : 5.0
-    });
+    
     viewer.entities.add({
         polyline : {
             positions : folgefonnaPos,
@@ -115,75 +130,106 @@ function buildFolgefonna(geojson) {
             })
         }
     });
+    
+}
 
+function buildFolgefonna3D(geojson) {
+    var coordinates = geojson.features[0].geometry.coordinates;
+    var folgefonnaPos = _.map(coordinates, function(coordinatePair) {
+        return new Cesium.Cartographic.fromDegrees(coordinatePair[0], coordinatePair[1]);
+    });
     
-    
-    var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 11, folgefonnaPos);
+    var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 14, folgefonnaPos);
     Cesium.when(promise, function(updatedPositions) {
-        
-        var positions = [];
-        _.each(updatedPositions, function(coordinate) {
-            positions.push(coordinate.longitude);
-            positions.push(coordinate.latitude);
-            positions.push(coordinate.height);
-        });
-        
-        console.log(positions);
-        
+        var heightCurve = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(updatedPositions);
 
+        folgefonna = viewer.entities.add({
+            polyline : {
+                positions : heightCurve,
+                width : 10.0,
+                material : new Cesium.PolylineGlowMaterialProperty({
+                    color : Cesium.Color.BLUE,
+                    glowPower : 0.25
+                })
+            }
+        });
+        viewer.zoomTo(folgefonna);
     });
-    
-    
-    
-    */
-    
-    viewer.entities.add({
-        polyline : {
-            positions : folgefonnaPos,
-            width : 10.0,
-            material : new Cesium.PolylineGlowMaterialProperty({
-                color : Cesium.Color.DEEPSKYBLUE,
-                glowPower : 0.25
-            })
+}
+
+
+
+
+function getBbox(geojson) {
+    var coordinates = geojson.features[0].geometry.coordinates;
+    var minLat, minLon, maxLat, maxLon;
+    minLon = coordinates[0][0];
+    minLat = coordinates[0][1];
+    maxLon = coordinates[0][0];
+    maxLat = coordinates[0][1];
+    _.each(coordinates, function(coordinatePair) {
+        if (coordinatePair[0] < minLon) {
+            minLon = coordinatePair[0]-1;
+        } else if (coordinatePair[1] < minLat) {
+            minLat = coordinatePair[1]-1;
+        } else if (coordinatePair[0] > maxLon) {
+            maxLon = coordinatePair[0]+1;
+        } else if (coordinatePair[1] > minLat) {
+            maxLat = coordinatePair[1]+1;
         }
     });
+    var bbox = minLon + ',' + minLat + ','  + maxLon + ',' + maxLat;
+    return bbox;
+}
+
+
+
+function addGeojson() {
+    
+}
+
+
+
+// getting kulturminner in areas
+
+
+function loadFangstgroper(bbox) {
+        console.log('load');
+    var norvegiana_kulturminnesok = {
+        api: 'norvegiana',
+        dataset: 'Kulturminnesøk'
+    };
+    
+    api.getBbox(norvegiana_kulturminnesok, bbox, function (res) {
+       console.log(res);
+        var dataSource = Cesium.GeoJsonDataSource.load(res);
+        viewer.dataSources.add(dataSource);
+        viewer.zoomTo(dataSource);
+
+    });
+    
+    
+    var sparql = {
+        limit: 100,
+        api: 'kulturminnedataSparql',
+        fylke: '08'
+    };
 
     
-        var polyline = new Cesium.SimplePolylineGeometry({
-          positions : folgefonnaPos
-        });
+        api.getData(sparql, function (res) {
+            console.log(res);
+            
+        var dataSource = Cesium.GeoJsonDataSource.load(res);
+        viewer.dataSources.add(dataSource);
+        viewer.zoomTo(dataSource);
+
         
+        });
+
 }
 
-var entities = viewer.entities;
-
-var i;
-var height;
-var positions;
-var stripeMaterial = new Cesium.StripeMaterialProperty({
-    evenColor : Cesium.Color.WHITE.withAlpha(0.5),
-    oddColor : Cesium.Color.BLUE.withAlpha(0.5),
-    repeat : 5.0
-});
-
-positions = [];
-for (i = 0; i < 40; ++i) {
-    positions.push(Cesium.Cartesian3.fromDegrees(-100.0 + i, 15.0));
-}
-console.log(positions);
-entities.add({
-    polyline : {
-        positions : positions,
-        width : 10.0,
-        material : new Cesium.PolylineGlowMaterialProperty({
-            color : Cesium.Color.DEEPSKYBLUE,
-            glowPower : 0.25
-        })
-    }
-});
 
 
-    
             }());
         </script>
     </body>

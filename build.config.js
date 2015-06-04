@@ -240,7 +240,7 @@ module.exports = {
         key: 'cesium_base',
         name: 'Cesium base example',
         scripts: [
-          'bower_components/Cesium-1.9/Build/Cesium/Cesium.js',
+          'bower_components/cesium1.9/Build/Cesium/Cesium.js',
           'bower_components/togeojson/togeojson.js',
           'common/js/DatasetLoader.js'
         ],
@@ -254,7 +254,7 @@ module.exports = {
         key: 'cesium_folgefonna',
         name: 'Folgefonna 3D',
         scripts: [
-          'bower_components/Cesium-1.9/Build/Cesium/Cesium.js',
+          'bower_components/cesium1.9/Build/Cesium/Cesium.js',
           'bower_components/togeojson/togeojson.js',
           'common/js/DatasetLoader.js'
         ],

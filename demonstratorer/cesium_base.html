@@ -27,7 +27,7 @@
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
-        <script src="../bower_components/Cesium-1.9/Build/Cesium/Cesium.js" type="text/javascript"></script>
+        <script src="../bower_components/cesium1.9/Build/Cesium/Cesium.js" type="text/javascript"></script>
         <script src="../bower_components/togeojson/togeojson.js" type="text/javascript"></script>
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
 
@@ -62,6 +62,7 @@ var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
 var scene = viewer.scene;
 var globe = scene.globe;
 
+// Will use local time to estimate actual daylight 
 globe.enableLighting = true;
 
 // Depth test: If this isn't on, objects will be visible through the terrain.
@@ -84,7 +85,7 @@ viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
 
 
-
+// Adding a marker for Stryn
 var strynMarker = viewer.entities.add({
   position : Cesium.Cartesian3.fromDegrees(6.719534397125244, 61.903449584557976, 80),
   billboard : {
@@ -105,7 +106,7 @@ var strynMarker = viewer.entities.add({
 });
 
 
-
+// Rough outline for a building in Stryn
 var building = [6.715291142463684, 61.900781568986325, 60, 6.715092658996582, 61.90066281667221, 60, 6.714212894439697, 61.900442997342445, 60, 6.714287996292114, 61.90037983057622, 60, 6.713864207267761, 61.90027371011537, 60, 6.713837385177612, 61.90031161032221, 60, 6.713719367980957, 61.90028381684177, 60, 6.713773012161255, 61.90024591660051, 60, 6.713740825653076, 61.90020801631225, 60, 6.7128986120224, 61.90001346076016, 60, 6.712764501571655, 61.90015495582985, 60, 6.71289324760437, 61.90019285618381, 60, 6.712791323661804, 61.90029392356487, 60, 6.712930798530579, 61.90032677039183, 60, 6.712914705276489, 61.90036214385832, 60, 6.712968349456787, 61.900374777229295, 60, 6.71288788318634, 61.90046573734636, 60, 6.712566018104553, 61.90038741059507, 60, 6.712077856063843, 61.90082452183749, 60, 6.712362170219421, 61.9009053740996, 60, 6.712292432785034, 61.90096095990585, 60, 6.7127376794815055, 61.90107718444708, 60, 6.7129576206207275, 61.90089021431674, 60, 6.712828874588013, 61.90084726155781, 60, 6.713005900382995, 61.90070829633634, 60, 6.713719367980957, 61.900885161054106, 60, 6.713864207267761, 61.900738616074854, 60, 6.714009046554565, 61.900781568986325, 60, 6.713515520095825, 61.90121109478409, 60, 6.714266538619995, 61.90140816930827, 60, 6.714969277381897, 61.900789148905616, 60, 6.715237498283386, 61.90085484146084, 60, 6.715291142463684, 61.900781568986325, 60];
   
   
@@ -120,29 +121,6 @@ var strynBuilding = viewer.entities.add({
         outlineColor : Cesium.Color.BLACK
     }
 });
-  /*
-var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 11, positions);
-Cesium.when(promise, function(updatedPositions) {
-    console.log(updatedPositions);
-    console.log('re');
-    
-    var pos = Cartesian3.fromDegreesArrayHeights();
-            
-        console.log(cartoToCartesian(udatedPositions));
-        stryn = viewer.entities.add({
-          name : 'Stryn',
-          polygon : {
-            hierarchy : cartoToCartesian(udatedPositions),
-            material : Cesium.Color.RED.withAlpha(0.5),
-            outline : true,
-            outlineColor : Cesium.Color.BLACK
-          }
-        });
-});
-*/
-
-viewer.terrainProvider = cesiumTerrainProvider;
-viewer.imageryLayers.addImageryProvider(kartverketTopo2);
 
 
 viewer.zoomTo(strynBuilding);
