@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
+        <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
+        <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
+        <link href='../common/css/markers.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
+        <link href='../common/css/audiojs.css' rel='stylesheet' />
+
+    </head>
+    <body>
+
+<div id="sidebar"></div>
+<div id="map"></div>
+
+<script type="text/template" id="popup_template">
+<h3><%= title %></h3>
+<p><%= dataset %></p>
+<% if (image) { %>
+<a href="<%= link %>">
+    <img class="fullwidth" src="<%= image %>" />
+</a>
+<% }%>
+<p><%= content %></p>
+<a href="<%= link %>">Mer info</a>
+</script>
+
+
+<script type="text/template" id="verneomraader_template">
+<h3>Verneområde</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= title %></dd>
+
+    <dt>Faktaark</dt>
+    <dd><a href="<%= link %>">naturbase.no</a></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= content %></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="kulturminne_template">
+<h3><%= title %></h3>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>
+</script>
+
+
+<script type="text/template" id="musit_template">
+<h3>MUSIT</h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<dl>
+    <dt>Artefakt</dt>
+    <dd><%= allProps.dc_subject %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
+
+    <dt>Funnsted</dt>
+    <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
+
+    <dt>Materiale</dt>
+    <dd><%= allProps.dcterms_medium %></dd>
+
+    <dt>Datering</dt>
+    <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
+
+    <dt>Museum</dt>
+    <dd><%= allProps.europeana_dataProvider %></dd>
+
+    <dt>Mer informasjon</dt>
+    <dd><a href="<%= link %>" target="_blank">link</a></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="digitalt_museum_template">
+<h3>Digitalt Museum</h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<dl>
+    <dt>Navn</dt>
+    <dd><%= title %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= allProps.delving_description.join('<br />') %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= allProps.europeana_dataProvider %></dd>
+
+    <dt>Mer informasjon</dt>
+    <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+<% if(contentType === 'VIDEO' && video) { %>
+    <% if (video.indexOf('mp4') !== -1) { %>
+        <video class="video-js vjs-default-skin fullwidth" controls
+         preload="auto" height="315" poster="<%= images[0] %>"
+         data-setup='{}'>
+          <source src="<%= videoEmbed %>" type='video/mp4'>
+        </video>
+    <% } else { %>
+        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    
+<% } else if(contentType === 'SOUND' && sound) { %>
+    <audio src="<%= sound %>" preload="auto"></audio>
+<% } else if(contentType === 'IMAGE' && images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<%= content %>
+
+
+<table class="sidebar-table">
+    <tr>
+      <td>Forfatter</td>
+      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Publisert</td>
+      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Lisens</td>
+      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+    </tr>
+</table>
+
+
+</script>
+
+
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
+</a>
+</script>
+
+
+<script type="text/template" id="fangstgrop_template">
+<h3>Fangstgrop</h3>
+
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker-icon-<%= color %> awesome-marker" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
+
+
+        <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
+        <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
+        <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
+        <script src="../common/js/util.js" type="text/javascript"></script>
+        <script src="../bower_components/proj4/dist/proj4.js" type="text/javascript"></script>
+        <script src="../bower_components/togeojson/togeojson.js" type="text/javascript"></script>
+        <script src="../bower_components/wellknown/wellknown.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.MarkerClusterGroup.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
+        <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
+        <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
+        <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
+        <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
+        <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            (function () {
+                'use strict';
+
+                //template used for sidebar
+
+var popupTemplate = _.template($('#popup_template').html());
+var listElementTemplate = _.template($('#list_item_template').html());
+var markerTemplate = _.template($('#marker_template').html());
+var thumbnailTemplate = _.template($('#thumbnail_template').html());
+var footerTemplate = _.template($('#footer_template').html());
+
+//create the map
+var map = L.map('map');
+
+//add a background layer from kartverket
+L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
+
+//set up an instance of the Norvegiana API
+var api = new KR.API({
+    cartodb: {
+        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+        user: 'knreise'
+    }
+});
+
+
+//The datasets in use
+var datasets = [
+    {
+        dataset: {
+            api: 'cartodb',
+            table: 'pilegrimsleden_dovre3',
+            mapper: KR.API.mappers.pilegrimsleden_dovre
+        },
+        name: 'Pilegrimsleden',
+        bbox: false
+    },
+    {
+        dataset: {
+            api: 'utno',
+            id: '2.8158',
+            type: 'huh'
+        },
+        name: 'ut.no 1',
+        bbox: false
+    },
+    {
+        dataset: {
+            api: 'utno',
+            id: '2.81582222',
+            type: 'gpx'
+        },
+        name: 'ut.no 2',
+        bbox: false
+    },
+    {
+        name: 'Fangstlokaliteter',
+    
+        dataset: {
+            api: 'norvegiana',
+            dataset: '',
+            query: ''
+        }
+    },
+    {
+        name: 'Fangstgroper',
+        dataset: {
+            api: 'kulturminnedata',
+            query: "Navn='Fangstgrop'",
+            layer: 20
+        }
+    },
+    {
+        name: 'Wikipedia',
+        dataset: {
+            api: 'wikipedia'
+        }
+    },
+    {
+        name: 'kulturminnedata 2',
+        dataset: {
+                limit: 100,
+                api: 'kulturminnedataSparql',
+                filter: ' '
+            },
+        bbox: false
+    },
+    {
+        name: 'folketelling',
+        dataset: {
+            api: 'folketelling',
+            dataset: 'property',
+            limit: 10
+        }
+    }
+
+];
+
+
+
+var errorHandler = KR.errorHandler($('#error_template').html());
+
+
+var datasetLoader = new KR.DatasetLoader(api, map, null, errorHandler);
+
+//get the are we are interested in
+var dovre = 511;
+api.getMunicipalityBounds(dovre, function (bbox) {
+    var bounds = L.latLngBounds.fromBBoxString(bbox);
+    map.fitBounds(bounds);
+    var layers = datasetLoader.loadDatasets(datasets);
+
+    L.control.datasets(layers).addTo(map);
+});
+            }());
+        </script>
+    </body>
+</html>

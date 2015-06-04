@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
@@ -12,7 +12,9 @@
     "bower_components",
     "test",
     "tests",
-    "src"
+    "src",
+    "Gruntfile.js",
+    "examples"
   ],
   "dependencies": {
     "underscore": "~1.8.3",

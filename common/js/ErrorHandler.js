@@ -11,9 +11,16 @@ var KR = this.KR || {};
                 return error.responseJSON.status;
             }
         }
+        if (error.statusText) {
+            return error.statusText;
+        }
         if (error.error) {
+            
             if (error.error.info) {
                 return error.error.info;
+            }
+            if (error.error.error) {
+                return error.error.error;
             }
             return error.error;
         }
@@ -29,6 +36,7 @@ var KR = this.KR || {};
         });
         var templ = _.template('<div><strong><%= dataset %>:</Strong> <%= error %></div>');
         return function (error) {
+
             var message = templ({
                 dataset: error.dataset,
                 error: parseError(error.error)

@@ -12,9 +12,9 @@ KR.Util = {};
         }).join('&');
     };
 
-    ns.handleError = function (errorCallback, error) {
+    ns.handleError = function (errorCallback, error, data) {
         if (errorCallback) {
-            errorCallback({'error': error});
+            errorCallback({'error': error, 'data': data});
             return;
         }
         throw new Error(error);
@@ -27,9 +27,9 @@ KR.Util = {};
             success: function (response) {
                 if (parser) {
                     try {
-                        callback(parser(response));
+                        callback(parser(response, errorCallback));
                     } catch (e) {
-                        ns.handleError(errorCallback, {error: e.message, data: response});
+                        ns.handleError(errorCallback, e.message, response);
                     }
                 } else {
                     callback(response);
@@ -115,11 +115,13 @@ KR.ArcgisAPI = function (BASE_URL) {
         });
     }
 
-    function _parseArcGisResponse(response, callback) {
+    function _parseArcGisResponse(response, callback, errorCallback) {
         response = JSON.parse(response);
         if (_.has(response, 'error')) {
-            callback(KR.Util.createFeatureCollection([]));
+            KR.Util.handleError(errorCallback, response.error.message);
+            return;
         }
+
         esri2geo.toGeoJSON(response, function (err, data) {
             if (!err) {
                 callback(data);
@@ -152,7 +154,7 @@ KR.ArcgisAPI = function (BASE_URL) {
         var layer = dataset.layer;
         var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
-            _parseArcGisResponse(response, callback);
+            _parseArcGisResponse(response, callback, errorCallback);
         }, errorCallback);
     }
 
@@ -723,11 +725,16 @@ KR.UtnoAPI = function () {
     'use strict';
 
     function getData(dataset, callback, errorCallback) {
+
+        if (typeof toGeoJSON === 'undefined') {
+            throw new Error('toGeoJSON not found!');
+        }
+
         if (dataset.type === 'gpx') {
             var url = 'http://ut.no/tur/' + dataset.id + '/gpx/';
             KR.Util.sendRequest(url, toGeoJSON.gpx, callback, errorCallback);
         } else {
-            errorCallback('unknown type');
+            KR.Util.handleError(errorCallback, 'Unknown type ' + dataset.type);
         }
     }
 
@@ -826,9 +833,14 @@ KR.SparqlAPI = function (BASE_URL) {
         return geom;
     }
 
-    function _parseResponse(response) {
+    function _parseResponse(response, errorCallback) {
+        try {
+            response = JSON.parse(response);
+        } catch (e) {
+            KR.Util.handleError(errorCallback, response);
+            return;
+        }
 
-        response = JSON.parse(response);
         var features = _.map(response.results.bindings, function (item) {
             var keys = _.without(_.keys(item), 'punkt', 'omraade');
             var attrs = _.reduce(keys, function (acc, key) {
