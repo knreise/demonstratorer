@@ -2,6 +2,9 @@
 
 var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
+var markerTemplate = _.template($('#marker_template').html());
+var thumbnailTemplate = _.template($('#thumbnail_template').html());
+var footerTemplate = _.template($('#footer_template').html());
 
 //create the map
 var map = L.map('map');
@@ -21,7 +24,10 @@ var api = new KR.API({
 var sidebar = L.Knreise.Control.sidebar('sidebar', {
     position: 'left',
     template: popupTemplate,
-    listElementTemplate: listElementTemplate
+    listElementTemplate: listElementTemplate,
+    markerTemplate: markerTemplate,
+    thumbnailTemplate: thumbnailTemplate,
+    footerTemplate: footerTemplate
 });
 map.addControl(sidebar);
 
@@ -29,6 +35,9 @@ KR.Config.templates = {
     'Musit': _.template($('#musit_template').html()),
     'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
 };
+
+
+
 
 //The datasets in use
 var datasets = [
@@ -64,7 +73,6 @@ var datasets = [
         circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
     },
     {
-        
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
         dataset: {
@@ -84,13 +92,18 @@ var datasets = [
         provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
-        style: function (feature) {
-            return {color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
-        },
+        style: KR.Util.getVerneomrStyle(0.2),
+        selectedStyle: KR.Util.getVerneomrStyle(0.5),
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
-        toPoint: 20,
+        toPoint: {
+            showAlways: true,
+            stopPolyClick: true,
+            minSize: 20,
+            circle: KR.Util.getVerneomrCircleStyle(),
+            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
+        },
         cluster: false
     },
     {
@@ -127,7 +140,13 @@ var datasets = [
         minZoom: 14
     }
 ];
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+
+
+
+var errorHandler = KR.errorHandler($('#error_template').html());
+
+
+var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
 
 //get the are we are interested in
 var dovre = 511;

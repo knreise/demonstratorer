@@ -1,20 +1,32 @@
-<h3>Kulturminne</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<h3><%= title %></h3>
 
-    <dt>Kategori</dt>
-    <dd><%= allProps.dc_subject[1] %></dd>
-
-    <dt>Type kulturminne</dt>
-    <dd><%= allProps.dc_subject[0] %></dd>
-
-    <dt>Vernestatus</dt>
-    <dd><%= allProps.dc_subject[2] %></dd>
-
-    <dt>Datering</dt>
-    <dd><%= allProps.dc_date %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">kulturminnesok.no</a></dd>
-</dl>
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>

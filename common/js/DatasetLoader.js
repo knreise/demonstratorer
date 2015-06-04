@@ -1,7 +1,7 @@
 /*global L:false */
 var KR = this.KR || {};
 
-KR.DatasetLoader = function (api, map, sidebar) {
+KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     'use strict';
 
     var reloads = [];
@@ -208,20 +208,32 @@ KR.DatasetLoader = function (api, map, sidebar) {
             });
             _.each(toLoad, function (dataset) {
                 var mapper = _mapper(dataset);
-                api.getBbox(dataset.dataset, newBounds, function (geoJson) {
-                    var geoJSONLayer;
-                    if (dataset.cluster) {
-                        geoJSONLayer = _createGeoJSONLayer(
-                            mapper(checkData(geoJson, vectorLayer)),
-                            dataset
-                        );
-                        dataset.geoJSONLayer = geoJSONLayer;
-                    } else {
-                        geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                api.getBbox(
+                    dataset.dataset,
+                    newBounds,
+                    function (geoJson) {
+                        var geoJSONLayer;
+                        if (dataset.cluster) {
+                            geoJSONLayer = _createGeoJSONLayer(
+                                mapper(checkData(geoJson, vectorLayer)),
+                                dataset
+                            );
+                            dataset.geoJSONLayer = geoJSONLayer;
+                        } else {
+                            geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                        }
+                        featurecollections.push(geoJSONLayer);
+                        finished();
+                    },
+                    function (error) {
+                        if (errorCallback) {
+                            errorCallback({
+                                dataset: dataset.name,
+                                error: error
+                            });
+                        }
                     }
-                    featurecollections.push(geoJSONLayer);
-                    finished();
-                });
+                );
             });
         };
 
@@ -253,14 +265,25 @@ KR.DatasetLoader = function (api, map, sidebar) {
         var mapper = _mapper(dataset);
         var vectorLayer = _createVectorLayer(dataset, map);
 
-        api.getData(dataset.dataset, function (geoJson) {
-            var geoJSONLayer = _createGeoJSONLayer(
-                mapper(geoJson),
-                dataset
-            );
-            vectorLayer.clearLayers();
-            vectorLayer.addLayers(geoJSONLayer.getLayers());
-        });
+        api.getData(
+            dataset.dataset,
+            function (geoJson) {
+                var geoJSONLayer = _createGeoJSONLayer(
+                    mapper(geoJson),
+                    dataset
+                );
+                vectorLayer.clearLayers();
+                vectorLayer.addLayers(geoJSONLayer.getLayers());
+            },
+            function (error) {
+                if (errorCallback) {
+                    errorCallback({
+                        dataset: dataset.name,
+                        error: error
+                    });
+                }
+            }
+        );
         return vectorLayer;
     }
 

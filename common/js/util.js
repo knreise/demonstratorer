@@ -56,6 +56,13 @@ KR.Util = KR.Util || {};
         }
     };
 
+    ns.createStyleString = function (styleDict) {
+        return _.map(styleDict, function (value, key) {
+            return key + ': ' + value;
+        }).join(';');
+    };
+
+
     ns.iconForContentType = function (feature) {
         var contentType = feature.properties.contentType;
         if (_.has(KR.Config.contentIcons, contentType)) {
@@ -87,15 +94,94 @@ KR.Util = KR.Util || {};
     };
 
 
-    ns.markerForFeature = function (feature) {
+    ns.markerForFeature = function (feature, selected) {
         var faIcon = ns.iconForFeature(feature);
-        var color = ns.colorForFeature(feature);
+        var color = selected
+                    ? 'blue'
+                    : ns.colorForFeature(feature);
+
         return L.AwesomeMarkers.icon({
             icon: faIcon,
             markerColor: color,
             prefix: 'fa'
         });
     };
+
+     var verneomrTypes = {
+        landskapsvern: {
+            ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV'],
+            style: {
+                fillColor: '#d8cb7a',
+                color: '#9c8f1b'
+            },
+        },
+        nasjonalpark: {
+            ids: ['NP', 'NPS'],
+            style: {
+                fillColor: '#7f9aac',
+                color: '#b3a721'
+            },
+        },
+        naturreservat: {
+            ids: ['NR', 'NRS'],
+            style: {
+                fillColor: '#ef9874',
+                color: '#ef9873'
+            }
+        }
+    };
+
+    function getVerneOmrcolors(feature) {
+        var id = feature.properties.vernef_id;
+        return _.find(verneomrTypes, function (type) {
+            return (type.ids.indexOf(id) !== -1);
+        });
+    }
+
+    ns.getVerneomrStyle = function (opacity) {
+
+        var defaultStyle = {
+            fillOpacity: opacity,
+            opacity: 0.8,
+            weight: 1,
+            clickable: false
+        };
+
+        return function find(feature) {
+            if (!feature) {
+                return;
+            }
+            var res = getVerneOmrcolors(feature);
+            if (res) {
+                return _.extend({}, defaultStyle, res.style);
+            }
+            return {stroke: false, fill: false};
+        };
+    };
+
+    ns.getVerneomrCircleStyle = function (color) {
+        var defaultStyle = {
+            fillOpacity: 1,
+            opacity: 0.8,
+            weight: 1,
+            radius: 10
+        };
+
+        return function find(feature) {
+            if (!feature) {
+                return;
+            }
+            var res = getVerneOmrcolors(feature);
+            var extra = {};
+            if (color) {
+                extra.color = color;
+            }
+            if (res) {
+                return _.extend({}, defaultStyle, res.style, extra);
+            }
+            return {stroke: false, fill: false};
+        };
+    }
 
 
     ns.featureClick = function (sidebar) {

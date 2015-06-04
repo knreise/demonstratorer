@@ -8,6 +8,11 @@ KR.Config.templates = {
 //template used for sidebar
 var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
+var markerTemplate = _.template($('#marker_template').html());
+var thumbnailTemplate = _.template($('#thumbnail_template').html());
+var footerTemplate = _.template($('#footer_template').html());
+
+
 //create the map
 var map = L.map('map');
 
@@ -30,7 +35,10 @@ var api = new KR.API({
 var sidebar = L.Knreise.Control.sidebar('sidebar', {
     position: 'left',
     template: popupTemplate,
-    listElementTemplate: listElementTemplate
+    listElementTemplate: listElementTemplate,
+    markerTemplate: markerTemplate,
+    thumbnailTemplate: thumbnailTemplate,
+    footerTemplate: footerTemplate
 });
 map.addControl(sidebar);
 

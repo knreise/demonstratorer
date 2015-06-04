@@ -17,4 +17,19 @@
 <% } %>
 <%= content %>
 
-<a href="<%= link %>">Mer hos <%= provider %><a/>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Forfatter</td>
+      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Publisert</td>
+      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Lisens</td>
+      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+    </tr>
+</table>
+

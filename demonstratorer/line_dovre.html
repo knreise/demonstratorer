@@ -8,6 +8,7 @@
 
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
         <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
@@ -53,26 +54,38 @@
 
 
 <script type="text/template" id="kulturminne_template">
-<h3>Kulturminne</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<h3><%= title %></h3>
 
-    <dt>Kategori</dt>
-    <dd><%= allProps.dc_subject[1] %></dd>
-
-    <dt>Type kulturminne</dt>
-    <dd><%= allProps.dc_subject[0] %></dd>
-
-    <dt>Vernestatus</dt>
-    <dd><%= allProps.dc_subject[2] %></dd>
-
-    <dt>Datering</dt>
-    <dd><%= allProps.dc_date %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">kulturminnesok.no</a></dd>
-</dl>
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>
 </script>
 
 
@@ -151,14 +164,36 @@
 <% } %>
 <%= content %>
 
-<a href="<%= link %>">Mer hos <%= provider %><a/>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Forfatter</td>
+      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Publisert</td>
+      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Lisens</td>
+      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+    </tr>
+</table>
+
+
 </script>
 
 
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
-    <i class="fa fa-<%= icon %> fa-fw"></i>&nbsp;
-    <%= title %>
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
 </a>
 </script>
 
@@ -176,8 +211,10 @@
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
+        <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
         <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>

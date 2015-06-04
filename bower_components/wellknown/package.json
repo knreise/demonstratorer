@@ -1,0 +1,34 @@
+{
+  "name": "wellknown",
+  "version": "0.3.1",
+  "description": "convert wkt to geojson",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js",
+    "cov": "istanbul cover node_modules/.bin/tape --report lcovonly test/*.js && coveralls < ./coverage/lcov.info"
+  },
+  "bin": {
+    "wellknown": "cli.js"
+  },
+  "keywords": [
+    "wkt",
+    "geojson",
+    "maps"
+  ],
+  "author": "Tom MacWright",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mapbox/wellknown.git"
+  },
+  "license": "BSD",
+  "devDependencies": {
+    "tape": "~2.4.2",
+    "fuzzer": "~0.1.0",
+    "istanbul": "~0.2.11",
+    "coveralls": "~2.10.0"
+  },
+  "dependencies": {
+    "concat-stream": "~1.4.5",
+    "minimist": "0.0.2"
+  }
+}
