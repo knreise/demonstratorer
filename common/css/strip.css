@@ -20,10 +20,15 @@
 
 #strip .arrow {
     position: absolute;
-    padding-top: 100px;
+    
     height: 100%;
     width: 20px;
     cursor: pointer;
+}
+#strip .arrow span {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #strip .arrow.right {
@@ -47,13 +52,16 @@
     position: relative;
 }
 
-#strip .panel-heading .header-text{ 
-    position: absolute;
-    left: 0;
-    right: 40px;
-    top: 0;
+#strip .panel-heading .header-text {
     bottom: 0;
+    left: 0;
+    overflow: hidden;
     padding: 10px;
+    position: absolute;
+    right: 40px;
+    text-overflow: ellipsis;
+    top: 0;
+    white-space: nowrap;
 }
 
 #strip .panel-heading .header-box{
@@ -63,10 +71,7 @@
     bottom: 0;
     text-align: center;
     border-left: 1px solid #ddd;
-
     padding: 2px;
-
-
 }
 
 
@@ -88,6 +93,10 @@
 
 #strip .panel-horizontal .panel-heading {
     height: 30%;
+}
+
+#strip.minimal .panel-horizontal .panel-heading {
+    height: 100%;
 }
 
 #strip .panel-horizontal .panel-body {
@@ -135,8 +144,18 @@
 
 #strip .spinner {
     width: 60px;
-    margin-top: 50px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+#strip.minimal {
+    height: 50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 4000;
 }

@@ -54,12 +54,15 @@ var KR = this.KR || {};
         _setupToggle();
 
         strip.swipe({
-                swipe: function () {}
-            })
-            .off('swipeLeft')
-            .on('swipeLeft', _moveRight)
-            .off('swipeRight')
-            .on('swipeRight', _moveLeft);
+            swipe: function (e, direction) {
+                if (direction === 'left') {
+                    _moveRight();
+                }
+                if (direction === 'right') {
+                    _moveLeft();
+                }
+            }
+        });
 
         strip.find('.js-close').on('click', function () {
             strip.addClass('hidden');
@@ -71,7 +74,9 @@ var KR = this.KR || {};
     };
 
 
-    ns.PreviewStrip = function (element, map, api, datasets, showFeature) {
+    ns.PreviewStrip = function (element, map, api, datasets, showFeature, options) {
+
+        options = _.extend({minimal: false}, options || {});
 
         var doReload = true;
 
@@ -81,7 +86,7 @@ var KR = this.KR || {};
 
         var datasetLoader = new KR.DatasetLoader(api, map, {showFeature: showFeature});
 
-        var spinner = $('#spinner_template').html();
+        var spinner = _.template($('#spinner_template').html());
 
         var panelTemplate = _.template($('#panel_template').html());
 
@@ -100,9 +105,54 @@ var KR = this.KR || {};
             return Math.round(km * 10) / 10;
         }
 
-        map.on('movestart', _moveStart);
+        function renderFeature(feature) {
+            feature.on('click', function () {
+                panToMarker = true;
+                map.panTo(feature.getLatLng());
+            });
 
-        map.on('moveend', _moveEnd);
+            if (feature.dataset.panelMap) {
+                feature.feature.properties = feature.dataset.panelMap(feature.feature.properties);
+            }
+
+            feature.feature.properties.icon = KR.Util.iconForContentType(feature.feature);
+            feature.feature.properties.distance = _formatDistance(feature.feature.properties.distance) || null;
+            var data = feature.feature.properties;
+            data.minimal = options.minimal;
+            var el = $(panelTemplate(data));
+            el.on('click', function () {
+                feature.fire('click');
+            });
+            return el;
+        }
+
+        function sortFeatures(features) {
+            features = _.map(features, function (feature) {
+                feature.feature.properties.distance = feature.getLatLng().distanceTo(position);
+                return feature;
+            });
+            return features.sort(function (a, b) {
+                if (a.feature.properties.distance < b.feature.properties.distance) {
+                    return -1;
+                }
+                if (a.feature.properties.distance > b.feature.properties.distance) {
+                    return 1;
+                }
+                return 0;
+            });
+        }
+
+        function showFeatures(features) {
+            if (position) {
+                features = sortFeatures(features);
+            }
+
+            var panels = _.map(features, renderFeature);
+
+            element.find('.strip-container').html(panels);
+            element.removeClass('hidden');
+            panel.redraw();
+        }
 
         function _dataReloaded() {
 
@@ -113,56 +163,19 @@ var KR = this.KR || {};
                 });
             }));
 
-            if (position) {
-                features = _.map(features, function (feature) {
-                    feature.feature.properties.distance = feature.getLatLng().distanceTo(position);
-                    return feature;
-                });
-                features = features.sort(function (a, b) {
-                    if (a.feature.properties.distance < b.feature.properties.distance) {
-                        return -1;
-                    }
-                    if (a.feature.properties.distance > b.feature.properties.distance) {
-                        return 1;
-                    }
-                    return 0;
-                });
-            }
-
-            var panels = _.map(features, function (feature) {
-
-                feature.on('click', function () {
-                    panToMarker = true;
-                    map.panTo(feature.getLatLng());
-                });
-
-                if (feature.dataset.panelMap) {
-                    feature.feature.properties = feature.dataset.panelMap(feature.feature.properties);
-                }
-
-                feature.feature.properties.icon = KR.Util.iconForContentType(feature.feature);
-                feature.feature.properties.distance = _formatDistance(feature.feature.properties.distance) || null;
-                var el = $(panelTemplate(feature.feature.properties));
-                el.on('click', function () {
-                    feature.fire('click');
-                });
-                return el;
-            });
-
-            element.find('.strip-container').html(panels);
-            element.removeClass('hidden');
-            panel.redraw();
+            showFeatures(features);
         }
 
         function _moveStart() {
             if (!doReload || panToMarker) {
                 return;
             }
-
             _.each(layers, function (layer) {
                 layer.clearLayers();
             });
-            element.find('.strip-container').html(spinner);
+            element.find('.strip-container').html(spinner({
+                size: options.minimal ? '3x' : '5x'
+            }));
         }
 
         function _moveEnd() {
@@ -178,13 +191,23 @@ var KR = this.KR || {};
         }
 
         function init() {
+            if (options.minimal) {
+                element.addClass('minimal');
+            }
+            console.log();
+
             _hideDatasets();
             layers = datasetLoader.loadDatasets(datasets);
             datasetLoader.reload(true, _dataReloaded);
         }
 
+        map.on('movestart', _moveStart);
+
+        map.on('moveend', _moveEnd);
+
         return {
             init: init,
+            showFeatures: showFeatures,
             setPosition: setPosition,
             off: function () {
                 doReload = false;

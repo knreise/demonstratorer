@@ -14,12 +14,13 @@
 <script type="text/template" id="panel_template">
     <div class="panel panel-default panel-horizontal">
         <div class="panel-heading">
-            <span class="header-text"><%= title %></span>
+            <span class="header-text" title="<%= title %>"><%= title %></span>
             <span class="header-box">
                 <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
                 <% if (distance) { %><div><%=distance %> km</div><% } %>
             </span>
         </div>
+        <% if (!minimal) { %>
         <div class="panel-body">
         <% if (thumbnail) { %>
             <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
@@ -32,11 +33,12 @@
             n/a
         <% } %>
       </div>
+      <% } %>
     </div>
 </script>
 
 <script type="text/template" id="spinner_template">
     <div class="spinner">
-    <i class="fa fa-cog fa-spin fa-5x"></i>
+    <i class="fa fa-cog fa-spin fa-<%= size %>"></i>
     </div>
 </script>
