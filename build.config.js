@@ -267,13 +267,42 @@ module.exports = {
           'bower_components/togeojson/togeojson.js',
           'bower_components/wellknown/wellknown.js',
           'bower_components/proj4/dist/proj4.js',
+          'bower_components/CryptoJS/build/components/core.js',
+          'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/jquery-ui/jquery-ui.min.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
-            'common/css/cesium_base.css'
+            'common/css/cesium_base.css',
+            'common/css/cesium_sidebar.css'
         ],
         templates: [
           'cesium_sparql_kulturminne',
+          'cesium_wikipedia',
+          'cesium_arc_kulturminne'
+        ]
+    },
+    {
+        key: 'cesium_terrain',
+        name: 'Terrain',
+        scripts: [
+          'bower_components/cesium1.9/Build/CesiumUnminified/Cesium.js',
+          'bower_components/togeojson/togeojson.js',
+          'bower_components/wellknown/wellknown.js',
+          'bower_components/proj4/dist/proj4.js',
+          'bower_components/CryptoJS/build/components/core.js',
+          'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/jquery-ui/jquery-ui.min.js',
+          'common/js/DatasetLoader.js'
+        ],
+        css: [
+            'common/css/cesium_base.css',
+            'bower_components/bootstrap/dist/css/bootstrap.css',
+            'common/css/cesium_sidebar.css'
+        ],
+        templates: [
+          'cesium_sparql_kulturminne',
+          'cesium_wikipedia',
           'cesium_arc_kulturminne'
         ]
     }

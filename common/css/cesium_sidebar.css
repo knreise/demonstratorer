@@ -2,3 +2,51 @@
 .cesium-sidebar-body {
     overflow-y: auto;
 }
+
+.cesium-sidebar-close {
+    position:absolute;
+    right:0;
+    margin-right:5px;
+    padding:10px;
+    margin-top:5px;
+    top:0;
+}
+
+.cesium-sidebar h4{
+    text-transform: uppercase;
+}
+
+#cesium-sidebar {
+
+    margin-top:50px;
+    position:absolute;
+    z-index:1000;
+    height: 100%;
+    display:none;
+    width: 400px;
+    background-color: rgba(255,255,255,0.9);
+    box-shadow: 1px 0px 1px #888888;
+}
+
+
+
+.cesium-sidebar-close .lr {
+    z-index: 1051;
+    width: 2px;
+    height: 15px;
+    margin-left: 35px;
+    background-color: #222;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.cesium-sidebar-close .lr .rl {
+    z-index: 1052;
+    width: 2px;
+    height: 15px;
+    background-color: #222;
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
