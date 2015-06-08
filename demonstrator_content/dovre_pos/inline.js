@@ -42,6 +42,15 @@ function setupLocate(map, callback) {
 }
 
 
+KR.Config.templates = {
+    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html()),
+    'Kulturminnesok': _.template($('#kulturminne_template').html()),
+    'Musit': _.template($('#musit_template').html()),
+    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
+    'artsobservasjon': _.template($('#artsobservasjon_template').html()),
+};
+
+
 
 var datasets = [
     /*{
@@ -101,15 +110,7 @@ var datasets = [
 
 
 
-/*
-KR.Config.templates = {
-    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html()),
-    'Kulturminnesok': _.template($('#kulturminne_template').html()),
-    'Musit': _.template($('#musit_template').html()),
-    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
-    'artsobservasjon': _.template($('#artsobservasjon_template').html()),
-};
-*/
+
 
 var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
