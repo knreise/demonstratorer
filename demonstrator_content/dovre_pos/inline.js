@@ -83,7 +83,7 @@ var datasets = [
         thumbnails: false,
         smallMarker: true,
         cluster: false
-    }/*,
+    },
     {
         name: 'MUSIT',
         dataset: {
@@ -105,7 +105,7 @@ var datasets = [
         thumbnails: false,
         smallMarker: true,
         cluster: false
-    }*/
+    }
 ];
 
 

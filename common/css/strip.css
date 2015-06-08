@@ -99,6 +99,10 @@
     height: 100%;
 }
 
+#strip.minimal .panel-body {
+    display: none;
+}
+
 #strip .panel-horizontal .panel-body {
     height: 70%; 
     width: 100%;
@@ -129,8 +133,8 @@
 
 #strip .close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    right: 7px;
+    top: 0;
     z-index: 3000;
 }
 
@@ -153,7 +157,7 @@
 }
 
 #strip.minimal {
-    height: 50px;
+    height: 60px;
     bottom: 0;
     left: 0;
     right: 0;

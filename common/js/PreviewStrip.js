@@ -65,7 +65,7 @@ var KR = this.KR || {};
         });
 
         strip.find('.js-close').on('click', function () {
-            strip.addClass('hidden');
+            strip.toggleClass('minimal');
         });
 
         return {
@@ -115,10 +115,17 @@ var KR = this.KR || {};
                 feature.feature.properties = feature.dataset.panelMap(feature.feature.properties);
             }
 
-            feature.feature.properties.icon = KR.Util.iconForContentType(feature.feature);
-            feature.feature.properties.distance = _formatDistance(feature.feature.properties.distance) || null;
-            var data = feature.feature.properties;
-            data.minimal = options.minimal;
+            var data = _.extend(
+                {},
+                feature.feature.properties,
+                {
+                    icon: KR.Util.iconForContentType(feature.feature),
+                    distance: _formatDistance(feature.feature.properties.distance) || null,
+                    minimal: options.minimal,
+                    color: KR.Util.colorForProvider(feature.feature.properties.provider, 'hex')
+                }
+            );
+
             var el = $(panelTemplate(data));
             el.on('click', function () {
                 feature.fire('click');
@@ -174,7 +181,7 @@ var KR = this.KR || {};
                 layer.clearLayers();
             });
             element.find('.strip-container').html(spinner({
-                size: options.minimal ? '3x' : '5x'
+                size: '3x'// options.minimal ? '3x' : '5x'
             }));
         }
 
@@ -194,7 +201,6 @@ var KR = this.KR || {};
             if (options.minimal) {
                 element.addClass('minimal');
             }
-            console.log();
 
             _hideDatasets();
             layers = datasetLoader.loadDatasets(datasets);
