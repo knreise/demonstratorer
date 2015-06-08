@@ -175,6 +175,12 @@ var KR = this.KR || {};
             panel.redraw();
         }
 
+        function showMessage(message) {
+            element.find('.strip-container').html(
+                '<span class="message">' + message + '</span>'
+            );
+        }
+
         function _dataReloaded() {
 
             var features = _.flatten(_.map(layers, function (layer) {
@@ -232,6 +238,7 @@ var KR = this.KR || {};
         return {
             init: init,
             showFeatures: showFeatures,
+            showMessage: showMessage,
             setPosition: setPosition,
             off: function () {
                 doReload = false;

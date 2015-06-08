@@ -146,14 +146,14 @@
     background-size: cover;
 }
 
-#strip .spinner {
-    width: 60px;
+#strip .message, #strip .spinner {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
     display: block;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
 }
 
 #strip.minimal {

@@ -11,7 +11,7 @@ function initScroll(map, line, positionCallback) {
     var length = turf.lineDistance(line.feature, 'kilometers');
     var steps = getSteps(length, 100);
     var layer = L.geoJson().addTo(map);
-    var index = 4;
+    var index = 8;
     function zoomToIndex(index) {
         var step = steps[index];
         if (step !== undefined) {
@@ -121,11 +121,21 @@ f.on('click', function (e) {
 
 map.on('moveend', function ()  {
     var bbox = map.getBounds().toBBoxString();
-    api.getBbox(dataset, bbox, function (features) {
+
+    function gotFeatures(features) {
         var features = filterByBbox(features, bbox);
         f.clearLayers().addData(features);
         previewStrip.showFeatures(f.getLayers());
-    }, null, {allPages: true});
+        if (!features.features.length) {
+            previewStrip.showMessage('<em>Ingen funnet!</em>');
+        }
+    }
+
+    function error() {
+        console.log(error);
+        previewStrip.showMessage('En feil oppstod!');
+    }
+    api.getBbox(dataset, bbox, gotFeatures, error, {allPages: true});
 });
 
 var url = 'https://gist.githubusercontent.com/anonymous/5a83eafe1e5cd369f6c9/raw/a58b4dfdd9d4a8772745009cb789baa187ef6202/map.geojson';
