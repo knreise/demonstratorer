@@ -16,7 +16,7 @@ var KR = this.KR || {};
         }
 
         function _moreRight() {
-            return (strip.find('.panel').last().offset().top > 2 * strip.height());
+            return ((strip.find('.panel').last().offset().top - strip.offset().top) > 10);
         }
 
         function _checkRight() {
