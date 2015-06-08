@@ -4,7 +4,7 @@ module.exports = {
     'bower_components/underscore/underscore-min.js',
     'bower_components/leaflet/dist/leaflet.js',
     'bower_components/esri2geo/esri2geo.js',
-    'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
+    'bower_components/KNreiseAPI/dist/KNreiseAPI.js',
     'common/js/ErrorHandler.js',
     'common/js/util.js'
   ],
@@ -143,10 +143,11 @@ module.exports = {
         css: [
           'bower_components/leaflet/dist/leaflet.css',
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
-          /*
+          
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+          /*
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
-          */
+          
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
           'bower_components/Leaflet.Photo/Leaflet.Photo.css',
