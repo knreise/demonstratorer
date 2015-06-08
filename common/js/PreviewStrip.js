@@ -15,34 +15,61 @@ var KR = this.KR || {};
             }
         }
 
+        function _moreRight() {
+            console.log(strip.find('.panel').last().offset().top, strip.height());
+            return (strip.find('.panel').last().offset().top > 2 * strip.height());
+        }
+
         function _checkRight() {
-            if (strip.find('.panel').not('.hidden').length < 2) {
+            if (!_moreRight()) {
                 rightBtn.addClass('hidden');
             } else {
                 rightBtn.removeClass('hidden');
             }
         }
 
+        function redraw() {
+            console.log("redraw")
+            _checkLeft();
+            _checkRight();
+        }
+
+        function _moveRight() {
+            if (_moreRight()) {
+                strip.find('.panel').not('.hidden').first().addClass('hidden');
+            }
+            redraw();
+        }
+
+        function _moveLeft() {
+            strip.find('.panel.hidden').last().removeClass('hidden');
+            redraw();
+        }
+
         function _setupToggle() {
             _checkLeft();
 
-            rightBtn.on('click', function () {
-                strip.find('.panel').not('.hidden').first().addClass('hidden');
-                _checkLeft();
-                _checkRight();
-            });
-            leftBtn.on('click', function () {
-                strip.find('.panel.hidden').last().removeClass('hidden');
-                _checkLeft();
-                _checkRight();
-            });
+            rightBtn.on('click', _moveRight);
+            leftBtn.on('click', _moveLeft);
         }
 
         _setupToggle();
 
+        strip.swipe({
+                swipe: function () {}
+            })
+            .off('swipeLeft')
+            .on('swipeLeft', _moveRight)
+            .off('swipeRight')
+            .on('swipeRight', _moveLeft);
+
         strip.find('.js-close').on('click', function () {
             strip.addClass('hidden');
         });
+
+        return {
+            redraw: redraw
+        };
     };
 
 
@@ -121,6 +148,8 @@ var KR = this.KR || {};
 
             element.find('.strip-container').html(panels);
             element.removeClass('hidden');
+            console.log("!", panel)
+            panel.redraw();
         }
 
         function _moveStart() {

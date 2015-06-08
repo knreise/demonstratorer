@@ -182,7 +182,7 @@ module.exports = {
           //'bower_components/CryptoJS/build/components/md5.js',
           //'bower_components/audiojs/audiojs/audio.min.js',
           //'bower_components/video.js/dist/video-js/video.js',
-          //'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
