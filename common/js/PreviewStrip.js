@@ -16,7 +16,6 @@ var KR = this.KR || {};
         }
 
         function _moreRight() {
-            console.log(strip.find('.panel').last().offset().top, strip.height());
             return (strip.find('.panel').last().offset().top > 2 * strip.height());
         }
 
@@ -29,7 +28,6 @@ var KR = this.KR || {};
         }
 
         function redraw() {
-            console.log("redraw")
             _checkLeft();
             _checkRight();
         }
@@ -73,13 +71,15 @@ var KR = this.KR || {};
     };
 
 
-    ns.PreviewStrip = function (element, map, api, datasets, featureClicked) {
+    ns.PreviewStrip = function (element, map, api, datasets, showFeature) {
 
         var doReload = true;
 
+        var panToMarker = false;
+
         var position;
 
-        var datasetLoader = new KR.DatasetLoader(api, map, {showFeature: featureClicked});
+        var datasetLoader = new KR.DatasetLoader(api, map, {showFeature: showFeature});
 
         var spinner = $('#spinner_template').html();
 
@@ -131,6 +131,11 @@ var KR = this.KR || {};
 
             var panels = _.map(features, function (feature) {
 
+                feature.on('click', function () {
+                    panToMarker = true;
+                    map.panTo(feature.getLatLng());
+                });
+
                 if (feature.dataset.panelMap) {
                     feature.feature.properties = feature.dataset.panelMap(feature.feature.properties);
                 }
@@ -139,22 +144,18 @@ var KR = this.KR || {};
                 feature.feature.properties.distance = _formatDistance(feature.feature.properties.distance) || null;
                 var el = $(panelTemplate(feature.feature.properties));
                 el.on('click', function () {
-                    if (featureClicked) {
-                        featureClicked(feature.feature);
-                    }
+                    feature.fire('click');
                 });
                 return el;
             });
 
             element.find('.strip-container').html(panels);
             element.removeClass('hidden');
-            console.log("!", panel)
             panel.redraw();
         }
 
         function _moveStart() {
-
-            if (!doReload) {
+            if (!doReload || panToMarker) {
                 return;
             }
 
@@ -165,7 +166,8 @@ var KR = this.KR || {};
         }
 
         function _moveEnd() {
-            if (!doReload) {
+            if (!doReload || panToMarker) {
+                panToMarker = false;
                 return;
             }
             datasetLoader.reload(true, _dataReloaded);

@@ -453,24 +453,23 @@ map.addControl(sidebar);
 
 
 var previewStrip;
-function showFeature(feature) {
-    //
-    previewStrip.off();
-    //map.panTo(feature.getLatLng());
-    sidebar.showFeature.apply(sidebar, arguments);
+
+sidebar.on('shown', function () {
     previewStrip.on();
+});
+
+function showFeature(feature) {
+    if (!sidebar.isVisible()) {
+        previewStrip.off();
+    }
+    sidebar.showFeature.apply(sidebar, arguments);
 }
 
-
 previewStrip = new KR.PreviewStrip($('#strip'), map, api, datasets, showFeature);
-
-
 
 setupLocate(map, function (e) {
     previewStrip.setPosition(e.latlng);
 });
-
-
 
 
 //get the are we are interested in
