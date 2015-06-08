@@ -16,7 +16,11 @@ var KR = this.KR || {};
         }
 
         function _moreRight() {
-            return ((strip.find('.panel').last().offset().top - strip.offset().top) > 10);
+            var panels = strip.find('.panel');
+            if (panels.length) {
+                return ((panels.last().offset().top - strip.offset().top) > 10);
+            }
+            return false;
         }
 
         function _checkRight() {
@@ -34,13 +38,19 @@ var KR = this.KR || {};
 
         function _moveRight() {
             if (_moreRight()) {
-                strip.find('.panel').not('.hidden').first().addClass('hidden');
+                var visible = strip.find('.panel').not('.hidden');
+                if (visible) {
+                    visible.first().addClass('hidden');
+                }
             }
             redraw();
         }
 
         function _moveLeft() {
-            strip.find('.panel.hidden').last().removeClass('hidden');
+            var hidden = strip.find('.panel.hidden');
+            if (hiddden) {
+                hidden.last().removeClass('hidden');
+            }
             redraw();
         }
 
@@ -76,7 +86,7 @@ var KR = this.KR || {};
 
     ns.PreviewStrip = function (element, map, api, datasets, showFeature, options) {
 
-        options = _.extend({minimal: false}, options || {});
+        options = _.extend({minimal: false, panOnClick: true}, options || {});
 
         var doReload = true;
 
@@ -84,12 +94,14 @@ var KR = this.KR || {};
 
         var position;
 
-        var datasetLoader = new KR.DatasetLoader(api, map, {showFeature: showFeature});
+        var datasetLoader;
+        if (datasets) {
+            datasetLoader = new KR.DatasetLoader(api, map, {showFeature: showFeature});
+        }
 
         var spinner = _.template($('#spinner_template').html());
 
         var panelTemplate = _.template($('#panel_template').html());
-
         var layers = [];
 
         var panel = new Panel(element);
@@ -106,12 +118,14 @@ var KR = this.KR || {};
         }
 
         function renderFeature(feature) {
-            feature.on('click', function () {
-                panToMarker = true;
-                map.panTo(feature.getLatLng());
-            });
+            if (options.panOnClick) {
+                feature.on('click', function () {
+                    panToMarker = true;
+                    map.panTo(feature.getLatLng());
+                });
+            }
 
-            if (feature.dataset.panelMap) {
+            if (feature.dataset && feature.dataset.panelMap) {
                 feature.feature.properties = feature.dataset.panelMap(feature.feature.properties);
             }
 
@@ -190,7 +204,9 @@ var KR = this.KR || {};
                 panToMarker = false;
                 return;
             }
-            datasetLoader.reload(true, _dataReloaded);
+            if (datasetLoader) {
+                datasetLoader.reload(true, _dataReloaded);
+            }
         }
 
         function setPosition(pos) {
@@ -203,8 +219,10 @@ var KR = this.KR || {};
             }
 
             _hideDatasets();
-            layers = datasetLoader.loadDatasets(datasets);
-            datasetLoader.reload(true, _dataReloaded);
+            if (datasetLoader) {
+                layers = datasetLoader.loadDatasets(datasets);
+                datasetLoader.reload(true, _dataReloaded);
+            }
         }
 
         map.on('movestart', _moveStart);

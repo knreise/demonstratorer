@@ -163,3 +163,7 @@
     right: 0;
     z-index: 4000;
 }
+
+#sidebar {
+    padding-bottom: 60px;
+}

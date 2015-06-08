@@ -230,6 +230,53 @@ module.exports = {
         ]
     },
     {
+        key: 'linemap',
+        name: 'Linjekart',
+        scripts: [
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'common/js/L.Knreise.GeoJSON.js',
+          'common/js/PreviewStrip.js',
+          'bower_components/turf/turf.min.js',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
+          //'bower_components/CryptoJS/build/components/core.js',
+          //'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/audiojs/audiojs/audio.min.js',
+          'bower_components/video.js/dist/video-js/video.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+          'common/js/L.Control.Info.js'
+        ],
+        css: [
+          'bower_components/leaflet/dist/leaflet.css',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/fullscreenmap.css',
+          'common/css/L.Knreise.Control.Datasets.css',
+          'bower_components/video.js/dist/video-js/video-js.css',
+          'common/css/fullscreenmap.css',
+          'common/css/markers.css',
+          'common/css/strip.css',
+          'common/css/L.Control.Info.css'
+        ],
+        templates: [
+          'popup',
+          'digitalt_fortalt',
+          'kulturminne',
+          'musit',
+          'digitalt_museum',
+          'digitalt_fortalt',
+          'list_item',
+          'fangstgrop',
+          'artsobservasjon',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error',
+          'spinner',
+          'panel'
+        ]
+    },
+    {
         key: 'general',
         name: 'Generell demo',
         scripts: [
