@@ -224,7 +224,9 @@ module.exports = {
           'marker',
           'thumbnail',
           'footer',
-          'error'
+          'error',
+          'spinner',
+          'panel'
         ]
     },
     {
