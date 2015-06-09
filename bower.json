@@ -31,5 +31,4 @@
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
     "L.TileLayer.Kartverket": "~1.0.0",
     "KNreiseAPI": "1.2.5"
-  }
 }

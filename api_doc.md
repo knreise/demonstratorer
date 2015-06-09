@@ -162,18 +162,33 @@ The DatasetWrapper passed to the DatasetLoader is a wrapper around the Dataset o
 
 ##### Options
 
-| Option         | Type     | Default value | Required? | Description                                                                                                                               |
-|----------------|----------|---------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| dataset        | Dataset  | null          | yes       | The dataset definition (see above                                                                                                         |
-| name           | Name     | null          | no        | Name of the dataset (used for display purposes)                                                                                           |
-| isStatic       | bool     | true          | no        | if false, reload on zoom/pan                                                                                                              |
-| bbox           | bool     | true          | no        | If true, use getBbox, else use getData                                                                                                    |
-| cluster        | bool     | true          | no        | Use clustering on layer                                                                                                                   |
-| smallMarker    | bool     | false         | no        | Use small markers?                                                                                                                        |
-| minZoom        | Number   | null          | no        | If set, does not show or load data above this zoom level                                                                                  |
-| minFeatures    | Number   | null          | no        | If set, do not show data if more than this number of features returned                                                                    |
-| style          | function | null          | no        | style-function as pr L.geoJson                                                                                                            |
-| getFeatureData | function | null          | no        | If provided, called with a feature and a calback to display info in sidebar                                                               |
-| template       | function | null          | no        | A function that can be called like underscore.js template() and return html, describing the feature. Called with the features properties. |
-| circle         | Object   | null          | no        | If provided, this object is passed as options to L.circleMarker in PointToLayer                                                           |
-|                |          |               |           |                                                                                                                                           |
+| Option         | Type           | Default value | Required? | Description                                                                                                                               |
+|----------------|----------------|---------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| dataset        | Dataset        | null          | yes       | The dataset definition (see above                                                                                                         |
+| name           | Name           | null          | no        | Name of the dataset (used for display purposes)                                                                                           |
+| isStatic       | bool           | true          | no        | if false, reload on zoom/pan                                                                                                              |
+| bbox           | bool           | true          | no        | If true, use getBbox, else use getData                                                                                                    |
+| cluster        | bool           | true          | no        | Use clustering on layer                                                                                                                   |
+| smallMarker    | bool           | false         | no        | Use small markers?                                                                                                                        |
+| minZoom        | Number         | null          | no        | If set, does not show or load data above this zoom level                                                                                  |
+| minFeatures    | Number         | null          | no        | If set, do not show data if more than this number of features returned                                                                    |
+| style          | function       | null          | no        | style-function as pr L.geoJson                                                                                                            |
+| selectedStyle  | function       | null          | no        | style-function as pr L.geoJson for a selected feature                                                                                     |
+| getFeatureData | function       | null          | no        | If provided, called with a feature and a calback to display info in sidebar                                                               |
+| template       | function       | null          | no        | A function that can be called like underscore.js template() and return html, describing the feature. Called with the features properties. |
+| circle         | Object         | null          | no        | If provided, this object is passed as options to L.circleMarker in PointToLayer                                                           |
+| toPoint        | toPointOptions | null          | no        | If provided, enables "deflation" of polygons (similar to [Leaflet.Deflate][deflate])                                                      |
+
+
+
+***toPointOptions***
+
+| Option         | Type           | Default value | Required? | Description                                                                               |
+|----------------|----------------|---------------|-----------|-------------------------------------------------------------------------------------------|
+| minSize        | int            | 20            | no        | The minimum width and height in pixels for a polygon to be displayed in its actual shape. |
+| showAlways     | bool           | false         | no        | Always show deflated polygons (in addition to polygon)                                    |
+| stopPolyClick  | bool           | false         | no        | Stop click events on the polygon to change its style                                      |
+| circle         | Object         | null          | no        | If provided, this object is passed as options to L.circleMarker in PointToLayer           |
+| circleSelected | Object         | null          | no        | If provided, this object is passed as options to L.circleMarker in PointToLayer           |
+
+[deflate]: https://github.com/oliverroick/Leaflet.Deflate

@@ -6,15 +6,12 @@ L.Knreise = L.Knreise || {};
 L.Knreise.Control = L.Knreise.Control || {};
 
 L.Control.Datasets = L.Control.extend({
-    options: {
-        collapsed: false
-    },
 
     initialize: function (layers, options) {
         L.setOptions(this, options);
         this._datasets = {};
         this._handlingClick = false;
-
+        this.expanded = false;
         var i;
         for (i in layers) {
             if (layers.hasOwnProperty(i)) {
@@ -182,45 +179,37 @@ L.Control.Datasets = L.Control.extend({
 
         var form = this._form = L.DomUtil.create('form', className + '-list');
 
-        if (this.options.collapsed) {
-            if (!L.Browser.android) {
-                L.DomEvent
-                    .on(container, 'mouseover', this._expand, this)
-                    .on(container, 'mouseout', this._collapse, this);
-            }
-            var link = this._layersLink = L.DomUtil.create('a', className + '-toggle', container);
-            link.href = '#';
-            link.title = 'Layers';
+        this._map.on('click', this._collapse, this);
+        this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
 
-            if (L.Browser.touch) {
-                L.DomEvent
-                    .on(link, 'click', L.DomEvent.stop)
-                    .on(link, 'click', this._expand, this);
-            } else {
-                L.DomEvent.on(link, 'focus', this._expand, this);
-            }
-            //Work around for Firefox android issue https://github.com/Leaflet/Leaflet/issues/2033
-            L.DomEvent.on(form, 'click', function () {
-                setTimeout(L.bind(this._onInputClick, this), 0);
-            }, this);
+        this._closeDiv = L.DomUtil.create('div', 'clearfix');
+        var closeBtn = L.DomUtil.create('button', 'btn btn-default pull-right', this._closeDiv);
+        closeBtn.title = 'Kartlag';
+        L.DomEvent.on(closeBtn, 'click', function () {
+            this._toggle();
+        }, this);
+        var icon = L.DomUtil.create('i', 'fa fa-bars', closeBtn);
 
-            this._map.on('click', this._collapse, this);
-            // TODO keyboard accessibility
+        container.appendChild(this._closeDiv);
+        container.appendChild(form);
+    },
+
+    _toggle: function () {
+        if (this.expanded) {
+            this._collapse();
         } else {
             this._expand();
         }
-
-        this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
-
-        container.appendChild(form);
     },
 
     _expand: function () {
         L.DomUtil.addClass(this._container, 'leaflet-control-layers-expanded');
+        this.expanded = true;
     },
 
     _collapse: function () {
         this._container.className = this._container.className.replace(' leaflet-control-layers-expanded', '');
+        this.expanded = false;
     }
 
 });
