@@ -244,8 +244,8 @@ module.exports = {
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'common/js/L.Control.Info.js',
-          'common/js/AlongLine.js'
+          'common/js/AlongLine.js',
+          'common/js/LineMap.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
