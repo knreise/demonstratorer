@@ -87,7 +87,7 @@ KR.LineMap = function (api, map, dataset, options) {
                 if (direction === 'down' || direction === 'right') {
                     callback(1);
                 }
-            },
+            }
         });
     }
 

@@ -3,7 +3,7 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
-    var Panel = function (strip) {
+    var Panel = function (strip, toggleCallback) {
         var leftBtn = strip.find('.js-left');
         var rightBtn = strip.find('.js-right');
 
@@ -48,7 +48,7 @@ var KR = this.KR || {};
 
         function _moveLeft() {
             var hidden = strip.find('.panel.hidden');
-            if (hiddden) {
+            if (hidden) {
                 hidden.last().removeClass('hidden');
             }
             redraw();
@@ -76,6 +76,9 @@ var KR = this.KR || {};
 
         strip.find('.js-close').on('click', function () {
             strip.toggleClass('minimal');
+            if (toggleCallback) {
+                toggleCallback(strip.hasClass('minimal'));
+            }
         });
 
         return {
@@ -87,6 +90,10 @@ var KR = this.KR || {};
     ns.PreviewStrip = function (element, map, api, datasets, showFeature, options) {
 
         options = _.extend({minimal: false, panOnClick: true}, options || {});
+
+        var hasImages = !options.minimal;
+
+        var loadedFeatures;
 
         var doReload = true;
 
@@ -104,7 +111,7 @@ var KR = this.KR || {};
         var panelTemplate = _.template($('#panel_template').html());
         var layers = [];
 
-        var panel = new Panel(element);
+        var panel;
 
         function _hideDatasets() {
             _.each(datasets, function (dataset) {
@@ -163,16 +170,20 @@ var KR = this.KR || {};
             });
         }
 
+        function _showFeatures(features) {
+            var panels = _.map(features, renderFeature);
+            element.find('.strip-container').html(panels);
+            element.removeClass('hidden');
+            panel.redraw();
+        }
+
         function showFeatures(features) {
             if (position) {
                 features = sortFeatures(features);
             }
-
-            var panels = _.map(features, renderFeature);
-
-            element.find('.strip-container').html(panels);
-            element.removeClass('hidden');
-            panel.redraw();
+            loadedFeatures = features;
+            _showFeatures(features);
+            hasImages = false;
         }
 
         function showMessage(message) {
@@ -180,6 +191,14 @@ var KR = this.KR || {};
                 '<span class="message">' + message + '</span>'
             );
         }
+
+        panel = new Panel(element, function (isMinimal) {
+            options.minimal = isMinimal;
+            if (!isMinimal && !hasImages && loadedFeatures) {
+                _showFeatures(loadedFeatures);
+                hasImages = true;
+            }
+        });
 
         function _dataReloaded() {
 
@@ -189,7 +208,6 @@ var KR = this.KR || {};
                     return l;
                 });
             }));
-
             showFeatures(features);
         }
 
@@ -201,7 +219,7 @@ var KR = this.KR || {};
                 layer.clearLayers();
             });
             element.find('.strip-container').html(spinner({
-                size: '3x'// options.minimal ? '3x' : '5x'
+                size: options.minimal ? '3x' : '5x'
             }));
         }
 
