@@ -131,11 +131,22 @@
     text-align: center;
 }
 
-#strip .close {
+#strip .toggle-size {
     position: absolute;
     right: 7px;
     top: 0;
     z-index: 3000;
+    color: #000;
+    float: right;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.2;
+    text-shadow: 0 1px 0 #fff;
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: 0 none;
+    cursor: pointer;
+    padding: 0;
 }
 
 #strip .image {

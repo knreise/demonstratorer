@@ -34,6 +34,7 @@ var KR = this.KR || {};
         function redraw() {
             _checkLeft();
             _checkRight();
+            _toggleToggleBtn();
         }
 
         function _moveRight() {
@@ -54,9 +55,17 @@ var KR = this.KR || {};
             redraw();
         }
 
+        function _toggleToggleBtn() {
+            var icon = strip.find('.js-toggle-size .glyphicon');
+            if (strip.hasClass('minimal')) {
+                icon.removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+            } else {
+                icon.removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+            }
+        }
+
         function _setupToggle() {
             _checkLeft();
-
             rightBtn.on('click', _moveRight);
             leftBtn.on('click', _moveLeft);
         }
@@ -74,11 +83,12 @@ var KR = this.KR || {};
             }
         });
 
-        strip.find('.js-close').on('click', function () {
+        strip.find('.js-toggle-size').on('click', function () {
             strip.toggleClass('minimal');
             if (toggleCallback) {
                 toggleCallback(strip.hasClass('minimal'));
             }
+            _toggleToggleBtn();
         });
 
         return {
