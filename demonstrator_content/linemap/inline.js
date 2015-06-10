@@ -1,29 +1,71 @@
 'use strict';
 
-function getSteps(length, steps) {
-    var stepLength = length / steps;
+function _length(lines) {
+    return _.reduce(lines, function (length, line) {
+        return length + turf.lineDistance(line, 'kilometers');
+    }, 0);
+}
+
+function stepsForLine(line, steps, stepLength) {
     return _.map(_.range(0, steps + 1), function (step) {
-        return stepLength * step;
+        var step = stepLength * step;
+        return turf.along(line, step, 'kilometers')
     });
 }
 
-function initScroll(map, line, positionCallback) {
-    var length = turf.lineDistance(line.feature, 'kilometers');
-    var steps = getSteps(length, 100);
+function getSteps(lines, stepLength) {
+    var totalLength = _length(lines);
+    var steps = Math.round(totalLength / stepLength);
+    return _.flatten(_.map(lines, function (line) {
+        var length = _length([line])
+        var lineSteps = Math.round(steps * (length / totalLength));
+        return stepsForLine(line, lineSteps, stepLength);
+    }));
+}
+
+function _multiToSimple(geoJson) {
+
+    var lines = _.map(geoJson.geometry.coordinates, function (line) {
+        if(_.last(line)[1] > _.first(line)[1]) {
+            line = line.reverse();
+        }
+        return turf.linestring(line);
+    });
+
+    lines.sort(function(a, b) {
+        return (b.geometry.coordinates[0][1] - a.geometry.coordinates[0][1]);
+    });
+    return lines;
+}
+
+
+
+function initScroll(map, geoJson, positionCallback) {
+
+    var lines;
+    if (geoJson.geometry.type === 'MultiLineString') {
+        lines = _multiToSimple(geoJson);
+    } else {
+        lines = [geoJson];
+    }
+
+    var steps = getSteps(lines, 0.6);
+
     var layer = L.geoJson().addTo(map);
-    var index = 8;
+
     function zoomToIndex(index) {
         var step = steps[index];
         if (step !== undefined) {
-            var along = turf.along(line.feature, step, 'kilometers');
-            layer.clearLayers().addData(along);
+            layer.clearLayers().addData(step);
             var pos = layer.getLayers()[0].getLatLng();
             map.panTo(pos);
             if (positionCallback) {
                 positionCallback(pos);
             }
         }
+
     }
+    var index = 0;
     zoomToIndex(index);
 
     function move(delta) {
@@ -83,13 +125,18 @@ var map = L.map('map', {
     keyboard: false,
     zoomControl: false
 });
-/*
+
 L.tileLayer.kartverket('topo2graatone').addTo(map);
-*/
 
-L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-var api = new KR.API();
+//L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+var api = new KR.API({
+    cartodb: {
+        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
+        user: 'knreise'
+    }
+});
 
 var dataset = {
     api: 'norvegiana',
@@ -118,7 +165,6 @@ f.on('click', function (e) {
     sidebar.setContent(popupTemplate(feature.properties)).show();
 });
 
-
 map.on('moveend', function ()  {
     var bbox = map.getBounds().toBBoxString();
 
@@ -138,13 +184,20 @@ map.on('moveend', function ()  {
     api.getBbox(dataset, bbox, gotFeatures, error, {allPages: true});
 });
 
-var url = 'https://gist.githubusercontent.com/anonymous/5a83eafe1e5cd369f6c9/raw/a58b4dfdd9d4a8772745009cb789baa187ef6202/map.geojson';
-KR.Util.sendRequest(url, null, function (geoJson) {
-    var layer = L.geoJson(JSON.parse(geoJson)).addTo(map);
-    var line = layer.getLayers()[0]
-    var start = line.getLatLngs()[0];
+
+var alongLine = new AlongLine(api);
+var pilegrimsleden_dovre = {
+    api: 'cartodb',
+    name: 'Pilegrimsleden',
+    table: 'pilegrimsleden_dovre',
+    mapper: KR.API.mappers.pilegrimsleden_dovre
+};
+
+alongLine.getLine(pilegrimsleden_dovre, function (res) {
+    var geoJson = res.line.toGeoJSON();
+    var layer = L.geoJson(geoJson).addTo(map);
     map.setZoom(15);
-    initScroll(map, line, function (pos) {
+    initScroll(map, geoJson.features[0], function (pos) {
         previewStrip.setPosition(pos);
     });
 });
