@@ -8,6 +8,7 @@
 
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
         <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
@@ -15,7 +16,6 @@
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
         <link href='../common/css/markers.css' rel='stylesheet' />
         <link href='../common/css/strip.css' rel='stylesheet' />
-        <link href='../common/css/L.Control.Info.css' rel='stylesheet' />
 
     </head>
     <body>
@@ -316,6 +316,7 @@
         <script src="../common/js/PreviewStrip.js" type="text/javascript"></script>
         <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
         <script src="../bower_components/video.js/dist/video-js/video.js" type="text/javascript"></script>
         <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.js" type="text/javascript"></script>
@@ -374,14 +375,21 @@ var previewStrip = new KR.PreviewStrip(
     }
 );
 
-var sidebar = new L.Control.Sidebar('sidebar', {autoPan: false});
+var footerTemplate = _.template($('#footer_template').html());
+var sidebar = new L.Knreise.Control.sidebar('sidebar', {
+    autoPan: false,
+    footerTemplate: footerTemplate
+});
+
 map.addControl(sidebar);
 
 var f = L.geoJson().addTo(map);
+
 var popupTemplate = _.template($('#digitalt_fortalt_template').html());
 f.on('click', function (e) {
     var feature = e.layer.feature;
-    sidebar.setContent(popupTemplate(feature.properties)).show();
+    //sidebar.setContent(popupTemplate(feature.properties)).show();
+    sidebar.showFeature(feature, popupTemplate);
 });
 
 function moved(position) {

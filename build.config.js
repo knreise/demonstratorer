@@ -239,8 +239,7 @@ module.exports = {
           'common/js/PreviewStrip.js',
           'bower_components/turf/turf.min.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
-          //'bower_components/CryptoJS/build/components/core.js',
-          //'bower_components/CryptoJS/build/components/md5.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
@@ -250,14 +249,14 @@ module.exports = {
         css: [
           'bower_components/leaflet/dist/leaflet.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'common/css/fullscreenmap.css',
           'common/css/L.Knreise.Control.Datasets.css',
           'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/strip.css',
-          'common/css/L.Control.Info.css'
+          'common/css/strip.css'
         ],
         templates: [
           'popup',

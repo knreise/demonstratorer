@@ -46,14 +46,21 @@ var previewStrip = new KR.PreviewStrip(
     }
 );
 
-var sidebar = new L.Control.Sidebar('sidebar', {autoPan: false});
+var footerTemplate = _.template($('#footer_template').html());
+var sidebar = new L.Knreise.Control.sidebar('sidebar', {
+    autoPan: false,
+    footerTemplate: footerTemplate
+});
+
 map.addControl(sidebar);
 
 var f = L.geoJson().addTo(map);
+
 var popupTemplate = _.template($('#digitalt_fortalt_template').html());
 f.on('click', function (e) {
     var feature = e.layer.feature;
-    sidebar.setContent(popupTemplate(feature.properties)).show();
+    //sidebar.setContent(popupTemplate(feature.properties)).show();
+    sidebar.showFeature(feature, popupTemplate);
 });
 
 function moved(position) {
