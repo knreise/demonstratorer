@@ -29,7 +29,7 @@ var pilegrimsleden_dovre = {
 var datasets = [
     {dataset: 'difo', api: 'norvegiana'},
     {dataset: 'Kulturminnesok', api: 'norvegiana'},
-    {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
+  //  {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
     {dataset: 'Artsdatabanken', api: 'norvegiana'}
 ];
 
@@ -58,21 +58,21 @@ function getLocation() {
 var locate = L.easyButton(map, getLocation, {icon: 'fa-user', title: 'Finn meg'});
 
 
-function initGeoLoc(interval, callback, error) {
-    getLocation(callback, error);
-    return setInterval(function () {
-        getLocation(callback, error);
-    }, interval * 1000);
-}
-
 function _getPoller(showPoint) {
-    var poller;
+    var id;
+    var prev;
     function on() {
-        poller = initGeoLoc(30, showPoint);
+        id = navigator.geolocation.watchPosition(function (pos) {
+            var identical = (prev && prev.latitude === pos.coords.latitude && prev.longitude === pos.coords.longitude);
+            if (!identical) {
+                showPoint(pos);
+            }
+            prev = pos.coords;
+        });
     }
 
     function off() {
-        window.clearInterval(poller);
+        navigator.geolocation.clearWatch(id);
     }
 
     return {

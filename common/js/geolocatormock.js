@@ -14,3 +14,28 @@ navigator.geolocation.getCurrentPosition = function (callback) {
         }
     });
 }
+
+function initGeoLoc(interval, callback, error) {
+    return setInterval(function () {
+        navigator.geolocation.getCurrentPosition(callback, error);
+    }, interval * 1000);
+}
+
+function _getPoller() {
+    var poller;
+    function on(callback, error) {
+        poller = initGeoLoc(15, callback, error);
+    }
+    function off() {
+        window.clearInterval(poller);
+    }
+
+    return {
+        on: on,
+        off: off
+    };
+}
+
+var p = _getPoller();
+navigator.geolocation.watchPosition = p.on;
+navigator.geolocation.clearWatch = p.off;
