@@ -508,8 +508,8 @@ KR.NorvegianaAPI = function () {
         }
         _checkCancel(requestId);
 
-        //var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        var url = '/dimu.json';
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        //var url = '/dimu.json';
         if (options.allPages) {
             requests[requestId] = _getAllPages(url, callback, errorCallback);
         } else {

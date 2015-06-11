@@ -26,11 +26,12 @@ KR.Config = {
         'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
         'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
         'Industrimuseum': {name: 'darkred', hex: '#A23336'},
-        'MUSIT': {name: 'darkred', hex: '#A23336'},
+        'MUSIT': {name: 'cadetblue', hex: '#436978'},
         'Kulturminnesøk': {name: 'green', hex: '#72B026'},
         'Naturbase': {name: 'purple', hex: '#D252B9'},
         'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
-        'default': {name: 'blue', hex: '#38A9DC'}
+        'default': {name: 'blue', hex: '#38A9DC'},
+        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'}
     },
 
     templates: {}
