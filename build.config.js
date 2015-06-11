@@ -131,7 +131,7 @@ module.exports = {
     },
     {
         key: 'line_dovre',
-        name: 'Pilegrimsleden, Dovre',
+        name: 'Pilegrimsleden, Dovre med posisjonering',
         scripts: [
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
@@ -156,56 +156,6 @@ module.exports = {
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'common/css/L.Knreise.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Datasets.css',
-          'common/css/fullscreenmap.css',
-          'common/css/markers.css',
-          'common/css/strip.css'
-        ],
-        templates: [
-          'popup',
-          'digitalt_fortalt',
-          'kulturminne',
-          'musit',
-          'digitalt_museum',
-          'digitalt_fortalt',
-          'list_item',
-          'fangstgrop',
-          'artsobservasjon',
-          'marker',
-          'thumbnail',
-          'footer',
-          'error',
-          'spinner',
-          'panel'
-        ]
-    },
-    {
-        key: 'dovre_pos',
-        name: 'Dovre med posisjonering',
-        scripts: [
-          'bower_components/L.EasyButton/easy-button.js',
-          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
-          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
-          'common/js/L.Knreise.GeoJSON.js',
-          'common/js/PreviewStrip.js',
-          'bower_components/turf/turf.min.js',
-          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
-          'common/js/L.Knreise.Control.Sidebar.js',
-          'bower_components/audiojs/audiojs/audio.min.js',
-          'bower_components/video.js/dist/video-js/video.js',
-          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'common/js/FollowLineMap.js',
-          'common/js/AlongLine.js',
-          'common/js/LineMap.js',
-          'common/js/geolocatormockrandom.js'
-        ],
-        css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
-          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
-          'common/css/L.Knreise.Control.Sidebar.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
-          'common/css/L.Knreise.Control.Datasets.css',
-          'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
           'common/css/strip.css'
