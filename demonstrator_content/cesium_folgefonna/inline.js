@@ -1,60 +1,33 @@
+var cesiumOptions = {
+    animation: false,
+    baseLayerPicker: false,
+    fullscreenButton: false,
+    geocoder: false,
+    homeButton: false,
+    infoBox: false,
+    sceneModePicker: false,
+    selectionIndicator: false,
+    timeline: false,
+    navigationHelpButton: false,
+    navigationInstructionsInitiallyVisible: false,
+    orderIndependentTranslucency: false
+};
 
-// config object removing timeline and other elements that are on by default
-var config = {
-    cesiumViewerOpts : {
-        animation: false,  
-        baseLayerPicker: false, 
-        fullscreenButton: false, 
-        geocoder: false, 
-        homeButton: false, 
-        infoBox: false, 
-        sceneModePicker: false, 
-        selectionIndicator: false, 
-        timeline: false, 
-        navigationHelpButton: false, 
-        navigationInstructionsInitiallyVisible: false, 
-        orderIndependentTranslucency: false
-    }
-}
+var map = new KR.CesiumMap('cesium-viewer', cesiumOptions);
 
-var viewer = new Cesium.Viewer('cesium-viewer', config.cesiumViewerOpts);
-    
-
-// Add the terrain provider (AGI)
-var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
-    url : '//assets.agi.com/stk-terrain/world',
-    requestVertexNormals : true,
-    requestWaterMask: true
-});
-viewer.terrainProvider = cesiumTerrainProvider;
-
-
-// Add kartverket WMTS
-var kartverketTopo2 = new Cesium.WebMapTileServiceImageryProvider({
-    url : 'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts?SERVICE=WMTS&REQUEST=GetTile&LAYER=matrikkel_bakgrunn&STYLE={Style}&TILEMATRIXSET=EPSG:3857&TILEMATRIX=EPSG:3857:{TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&FORMAT=image/png',
-    layer : 'matrikkel_bakgrunn',
-    style : 'default',
-    version : "1.0.0",
-    format : 'image/png',
-    tileMatrixSetID : 'EPSG:3857',
-    maximumLevel: 19
-});
-//viewer.imageryLayers.addImageryProvider(kartverketTopo2);
-
-
-var scene = viewer.scene;
+var viewer = map.viewer;
+var scene = map.viewer.scene;
 var globe = scene.globe;
 
 // Depth test: If this isn't on, objects will be visible through the terrain.
 globe.depthTestAgainstTerrain = true;
 
-
 var $sidebar = $('#cesium-sidebar');
 var $loader = $('.spinner-wrapper');
 
-    
+
 // Setting up API and retrieving the Folgefonna geojson
-var api = new KR.API();4
+var api = new KR.API();
 
 var tur = {
     api: 'utno',
@@ -67,8 +40,8 @@ api.getData(tur, function (geojson) {
     folgefonnaGeojson = geojson;
     //addFolgefonna2D(folgefonnaGeojson);
     buildFolgefonna3D(folgefonnaGeojson);
-    loadKulturminner( getBbox(folgefonnaGeojson));
-    loadWikipedia(getBboxLimit(folgefonnaGeojson,20));
+    loadKulturminner(getBbox(folgefonnaGeojson));
+    loadWikipedia(getBboxLimit(folgefonnaGeojson, 20));
 });
 
 
@@ -81,79 +54,67 @@ var handler;
 
 function addFolgefonna2D(geojson) {
     var coordinates = geojson.features[0].geometry.coordinates;
-    var folgefonnaPos = _.map(coordinates, function(coordinatePair) {
+    var folgefonnaPos = _.map(coordinates, function (coordinatePair) {
         return Cesium.Cartesian3.fromDegrees(coordinatePair[0], coordinatePair[1]);
     });
-    
+
     viewer.entities.add({
-        polyline : {
-            positions : folgefonnaPos,
-            width : 10.0,
-            material : new Cesium.PolylineGlowMaterialProperty({
-                color : Cesium.Color.DEEPSKYBLUE,
-                glowPower : 0.25
+        polyline: {
+            positions: folgefonnaPos,
+            width: 10.0,
+            material: new Cesium.PolylineGlowMaterialProperty({
+                color: Cesium.Color.DEEPSKYBLUE,
+                glowPower: 0.25
             })
         }
     });
-    
 }
 
 function buildFolgefonna3D(geojson) {
-    
+
     var coordinates = geojson.features[0].geometry.coordinates;
-    var folgefonnaPos = _.map(coordinates, function(coordinatePair) {
+    var folgefonnaPos = _.map(coordinates, function (coordinatePair) {
         return new Cesium.Cartographic.fromDegrees(coordinatePair[0], coordinatePair[1]);
     });
-    
-    var promise = Cesium.sampleTerrain(cesiumTerrainProvider, 14, folgefonnaPos);
-    Cesium.when(promise, function(updatedPositions) {
+
+    var promise = Cesium.sampleTerrain(viewer.terrainProvider, 14, folgefonnaPos);
+    Cesium.when(promise, function (updatedPositions) {
         var heightCurve = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(updatedPositions);
-        
+
         folgefonna = viewer.entities.add({
-            polyline : {
-                positions : heightCurve,
-                width : 10.0,
-                material : new Cesium.PolylineGlowMaterialProperty({
-                    color : Cesium.Color.DEEPSKYBLUE,
-                    glowPower : 0.25
+            polyline: {
+                positions: heightCurve,
+                width: 10.0,
+                material: new Cesium.PolylineGlowMaterialProperty({
+                    color: Cesium.Color.DEEPSKYBLUE,
+                    glowPower: 0.25
                 })
             }
         });
         viewer.zoomTo(folgefonna);
         stopLoading();
-        
     });
 }
 
-
-
-function getHeightsForGeoJsonPoints(geojson, callback, zoomLevel, extraHeight ) {
+function getHeightsForGeoJsonPoints(geojson, callback, zoomLevel, extraHeight) {
     var allCoordinates = [];
-    if(!extraHeight) {
+    if (!extraHeight) {
         extraHeight = 0;
     }
     _.each(geojson.features, function (feature) {
-        var fgeom = feature.geometry.coordinates;        
+        var fgeom = feature.geometry.coordinates;
         allCoordinates.push(new Cesium.Cartographic.fromDegrees(fgeom[0], fgeom[1]));
     });
-        
-    var promise = Cesium.sampleTerrain(cesiumTerrainProvider, zoomLevel = 14, allCoordinates);
-    Cesium.when(promise, function(updatedPositions) {
+
+    var promise = Cesium.sampleTerrain(viewer.terrainProvider, zoomLevel = 14, allCoordinates);
+    Cesium.when(promise, function (updatedPositions) {
         var allCoordinatesHeight = updatedPositions;
-        
-        var count = 0;
-        
-        for (var i=0; i<geojson.features.length; i++) {
+        _.each(geojson.features, function (feature, count) {
             var newCoor = allCoordinatesHeight[count];
-            geojson.features[i].geometry.coordinates = [Cesium.Math.toDegrees(newCoor.longitude), Cesium.Math.toDegrees(newCoor.latitude), newCoor.height + extraHeight ];
-            count++;
-        }
-        
-        
+            feature.geometry.coordinates = [Cesium.Math.toDegrees(newCoor.longitude), Cesium.Math.toDegrees(newCoor.latitude), newCoor.height + extraHeight ];
+        });
         callback(geojson);
     });
-    
-    
 }
 
 
@@ -165,18 +126,18 @@ function getBboxLimit(geojson, limit) {
     minLat = coordinates[0][1];
     maxLon = coordinates[0][0];
     maxLat = coordinates[0][1];
-    for (var i=0; i<500; i++) {
-        var coordinatePair = coordinates[i];
+    _.each(coordinates, function (coordinatePair) {
         if (coordinatePair[0] < minLon) {
-            minLon = coordinatePair[0]-0.05;
+            minLon = coordinatePair[0] - 0.05;
         } else if (coordinatePair[1] < minLat) {
-            minLat = coordinatePair[1]-0.05;
+            minLat = coordinatePair[1] - 0.05;
         } else if (coordinatePair[0] > maxLon) {
-            maxLon = coordinatePair[0]+0.05;
+            maxLon = coordinatePair[0] + 0.05;
         } else if (coordinatePair[1] > minLat) {
-            maxLat = coordinatePair[1]+0.05;
+            maxLat = coordinatePair[1] + 0.05;
         }
-    }
+    });
+
     var bbox = minLon + ',' + minLat + ','  + maxLon + ',' + maxLat;
     return bbox;
 }
@@ -190,22 +151,20 @@ function getBbox(geojson) {
     minLat = coordinates[0][1];
     maxLon = coordinates[0][0];
     maxLat = coordinates[0][1];
-    _.each(coordinates, function(coordinatePair) {
+    _.each(coordinates, function (coordinatePair) {
         if (coordinatePair[0] < minLon) {
-            minLon = coordinatePair[0]-0.05;
+            minLon = coordinatePair[0] - 0.05;
         } else if (coordinatePair[1] < minLat) {
-            minLat = coordinatePair[1]-0.05;
+            minLat = coordinatePair[1] - 0.05;
         } else if (coordinatePair[0] > maxLon) {
-            maxLon = coordinatePair[0]+0.05;
+            maxLon = coordinatePair[0] + 0.05;
         } else if (coordinatePair[1] > minLat) {
-            maxLat = coordinatePair[1]+0.05;
+            maxLat = coordinatePair[1] + 0.05;
         }
     });
     var bbox = minLon + ',' + minLat + ','  + maxLon + ',' + maxLat;
     return bbox;
 }
-
-
 
 
 // getting kulturminner in areas
@@ -226,8 +185,6 @@ function loadKulturminner(bbox) {
 
 
 function loadWikipedia(bbox) {
-    
-        
     var wikipedia = {
         api: 'wikipedia'
     };
@@ -238,8 +195,6 @@ function loadWikipedia(bbox) {
             viewer.dataSources.add(dataSource);
         });
     });
-    
-    
 }
 
 
@@ -263,37 +218,27 @@ function sethandler() {
                 show(entity.properties);
             }
         }
-        
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 
-
-
 function show(properties) {
     $sidebar.show('slide', {direction: 'left'}, 100);
-    
-    console.log(properties.dataset);
     if (properties.dataset == 'Wikipedia') {
         $('.cesium-sidebar-body').html($(wikipediaTemplate(properties)));
     } else {
-         $('.cesium-sidebar-body').html($(arcKulturminneTemplate(properties)));
-        
+        $('.cesium-sidebar-body').html($(arcKulturminneTemplate(properties)));
     }
 }
 
-
-function stopLoading() {    
-    $loader.delay(2000).fadeOut({duration: 200});    
+function stopLoading() {
+    $loader.delay(2000).fadeOut({duration: 200});
 }
 
 function close() {
     $sidebar.hide('slide', {direction: 'left'}, 100);
-    
-    
 }
 
-$('.cesium-sidebar-close').on('click', function(e) {
+$('.close-sidebar').on('click', function(e) {
+    console.log('close');
     close();
 });
-
-

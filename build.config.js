@@ -254,7 +254,7 @@ module.exports = {
         scripts: [
           'bower_components/cesium1.9/Build/CesiumUnminified/Cesium.js',
           'bower_components/togeojson/togeojson.js',
-          'common/js/DatasetLoader.js'
+          'common/js/CesiumMap.js'
         ],
         css: [
             'common/css/cesium_base.css'
@@ -273,6 +273,7 @@ module.exports = {
           'bower_components/CryptoJS/build/components/core.js',
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/jquery-ui/jquery-ui.min.js',
+          'common/js/CesiumMap.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
