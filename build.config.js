@@ -4,7 +4,7 @@ module.exports = {
     'bower_components/underscore/underscore-min.js',
     'bower_components/leaflet/dist/leaflet.js',
     'bower_components/esri2geo/esri2geo.js',
-    'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
+    'bower_components/KNreiseAPI/dist/KNreiseAPI.js',
     'common/js/ErrorHandler.js',
     'common/js/util.js'
   ],

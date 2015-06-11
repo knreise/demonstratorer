@@ -7,7 +7,8 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
     options: {
         zoomToBoundsOnClick: false,
-        spiderfyOnMaxZoom: false
+        spiderfyOnMaxZoom: false,
+        polygonOptions: {fillColor: '#ddd', weight: 2, color: '#999', fillOpacity:0.6}
     },
 
     initialize: function (options) {
