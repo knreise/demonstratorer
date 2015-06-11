@@ -19,7 +19,6 @@
         <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
         <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
         <link href='../common/css/audiojs.css' rel='stylesheet' />
-        <link href='../common/css/L.Control.DatasetChooser.css' rel='stylesheet' />
 
     </head>
     <body>
@@ -223,6 +222,14 @@
 </script>
 
 
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -232,49 +239,37 @@
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
         <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
-        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
-        <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
+        <script src="../bower_components/proj4/dist/proj4.js" type="text/javascript"></script>
+        <script src="../bower_components/togeojson/togeojson.js" type="text/javascript"></script>
+        <script src="../bower_components/wellknown/wellknown.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.MarkerClusterGroup.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
         <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
-        <script src="../bower_components/video.js/dist/video-js/video.js" type="text/javascript"></script>
-        <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
-        <script src="../common/js/L.NorvegianaGeoJSON.js" type="text/javascript"></script>
-        <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
-        <script src="../common/js/L.Control.DatasetChooser.js" type="text/javascript"></script>
-        <script src="../common/js/L.Control.MapClick.js" type="text/javascript"></script>
+        <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
                 'use strict';
 
-                KR.Config.templates = {
-    'Kulturminnesok': _.template($('#kulturminne_template').html()),
-    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
-    'Musit': _.template($('#musit_template').html()),
-    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
-};
+                //template used for sidebar
 
-//template used for sidebar
 var popupTemplate = _.template($('#popup_template').html());
 var listElementTemplate = _.template($('#list_item_template').html());
 var markerTemplate = _.template($('#marker_template').html());
 var thumbnailTemplate = _.template($('#thumbnail_template').html());
 var footerTemplate = _.template($('#footer_template').html());
 
-
 //create the map
 var map = L.map('map');
 
 //add a background layer from kartverket
-L.tileLayer.kartverket('topo2graatone').addTo(map);
-
-
-//initialize the map in oslo
-map.setView(new L.LatLng(59.910586, 10.734329), 16);
+L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
 
 //set up an instance of the Norvegiana API
 var api = new KR.API({
@@ -284,36 +279,95 @@ var api = new KR.API({
     }
 });
 
-//the sidebar, used for displaying information
-var sidebar = L.Knreise.Control.sidebar('sidebar', {
-    position: 'left',
-    template: popupTemplate,
-    listElementTemplate: listElementTemplate,
-    markerTemplate: markerTemplate,
-    thumbnailTemplate: thumbnailTemplate,
-    footerTemplate: footerTemplate
-});
-map.addControl(sidebar);
 
-var layer = L.norvegianaGeoJSON(null, sidebar, {cluster: true});
-
-var datasets = api.datasets();
-//var selectedDataset = 'delving_spec:DiMu';
-var selectedDataset = 'Artsdatabanken';
-var clickFunc = L.control.mapClick(layer, api, datasets[selectedDataset]);
-map.addControl(clickFunc);
-clickFunc.on();
-
-//simple control to choose datasets
-var datasetChooser = L.control.datasetChooser({
-    datasets: datasets,
-    initialDataset: selectedDataset,
-    datasetSelected: function (dataset) {
-        clickFunc.setDataset(dataset);
+//The datasets in use
+var datasets = [
+    {
+        dataset: {
+            api: 'cartodb',
+            table: 'pilegrimsleden_dovre3',
+            mapper: KR.API.mappers.pilegrimsleden_dovre
+        },
+        name: 'Pilegrimsleden',
+        bbox: false
+    },
+    {
+        dataset: {
+            api: 'utno',
+            id: '2.8158',
+            type: 'huh'
+        },
+        name: 'ut.no 1',
+        bbox: false
+    },
+    {
+        dataset: {
+            api: 'utno',
+            id: '2.81582222',
+            type: 'gpx'
+        },
+        name: 'ut.no 2',
+        bbox: false
+    },
+    {
+        name: 'Fangstlokaliteter',
+    
+        dataset: {
+            api: 'norvegiana',
+            dataset: '',
+            query: ''
+        }
+    },
+    {
+        name: 'Fangstgroper',
+        dataset: {
+            api: 'kulturminnedata',
+            query: "Navn='Fangstgrop'",
+            layer: 20
+        }
+    },
+    {
+        name: 'Wikipedia',
+        dataset: {
+            api: 'wikipedia'
+        }
+    },
+    {
+        name: 'kulturminnedata 2',
+        dataset: {
+                limit: 100,
+                api: 'kulturminnedataSparql',
+                filter: ' '
+            },
+        bbox: false
+    },
+    {
+        name: 'folketelling',
+        dataset: {
+            api: 'folketelling',
+            dataset: 'property',
+            limit: 10
+        }
     }
-});
-map.addControl(datasetChooser);
 
+];
+
+
+
+var errorHandler = KR.errorHandler($('#error_template').html());
+
+
+var datasetLoader = new KR.DatasetLoader(api, map, null, errorHandler);
+
+//get the are we are interested in
+var dovre = 511;
+api.getMunicipalityBounds(dovre, function (bbox) {
+    var bounds = L.latLngBounds.fromBBoxString(bbox);
+    map.fitBounds(bounds);
+    var layers = datasetLoader.loadDatasets(datasets);
+
+    L.control.datasets(layers).addTo(map);
+});
             }());
         </script>
     </body>

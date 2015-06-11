@@ -222,6 +222,14 @@
 </script>
 
 
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -229,6 +237,7 @@
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
+        <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
@@ -287,6 +296,9 @@ KR.Config.templates = {
     'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
 };
 
+
+
+
 //The datasets in use
 var datasets = [
     {
@@ -340,16 +352,18 @@ var datasets = [
         provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
-        style: function (feature) {
-            return {fillOpacity: 0.2, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
-        },
-        selectedStyle: function (feature) {
-            return {fillOpacity: 0.6, color: '#7570b3', weight: 1, fillColor: KR.Util.colorForProvider('Naturbase')};
-        },
+        style: KR.Util.getVerneomrStyle(0.2),
+        selectedStyle: KR.Util.getVerneomrStyle(0.5),
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
-        toPoint: 20,
+        toPoint: {
+            showAlways: true,
+            stopPolyClick: true,
+            minSize: 20,
+            circle: KR.Util.getVerneomrCircleStyle(),
+            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
+        },
         cluster: false
     },
     {
@@ -387,7 +401,12 @@ var datasets = [
     }
 ];
 
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+
+
+var errorHandler = KR.errorHandler($('#error_template').html());
+
+
+var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
 
 //get the are we are interested in
 var dovre = 511;
