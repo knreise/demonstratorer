@@ -12,7 +12,8 @@ var KR = this.KR || {};
                 fillColor: '#f00',
                 radius: 10,
                 fillOpacity: 0.8
-            }
+            },
+            zoom: 15
         }, options || {});
 
         var previewStrip = new KR.PreviewStrip(
@@ -35,8 +36,6 @@ var KR = this.KR || {};
                 sidebar.showFeature(feature);
             }
         });
-
-        
 
         function _gotFeatures(features) {
             markerLayer.clearLayers().addData(features);
@@ -61,6 +60,7 @@ var KR = this.KR || {};
         function positionChanged(position) {
             previewStrip.moveStart();
             markerLayer.clearLayers();
+            map.setZoom(options.zoom);
             map.panTo(position);
             _updateMarker(position);
 

@@ -5,7 +5,6 @@ KR.LineMap = function (api, map, dataset, options) {
     'use strict';
 
     options = _.extend({
-        zoom: 15,
         scrollLength: 0.6 //km
     }, options || {});
 
@@ -128,7 +127,6 @@ KR.LineMap = function (api, map, dataset, options) {
         alongLine.getLine(dataset, function (res) {
             var geoJson = res.line.toGeoJSON();
             L.geoJson(geoJson).addTo(map);
-            map.setZoom(options.zoom);
             _initScroll(map, geoJson.features[0], callback);
         });
     }

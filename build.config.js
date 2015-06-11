@@ -138,78 +138,77 @@ module.exports = {
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/turf/turf.min.js',
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
+          'common/js/PreviewStrip.js',
           'common/js/geolocatormock.js',
-          'common/js/AlongLine.js'
+          'common/js/FollowLineMap.js',
+          'common/js/AlongLine.js',
+          'common/js/FollowLineMap.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
-          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'bower_components/video.js/dist/video-js/video-js.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Datasets.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/L.Knreise.Control.Sidebar.css',
-          'common/css/along-line.css'
+          'common/css/strip.css'
         ],
         templates: [
           'popup',
-          'verneomraader',
+          'digitalt_fortalt',
           'kulturminne',
           'musit',
           'digitalt_museum',
           'digitalt_fortalt',
           'list_item',
-          'fangstgrop'
+          'fangstgrop',
+          'artsobservasjon',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error',
+          'spinner',
+          'panel'
         ]
     },
     {
         key: 'dovre_pos',
         name: 'Dovre med posisjonering',
         scripts: [
-          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/L.EasyButton/easy-button.js',
-          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
-          'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
-          'common/js/L.Knreise.MarkerClusterGroup.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'common/js/L.Knreise.GeoJSON.js',
-          'common/js/DatasetLoader.js',
           'common/js/PreviewStrip.js',
-          //'bower_components/CryptoJS/build/components/core.js',
-          //'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/turf/turf.min.js',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
-          'common/js/L.Knreise.Control.Sidebar.js',
-          'common/js/L.Knreise.Control.Datasets.js',
-          
+          'common/js/FollowLineMap.js',
+          'common/js/AlongLine.js',
+          'common/js/LineMap.js',
           'common/js/geolocatormockrandom.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
-          
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
-          
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
-          /*
-          'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
-          'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
-          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
-          */
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/L.Knreise.Control.Datasets.css',
           'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
           'common/css/strip.css'
-          /*
-          'common/css/L.Knreise.Control.Sidebar.css',
-          'common/css/L.Knreise.Control.Datasets.css',
-          'common/css/audiojs.css'
-          */
         ],
         templates: [
           'popup',
@@ -253,7 +252,6 @@ module.exports = {
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Sidebar.css',
           'bower_components/bootstrap/dist/css/bootstrap.min.css',
-          'common/css/fullscreenmap.css',
           'common/css/L.Knreise.Control.Datasets.css',
           'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',

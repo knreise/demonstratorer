@@ -26,25 +26,31 @@ var pilegrimsleden_dovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var locate = L.easyButton(map, null, {icon: 'fa-user', title: 'Finn meg'});
-var locateFollow = L.easyButton(map, null, {icon: 'fa-user-times', title: 'Følg meg', toggle: true});
+var datasets = [
+    {dataset: 'difo', api: 'norvegiana'},
+    {dataset: 'Kulturminnesok', api: 'norvegiana'},
+    {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
+    {dataset: 'Artsdatabanken', api: 'norvegiana'}
+];
 
 
-KR.Config.templates = {
-    'Kulturminnesok': _.template($('#kulturminne_template').html()),
-    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
-    'Musit': _.template($('#musit_template').html()),
-    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
-};
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets);
 
+function showPosition(pos) {
+    var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
+    followMap.positionChanged(p);
+}
 
-function getLocation (callback, error) {
+function getLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(callback);
+        navigator.geolocation.getCurrentPosition(showPosition);
     } else {
         error();
     }
 }
+
+var locate = L.easyButton(map, getLocation, {icon: 'fa-user', title: 'Finn meg'});
+
 
 function initGeoLoc(interval, callback, error) {
     getLocation(callback, error);
@@ -53,94 +59,38 @@ function initGeoLoc(interval, callback, error) {
     }, interval * 1000);
 }
 
-var datasets = [
-    {
-        name: 'Digitalt fortalt',
-        dataset: {dataset: 'difo', api: 'norvegiana'},
-        options: {allPages: true}
-    },
-    {
-        name: 'Kulturminner',
-        dataset: {dataset: 'Kulturminnesok', api: 'norvegiana'},
-        options: {allPages: true}
-    },
-    {
-        
-        name: 'Museumsdata',
-        dataset: {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
-        options: {allPages: true}
-    },
-    {
-        name: 'Artsobservasjoner',
-        dataset: {dataset: 'Artsdatabanken', api: 'norvegiana'},
-        options: {allPages: true}
+function _getPoller(showPoint) {
+    var poller;
+    function on() {
+        poller = initGeoLoc(30, showPoint);
     }
-];
 
-function getShowPointFunc(map, data, clickCallback) {
-    var point;
-    return function showPoint(pos) {
-        var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
-        var snapped = alongLine.snapPoint(p);
-        if (point) {
-            map.removeLayer(point);
-        }
-        point = L.geoJson(snapped).getLayers()[0].setZIndexOffset(1000).addTo(map);
-        map.setView(point.getLatLng(), 14, {animate: true});
-        var sorted = alongLine.orderByDistance(data, snapped);
+    function off() {
+        window.clearInterval(poller);
+    }
 
-        var lis =_.chain(sorted.features)
-            .first(10)
-            .map(function (feature) {
-                var icon = KR.Util.iconForFeature(feature);
-                var el = $(listElementTemplate({
-                    title: feature.properties.title,
-                    icon: icon
-                }));
-                el.on('click', function () {
-                    clickCallback(feature)
-                });
-                return el;
-            })
-            .value();
-        $('#list').html(lis);
-        $('#list-container').removeClass('hidden');
+    return {
+        on: on,
+        off: off
     };
 }
 
-var addFeatureClick = KR.Util.featureClick(sidebar);
+var poller = _getPoller(showPosition);
 
-var alongLine = new AlongLine(api);
+var locateFollow = L.easyButton(
+    map,
+    poller.on,
+    {
+        icon: 'fa-user-times',
+        title: 'Følg meg',
+        toggle: true,
+        offCallback: poller.off
+    }
+);
 
+var alongLine = new KR.AlongLine(api);
 alongLine.getLine(pilegrimsleden_dovre, function (data) {
     data.line.addTo(map);
     map.fitBounds(data.bounds);
-    alongLine.fetchDatasets(datasets, function (data) {
-        L.Knreise.geoJson(
-            data,
-            {
-                dataset:  {
-                    thumbnails: true,
-                    smallMarker: true
-                },
-                onEachFeature: addFeatureClick
-            }
-        ).addTo(map);
-        var showPoint = getShowPointFunc(map, data, _.bind(sidebar.showFeature, sidebar));
-
-        locate.callback = function () {
-            getLocation(showPoint);
-        }
-
-        var poller;
-        locateFollow.callback = function () {
-            poller = initGeoLoc(5, showPoint);
-        }
-
-        locateFollow.offCallback = function () {
-            window.clearInterval(poller);
-        }
-
-    });
-
+    getLocation();
 });
