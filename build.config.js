@@ -243,6 +243,7 @@ module.exports = {
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+          'common/js/FollowLineMap.js',
           'common/js/AlongLine.js',
           'common/js/LineMap.js'
         ],

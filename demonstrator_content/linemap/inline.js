@@ -1,12 +1,3 @@
-
-
-
-function filterByBbox (features, bbox) {
-    var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
-    return turf.within(features, boundPoly);
-}
-
-
 var map = L.map('map', {
     dragging: false,
     touchZoom: false,
@@ -18,9 +9,6 @@ var map = L.map('map', {
 });
 
 L.tileLayer.kartverket('topo2graatone').addTo(map);
-
-
-//L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 var api = new KR.API({
     cartodb: {
@@ -40,19 +28,6 @@ var datasets = [
     }
 ];
 
-var previewStrip = new KR.PreviewStrip(
-    $('#strip'),
-    map,
-    null,
-    null,
-    null,
-    {
-        panOnClick: false,
-        minimal: true
-    }
-);
-
-var footerTemplate = _.template($('#footer_template').html());
 
 
 KR.Config.templates = {
@@ -60,65 +35,13 @@ KR.Config.templates = {
     'Musit': _.template($('#musit_template').html())
 };
 
+var footerTemplate = _.template($('#footer_template').html());
 var sidebar = new L.Knreise.Control.sidebar('sidebar', {
     autoPan: false,
     footerTemplate: footerTemplate
 });
-
 map.addControl(sidebar);
 
-var markerLayer = L.Knreise.geoJson().addTo(map);
-
-markerLayer.on('click', function (e) {
-    var feature = e.layer.feature;
-    sidebar.showFeature(feature);
-});
-
-var marker;
-
-
-var circleStyle = {stroke: false, fillColor: '#f00', radius: 10, fillOpacity: 0.8};
-function moved(position) {
-    previewStrip.moveStart();
-    markerLayer.clearLayers();
-    map.panTo(position);
-    if (!marker) {
-        marker = L.circleMarker(position, circleStyle).addTo(map);
-    } else {
-        marker.setLatLng(position);
-    }
-
-    previewStrip.setPosition(position);
-    var bbox = map.getBounds().toBBoxString();
-
-    function gotFeatures(features) {
-        markerLayer.clearLayers().addData(features);
-        previewStrip.showFeatures(markerLayer.getLayers());
-        if (!features.features.length) {
-            previewStrip.showMessage('<em>Ingen funnet!</em>');
-        }
-    }
-
-    var found = [];
-    var featuresLoaded = _.after(datasets.length, function () {
-        gotFeatures(KR.Util.createFeatureCollection(found));
-    });
-
-    function error() {
-        previewStrip.showMessage('En feil oppstod!');
-        featuresLoaded();
-    }
-
-    function datasetLoaded(features) {
-        features = filterByBbox(features, bbox);
-        found = found.concat(features.features);
-        featuresLoaded();
-    }
-
-    _.each(datasets, function (dataset) {
-        api.getBbox(dataset, bbox, datasetLoaded, error, {allPages: true});
-    });
-}
 
 var pilegrimsledenDovre = {
     api: 'cartodb',
@@ -127,6 +50,7 @@ var pilegrimsledenDovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var linemap = new KR.LineMap(api, map, pilegrimsledenDovre);
-linemap.init(moved);
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets);
 
+var linemap = new KR.LineMap(api, map, pilegrimsledenDovre);
+linemap.init(followMap.positionChanged);

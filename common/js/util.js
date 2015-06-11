@@ -224,6 +224,11 @@ KR.Util = KR.Util || {};
         };
     };
 
+    ns.filterByBbox = function (features, bbox) {
+        var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
+        return turf.within(features, boundPoly);
+    };
+
     if (typeof L !== 'undefined') {
         L.latLngBounds.fromBBoxString = function (bbox) {
             bbox = KR.Util.splitBbox(bbox);
