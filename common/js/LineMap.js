@@ -89,7 +89,7 @@ KR.LineMap = function (api, map, dataset, options) {
     }
 
     function _setupMove(steps, positionCallback) {
-        var index = 3;
+        var index = 0;
         var zoomToIndex = _getZoomToIndex(steps, positionCallback);
         zoomToIndex(index);
 
@@ -117,7 +117,6 @@ KR.LineMap = function (api, map, dataset, options) {
             lines = [geoJson];
         }
         var steps = _getSteps(lines, options.scrollLength);
-        //var layer = L.geoJson().addTo(map);
         _setupMove(steps, positionCallback);
     }
 
