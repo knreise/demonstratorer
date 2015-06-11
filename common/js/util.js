@@ -96,8 +96,7 @@ KR.Util = KR.Util || {};
                     ? 'blue'
                     : ns.colorForFeature(feature);
 
-        return L.AwesomeMarkers.icon({
-            icon: faIcon,
+        return L.Knreise.icon({
             markerColor: color,
             prefix: 'fa'
         });

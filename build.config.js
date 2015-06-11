@@ -13,7 +13,7 @@ module.exports = {
         key: 'dovre',
         name: 'Dovre',
         scripts: [
-          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
           'common/js/L.Knreise.MarkerClusterGroup.js',
@@ -26,6 +26,7 @@ module.exports = {
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
+          'common/js/L.Knreise.Icon.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
