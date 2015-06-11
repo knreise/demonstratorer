@@ -83,10 +83,13 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
     _defaultIconCreateFunction: function (cluster) {
         var childCount = cluster.getChildCount();
-        var color = KR.Util.colorForFeature(cluster.getAllChildMarkers()[0].feature, 'hex')
+        var color = KR.Util.hexToRgb(KR.Util.colorForFeature(cluster.getAllChildMarkers()[0].feature, 'hex'));
+
+        var rgbaColor = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.7)';
+
         return new L.DivIcon(L.extend({
             className: 'leaflet-marker-circle',
-            html: '<div class="outer">​<div class="circle" style="background: ' + color + '"></div></div><b>' + cluster.getChildCount() + '</b>',
+            html: '<div class="outer">​<div class="circle" style="background-color: ' + rgbaColor + '"></div></div><b>' + cluster.getChildCount() + '</b>',
             iconSize: [20, 20]
         }, this.icon));
     },

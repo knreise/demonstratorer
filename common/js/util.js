@@ -91,7 +91,7 @@ KR.Util = KR.Util || {};
 
 
     ns.markerForFeature = function (feature, selected) {
-        var faIcon = ns.iconForFeature(feature);
+        //var faIcon = ns.iconForFeature(feature);
         var color = selected
                     ? 'blue'
                     : ns.colorForFeature(feature);
@@ -102,7 +102,7 @@ KR.Util = KR.Util || {};
         });
     };
 
-     var verneomrTypes = {
+    var verneomrTypes = {
         landskapsvern: {
             ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV'],
             style: {
@@ -176,7 +176,7 @@ KR.Util = KR.Util || {};
             }
             return {stroke: false, fill: false};
         };
-    }
+    };
 
 
     ns.featureClick = function (sidebar) {
@@ -217,6 +217,16 @@ KR.Util = KR.Util || {};
                 sidebar.showFeatures(features);
             });
         };
+    };
+
+
+    ns.hexToRgb = function (hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
     };
 
     if (typeof L !== 'undefined') {
