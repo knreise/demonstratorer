@@ -9,7 +9,7 @@ module.exports = {
     'common/js/util.js'
   ],
   demonstrators: [
-        {
+      {
         key: 'dovre',
         name: 'Dovre',
         scripts: [
@@ -354,6 +354,6 @@ module.exports = {
           'footer',
           'error'
         ]
-    },
+    }
   ]
 };
