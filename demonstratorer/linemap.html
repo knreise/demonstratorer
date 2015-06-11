@@ -382,7 +382,14 @@ var pilegrimsledenDovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var followMap = new KR.FollowLineMap(map, api, sidebar, datasets);
+var circleStyle = {
+    stroke: false,
+    fillColor: '#f00',
+    radius: 10,
+    fillOpacity: 0.8
+};
+
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
 
 var linemap = new KR.LineMap(api, map, pilegrimsledenDovre);
 linemap.init(followMap.positionChanged);

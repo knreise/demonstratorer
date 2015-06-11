@@ -7,12 +7,6 @@ var KR = this.KR || {};
     ns.FollowLineMap = function (map, api, sidebar, datasets, options) {
 
         options = _.extend({
-            circleStyle: {
-                stroke: false,
-                fillColor: '#f00',
-                radius: 10,
-                fillOpacity: 0.8
-            },
             zoom: 15
         }, options || {});
 
@@ -48,10 +42,16 @@ var KR = this.KR || {};
         var marker;
         function _updateMarker(position) {
             if (!marker) {
-                marker = L.circleMarker(
-                    position,
-                    options.circleStyle
-                ).addTo(map);
+                if (options.circleStyle) {
+                    marker = L.circleMarker(
+                        position,
+                        options.circleStyle
+                    ).addTo(map);
+                } else if (options.icon) {
+                    marker = L.marker(position, {icon: options.icon}).addTo(map);
+                } else {
+                    marker = L.marker(position).addTo(map);
+                }
             } else {
                 marker.setLatLng(position);
             }

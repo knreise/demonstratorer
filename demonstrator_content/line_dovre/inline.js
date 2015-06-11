@@ -33,8 +33,14 @@ var datasets = [
     {dataset: 'Artsdatabanken', api: 'norvegiana'}
 ];
 
+var icon = L.icon({
+    iconUrl: '../common/img/locate.gif',
+    iconSize: [50, 50],
+    iconAnchor: [25, 25]
+});
 
-var followMap = new KR.FollowLineMap(map, api, sidebar, datasets);
+
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {icon: icon});
 
 function showPosition(pos) {
     var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
