@@ -59,11 +59,20 @@ var f = L.geoJson().addTo(map);
 var popupTemplate = _.template($('#digitalt_fortalt_template').html());
 f.on('click', function (e) {
     var feature = e.layer.feature;
-    //sidebar.setContent(popupTemplate(feature.properties)).show();
     sidebar.showFeature(feature, popupTemplate);
 });
 
+var marker;
+
 function moved(position) {
+    map.panTo(position);
+    if (!marker) {
+        marker = L.circleMarker(position, {stroke: false, fillColor: '#f00', radius: 10, fillOpacity: 0.8}).addTo(map);
+    } else {
+        marker.setLatLng(position);
+    }
+
+
     previewStrip.setPosition(position);
     var bbox = map.getBounds().toBBoxString();
 

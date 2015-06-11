@@ -48,13 +48,11 @@ KR.LineMap = function (api, map, dataset, options) {
         return lines;
     }
 
-    function _getZoomToIndex(steps, positionCallback, layer) {
+    function _getZoomToIndex(steps, positionCallback) {
         return function _zoomToIndex(index) {
             var step = steps[index];
             if (step !== undefined) {
-                layer.clearLayers().addData(step);
-                var pos = layer.getLayers()[0].getLatLng();
-                map.panTo(pos);
+                var pos = L.geoJson(step).getLayers()[0].getLatLng();
                 if (positionCallback) {
                     positionCallback(pos);
                 }
@@ -91,9 +89,9 @@ KR.LineMap = function (api, map, dataset, options) {
         });
     }
 
-    function _setupMove(steps, positionCallback, layer) {
+    function _setupMove(steps, positionCallback) {
         var index = 0;
-        var zoomToIndex = _getZoomToIndex(steps, positionCallback, layer);
+        var zoomToIndex = _getZoomToIndex(steps, positionCallback);
         zoomToIndex(index);
 
         function move(delta) {
@@ -120,8 +118,8 @@ KR.LineMap = function (api, map, dataset, options) {
             lines = [geoJson];
         }
         var steps = _getSteps(lines, options.scrollLength);
-        var layer = L.geoJson().addTo(map);
-        _setupMove(steps, positionCallback, layer);
+        //var layer = L.geoJson().addTo(map);
+        _setupMove(steps, positionCallback);
     }
 
 
