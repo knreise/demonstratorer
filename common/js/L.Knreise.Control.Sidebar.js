@@ -88,7 +88,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var content = '<span class="providertext">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 
-        if (this.options.footerTemplate) {
+        if (this.options.footerTemplate && feature.properties.link) {
             content += this.options.footerTemplate(feature.properties);
         }
 

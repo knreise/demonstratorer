@@ -14,6 +14,8 @@ or, download manually.
 
 See [doc.md][doc] and the [live example][example] for more details.
 
+See also this  [codepen collection][codepen] for live examples of more advanced usage with Leaflet
+
 License
 -------
 This library is licensed under the Apache Software License, Version 1.1, 
@@ -27,3 +29,4 @@ part of the ["Kultur- og naturreise demo"-project][knreise]
 [knreise]: https://github.com/knreise/demonstratorer
 [doc]: https://github.com/knreise/KNReiseAPI/blob/master/doc.md
 [example]: http://knreise.github.io/KNReiseAPI/examples/api.html
+[codepen]: http://codepen.io/collection/XJGJNL/

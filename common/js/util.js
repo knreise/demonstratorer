@@ -31,7 +31,8 @@ KR.Config = {
         'Naturbase': {name: 'purple', hex: '#D252B9'},
         'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
         'default': {name: 'blue', hex: '#38A9DC'},
-        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'}
+        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'},
+        'Trondheim byarkiv': {name: 'darkred', hex: '#A23336'}
     },
 
     templates: {}
@@ -78,7 +79,6 @@ KR.Util = KR.Util || {};
 
 
     ns.colorForProvider = function (provider, type) {
-        console.log(provider);
         type = type || 'name';
         if (_.has(KR.Config.providerColors, provider)) {
             return KR.Config.providerColors[provider][type];
