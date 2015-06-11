@@ -8,7 +8,7 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
     options: {
         zoomToBoundsOnClick: false,
         spiderfyOnMaxZoom: false,
-        polygonOptions: {fillColor: '#ddd', weight: 2, color: '#999', fillOpacity:0.6}
+        polygonOptions: {fillColor: '#ddd', weight: 2, color: '#999', fillOpacity: 0.6}
     },
 
     initialize: function (options) {
@@ -78,6 +78,17 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
         };
         layer.selected = true;
         layer._updateIcon();
+    },
+
+
+    _defaultIconCreateFunction: function (cluster) {
+        var childCount = cluster.getChildCount();
+        var color = KR.Util.colorForFeature(cluster.getAllChildMarkers()[0].feature, 'hex')
+        return new L.DivIcon(L.extend({
+            className: 'leaflet-marker-circle',
+            html: '<div class="outer">​<div class="circle" style="background: ' + color + '"></div></div><b>' + cluster.getChildCount() + '</b>',
+            iconSize: [20, 20]
+        }, this.icon));
     },
 
     _iconCreator: function (cluster, selected) {
