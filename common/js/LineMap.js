@@ -90,7 +90,7 @@ KR.LineMap = function (api, map, dataset, options) {
     }
 
     function _setupMove(steps, positionCallback) {
-        var index = 0;
+        var index = 3;
         var zoomToIndex = _getZoomToIndex(steps, positionCallback);
         zoomToIndex(index);
 

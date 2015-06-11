@@ -29,10 +29,16 @@ var api = new KR.API({
     }
 });
 
-var dataset = {
-    api: 'norvegiana',
-    dataset: 'difo'
-};
+var datasets = [
+    {
+        api: 'norvegiana',
+        dataset: 'difo'
+    },
+    {
+        api: 'norvegiana',
+        dataset: 'MUSIT'
+    }
+];
 
 var previewStrip = new KR.PreviewStrip(
     $('#strip'),
@@ -47,6 +53,13 @@ var previewStrip = new KR.PreviewStrip(
 );
 
 var footerTemplate = _.template($('#footer_template').html());
+
+
+KR.Config.templates = {
+    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html()),
+    'Musit': _.template($('#musit_template').html())
+};
+
 var sidebar = new L.Knreise.Control.sidebar('sidebar', {
     autoPan: false,
     footerTemplate: footerTemplate
@@ -54,40 +67,57 @@ var sidebar = new L.Knreise.Control.sidebar('sidebar', {
 
 map.addControl(sidebar);
 
-var f = L.geoJson().addTo(map);
+var markerLayer = L.Knreise.geoJson().addTo(map);
 
-var popupTemplate = _.template($('#digitalt_fortalt_template').html());
-f.on('click', function (e) {
+markerLayer.on('click', function (e) {
     var feature = e.layer.feature;
-    sidebar.showFeature(feature, popupTemplate);
+    sidebar.showFeature(feature);
 });
 
 var marker;
 
+
+var circleStyle = {stroke: false, fillColor: '#f00', radius: 10, fillOpacity: 0.8};
 function moved(position) {
+    previewStrip.moveStart();
+    markerLayer.clearLayers();
     map.panTo(position);
     if (!marker) {
-        marker = L.circleMarker(position, {stroke: false, fillColor: '#f00', radius: 10, fillOpacity: 0.8}).addTo(map);
+        marker = L.circleMarker(position, circleStyle).addTo(map);
     } else {
         marker.setLatLng(position);
     }
-
 
     previewStrip.setPosition(position);
     var bbox = map.getBounds().toBBoxString();
 
     function gotFeatures(features) {
-        var features = filterByBbox(features, bbox);
-        f.clearLayers().addData(features);
-        previewStrip.showFeatures(f.getLayers());
+        markerLayer.clearLayers().addData(features);
+        previewStrip.showFeatures(markerLayer.getLayers());
         if (!features.features.length) {
             previewStrip.showMessage('<em>Ingen funnet!</em>');
         }
     }
+
+    var found = [];
+    var featuresLoaded = _.after(datasets.length, function () {
+        gotFeatures(KR.Util.createFeatureCollection(found));
+    });
+
     function error() {
         previewStrip.showMessage('En feil oppstod!');
+        featuresLoaded();
     }
-    api.getBbox(dataset, bbox, gotFeatures, error, {allPages: true});
+
+    function datasetLoaded(features) {
+        features = filterByBbox(features, bbox);
+        found = found.concat(features.features);
+        featuresLoaded();
+    }
+
+    _.each(datasets, function (dataset) {
+        api.getBbox(dataset, bbox, datasetLoaded, error, {allPages: true});
+    });
 }
 
 var pilegrimsledenDovre = {

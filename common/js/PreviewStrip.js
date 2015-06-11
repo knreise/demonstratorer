@@ -221,7 +221,7 @@ var KR = this.KR || {};
             showFeatures(features);
         }
 
-        function _moveStart() {
+        function moveStart() {
             if (!doReload || panToMarker) {
                 return;
             }
@@ -259,9 +259,10 @@ var KR = this.KR || {};
             }
         }
 
-        map.on('movestart', _moveStart);
-
-        map.on('moveend', _moveEnd);
+        if (datasetLoader) {
+            map.on('movestart', moveStart);
+            map.on('moveend', _moveEnd);
+        }
 
         return {
             init: init,
@@ -273,7 +274,8 @@ var KR = this.KR || {};
             },
             on: function () {
                 doReload = true;
-            }
+            },
+            moveStart: moveStart
         };
     };
 
