@@ -60,7 +60,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig( grunt.util._.extend( taskConfig, userConfig ) );
 
-  grunt.loadNpmTasks('grunt-file-creator');
+  
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', ['file-creator:build-demos', 'file-creator:build-index']);

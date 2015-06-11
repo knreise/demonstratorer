@@ -23,7 +23,8 @@ var viewer = new Cesium.Viewer('cesium-viewer', config.cesiumViewerOpts);
 // Add the terrain provider (AGI)
 var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
     url : '//assets.agi.com/stk-terrain/world',
-    requestVertexNormals : true
+    requestVertexNormals : true,
+    requestWaterMask: true
 });
 viewer.terrainProvider = cesiumTerrainProvider;
 

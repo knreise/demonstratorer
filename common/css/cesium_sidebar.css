@@ -3,21 +3,58 @@
     overflow-y: auto;
 }
 
-.cesium-sidebar-close {
-    position:absolute;
-    right:0;
-    margin-right:5px;
-    padding:10px;
-    margin-top:5px;
-    top:0;
+.close-sidebar {
+    padding-top:5px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  cursor: pointer;
 }
+
+.close-sidebar:hover {
+  opacity: .3;
+}
+
+
+.close-sidebar .lr {
+  z-index: 1051;
+  width: 1px;
+  height: 30px;
+  margin-left: 15px;
+  background-color: #222;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.close-sidebar .lr .rl {
+  z-index: 1052;
+  width: 1px;
+  height: 30px;
+  background-color: #222;
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.fullwidth {
+  max-width: 95%;
+  padding: 10px;
+}
+
+
+
+
+
 
 .cesium-sidebar h4{
     text-transform: uppercase;
 }
 
 #cesium-sidebar {
-
     margin-top:50px;
     position:absolute;
     z-index:1000;
@@ -27,8 +64,6 @@
     background-color: rgba(255,255,255,0.9);
     box-shadow: 1px 0px 1px #888888;
 }
-
-
 
 .cesium-sidebar-close .lr {
     z-index: 1051;
@@ -49,4 +84,11 @@
     -webkit-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
+}
+
+.cesium-sidebar-body {
+
+    padding:10px;
+
+
 }

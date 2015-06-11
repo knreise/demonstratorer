@@ -56,7 +56,7 @@
 
 
 <script type="text/template" id="cesium_sparql_kulturminne_template">
-<h4><%= label %></h4>
+<h3><%= label %></h3>
 
 <div class="cesium-sidebar-body">
     <p><%= loklab%></p>
@@ -68,8 +68,12 @@
 
 <script type="text/template" id="cesium_wikipedia_template">
 
-<h4><%= title %></h4>
+<h3><%= title %></h3>
 
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
 
 <p><%= content %></p>
 
@@ -81,7 +85,7 @@
 
 <script type="text/template" id="cesium_arc_kulturminne_template">
 
-<h4><%= Navn %></h4>
+<h3><%= Navn %></h3>
 
 
 </script>
