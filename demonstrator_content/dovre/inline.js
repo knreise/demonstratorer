@@ -60,7 +60,7 @@ var datasets = [
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
         template: _.template($('#digitalt_fortalt_template').html())
-    },*/
+    },
     {
         name: 'Fangstlokaliteter',
         dataset_name_override: 'fangstlokaliteter',
@@ -72,7 +72,7 @@ var datasets = [
         template: _.template($('#kulturminne_template').html()),
         smallMarker: true,
         cluster: false,
-        visible: true,
+        visible: false,
         circle: {
             radius: 5,
             weight:1,
@@ -80,7 +80,7 @@ var datasets = [
             color: KR.Util.colorForProvider('fangstlokaliteter', 'hex'),
             fillOpacity: 0.4
         }
-    }/*,
+    },
     {
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
@@ -138,17 +138,24 @@ var datasets = [
         minZoom: 12,
         thumbnails: true,
         smallMarker: true
-    },
+    },*/
     {
         name: 'Artsobservasjoner',
         dataset: {
             api: 'norvegiana',
             dataset:'Artsdatabanken'
         },
-        smallMarker: true,
+        circle: {
+            radius: 7,
+            weight:1,
+            opacity: 1,
+            color: KR.Util.colorForProvider('Artsdatabanken', 'hex'),
+            fillOpacity: 0.4
+        },
+        cluster: true,
         minZoom: 14
     }
-    */
+    
 ];
 
 

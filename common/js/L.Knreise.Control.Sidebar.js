@@ -176,6 +176,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 color: KR.Util.colorForFeature(feature, 'hex')
             });
         } else {
+            console.log(feature);
             marker = this.options.markerTemplate({
                 icon: KR.Util.iconForFeature(feature),
                 color: KR.Util.colorForFeature(feature)

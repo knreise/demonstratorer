@@ -22,7 +22,7 @@ KR.Config = {
     },
 
     providerColors: {
-        'Artsdatabanken': {name: 'darkpuple', hex: '#5B396B'},
+        'Artsdatabanken': {name: 'darkpurple', hex: '#5B396B'},
         'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
         'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
         'Industrimuseum': {name: 'darkred', hex: '#A23336'},
@@ -78,6 +78,7 @@ KR.Util = KR.Util || {};
 
 
     ns.colorForProvider = function (provider, type) {
+        console.log(provider);
         type = type || 'name';
         if (_.has(KR.Config.providerColors, provider)) {
             return KR.Config.providerColors[provider][type];
