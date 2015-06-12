@@ -176,7 +176,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (feature.properties.thumbnail) {
             marker = this.options.thumbnailTemplate({
                 thumbnail: feature.properties.thumbnail,
-                color: KR.Util.colorForFeature(feature, 'hex')
+                color: KR.Style.colorForFeature(feature)
             });
         } else {
             marker = this.options.markerTemplate({

@@ -6,7 +6,8 @@ module.exports = {
     'bower_components/esri2geo/esri2geo.js',
     'bower_components/KNreiseAPI/dist/KNreiseAPI.js',
     'common/js/ErrorHandler.js',
-    'common/js/util.js'
+    'common/js/util.js',
+    'common/js/style.js'
   ],
   demonstrators: [
     {

@@ -43,7 +43,9 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-   {
+
+
+    /*{
         dataset: {
             api: 'cartodb',
             table: 'pilegrimsleden_dovre',
@@ -54,13 +56,13 @@ var datasets = [
             return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
         },
         bbox: false
-    },
+    },*/
     {
-        thumbnails: true,
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
+        cluster: true,
         template: _.template($('#digitalt_fortalt_template').html())
-    },
+    }/*,
     {
         name: 'Fangstlokaliteter',
         dataset_name_override: 'fangstlokaliteter',
@@ -155,7 +157,7 @@ var datasets = [
         cluster: true,
         minZoom: 14
     }
-    
+    */
 ];
 
 
@@ -163,7 +165,7 @@ var datasets = [
 var errorHandler = KR.errorHandler($('#error_template').html());
 
 
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
+var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
 //get the are we are interested in
 var dovre = 511;

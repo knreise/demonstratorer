@@ -35,6 +35,7 @@
     background-size: cover;
     height: 100%;
     width: 100%;
+
 }
 
 .leaflet-marker-circle b, .leaflet-marker-photo b {
@@ -61,4 +62,5 @@
 .circle {
     border-radius: 50%;
     behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+    border: 1px solid white;
 }

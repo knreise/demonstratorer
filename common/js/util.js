@@ -221,14 +221,19 @@ KR.Util = KR.Util || {};
         };
     };
 
-
-    ns.hexToRgb = function (hex) {
+    ns.hexToRgba = function (hex, transparency) {
+        transparency = transparency || 1;
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
+
+        if (!result) {
+            return 0;
+        }
+        var rgb = {
             r: parseInt(result[1], 16),
             g: parseInt(result[2], 16),
             b: parseInt(result[3], 16)
-        } : null;
+        };
+        return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
     };
 
     if (typeof L !== 'undefined') {

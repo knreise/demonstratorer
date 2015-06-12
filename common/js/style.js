@@ -9,6 +9,8 @@ KR.Style = {};
 
     //name: 'orange', hex: 
 
+    var SELECTED_COLOR = '#38A9DC';
+
     ns.datasets = {
         'Digitalt fortalt': {
             color: '#F69730',
@@ -32,7 +34,8 @@ KR.Style = {};
     };
 
     var colors = {
-        '#F69730': 'orange'
+        '#F69730': 'orange',
+        '#38A9DC': 'blue'
     };
 
     function hexToName(hex) {
@@ -51,14 +54,18 @@ KR.Style = {};
         return config;
     }
 
-    function getCircle(latlng, color) {
-        return L.circleMarker(latlng, {
+    function getCircleOptions(color) {
+        return {
             radius: 9,
             weight: 1,
             opacity: 1,
             color: color,
             fillOpacity: 0.4
-        });
+        };
+    }
+
+    function getCircle(latlng, color) {
+        return L.circleMarker(latlng, getCircleOptions(color));
     }
 
     function createAwesomeMarker(color) {
@@ -79,7 +86,7 @@ KR.Style = {};
         });
     }
 
-    function getThumbnail(feature, latlng, color) {
+    function getThumbnail(feature, color, selected) {
         if (!feature.properties || !feature.properties.thumbnail) {
             return;
         }
@@ -88,12 +95,10 @@ KR.Style = {};
             'border-color': color,
             'background-image': 'url(' + feature.properties.thumbnail + ')'
         };
-        /*
+
         if (selected) {
             styleDict['border-width'] = '3px';
-            styleDict['border-color'] = '#38A9DC';
         }
-        */
 
         return L.divIcon({
             html: '<div class="single" style="' + KR.Util.createStyleString(styleDict) + '"></div>​',
@@ -102,7 +107,7 @@ KR.Style = {};
         });
     }
 
-    function getClusterThumbnailIcon(features, color) {
+    function getClusterThumbnailIcon(features, color, selected) {
         var photos = _.filter(features, function (marker) {
             return marker.feature.properties.thumbnail;
         });
@@ -120,12 +125,11 @@ KR.Style = {};
                 'border-color': color,
                 'background-image': 'url(' + photo.feature.properties.thumbnail + ');'
             };
-            /*
+
             if (selected) {
                 styleDict['border-width'] = '3px';
-                styleDict['border-color'] = '#38A9DC';
             }
-            */
+
             return template({
                 style: KR.Util.createStyleString(styleDict),
                 rotation: rotation,
@@ -150,31 +154,42 @@ KR.Style = {};
     }
 
 
-    ns.getClusterIcon = function (cluster) {
+    ns.getClusterIcon = function (cluster, selected) {
 
         var features = cluster.getAllChildMarkers();
 
         var config = getConfig(features[0].feature);
 
+        var color = (selected) ? SELECTED_COLOR : config.color;
+
         if (config.thumbnail) {
-            var thumbnail = getClusterThumbnailIcon(features, config.color);
+            var thumbnail = getClusterThumbnailIcon(features, color, selected);
             if (thumbnail) {
                 return thumbnail;
             }
         }
-        return getClusterIcon(features, config.color);
+        return getClusterIcon(features, color);
     };
 
     ns.getIcon = function (feature, selected) {
         var config = getConfig(feature);
-        var color = (selected) ? '#ff0000' : config.color;
+        var color = (selected) ? SELECTED_COLOR : config.color;
+        if (config.thumbnail) {
+            var thumbnail = getThumbnail(feature, color, selected);
+            if (thumbnail) {
+                return thumbnail
+            }
+        }
+        if (config.circle) {
+            return getCircleOptions(color);
+        }
         return createAwesomeMarker(color);
     }
 
     ns.getMarker = function (feature, latlng) {
         var config = getConfig(feature);
         if (config.thumbnail) {
-            var thumbnail = getThumbnail(feature, latlng, config.color);
+            var thumbnail = getThumbnail(feature, config.color, false);
             if (thumbnail) {
                 return createMarker(feature, latlng, thumbnail);
             }
@@ -183,6 +198,14 @@ KR.Style = {};
             return getCircle(latlng, config.color);
         }
         return createMarker(feature, latlng, ns.getIcon(feature, false));
+    };
+
+
+    ns.colorForFeature = function (feature) {
+        var config = getConfig(feature);
+        if (config) {
+            return config.color;
+        }
     };
 
 }(KR.Style));
