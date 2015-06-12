@@ -10,9 +10,9 @@ var footerTemplate = _.template($('#footer_template').html());
 var map = L.map('map');
 
 //add a background layer from kartverket
-//L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
+L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
 
-L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+//L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 //set up an instance of the Norvegiana API
 var api = new KR.API({
