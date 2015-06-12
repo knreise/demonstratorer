@@ -7,16 +7,60 @@ KR.Style = {};
 (function (ns) {
     'use strict';
 
-    //name: 'orange', hex: 
+    var SELECTED_COLOR = '#72B026';
+    var DEFAULT_COLOR = '#38A9DC';
 
-    var SELECTED_COLOR = '#38A9DC';
+    var DEFAULT_STYLE = {
+        color: DEFAULT_COLOR,
+        circle: false,
+        thumbnail: true
+    };
+
+    var mappings = {
+        'difo': 'Digitalt fortalt',
+        'Kulturminnesok': 'Kulturminnesok',
+        'DiMu': 'DigitaltMuseum',
+        'MUSIT': 'Musit',
+        'Artsdatabanken': 'Artsdatabanken'
+    };
 
     ns.datasets = {
         'Digitalt fortalt': {
             color: '#F69730',
             circle: false,
             thumbnail: true
+        },
+        'Kulturminnesok': {
+            color: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'DigitaltMuseum': {
+            color: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'Musit': {
+            color: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'Artsdatabanken': {
+            color: '#5B396B',
+            thumbnail: false,
+            circle: true
         }
+    };
+
+    ns.getDatasetStyle = function (name) {
+        return ns.datasets[mappings[name]];
+    };
+
+    ns.setDatasetStyle = function (name, style) {
+        if (_.has(mappings, name)) {
+            mappings[name] = name;
+        }
+        ns.datasets[mappings[name]] = _.extend({}, DEFAULT_STYLE, style);
     };
 
     ns.providerColors = {
@@ -35,7 +79,11 @@ KR.Style = {};
 
     var colors = {
         '#F69730': 'orange',
-        '#38A9DC': 'blue'
+        '#38A9DC': 'blue',
+        '#A23336': 'darkred',
+        '#72B026': 'green',
+        '#436978': 'cadetblue',
+        '#5B396B': 'darkpurple'
     };
 
     function hexToName(hex) {
@@ -44,11 +92,11 @@ KR.Style = {};
 
     function getConfig(feature) {
         var config;
-        if (feature.properties && feature.properties.dataset) {
-            config = ns.datasets[feature.properties.dataset];
+        if (feature.properties && feature.properties.datasetId) {
+            config = ns.datasets[mappings[feature.properties.datasetId]];
         }
         if (!config) {
-            console.error("dataset not defined!");
+            console.error("dataset not defined!", feature);
             return;
         }
         return config;
@@ -115,7 +163,6 @@ KR.Style = {};
             return;
         }
 
-
         var rotations = ['rotation1', 'rotation2', 'rotation3'];
         var template = _.template('<div class="inner <%= rotation %><% if (first) {print(" first")}%>" style="<%= style %>"></div>');
         var html = _.map(photos.slice(0, 3), function (photo, idx) {
@@ -160,7 +207,7 @@ KR.Style = {};
 
         var config = getConfig(features[0].feature);
 
-        var color = (selected) ? SELECTED_COLOR : config.color;
+        var color = selected ? SELECTED_COLOR : config.color;
 
         if (config.thumbnail) {
             var thumbnail = getClusterThumbnailIcon(features, color, selected);
@@ -173,18 +220,18 @@ KR.Style = {};
 
     ns.getIcon = function (feature, selected) {
         var config = getConfig(feature);
-        var color = (selected) ? SELECTED_COLOR : config.color;
+        var color = selected ? SELECTED_COLOR : config.color;
         if (config.thumbnail) {
             var thumbnail = getThumbnail(feature, color, selected);
             if (thumbnail) {
-                return thumbnail
+                return thumbnail;
             }
         }
         if (config.circle) {
             return getCircleOptions(color);
         }
         return createAwesomeMarker(color);
-    }
+    };
 
     ns.getMarker = function (feature, latlng) {
         var config = getConfig(feature);
@@ -200,11 +247,13 @@ KR.Style = {};
         return createMarker(feature, latlng, ns.getIcon(feature, false));
     };
 
-
-    ns.colorForFeature = function (feature) {
+    ns.colorForFeature = function (feature, hex) {
         var config = getConfig(feature);
         if (config) {
-            return config.color;
+            if (hex) {
+                return config.color;
+            }
+            return hexToName(config.color);
         }
     };
 

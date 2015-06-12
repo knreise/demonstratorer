@@ -8,8 +8,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         isStatic: true,
         bbox: true,
         cluster: true,
-        smallMarker: false,
-        thumbnails: true,
+      //  smallMarker: false,
+      //  thumbnails: true,
         visible: true
     };
 
@@ -30,12 +30,17 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'circle')) {
                     feature.properties.circle = dataset.circle;
                 }
-                if (_.has(dataset, 'dataset_name_override')) {
+/*                if (_.has(dataset, 'dataset_name_override')) {
                     feature.properties.dataset = dataset.dataset_name_override;
                 }
+*/
                 if (_.has(dataset, 'provider')) {
                     feature.properties.provider = dataset.provider;
                 }
+                if (_.has(dataset, 'extras')) {
+                    feature.properties = _.extend(feature.properties, dataset.extras);
+                }
+
             });
             return features;
         };
@@ -270,9 +275,39 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         return vectorLayer;
     }
 
+    function _getDatasetId(dataset) {
+        if (dataset.dataset.api === 'norvegiana') {
+            if (!dataset.dataset.query) {
+                return dataset.dataset.dataset;
+            }
+        }
+        if (dataset.id) {
+            return dataset.id;
+        }
+        return KR.Util.stamp(dataset);
+    }
+
+    function _setStyle(dataset) {
+        var id = _getDatasetId(dataset);
+        dataset.extras = dataset.extras || {};
+        dataset.extras.datasetId = id;
+        if (dataset.style) {
+            KR.Style.setDatasetStyle(id, dataset.style);
+        }
+    }
+
     function loadDatasets(datasets, bounds) {
         return _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
+
+            if (KR.Style.setDatasetStyle) {
+                if (dataset.datasets) {
+                    _.each(dataset.datasets, _setStyle);
+                } else {
+                    _setStyle(dataset);
+                }
+            }
+
             if (!dataset.visible) {
                 dataset.notLoaded = true;
             }

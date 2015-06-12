@@ -145,12 +145,13 @@ L.Control.Datasets = L.Control.extend({
         label.appendChild(name);
 
         var datasetName = obj.dataset.dataset.dataset;
+        /*
         var iconMarker = KR.Util.iconForDataset(obj.dataset.dataset_name_override || datasetName);
         if (iconMarker) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa fa-' + iconMarker;
             label.appendChild(icon);
-        }
+        }*/
 
         this._overlaysList.appendChild(label);
 

@@ -180,8 +180,8 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
         } else {
             marker = this.options.markerTemplate({
-                icon: KR.Util.iconForFeature(feature),
-                color: KR.Util.colorForFeature(feature)
+                icon: '',
+                color: KR.Style.colorForFeature(feature)
             });
         }
 

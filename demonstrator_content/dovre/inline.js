@@ -43,8 +43,6 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-
-
     /*{
         dataset: {
             api: 'cartodb',
@@ -56,13 +54,13 @@ var datasets = [
             return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
         },
         bbox: false
-    },*/
+    },
     {
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
         cluster: true,
         template: _.template($('#digitalt_fortalt_template').html())
-    }/*,
+    },
     {
         name: 'Fangstlokaliteter',
         dataset_name_override: 'fangstlokaliteter',
@@ -72,27 +70,22 @@ var datasets = [
             query: 'delving_title:Fangstlokalitet'
         },
         template: _.template($('#kulturminne_template').html()),
-        smallMarker: true,
+        style: {
+            color: '#436978',
+            circle: true
+        },
         cluster: false,
-        visible: false,
-        circle: {
-            radius: 5,
-            weight:1,
-            opacity: 1,
-            color: KR.Util.colorForProvider('fangstlokaliteter', 'hex'),
-            fillOpacity: 0.4
-        }
+        visible: true
     },
     {
         name: 'Kulturminner',
-        dataset_name_override: 'Kulturminnesok',
+        id: 'Kulturminnesok',
         dataset: {
             api: 'norvegiana',
             dataset: 'Kulturminnesok',
             query: '-delving_title:Fangstlokalitet'
         },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true
+        template: _.template($('#kulturminne_template').html())
     },
     {
         dataset: {
@@ -129,7 +122,6 @@ var datasets = [
             },
             {
                 name: 'DiMu',
-
                 dataset: {
                     api: 'norvegiana',
                     dataset: 'DiMu'
@@ -140,7 +132,7 @@ var datasets = [
         minZoom: 12,
         thumbnails: true,
         smallMarker: true
-    },
+    },*/
     {
         name: 'Artsobservasjoner',
         dataset: {
@@ -154,10 +146,9 @@ var datasets = [
             color: KR.Util.colorForProvider('Artsdatabanken', 'hex'),
             fillOpacity: 0.4
         },
-        cluster: true,
-        minZoom: 14
+        cluster: false,
+        //minZoom: 14
     }
-    */
 ];
 
 
