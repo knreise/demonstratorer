@@ -183,7 +183,14 @@ KR.Util = KR.Util || {};
 
     ns.featureClick = function (sidebar) {
         return function _addFeatureClick(feature, layer, dataset) {
-            layer.on('click', function () {
+            layer.on('click', function (e) {
+                if (dataset.toPoint && dataset.toPoint.stopPolyClick) {
+                    if (!e.parent) {
+                        return;
+                    }
+                }
+
+                
                 if (dataset) {
                     sidebar.showFeature(
                         feature,

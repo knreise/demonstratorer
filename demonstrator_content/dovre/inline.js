@@ -86,8 +86,9 @@ var datasets = [
             query: '-delving_title:Fangstlokalitet'
         },
         template: _.template($('#kulturminne_template').html())
-    },
+    },*/
     {
+        id: 'verneomraader',
         dataset: {
             api: 'cartodb',
             table: 'naturvernomrader_utm33_2',
@@ -96,20 +97,18 @@ var datasets = [
         provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
-        style: KR.Util.getVerneomrStyle(0.2),
-        selectedStyle: KR.Util.getVerneomrStyle(0.5),
+        //style: {clickable: false},
+        //selectedStyle: KR.Util.getVerneomrStyle(0.5),
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
         toPoint: {
             showAlways: true,
             stopPolyClick: true,
-            minSize: 20,
-            circle: KR.Util.getVerneomrCircleStyle(),
-            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
+            minSize: 20
         },
         cluster: false
-    },
+    }/*,
     {
         datasets: [
             {
@@ -132,7 +131,7 @@ var datasets = [
         minZoom: 12,
         thumbnails: true,
         smallMarker: true
-    },*/
+    },
     {
         name: 'Artsobservasjoner',
         dataset: {
@@ -147,8 +146,8 @@ var datasets = [
             fillOpacity: 0.4
         },
         cluster: false,
-        //minZoom: 14
-    }
+        minZoom: 14
+    }*/
 ];
 
 

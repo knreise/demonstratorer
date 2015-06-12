@@ -7,6 +7,37 @@ KR.Style = {};
 (function (ns) {
     'use strict';
 
+    var verneomrTypes = {
+        landskapsvern: {
+            ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV', 'NM', 'BVV'],
+            style: {
+                fillColor: '#d8cb7a',
+                color: '#9c8f1b'
+            },
+        },
+        nasjonalpark: {
+            ids: ['NP', 'NPS'],
+            style: {
+                fillColor: '#7f9aac',
+                color: '#b3a721'
+            },
+        },
+        naturreservat: {
+            ids: ['NR', 'NRS'],
+            style: {
+                fillColor: '#ef9874',
+                color: '#ef9873'
+            }
+        }
+    };
+
+    function getVerneOmrcolor(feature) {
+        var id = feature.properties.vernef_id;
+        return _.find(verneomrTypes, function (type) {
+            return (type.ids.indexOf(id) !== -1);
+        });
+    }
+
     var SELECTED_COLOR = '#72B026';
     var DEFAULT_COLOR = '#38A9DC';
 
@@ -21,32 +52,51 @@ KR.Style = {};
         'Kulturminnesok': 'Kulturminnesok',
         'DiMu': 'DigitaltMuseum',
         'MUSIT': 'Musit',
-        'Artsdatabanken': 'Artsdatabanken'
+        'Artsdatabanken': 'Artsdatabanken',
+        'verneomraader': 'verneomraader'
     };
 
     ns.datasets = {
         'Digitalt fortalt': {
-            color: '#F69730',
+            fillcolor: '#F69730',
             circle: false,
             thumbnail: true
         },
         'Kulturminnesok': {
-            color: '#436978',
+            fillcolor: '#436978',
             circle: false,
             thumbnail: false
         },
         'DigitaltMuseum': {
-            color: '#436978',
+            fillcolor: '#436978',
             circle: false,
             thumbnail: false
         },
         'Musit': {
-            color: '#436978',
+            fillcolor: '#436978',
             circle: false,
             thumbnail: false
         },
         'Artsdatabanken': {
-            color: '#5B396B',
+            fillcolor: '#5B396B',
+            thumbnail: false,
+            circle: true
+        },
+        'verneomraader': {
+            fillcolor: function (feature) {
+                var c = getVerneOmrcolor(feature);
+                if (c) {
+                    return c.style.fillColor;
+                }
+                return "#000000";
+            },
+            bordercolor: function (feature) {
+                var c = getVerneOmrcolor(feature);
+                if (c) {
+                    return c.style.color;
+                }
+                return "#000000";
+            },
             thumbnail: false,
             circle: true
         }
@@ -90,30 +140,49 @@ KR.Style = {};
         return colors[hex] || 'blue';
     }
 
+    function valueOrfunc(dict, key, feature) {
+        if (_.isFunction(dict[key])) {
+            return dict[key](feature);
+        }
+        return dict[key];
+    }
+
+    function getFillColor(config, feature) {
+        return valueOrfunc(config, 'fillcolor', feature);
+    }
+
+    function getBorderColor(config, feature) {
+        if (!config.bordercolor) {
+            return getFillColor(config, feature);
+        }
+        return valueOrfunc(config, 'bordercolor', feature);
+    }
+
+
     function getConfig(feature) {
         var config;
         if (feature.properties && feature.properties.datasetId) {
             config = ns.datasets[mappings[feature.properties.datasetId]];
         }
         if (!config) {
-            console.error("dataset not defined!", feature);
-            return;
+            return _.extend({}, DEFAULT_STYLE);
         }
         return config;
     }
 
-    function getCircleOptions(color) {
+    function getCircleOptions(bordercolor, fillcolor) {
         return {
             radius: 9,
             weight: 1,
             opacity: 1,
-            color: color,
+            color: bordercolor,
+            fillColor: fillcolor,
             fillOpacity: 0.4
         };
     }
 
-    function getCircle(latlng, color) {
-        return L.circleMarker(latlng, getCircleOptions(color));
+    function getCircle(latlng, bordercolor, fillcolor) {
+        return L.circleMarker(latlng, getCircleOptions(bordercolor, fillcolor));
     }
 
     function createAwesomeMarker(color) {
@@ -207,7 +276,7 @@ KR.Style = {};
 
         var config = getConfig(features[0].feature);
 
-        var color = selected ? SELECTED_COLOR : config.color;
+        var color = selected ? SELECTED_COLOR : getFillColor(config, features[0].feature);
 
         if (config.thumbnail) {
             var thumbnail = getClusterThumbnailIcon(features, color, selected);
@@ -220,17 +289,18 @@ KR.Style = {};
 
     ns.getIcon = function (feature, selected) {
         var config = getConfig(feature);
-        var color = selected ? SELECTED_COLOR : config.color;
+        var fillcolor = selected ? SELECTED_COLOR : getFillColor(config, feature);
+        var bordercolor = selected ? SELECTED_COLOR : getBorderColor(config, feature);
         if (config.thumbnail) {
-            var thumbnail = getThumbnail(feature, color, selected);
+            var thumbnail = getThumbnail(feature, bordercolor, selected);
             if (thumbnail) {
                 return thumbnail;
             }
         }
         if (config.circle) {
-            return getCircleOptions(color);
+            return getCircleOptions(bordercolor, fillcolor);
         }
-        return createAwesomeMarker(color);
+        return createAwesomeMarker(fillcolor);
     };
 
     ns.getMarker = function (feature, latlng) {
@@ -242,7 +312,7 @@ KR.Style = {};
             }
         }
         if (config.circle) {
-            return getCircle(latlng, config.color);
+            return getCircle(latlng, getBorderColor(config, feature), getFillColor(config, feature));
         }
         return createMarker(feature, latlng, ns.getIcon(feature, false));
     };
@@ -251,10 +321,17 @@ KR.Style = {};
         var config = getConfig(feature);
         if (config) {
             if (hex) {
-                return config.color;
+                return getFillColor(config, feature);
             }
-            return hexToName(config.color);
+            return hexToName(getFillColor(config, feature));
         }
+    };
+
+    ns.getPathStyle = function (feature, selected) {
+        var config = getConfig(feature);
+        var fill = getFillColor(config, feature);
+        var border = getBorderColor(config, feature);
+        return {weight: 1, color: border, fillColor: fill, clickable: false, opacity: 0.8, fillOpacity: 0.4};
     };
 
 }(KR.Style));

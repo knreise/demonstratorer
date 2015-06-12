@@ -51,8 +51,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _featureClicked: function (e) {
-        if (e.parent && this.options.dataset.toPoint.stopPolyClick) {
-            return;
+        if (this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
+            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
+                return;
+            }
         }
         e.layer._map.fire('layerSelected');
         var layer = e.layer;
@@ -66,18 +68,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 var parent = this.getParentLayer(layer._leaflet_id);
                 feature = parent.feature;
             }
-            layer.setStyle(this._createFeatureIcon(layer.feature, true));
-            /*
-            if (this.options.dataset.selectedStyle) {
-                if (this.options.dataset.toPoint && this.options.dataset.toPoint.circleSelected) {
-                    //layer.setStyle(this.options.dataset.toPoint.circleSelected(feature));
-                    this._createFeatureIcon(layer.feature, true)
-                } else {
-                    //layer.setStyle(this.options.dataset.selectedStyle(feature));
-                }
+            if (feature) {
+                layer.setStyle(this._createFeatureIcon(feature, true));
+                layer.bringToFront();
             }
-            */
-            layer.bringToFront();
         }
         this._selectedLayer = layer;
     },
@@ -155,22 +149,23 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _layeradd: function (event) {
+        var feature = event.layer;
+        if (feature.feature.geometry.type !== 'Point' && !feature.isMarker) {
+            feature.setStyle(KR.Style.getPathStyle(feature.feature));
+            feature.bringToBack();
+        }
+
         if (this.options.dataset.toPoint) {
-            var feature = event.layer;
 
             if (feature.isMarker) {
                 return;
             }
-
             if (feature.getBounds && !feature.zoomThreshold && !feature.marker) {
                 var zoomThreshold = this.getZoomThreshold(feature);
-
-                var marker = this._createMarker(
+                var marker = this._pointToLayer(
                     feature.feature,
-                    feature.getBounds().getCenter(),
-                    this.options.dataset.toPoint.circle
+                    feature.getBounds().getCenter()
                 );
-
                 marker.feature = feature.feature;
                 marker.on('click', function (e) {
                     feature.fire('click', {
@@ -206,7 +201,6 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     onAdd: function (map) {
-
         L.GeoJSON.prototype.onAdd.apply(this, arguments);
         if (this.options.dataset.toPoint) {
             this._zoomend();
