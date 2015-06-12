@@ -43,7 +43,7 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-    /*{
+    {
         dataset: {
             api: 'cartodb',
             table: 'pilegrimsleden_dovre',
@@ -86,7 +86,7 @@ var datasets = [
             query: '-delving_title:Fangstlokalitet'
         },
         template: _.template($('#kulturminne_template').html())
-    },*/
+    },
     {
         id: 'verneomraader',
         dataset: {
@@ -97,8 +97,6 @@ var datasets = [
         provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
-        //style: {clickable: false},
-        //selectedStyle: KR.Util.getVerneomrStyle(0.5),
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
@@ -108,7 +106,7 @@ var datasets = [
             minSize: 20
         },
         cluster: false
-    }/*,
+    },
     {
         datasets: [
             {
@@ -147,7 +145,7 @@ var datasets = [
         },
         cluster: false,
         minZoom: 14
-    }*/
+    }
 ];
 
 

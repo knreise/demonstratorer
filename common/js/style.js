@@ -306,7 +306,7 @@ KR.Style = {};
     ns.getMarker = function (feature, latlng) {
         var config = getConfig(feature);
         if (config.thumbnail) {
-            var thumbnail = getThumbnail(feature, config.color, false);
+            var thumbnail = getThumbnail(feature, getBorderColor(config, feature), false);
             if (thumbnail) {
                 return createMarker(feature, latlng, thumbnail);
             }
