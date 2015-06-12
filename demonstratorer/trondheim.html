@@ -237,6 +237,16 @@
 </script>
 
 
+<script type="text/template" id="ra_sparql_template">
+<h3><%= name %></h3>
+<% if (lokimg) { %>
+<img class="fullwidth" src="<%= lokimg %>" />
+<% } %>
+<p><%= beskrivelse %></p>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -251,6 +261,8 @@
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.MarkerClusterGroup.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
+        <script src="../bower_components/wellknown/wellknown.js" type="text/javascript"></script>
+        <script src="../bower_components/proj4/dist/proj4.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
         <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
@@ -321,26 +333,6 @@ var datasets = [
         template: _.template($('#digitalt_fortalt_template').html())
     },
     {
-        name: 'Fangstlokaliteter',
-        dataset_name_override: 'fangstlokaliteter',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: 'delving_title:Fangstlokalitet'
-        },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true,
-        cluster: false,
-        visible: false,
-        circle: {
-            radius: 5,
-            weight:1,
-            opacity: 1,
-            color: KR.Util.colorForProvider('fangstlokaliteter', 'hex'),
-            fillOpacity: 0.4
-        }
-    },
-    {
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
         dataset: {
@@ -373,27 +365,13 @@ var datasets = [
         template: _.template($('#flickr_template').html())
     },
     {
+        name: 'Riksantikvaren',
         dataset: {
-            api: 'cartodb',
-            table: 'naturvernomrader_utm33_2',
-            columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+            api: 'kulturminnedataSparql',
+            filter: 'regex(?kommune, "^.*1601")'
         },
-        provider: 'Naturbase',
-        name: 'Verneområder',
-        template: _.template($('#verneomraader_template').html()),
-        style: KR.Util.getVerneomrStyle(0.2),
-        selectedStyle: KR.Util.getVerneomrStyle(0.5),
-        getFeatureData: function (feature, callback) {
-            api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-        },
-        toPoint: {
-            showAlways: true,
-            stopPolyClick: true,
-            minSize: 20,
-            circle: KR.Util.getVerneomrCircleStyle(),
-            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
-        },
-        cluster: false
+        template: _.template($('#ra_sparql_template').html()),
+        bbox: false
     },
     {
         datasets: [

@@ -68,6 +68,8 @@ module.exports = {
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
           'common/js/L.Knreise.MarkerClusterGroup.js',
           'common/js/L.Knreise.GeoJSON.js',
+          'bower_components/wellknown/wellknown.js',
+          'bower_components/proj4/dist/proj4.js',
           'bower_components/CryptoJS/build/components/core.js',
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/audiojs/audiojs/audio.min.js',
@@ -107,7 +109,8 @@ module.exports = {
           'marker',
           'thumbnail',
           'footer',
-          'error'
+          'error',
+          'ra_sparql'
         ]
     },
     {

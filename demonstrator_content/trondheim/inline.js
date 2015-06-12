@@ -53,26 +53,6 @@ var datasets = [
         template: _.template($('#digitalt_fortalt_template').html())
     },
     {
-        name: 'Fangstlokaliteter',
-        dataset_name_override: 'fangstlokaliteter',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: 'delving_title:Fangstlokalitet'
-        },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true,
-        cluster: false,
-        visible: false,
-        circle: {
-            radius: 5,
-            weight:1,
-            opacity: 1,
-            color: KR.Util.colorForProvider('fangstlokaliteter', 'hex'),
-            fillOpacity: 0.4
-        }
-    },
-    {
         name: 'Kulturminner',
         dataset_name_override: 'Kulturminnesok',
         dataset: {
@@ -105,27 +85,13 @@ var datasets = [
         template: _.template($('#flickr_template').html())
     },
     {
+        name: 'Riksantikvaren',
         dataset: {
-            api: 'cartodb',
-            table: 'naturvernomrader_utm33_2',
-            columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+            api: 'kulturminnedataSparql',
+            filter: 'regex(?kommune, "^.*1601")'
         },
-        provider: 'Naturbase',
-        name: 'Verneområder',
-        template: _.template($('#verneomraader_template').html()),
-        style: KR.Util.getVerneomrStyle(0.2),
-        selectedStyle: KR.Util.getVerneomrStyle(0.5),
-        getFeatureData: function (feature, callback) {
-            api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-        },
-        toPoint: {
-            showAlways: true,
-            stopPolyClick: true,
-            minSize: 20,
-            circle: KR.Util.getVerneomrCircleStyle(),
-            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
-        },
-        cluster: false
+        template: _.template($('#ra_sparql_template').html()),
+        bbox: false
     },
     {
         datasets: [

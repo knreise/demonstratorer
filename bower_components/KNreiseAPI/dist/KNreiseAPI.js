@@ -850,6 +850,11 @@ KR.SparqlAPI = function (BASE_URL) {
                 acc[key] = item[key].value;
                 return acc;
             }, {});
+
+            if (!attrs.lokimg) {
+                attrs.lokimg = false;
+            }
+            console.log(attrs);
             if (_.has(item, 'punkt')) {
                 return KR.Util.createGeoJSONFeatureFromGeom(
                     _parseGeom(item.punkt),
@@ -904,6 +909,7 @@ KR.SparqlAPI = function (BASE_URL) {
             throw new Error('Invalid geomType: ' + dataset.geomType);
         }
 
+        /*
         var query = 'SELECT ' + fields.join(' ') +
                     ' where {' +
                     where.join('\n') +
@@ -916,6 +922,23 @@ KR.SparqlAPI = function (BASE_URL) {
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
         }
+        */
+
+            var query = 'select ?id ?name ?beskrivelse ?loklab ?punkt ?lokimg {' +
+            '?id a ?type .' +
+            '?id rdfs:label ?name .' +
+            '?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
+            '?id ?p <https://data.kulturminne.no/difi/geo/kommune/1601> .' +
+            '?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse .' +
+            '?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori .' +
+            '?lokalitetskategori rdfs:label ?loklab .' +
+            '?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt .' +
+            'optional {' +
+            '?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+            '?picture <https://data.kulturminne.no/schema/source-link> ?link ' +
+            'BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
+            'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg)' +'}' +
+            '}';
         return query;
     }
 
