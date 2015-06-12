@@ -78,16 +78,6 @@ var datasets = [
         visible: true
     },
     {
-        name: 'Kulturminner',
-        id: 'Kulturminnesok',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: '-delving_title:Fangstlokalitet'
-        },
-        template: _.template($('#kulturminne_template').html())
-    },
-    {
         id: 'verneomraader',
         dataset: {
             api: 'cartodb',
@@ -108,6 +98,8 @@ var datasets = [
         cluster: false
     },
     {
+        grouped: true,
+        name: 'Historie',
         datasets: [
             {
                 name: 'MUSIT',
@@ -124,11 +116,20 @@ var datasets = [
                     dataset: 'DiMu'
                 },
                 template: _.template($('#digitalt_museum_template').html())
+            },
+            {
+                name: 'Kulturminner',
+                id: 'Kulturminnesok',
+                dataset: {
+                    api: 'norvegiana',
+                    dataset: 'Kulturminnesok',
+                    query: '-delving_title:Fangstlokalitet'
+                },
+                template: _.template($('#kulturminne_template').html())
             }
         ],
-        minZoom: 12,
-        thumbnails: true,
-        smallMarker: true
+        isStatic: false,
+        minZoom: 12
     },
     {
         name: 'Artsobservasjoner',

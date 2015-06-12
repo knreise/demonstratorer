@@ -7,6 +7,8 @@ L.Knreise.Control = L.Knreise.Control || {};
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
+        options = options || {};
+        options.autoPan = false
         L.setOptions(this, options);
 
         this._template = options.template;
@@ -15,7 +17,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
         // Remove the content container from its original parent
         content.parentNode.removeChild(content);
-
 
         var top = L.DomUtil.create('div', 'top-menu', content);
         this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);

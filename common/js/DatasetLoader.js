@@ -126,7 +126,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function _getvisible(dataset) {
-        if (dataset.datasets) {
+        if (dataset.datasets && !dataset.grouped) {
             var numVisible = _.filter(dataset.datasets, function (d) {
                 return d.visible;
             }).length;
@@ -137,7 +137,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function _checkShouldLoad(dataset) {
-
         if (!dataset.minZoom) {
             return _getvisible(dataset);
         }
