@@ -154,13 +154,18 @@ L.Control.Datasets = L.Control.extend({
              datasetName = obj.dataset.dataset.dataset;
         }
         
-        /*
-        var iconMarker = KR.Util.iconForDataset(obj.dataset.dataset_name_override || datasetName);
-        if (iconMarker) {
-            var icon = document.createElement('i');
-            icon.className = 'layericon fa fa-' + iconMarker;
-            label.appendChild(icon);
-        }*/
+        var datasetId;
+        if (obj.dataset.cluster && obj.dataset.grouped) {
+            datasetId = obj.dataset.datasets[0].extras.datasetId;
+        } else {
+            datasetId = obj.dataset.extras.datasetId;
+        }
+
+        var icon = document.createElement('i');
+        icon.className = 'layericon fa fa-square';
+        icon.style.color = KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true);
+        label.appendChild(icon);
+
 
         this._overlaysList.appendChild(label);
 
