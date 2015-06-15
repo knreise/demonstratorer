@@ -303,7 +303,7 @@ module.exports = {
         ],
         templates: []
     },
-        {
+    {
         key: 'errors',
         name: 'Error handling',
         scripts: [
@@ -351,5 +351,35 @@ module.exports = {
           'error'
         ]
     },
+    {
+        key: 'style',
+        name: 'Stiler',
+        scripts: [
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'common/js/L.Knreise.Icon.js',
+          'common/js/style.js'
+        ],
+        css: [
+          'bower_components/leaflet/dist/leaflet.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+          'common/css/markers.css'
+        ],
+        templates: [
+          'popup',
+          'verneomraader',
+          'kulturminne',
+          'musit',
+          'digitalt_museum',
+          'digitalt_fortalt',
+          'list_item',
+          'fangstgrop',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error'
+        ]
+    }
   ]
 };

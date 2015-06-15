@@ -42,7 +42,7 @@ KR.Style = {};
     var DEFAULT_COLOR = '#38A9DC';
 
     var DEFAULT_STYLE = {
-        color: DEFAULT_COLOR,
+        fillcolor: DEFAULT_COLOR,
         circle: false,
         thumbnail: true
     };
@@ -103,28 +103,18 @@ KR.Style = {};
     };
 
     ns.getDatasetStyle = function (name) {
-        return ns.datasets[mappings[name]];
+        var config = ns.datasets[mappings[name]];
+        if (!config) {
+            config = ns.datasets[name];
+        }
+        return config;
     };
 
     ns.setDatasetStyle = function (name, style) {
         if (_.has(mappings, name)) {
             mappings[name] = name;
         }
-        ns.datasets[mappings[name]] = _.extend({}, DEFAULT_STYLE, style);
-    };
-
-    ns.providerColors = {
-        'default': {name: 'blue', hex: '#38A9DC'},
-        'Artsdatabanken': {name: 'darkpurple', hex: '#5B396B'},
-        'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
-        'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
-        'Industrimuseum': {name: 'darkred', hex: '#A23336'},
-        'MUSIT': {name: 'cadetblue', hex: '#436978'},
-        'Kulturminnesøk': {name: 'green', hex: '#72B026'},
-        'Naturbase': {name: 'purple', hex: '#D252B9'},
-        'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
-        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'},
-        'Trondheim byarkiv': {name: 'darkred', hex: '#A23336'}
+        ns.datasets[name] = _.extend({}, DEFAULT_STYLE, style);
     };
 
     var colors = {
@@ -162,7 +152,7 @@ KR.Style = {};
     function getConfig(feature) {
         var config;
         if (feature.properties && feature.properties.datasetId) {
-            config = ns.datasets[mappings[feature.properties.datasetId]];
+            config = ns.getDatasetStyle(feature.properties.datasetId);
         }
         if (!config) {
             return _.extend({}, DEFAULT_STYLE);
@@ -327,11 +317,18 @@ KR.Style = {};
         }
     };
 
-    ns.getPathStyle = function (feature, selected) {
+    ns.getPathStyle = function (feature) {
         var config = getConfig(feature);
         var fill = getFillColor(config, feature);
         var border = getBorderColor(config, feature);
-        return {weight: 1, color: border, fillColor: fill, clickable: false, opacity: 0.8, fillOpacity: 0.4};
+        return {
+            weight: 1,
+            color: border,
+            fillColor: fill,
+            clickable: false,
+            opacity: 0.8,
+            fillOpacity: 0.4
+        };
     };
 
 }(KR.Style));
