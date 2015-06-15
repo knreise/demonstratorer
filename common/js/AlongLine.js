@@ -1,5 +1,6 @@
 /*global turf:false, L:false */
-var AlongLine = function (api) {
+var KR = this.KR || {};
+KR.AlongLine = function (api) {
     'use strict';
 
     var line, bounds, buffer;

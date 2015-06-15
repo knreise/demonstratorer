@@ -64,17 +64,21 @@ KR.Util = KR.Util || {};
         }).join(';');
     };
 
-    ns.iconForFeature = function (feature) {
-        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
-        if (datasetIcon) {
-            return datasetIcon;
-        }
 
+    ns.iconForContentType = function (feature) {
         var contentType = feature.properties.contentType;
         if (_.has(KR.Config.contentIcons, contentType)) {
             return KR.Config.contentIcons[contentType];
         }
         return KR.Config.contentIcons['default'];
+    };
+
+    ns.iconForFeature = function (feature) {
+        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
+        if (datasetIcon) {
+            return datasetIcon;
+        }
+        return ns.iconForContentType(feature);
     };
 
 
@@ -241,6 +245,11 @@ KR.Util = KR.Util || {};
             b: parseInt(result[3], 16)
         };
         return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
+    };
+
+    ns.filterByBbox = function (features, bbox) {
+        var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
+        return turf.within(features, boundPoly);
     };
 
     if (typeof L !== 'undefined') {
