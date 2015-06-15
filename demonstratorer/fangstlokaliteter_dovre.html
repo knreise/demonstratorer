@@ -73,6 +73,8 @@
         <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Icon.js" type="text/javascript"></script>
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
 
         <script type="text/javascript">
@@ -119,7 +121,7 @@ var datasets = [
         template: _.template($('#fangstgrop_template').html()),
         smallMarker: true,
         cluster: false,
-        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
+        style: {radius: 1.5, opacity: 1, fillcolor: '#000', fillOpacity: 1, circle: true}
     }
 ];
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);

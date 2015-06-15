@@ -19,12 +19,16 @@ var api = new KR.API({
 
 var datasets = [
     {
-        api: 'norvegiana',
-        dataset: 'difo'
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'difo'
+        }
     },
     {
-        api: 'norvegiana',
-        dataset: 'MUSIT'
+        dataset:{
+            api: 'norvegiana',
+            dataset: 'MUSIT'
+        }
     }
 ];
 

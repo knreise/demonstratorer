@@ -327,6 +327,7 @@
         <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
         <script src="../common/js/AlongLine.js" type="text/javascript"></script>
         <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Icon.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
@@ -361,10 +362,9 @@ var pilegrimsleden_dovre = {
 };
 
 var datasets = [
-    {dataset: 'difo', api: 'norvegiana'},
-    {dataset: 'Kulturminnesok', api: 'norvegiana'},
-  //  {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
-    {dataset: 'Artsdatabanken', api: 'norvegiana'}
+    {dataset: {dataset: 'difo', api: 'norvegiana'}},
+    {dataset: {dataset: 'Kulturminnesok', api: 'norvegiana'}},
+    {dataset: {dataset: 'Artsdatabanken', api: 'norvegiana'}},
 ];
 
 var icon = L.icon({

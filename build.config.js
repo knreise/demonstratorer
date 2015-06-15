@@ -131,7 +131,9 @@ module.exports = {
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
-          'common/js/DatasetLoader.js'
+          'common/js/DatasetLoader.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'common/js/L.Knreise.Icon.js',
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
@@ -165,6 +167,8 @@ module.exports = {
           'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'common/js/L.Knreise.Icon.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
@@ -202,7 +206,8 @@ module.exports = {
           'common/js/geolocatormock.js',
           'common/js/FollowLineMap.js',
           'common/js/AlongLine.js',
-          'common/js/FollowLineMap.js'
+          'common/js/FollowLineMap.js',
+          'common/js/L.Knreise.Icon.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
@@ -250,7 +255,8 @@ module.exports = {
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'common/js/FollowLineMap.js',
           'common/js/AlongLine.js',
-          'common/js/LineMap.js'
+          'common/js/LineMap.js',
+          'common/js/L.Knreise.Icon.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',

@@ -51,7 +51,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _featureClicked: function (e) {
-        if (this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
+        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
             if (e.layer.toGeoJSON().geometry.type !== 'Point') {
                 return;
             }

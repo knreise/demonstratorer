@@ -1,4 +1,4 @@
-/*global L: false */
+/*global L: false, turf: false */
 
 var KR = this.KR || {};
 
@@ -194,7 +194,6 @@ KR.Util = KR.Util || {};
                     }
                 }
 
-                
                 if (dataset) {
                     sidebar.showFeature(
                         feature,
@@ -250,6 +249,18 @@ KR.Util = KR.Util || {};
     ns.filterByBbox = function (features, bbox) {
         var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
         return turf.within(features, boundPoly);
+    };
+
+    ns.getDatasetId = function (dataset) {
+        if (dataset.dataset.api === 'norvegiana') {
+            if (!dataset.dataset.query) {
+                return dataset.dataset.dataset;
+            }
+        }
+        if (dataset.id) {
+            return dataset.id;
+        }
+        return KR.Util.stamp(dataset);
     };
 
     if (typeof L !== 'undefined') {

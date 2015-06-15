@@ -292,20 +292,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         return vectorLayer;
     }
 
-    function _getDatasetId(dataset) {
-        if (dataset.dataset.api === 'norvegiana') {
-            if (!dataset.dataset.query) {
-                return dataset.dataset.dataset;
-            }
-        }
-        if (dataset.id) {
-            return dataset.id;
-        }
-        return KR.Util.stamp(dataset);
-    }
-
     function _setStyle(dataset) {
-        var id = _getDatasetId(dataset);
+        var id = KR.Util.getDatasetId(dataset);
         dataset.extras = dataset.extras || {};
         dataset.extras.datasetId = id;
         if (dataset.style) {

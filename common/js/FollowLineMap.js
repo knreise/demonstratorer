@@ -57,6 +57,28 @@ var KR = this.KR || {};
             }
         }
 
+        function _datasetLoader(bbox, loadedFunc, errorCallback, dataset) {
+            var id = KR.Util.getDatasetId(dataset);
+            if (dataset.style) {
+                KR.Style.setDatasetStyle(id, dataset.style);
+            }
+            function datasetLoaded(features) {
+                _.each(features.features, function (feature) {
+                    feature.properties.datasetId = id;
+                });
+
+                loadedFunc(features);
+            }
+
+            api.getBbox(
+                dataset.dataset,
+                bbox,
+                datasetLoaded,
+                errorCallback,
+                {allPages: true}
+            );
+        }
+
         function positionChanged(position) {
             previewStrip.moveStart();
             markerLayer.clearLayers();
@@ -82,15 +104,8 @@ var KR = this.KR || {};
                 found = found.concat(features.features);
                 featuresLoaded();
             }
-
             _.each(datasets, function (dataset) {
-                api.getBbox(
-                    dataset,
-                    bbox,
-                    datasetLoaded,
-                    errorCallback,
-                    {allPages: true}
-                );
+                _datasetLoader(bbox, datasetLoaded, errorCallback, dataset);
             });
         }
 

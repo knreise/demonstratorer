@@ -27,10 +27,9 @@ var pilegrimsleden_dovre = {
 };
 
 var datasets = [
-    {dataset: 'difo', api: 'norvegiana'},
-    {dataset: 'Kulturminnesok', api: 'norvegiana'},
-  //  {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
-    {dataset: 'Artsdatabanken', api: 'norvegiana'}
+    {dataset: {dataset: 'difo', api: 'norvegiana'}},
+    {dataset: {dataset: 'Kulturminnesok', api: 'norvegiana'}},
+    {dataset: {dataset: 'Artsdatabanken', api: 'norvegiana'}},
 ];
 
 var icon = L.icon({
