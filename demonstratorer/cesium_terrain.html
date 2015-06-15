@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link href='../common/css/cesium_base.css' rel='stylesheet' />
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.css' rel='stylesheet' />
+        <link href='../common/css/cesium_sidebar.css' rel='stylesheet' />
+
+    </head>
+    <body>
+
+<div class="navbar-default">
+
+    <div class="navbar-header">
+    
+    <a rel="home" href="#" title="Folgefonna">
+        <img src="../common/img/Kulturradet_simple.png" class="navbar-logo"></img>
+    </a>
+    </div>
+      <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="#" id="load-terrain">Load</a></li>
+             </ul>
+          </div><!--/.nav-collapse -->
+          
+    
+    
+    
+    
+</div>
+
+<div id="cesium-sidebar">
+<div class="cesium-sidebar-close">
+    <div class="lr">
+        <div class="rl">
+        </div>
+    </div>
+</div>
+
+
+<div class="cesium-sidebar-body"></div>
+
+</div>
+
+
+<div class="spinner-wrapper">
+    <div class="spinner"></div>
+    
+</div>
+
+<div id="cesium-viewer"></div>
+
+
+<script type="text/template" id="cesium_sparql_kulturminne_template">
+<h3><%= label %></h3>
+
+<div class="cesium-sidebar-body">
+    <p><%= loklab%></p>
+    <p><%= beskrivelse%></p>
+    <img class="fullwidth" src="<%= lokimg %>" />
+</div>
+</script>
+
+
+<script type="text/template" id="cesium_wikipedia_template">
+
+<h3><%= title %></h3>
+
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
+
+
+<a href=\"<%= link %>\"></a>
+</script>
+
+
+<script type="text/template" id="cesium_arc_kulturminne_template">
+
+<h3><%= Navn %></h3>
+
+
+</script>
+
+
+
+
+        <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
+        <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
+        <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
+        <script src="../common/js/util.js" type="text/javascript"></script>
+        <script src="../bower_components/cesium1.9/Build/CesiumUnminified/Cesium.js" type="text/javascript"></script>
+        <script src="../bower_components/togeojson/togeojson.js" type="text/javascript"></script>
+        <script src="../bower_components/wellknown/wellknown.js" type="text/javascript"></script>
+        <script src="../bower_components/proj4/dist/proj4.js" type="text/javascript"></script>
+        <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
+        <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
+        <script src="../bower_components/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+        <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            (function () {
+                'use strict';
+
+                
+// config object removing timeline and other elements that are on by default
+var config = {
+    cesiumViewerOpts : {
+        animation: false,  
+        baseLayerPicker: false, 
+        fullscreenButton: false, 
+        geocoder: false, 
+        homeButton: false, 
+        infoBox: false, 
+        sceneModePicker: false, 
+        selectionIndicator: false, 
+        timeline: false, 
+        navigationHelpButton: false, 
+        navigationInstructionsInitiallyVisible: false, 
+        orderIndependentTranslucency: false
+    }
+}
+
+var viewer = new Cesium.Viewer('cesium-viewer', config.cesiumViewerOpts);
+    
+
+
+var $sidebar = $('#cesium-sidebar');
+var $loader = $('.spinner-wrapper');
+var $loadTerrain =  $('#load-terrain');
+
+// Add the terrain provider (AGI)
+var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
+    url : '//assets.agi.com/stk-terrain/world',
+    requestVertexNormals : true
+});
+viewer.terrainProvider = cesiumTerrainProvider;
+
+
+function stopLoading() {    
+    $loader.delay(2000).fadeOut({duration: 200});    
+}
+
+$loadTerrain.on('click', function(event) {
+    
+
+    // Add the terrain provider (AGI)
+    var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
+    url : 'http://localhost:8006/terrtiles'
+    });
+    viewer.terrainProvider = cesiumTerrainProvider;
+});
+
+
+
+
+
+stopLoading();
+
+            }());
+        </script>
+    </body>
+</html>

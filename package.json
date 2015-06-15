@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/knreise/demonstratorer/issues"
   },
-  "homepage": "https://github.com/knreise/demonstratorer"
+  "homepage": "https://github.com/knreise/demonstratorer",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
