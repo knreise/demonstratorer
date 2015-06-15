@@ -1,0 +1,23 @@
+<div class="panel panel-default panel-horizontal" style="border: 2px solid <%= color %>">
+    <div class="panel-heading">
+        <span class="header-text" title="<%= title %>"><%= title %></span>
+        <span class="header-box">
+            <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
+            <% if (distance) { %><div><%=distance %> km</div><% } %>
+        </span>
+    </div>
+    <% if (!minimal) { %>
+    <div class="panel-body">
+    <% if (thumbnail) { %>
+        <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
+    <%} else if (contentType === 'TEXT') { %>
+        <div class="text-box">
+            <p><% print(content ? content : 'Ingen tekst') %></p>
+            <p class="text-fade"></p>
+        </div>
+    <%} else { %>
+        n/a
+    <% } %>
+  </div>
+  <% } %>
+</div>
