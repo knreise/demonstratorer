@@ -164,10 +164,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     function _addBboxDataset(dataset, initBounds) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
-        //copy properties from parent
-        if (dataset.datasets) {
-            _copyProperties(dataset);
-        }
+
 
         function checkData(geoJson, vectorLayer) {
             if (dataset.minFeatures) {
@@ -304,6 +301,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     function loadDatasets(datasets, bounds) {
         var res = _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
+            //copy properties from parent
+            if (dataset.datasets) {
+                _copyProperties(dataset);
+            }
 
             if (KR.Style.setDatasetStyle) {
                 if (dataset.datasets) {

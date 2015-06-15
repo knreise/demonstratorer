@@ -46,7 +46,7 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-    {
+   /*{
         thumbnails: true,
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
@@ -66,13 +66,10 @@ var datasets = [
     {
         name: 'Wikipedia',
         provider: 'Wikipedia',
-        //dataset_name_override: 'Kulturminnesok',
         dataset: {
             api: 'wikipedia'
         },
         minZoom: 13
-        //template: _.template($('#kulturminne_template').html()),
-        //smallMarker: true
     },
     {
         name: 'Trondheim byarkiv',
@@ -82,41 +79,41 @@ var datasets = [
             api: 'flickr',
             user_id: 'trondheim_byarkiv'
         },
-        template: _.template($('#flickr_template').html())
-    },
+        template: _.template($('#flickr_template').html()),
+        style: {fillcolor: '#D252B9'}
+    },*/
     {
         name: 'Riksantikvaren',
+        provider: 'Riksantikvaren',
         dataset: {
             api: 'kulturminnedataSparql',
-            filter: 'regex(?kommune, "^.*1601")'
+            kommune: '1601'
         },
         template: _.template($('#ra_sparql_template').html()),
-        bbox: false
+        bbox: false,
+        style: {fillcolor: '#728224'}
+    }/*,
+    {
+        name: 'MUSIT',
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'MUSIT'
+        },
+        template: _.template($('#musit_template').html()),
+        minZoom: 12,
+        style: {thumbnail: true}
     },
     {
-        datasets: [
-            {
-                name: 'MUSIT',
-                dataset: {
-                    api: 'norvegiana',
-                    dataset: 'MUSIT'
-                },
-                template: _.template($('#musit_template').html())
-            },
-            {
-                name: 'DiMu',
-
-                dataset: {
-                    api: 'norvegiana',
-                    dataset: 'DiMu'
-                },
-                template: _.template($('#digitalt_museum_template').html())
-            }
-        ],
+        name: 'DiMu',
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'DiMu'
+        },
+        template: _.template($('#digitalt_museum_template').html()),
         minZoom: 12,
-        thumbnails: true,
-        smallMarker: true
-    }
+        style: {thumbnail: true}
+    }*/
+
 ];
 
 

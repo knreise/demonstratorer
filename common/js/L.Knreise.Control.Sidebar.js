@@ -171,14 +171,11 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     _createListElement: function (feature, index, template, getData, features) {
 
-        //hack for sparql
-        feature.properties.title = feature.properties.title || feature.properties.name;
-
         var marker;
         if (feature.properties.thumbnail) {
             marker = this.options.thumbnailTemplate({
                 thumbnail: feature.properties.thumbnail,
-                color: KR.Style.colorForFeature(feature)
+                color: KR.Style.colorForFeature(feature, true)
             });
         } else {
             marker = this.options.markerTemplate({

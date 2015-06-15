@@ -257,6 +257,9 @@ KR.Util = KR.Util || {};
                 return dataset.dataset.dataset;
             }
         }
+        if (dataset.dataset.api === 'wikipedia') {
+            return 'wikipedia';
+        }
         if (dataset.id) {
             return dataset.id;
         }

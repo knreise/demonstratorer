@@ -53,7 +53,7 @@ KR.Style = {};
         'DiMu': 'DigitaltMuseum',
         'MUSIT': 'Musit',
         'Artsdatabanken': 'Artsdatabanken',
-        'verneomraader': 'verneomraader'
+        'wikipedia': 'wikipedia'
     };
 
     ns.datasets = {
@@ -70,7 +70,8 @@ KR.Style = {};
         'DigitaltMuseum': {
             fillcolor: '#436978',
             circle: false,
-            thumbnail: false
+            thumbnail: false,
+            test: "!!"
         },
         'Musit': {
             fillcolor: '#436978',
@@ -99,6 +100,9 @@ KR.Style = {};
             },
             thumbnail: false,
             circle: true
+        },
+        'wikipedia': {
+            fillcolor: '#D14020'
         }
     };
 
@@ -111,10 +115,15 @@ KR.Style = {};
     };
 
     ns.setDatasetStyle = function (name, style) {
-        if (_.has(mappings, name)) {
+        if (!_.has(mappings, name)) {
             mappings[name] = name;
         }
-        ns.datasets[name] = _.extend({}, DEFAULT_STYLE, style);
+        var old = ns.getDatasetStyle(name);
+        if (!old) {
+            old = DEFAULT_STYLE;
+        }
+
+        ns.datasets[mappings[name]] = _.extend({}, old, style);
     };
 
     var colors = {
@@ -123,7 +132,10 @@ KR.Style = {};
         '#A23336': 'darkred',
         '#72B026': 'green',
         '#436978': 'cadetblue',
-        '#5B396B': 'darkpurple'
+        '#5B396B': 'darkpurple',
+        '#728224': 'darkgreen',
+        '#D252B9': 'purple',
+        '#D14020': 'red'
     };
 
     function hexToName(hex) {
@@ -218,7 +230,7 @@ KR.Style = {};
         var photos = _.filter(features, function (marker) {
             return marker.feature.properties.thumbnail;
         });
-        if (!photos) {
+        if (!photos.length) {
             return;
         }
 
@@ -242,7 +254,6 @@ KR.Style = {};
                 first: idx === 0
             });
         }).join('');
-
         return new L.DivIcon({
             className: 'leaflet-marker-photo',
             html: '<div class="outer">​' + html + '</div><b>' + features.length + '</b>',
