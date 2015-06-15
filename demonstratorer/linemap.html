@@ -7,24 +7,31 @@
         <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
-        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
-        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
-        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
-        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
         <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
         <link href='../common/css/markers.css' rel='stylesheet' />
-        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
-        <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
-        <link href='../common/css/audiojs.css' rel='stylesheet' />
+        <link href='../common/css/strip.css' rel='stylesheet' />
 
     </head>
     <body>
 
 <div id="sidebar"></div>
 <div id="map"></div>
+<div id="strip" class="minimal">
+    <div class="arrow left js-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></div>
+    <div class="strip-container"></div>
+    <div class="arrow right js-right">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </div>
+    <button type="button" class="toggle-size js-toggle-size" data-dismiss="alert" aria-label="toggle">
+        <span class="glyphicon"></span>
+    </button>
+</div>
 
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
@@ -39,18 +46,43 @@
 </script>
 
 
-<script type="text/template" id="verneomraader_template">
-<h3>Verneområde</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+<% if(contentType === 'VIDEO' && video) { %>
+    <% if (video.indexOf('mp4') !== -1) { %>
+        <video class="video-js vjs-default-skin fullwidth" controls
+         preload="auto" height="315" poster="<%= images[0] %>"
+         data-setup='{}'>
+          <source src="<%= videoEmbed %>" type='video/mp4'>
+        </video>
+    <% } else { %>
+        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    
+<% } else if(contentType === 'SOUND' && sound) { %>
+    <audio src="<%= sound %>" preload="auto"></audio>
+<% } else if(contentType === 'IMAGE' && images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<%= content %>
 
-    <dt>Faktaark</dt>
-    <dd><a href="<%= link %>">naturbase.no</a></dd>
 
-    <dt>Beskrivelse</dt>
-    <dd><%= content %></dd>
-</dl>
+<table class="sidebar-table">
+    <tr>
+      <td>Forfatter</td>
+      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Publisert</td>
+      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Lisens</td>
+      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+    </tr>
+</table>
+
+
 </script>
 
 
@@ -205,6 +237,11 @@
 </script>
 
 
+<script type="text/template" id="artsobservasjon_template">
+
+</script>
+
+
 <script type="text/template" id="marker_template">
 <div class="awesome-marker-icon-<%= color %> awesome-marker" style="width: 35px; height: 45px;">
     <i class="fa fa-<%= icon %> icon-white"></i>
@@ -230,6 +267,42 @@
 </script>
 
 
+<script type="text/template" id="spinner_template">
+<div class="spinner">
+    <i class="fa fa-cog fa-spin fa-<%= size %>"></i>
+</div>
+
+</script>
+
+
+<script type="text/template" id="panel_template">
+<div class="panel panel-default panel-horizontal" style="border: 2px solid <%= color %>">
+    <div class="panel-heading">
+        <span class="header-text" title="<%= title %>"><%= title %></span>
+        <span class="header-box">
+            <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
+            <% if (distance) { %><div><%=distance %> km</div><% } %>
+        </span>
+    </div>
+    <% if (!minimal) { %>
+    <div class="panel-body">
+    <% if (thumbnail) { %>
+        <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
+    <%} else if (contentType === 'TEXT') { %>
+        <div class="text-box">
+            <p><% print(content ? content : 'Ingen tekst') %></p>
+            <p class="text-fade"></p>
+        </div>
+    <%} else { %>
+        n/a
+    <% } %>
+  </div>
+  <% } %>
+</div>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -239,40 +312,36 @@
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
         <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
+        <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
-        <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
-        <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
-        <script src="../common/js/L.Knreise.MarkerClusterGroup.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
-        <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
-        <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
+        <script src="../common/js/PreviewStrip.js" type="text/javascript"></script>
+        <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
         <script src="../bower_components/video.js/dist/video-js/video.js" type="text/javascript"></script>
         <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.js" type="text/javascript"></script>
-        <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
-        <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
-        <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
-        <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
+        <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
+        <script src="../common/js/AlongLine.js" type="text/javascript"></script>
+        <script src="../common/js/LineMap.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
                 'use strict';
 
-                //template used for sidebar
+                var map = L.map('map', {
+    dragging: false,
+    touchZoom: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    zoomControl: false
+});
 
-var popupTemplate = _.template($('#popup_template').html());
-var listElementTemplate = _.template($('#list_item_template').html());
-var markerTemplate = _.template($('#marker_template').html());
-var thumbnailTemplate = _.template($('#thumbnail_template').html());
-var footerTemplate = _.template($('#footer_template').html());
+L.tileLayer.kartverket('topo2graatone').addTo(map);
 
-//create the map
-var map = L.map('map');
-
-//add a background layer from kartverket
-L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
-
-//set up an instance of the Norvegiana API
 var api = new KR.API({
     cartodb: {
         apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
@@ -280,143 +349,51 @@ var api = new KR.API({
     }
 });
 
-//the sidebar, used for displaying information
-var sidebar = L.Knreise.Control.sidebar('sidebar', {
-    position: 'left',
-    template: popupTemplate,
-    listElementTemplate: listElementTemplate,
-    markerTemplate: markerTemplate,
-    thumbnailTemplate: thumbnailTemplate,
-    footerTemplate: footerTemplate
-});
-map.addControl(sidebar);
-
-KR.Config.templates = {
-    'Musit': _.template($('#musit_template').html()),
-    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
-};
-
-
-
-
-//The datasets in use
 var datasets = [
     {
-        dataset: {
-            api: 'cartodb',
-            table: 'pilegrimsleden_dovre',
-            mapper: KR.API.mappers.pilegrimsleden_dovre
-        },
-        name: 'Pilegrimsleden',
-        style: function (feature) {
-            return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
-        },
-        bbox: false
+        api: 'norvegiana',
+        dataset: 'difo'
     },
     {
-        name: 'Digitalt fortalt',
-        dataset: {dataset: 'difo', api: 'norvegiana'},
-        template: _.template($('#digitalt_fortalt_template').html())
-    },
-    {
-        name: 'Fangstlokaliteter',
-        dataset_name_override: 'fangstlokaliteter',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: 'delving_title:Fangstlokalitet'
-        },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true,
-        cluster: false,
-        visible: false,
-        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
-    },
-    {
-        name: 'Kulturminner',
-        dataset_name_override: 'Kulturminnesok',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: '-delving_title:Fangstlokalitet'
-        },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true
-    },
-    {
-        dataset: {
-            api: 'cartodb',
-            table: 'naturvernomrader_utm33_2',
-            columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-        },
-        provider: 'Naturbase',
-        name: 'Verneområder',
-        template: _.template($('#verneomraader_template').html()),
-        style: KR.Util.getVerneomrStyle(0.2),
-        selectedStyle: KR.Util.getVerneomrStyle(0.5),
-        getFeatureData: function (feature, callback) {
-            api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
-        },
-        toPoint: {
-            showAlways: true,
-            stopPolyClick: true,
-            minSize: 20,
-            circle: KR.Util.getVerneomrCircleStyle(),
-            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
-        },
-        cluster: false
-    },
-    {
-        datasets: [
-            {
-                name: 'MUSIT',
-                dataset: {
-                    api: 'norvegiana',
-                    dataset: 'MUSIT'
-                },
-                template: _.template($('#musit_template').html())
-            },
-            {
-                name: 'DiMu',
-
-                dataset: {
-                    api: 'norvegiana',
-                    dataset: 'DiMu'
-                },
-                template: _.template($('#digitalt_museum_template').html())
-            }
-        ],
-        minZoom: 12,
-        thumbnails: true,
-        smallMarker: true
-    },
-    {
-        name: 'Artsobservasjoner',
-        dataset: {
-            api: 'norvegiana',
-            dataset:'Artsdatabanken'
-        },
-        smallMarker: true,
-        minZoom: 14
+        api: 'norvegiana',
+        dataset: 'MUSIT'
     }
 ];
 
 
 
-var errorHandler = KR.errorHandler($('#error_template').html());
+KR.Config.templates = {
+    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html()),
+    'Musit': _.template($('#musit_template').html())
+};
 
-
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
-
-//get the are we are interested in
-var dovre = 511;
-api.getMunicipalityBounds(dovre, function (bbox) {
-    var bounds = L.latLngBounds.fromBBoxString(bbox);
-    map.fitBounds(bounds);
-    var layers = datasetLoader.loadDatasets(datasets);
-
-    L.control.datasets(layers).addTo(map);
+var footerTemplate = _.template($('#footer_template').html());
+var sidebar = new L.Knreise.Control.sidebar('sidebar', {
+    autoPan: false,
+    footerTemplate: footerTemplate
 });
+map.addControl(sidebar);
+
+
+var pilegrimsledenDovre = {
+    api: 'cartodb',
+    name: 'Pilegrimsleden',
+    table: 'pilegrimsleden_dovre',
+    mapper: KR.API.mappers.pilegrimsleden_dovre
+};
+
+var circleStyle = {
+    stroke: false,
+    fillColor: '#f00',
+    radius: 10,
+    fillOpacity: 0.8
+};
+
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
+
+var linemap = new KR.LineMap(api, map, pilegrimsledenDovre);
+linemap.init(followMap.positionChanged);
+
             }());
         </script>
     </body>

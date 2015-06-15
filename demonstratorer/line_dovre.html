@@ -7,22 +7,30 @@
         <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
-        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
-        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
         <link href='../common/css/markers.css' rel='stylesheet' />
-        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
-        <link href='../common/css/along-line.css' rel='stylesheet' />
+        <link href='../common/css/strip.css' rel='stylesheet' />
 
     </head>
     <body>
 
 <div id="sidebar"></div>
 <div id="map"></div>
-<div id="list-container" class="hidden">
-    <div id="list" class="list-group"></div>
+<div id="strip" class="minimal">
+    <div class="arrow left js-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></div>
+    <div class="strip-container"></div>
+    <div class="arrow right js-right">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </div>
+    <button type="button" class="toggle-size js-toggle-size" data-dismiss="alert" aria-label="toggle">
+        <span class="glyphicon"></span>
+    </button>
 </div>
 
 <script type="text/template" id="popup_template">
@@ -38,18 +46,43 @@
 </script>
 
 
-<script type="text/template" id="verneomraader_template">
-<h3>Verneområde</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+<% if(contentType === 'VIDEO' && video) { %>
+    <% if (video.indexOf('mp4') !== -1) { %>
+        <video class="video-js vjs-default-skin fullwidth" controls
+         preload="auto" height="315" poster="<%= images[0] %>"
+         data-setup='{}'>
+          <source src="<%= videoEmbed %>" type='video/mp4'>
+        </video>
+    <% } else { %>
+        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    
+<% } else if(contentType === 'SOUND' && sound) { %>
+    <audio src="<%= sound %>" preload="auto"></audio>
+<% } else if(contentType === 'IMAGE' && images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<%= content %>
 
-    <dt>Faktaark</dt>
-    <dd><a href="<%= link %>">naturbase.no</a></dd>
 
-    <dt>Beskrivelse</dt>
-    <dd><%= content %></dd>
-</dl>
+<table class="sidebar-table">
+    <tr>
+      <td>Forfatter</td>
+      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Publisert</td>
+      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Lisens</td>
+      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+    </tr>
+</table>
+
+
 </script>
 
 
@@ -204,13 +237,79 @@
 </script>
 
 
+<script type="text/template" id="artsobservasjon_template">
+
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker-icon-<%= color %> awesome-marker" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
+<script type="text/template" id="spinner_template">
+<div class="spinner">
+    <i class="fa fa-cog fa-spin fa-<%= size %>"></i>
+</div>
+
+</script>
+
+
+<script type="text/template" id="panel_template">
+<div class="panel panel-default panel-horizontal" style="border: 2px solid <%= color %>">
+    <div class="panel-heading">
+        <span class="header-text" title="<%= title %>"><%= title %></span>
+        <span class="header-box">
+            <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
+            <% if (distance) { %><div><%=distance %> km</div><% } %>
+        </span>
+    </div>
+    <% if (!minimal) { %>
+    <div class="panel-body">
+    <% if (thumbnail) { %>
+        <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
+    <%} else if (contentType === 'TEXT') { %>
+        <div class="text-box">
+            <p><% print(content ? content : 'Ingen tekst') %></p>
+            <p class="text-fade"></p>
+        </div>
+    <%} else { %>
+        n/a
+    <% } %>
+  </div>
+  <% } %>
+</div>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
-        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
         <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
@@ -218,11 +317,15 @@
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
         <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
+        <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
+        <script src="../common/js/PreviewStrip.js" type="text/javascript"></script>
         <script src="../common/js/geolocatormock.js" type="text/javascript"></script>
+        <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
         <script src="../common/js/AlongLine.js" type="text/javascript"></script>
+        <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
@@ -256,124 +359,81 @@ var pilegrimsleden_dovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var locate = L.easyButton(map, null, {icon: 'fa-user', title: 'Finn meg'});
-var locateFollow = L.easyButton(map, null, {icon: 'fa-user-times', title: 'Følg meg', toggle: true});
+var datasets = [
+    {dataset: 'difo', api: 'norvegiana'},
+    {dataset: 'Kulturminnesok', api: 'norvegiana'},
+  //  {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
+    {dataset: 'Artsdatabanken', api: 'norvegiana'}
+];
+
+var icon = L.icon({
+    iconUrl: '../common/img/locate.gif',
+    iconSize: [50, 50],
+    iconAnchor: [25, 25]
+});
 
 
-KR.Config.templates = {
-    'Kulturminnesok': _.template($('#kulturminne_template').html()),
-    'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
-    'Musit': _.template($('#musit_template').html()),
-    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html())
-};
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {icon: icon});
 
+function showPosition(pos) {
+    var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
+    followMap.positionChanged(p);
+}
 
-function getLocation (callback, error) {
+function getLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(callback);
+        navigator.geolocation.getCurrentPosition(showPosition);
     } else {
         error();
     }
 }
 
-function initGeoLoc(interval, callback, error) {
-    getLocation(callback, error);
-    return setInterval(function () {
-        getLocation(callback, error);
-    }, interval * 1000);
-}
+var locate = L.easyButton(map, getLocation, {icon: 'fa-user', title: 'Finn meg'});
 
-var datasets = [
-    {
-        name: 'Digitalt fortalt',
-        dataset: {dataset: 'difo', api: 'norvegiana'},
-        options: {allPages: true}
-    },
-    {
-        name: 'Kulturminner',
-        dataset: {dataset: 'Kulturminnesok', api: 'norvegiana'},
-        options: {allPages: true}
-    },
-    {
-        
-        name: 'Museumsdata',
-        dataset: {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
-        options: {allPages: true}
-    },
-    {
-        name: 'Artsobservasjoner',
-        dataset: {dataset: 'Artsdatabanken', api: 'norvegiana'},
-        options: {allPages: true}
+
+function _getPoller(showPoint) {
+    var id;
+    var prev;
+    function on() {
+        id = navigator.geolocation.watchPosition(function (pos) {
+            var identical = (prev && prev.latitude === pos.coords.latitude && prev.longitude === pos.coords.longitude);
+            if (!identical) {
+                showPoint(pos);
+            }
+            prev = pos.coords;
+        });
     }
-];
 
-function getShowPointFunc(map, data, clickCallback) {
-    var point;
-    return function showPoint(pos) {
-        var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
-        var snapped = alongLine.snapPoint(p);
-        if (point) {
-            map.removeLayer(point);
-        }
-        point = L.geoJson(snapped).getLayers()[0].setZIndexOffset(1000).addTo(map);
-        map.setView(point.getLatLng(), 14, {animate: true});
-        var sorted = alongLine.orderByDistance(data, snapped);
+    function off() {
+        navigator.geolocation.clearWatch(id);
+    }
 
-        var lis =_.chain(sorted.features)
-            .first(10)
-            .map(function (feature) {
-                var icon = KR.Util.iconForFeature(feature);
-                var el = $(listElementTemplate({
-                    title: feature.properties.title,
-                    icon: icon
-                }));
-                el.on('click', function () {
-                    clickCallback(feature)
-                });
-                return el;
-            })
-            .value();
-        $('#list').html(lis);
-        $('#list-container').removeClass('hidden');
+    return {
+        on: on,
+        off: off
     };
 }
 
-var addFeatureClick = KR.Util.featureClick(sidebar);
+var poller = _getPoller(showPosition);
 
-var alongLine = new AlongLine(api);
+var locateFollow = L.easyButton(
+    map,
+    poller.on,
+    {
+        icon: 'fa-user-times',
+        title: 'Følg meg',
+        toggle: true,
+        offCallback: poller.off
+    }
+);
 
+var alongLine = new KR.AlongLine(api);
 alongLine.getLine(pilegrimsleden_dovre, function (data) {
     data.line.addTo(map);
     map.fitBounds(data.bounds);
-    alongLine.fetchDatasets(datasets, function (data) {
-        L.Knreise.geoJson(
-            data,
-            {
-                dataset:  {
-                    thumbnails: true,
-                    smallMarker: true
-                },
-                onEachFeature: addFeatureClick
-            }
-        ).addTo(map);
-        var showPoint = getShowPointFunc(map, data, _.bind(sidebar.showFeature, sidebar));
-
-        locate.callback = function () {
-            getLocation(showPoint);
-        }
-
-        var poller;
-        locateFollow.callback = function () {
-            poller = initGeoLoc(5, showPoint);
-        }
-
-        locateFollow.offCallback = function () {
-            window.clearInterval(poller);
-        }
-
-    });
-
+    getLocation();
 });
+
             }());
         </script>
     </body>

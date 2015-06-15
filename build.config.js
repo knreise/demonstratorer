@@ -4,12 +4,12 @@ module.exports = {
     'bower_components/underscore/underscore-min.js',
     'bower_components/leaflet/dist/leaflet.js',
     'bower_components/esri2geo/esri2geo.js',
-    'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
+    'bower_components/KNreiseAPI/dist/KNreiseAPI.js',
     'common/js/ErrorHandler.js',
     'common/js/util.js'
   ],
   demonstrators: [
-    {
+      {
         key: 'dovre',
         name: 'Dovre',
         scripts: [
@@ -131,39 +131,99 @@ module.exports = {
     },
     {
         key: 'line_dovre',
-        name: 'Pilegrimsleden, Dovre',
+        name: 'Pilegrimsleden, Dovre med posisjonering',
         scripts: [
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/turf/turf.min.js',
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'common/js/L.Knreise.GeoJSON.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
+          'common/js/PreviewStrip.js',
           'common/js/geolocatormock.js',
-          'common/js/AlongLine.js'
+          'common/js/FollowLineMap.js',
+          'common/js/AlongLine.js',
+          'common/js/FollowLineMap.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
-          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'bower_components/video.js/dist/video-js/video-js.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Datasets.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
-          'common/css/L.Knreise.Control.Sidebar.css',
-          'common/css/along-line.css'
+          'common/css/strip.css'
         ],
         templates: [
           'popup',
-          'verneomraader',
+          'digitalt_fortalt',
           'kulturminne',
           'musit',
           'digitalt_museum',
           'digitalt_fortalt',
           'list_item',
-          'fangstgrop'
+          'fangstgrop',
+          'artsobservasjon',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error',
+          'spinner',
+          'panel'
+        ]
+    },
+    {
+        key: 'linemap',
+        name: 'Linjekart',
+        scripts: [
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'common/js/L.Knreise.GeoJSON.js',
+          'common/js/PreviewStrip.js',
+          'bower_components/turf/turf.min.js',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'bower_components/audiojs/audiojs/audio.min.js',
+          'bower_components/video.js/dist/video-js/video.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+          'common/js/FollowLineMap.js',
+          'common/js/AlongLine.js',
+          'common/js/LineMap.js'
+        ],
+        css: [
+          'bower_components/leaflet/dist/leaflet.css',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/L.Knreise.Control.Datasets.css',
+          'bower_components/video.js/dist/video-js/video-js.css',
+          'common/css/fullscreenmap.css',
+          'common/css/markers.css',
+          'common/css/strip.css'
+        ],
+        templates: [
+          'popup',
+          'digitalt_fortalt',
+          'kulturminne',
+          'musit',
+          'digitalt_museum',
+          'digitalt_fortalt',
+          'list_item',
+          'fangstgrop',
+          'artsobservasjon',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error',
+          'spinner',
+          'panel'
         ]
     },
     {
@@ -247,7 +307,6 @@ module.exports = {
         ],
         templates: []
     },
-
     {
         key: 'cesium_base',
         name: 'Cesium base example',
@@ -310,7 +369,7 @@ module.exports = {
           'cesium_arc_kulturminne'
         ]
     },
-        {
+    {
         key: 'errors',
         name: 'Error handling',
         scripts: [
@@ -358,6 +417,5 @@ module.exports = {
           'error'
         ]
     }
-
   ]
 };

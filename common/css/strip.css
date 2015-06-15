@@ -1,0 +1,180 @@
+#strip {
+    position: absolute;
+    bottom: 30px;
+    left: 10px;
+    right: 10px;
+    height: 200px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+}
+
+#strip .strip-container {
+    left: 20px;
+    right: 20px;
+    position: absolute;
+    height: 100%;
+    overflow: hidden;
+    padding: 5px;
+}
+
+#strip .arrow {
+    position: absolute;
+    
+    height: 100%;
+    width: 20px;
+    cursor: pointer;
+}
+#strip .arrow span {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#strip .arrow.right {
+    right: 0;
+}
+
+#strip .arrow.left {
+    left: 0;
+}
+
+#strip .panel-horizontal {
+    width: 200px;
+    float: left;
+    height: 100%;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+#strip .panel-heading {
+    padding: 0;
+    position: relative;
+}
+
+#strip .panel-heading .header-text {
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    padding: 10px;
+    position: absolute;
+    right: 40px;
+    text-overflow: ellipsis;
+    top: 0;
+    white-space: nowrap;
+}
+
+#strip .panel-heading .header-box{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    border-left: 1px solid #ddd;
+    padding: 2px;
+}
+
+
+#strip .panel-horizontal img {
+    padding: 0;
+    /* CSS Hack will make it width 100% and height 100% */
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    /* Maintain aspect ratio */
+    max-height: 100%;
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
+#strip .panel-horizontal .panel-heading {
+    height: 30%;
+}
+
+#strip.minimal .panel-horizontal .panel-heading {
+    height: 100%;
+}
+
+#strip.minimal .panel-body {
+    display: none;
+}
+
+#strip .panel-horizontal .panel-body {
+    height: 70%; 
+    width: 100%;
+    position: relative;
+    padding: 0;
+}
+
+#strip .text-box {
+    max-height: 90%;
+    height: 90%;
+    overflow: hidden;
+    position: relative;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 3px;
+}
+
+#strip .text-box .text-fade {
+    background-image: linear-gradient(to bottom, transparent, white);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 1.2em 0;
+    position: absolute;
+    text-align: center;
+}
+
+#strip .toggle-size {
+    position: absolute;
+    right: 7px;
+    top: 0;
+    z-index: 3000;
+    color: #000;
+    float: right;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.2;
+    text-shadow: 0 1px 0 #fff;
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: 0 none;
+    cursor: pointer;
+    padding: 0;
+}
+
+#strip .image {
+    height: 100%;
+    width: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#strip .message, #strip .spinner {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#strip.minimal {
+    height: 60px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+#sidebar {
+    padding-bottom: 60px;
+}

@@ -204,7 +204,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     onAdd: function (map) {
 
         L.GeoJSON.prototype.onAdd.apply(this, arguments);
-        if (this.options.dataset.toPoint) {
+        if (this.options.dataset && this.options.dataset.toPoint) {
             this._zoomend();
             map.on('zoomend', this._zoomend, this);
             this.on('layeradd', this._layeradd, this);
