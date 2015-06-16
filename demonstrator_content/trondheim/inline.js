@@ -46,7 +46,7 @@ KR.Config.templates = {
 
 //The datasets in use
 var datasets = [
-   /*{
+    {
         thumbnails: true,
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
@@ -81,7 +81,7 @@ var datasets = [
         },
         template: _.template($('#flickr_template').html()),
         style: {fillcolor: '#D252B9'}
-    },*/
+    },
     {
         name: 'Riksantikvaren',
         provider: 'Riksantikvaren',
@@ -92,7 +92,7 @@ var datasets = [
         template: _.template($('#ra_sparql_template').html()),
         bbox: false,
         style: {fillcolor: '#728224'}
-    }/*,
+    },
     {
         name: 'MUSIT',
         dataset: {
@@ -112,8 +112,7 @@ var datasets = [
         template: _.template($('#digitalt_museum_template').html()),
         minZoom: 12,
         style: {thumbnail: true}
-    }*/
-
+    }
 ];
 
 
