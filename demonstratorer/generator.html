@@ -325,7 +325,8 @@ $('#generate').on('click', function () {
             datasets: checkedVals.join(',')
         });
 
-        var url = location.protocol + '//' + location.host + '/demonstratorer/config.html?' + params;
+        var path = window.location.pathname;
+        var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + params;
 
         $('#link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
     } else {

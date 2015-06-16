@@ -345,13 +345,15 @@ var api = new KR.API({
     cartodb: {
         apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
         user: 'knreise'
+    },
+    flickr: {
+        apikey: '65a0d78867596f8ccfeb9718f4d915d0'
     }
 });
 
 var datasetConfig = getDatasetList(api, qs.komm);
 
 var datasets = _.map(qs.datasets.split(','), function (dataset) {
-    console.log(dataset);
     return datasetConfig[dataset];
 });
 
