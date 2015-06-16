@@ -206,8 +206,9 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         return li;
     },
 
-    showFeatures: function (features, template, getData) {
-        var shouldSkipList = this.options.noListThreshold && (features.length <= this.options.noListThreshold);
+    showFeatures: function (features, template, getData, noListThreshold) {
+        noListThreshold = (noListThreshold === undefined) ? this.options.noListThreshold : noListThreshold;
+        var shouldSkipList = (features.length <= noListThreshold);
         if (shouldSkipList) {
             var feature = features[0];
             $(this.getContainer()).html('');
