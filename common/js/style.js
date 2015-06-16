@@ -70,8 +70,7 @@ KR.Style = {};
         'DigitaltMuseum': {
             fillcolor: '#436978',
             circle: false,
-            thumbnail: false,
-            test: "!!"
+            thumbnail: false
         },
         'Musit': {
             fillcolor: '#436978',
