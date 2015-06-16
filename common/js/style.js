@@ -219,10 +219,15 @@ KR.Style = {};
             styleDict['border-width'] = '3px';
         }
 
-        return L.divIcon({
-            html: '<div class="single" style="' + KR.Util.createStyleString(styleDict) + '"></div>​',
-            className: 'leaflet-marker-photo',
-            iconSize: [50, 50]
+        var html = '<div class="outer">' +
+            '<div class="circle" style="background-image: url(' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
+            '</div>';
+
+        return new L.DivIcon({
+            className: 'leaflet-marker-circle',
+            html: html,
+            iconSize: [50, 50],
+            iconAnchor: [25, 45]
         });
     }
 
@@ -234,39 +239,36 @@ KR.Style = {};
             return;
         }
 
-        var rotations = ['rotation1', 'rotation2', 'rotation3'];
-        var template = _.template('<div class="inner <%= rotation %><% if (first) {print(" first")}%>" style="<%= style %>"></div>');
-        var html = _.map(photos.slice(0, 3), function (photo, idx) {
-            var rotation = rotations[idx % rotations.length];
+        var styleDict = {
+            'border-color': color,
+            'background-image': 'url(' + photos[0].feature.properties.thumbnail + ');'
+        };
 
-            var styleDict = {
-                'border-color': color,
-                'background-image': 'url(' + photo.feature.properties.thumbnail + ');'
-            };
+        if (selected) {
+            styleDict['border-width'] = '3px';
+        }
 
-            if (selected) {
-                styleDict['border-width'] = '3px';
-            }
+        var html = '<div class="outer">' +
+            '<div class="circle" style="' + KR.Util.createStyleString(styleDict) + '"></div>' +
+            '</div>' +
+            '<b>' + photos.length + '</b>';
 
-            return template({
-                style: KR.Util.createStyleString(styleDict),
-                rotation: rotation,
-                first: idx === 0
-            });
-        }).join('');
         return new L.DivIcon({
             className: 'leaflet-marker-photo',
-            html: '<div class="outer">​' + html + '</div><b>' + features.length + '</b>',
-            iconSize: [50, 50]
+            html: html,
+            iconSize: [60, 60],
+            iconAnchor: [28, 45]
         });
+
     }
 
     function getClusterIcon(features, color) {
         var rgbaColor = KR.Util.hexToRgba(color, 0.4);
         return new L.DivIcon({
             className: 'leaflet-marker-circle',
-            html: '<div class="outer">​<div class="circle" style="background-color: ' + rgbaColor + ';border-color:' + color + ';"></div></div><b>' + features.length + '</b>',
-            iconSize: [20, 20]
+            html: '<div class="outer"><div class="circle" style="background-color: ' + rgbaColor + ';border-color:' + color + ';"></div></div><b>' + features.length + '</b>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 30]
         });
     }
 

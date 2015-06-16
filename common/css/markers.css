@@ -51,7 +51,8 @@
     padding: 3px;
     position: absolute;
     text-align: center;
-    right: -8px;
+    right: 8px;
+    top: 16px;
 }
 
 .leaflet-marker-circle b {
@@ -62,5 +63,5 @@
 .circle {
     border-radius: 50%;
     behavior: url(PIE.htc); /* remove if you don't care about IE8 */
-    border: 1px solid white;
+    border: 2px solid white;
 }
