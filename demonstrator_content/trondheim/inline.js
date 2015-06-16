@@ -69,6 +69,7 @@ var datasets = [
         dataset: {
             api: 'wikipedia'
         },
+        style: {template: true},
         minZoom: 13
     },
     {
