@@ -226,7 +226,7 @@ KR.Util = KR.Util || {};
                     feature.template = _getTemplateForFeature(feature, dataset);
                     return feature;
                 });
-                sidebar.showFeatures(features);
+                sidebar.showFeatures(features, null, null, dataset.noListThreshold);
             });
         };
     };

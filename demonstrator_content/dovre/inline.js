@@ -59,7 +59,8 @@ var datasets = [
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
         cluster: true,
-        template: _.template($('#digitalt_fortalt_template').html())
+        template: _.template($('#digitalt_fortalt_template').html()),
+        noListThreshold: Infinity
     },
     {
         name: 'Fangstlokaliteter',
