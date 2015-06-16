@@ -51,13 +51,13 @@
     padding: 3px;
     position: absolute;
     text-align: center;
-    right: 8px;
-    top: 16px;
+    right: -7px;
+    top: -7px;
 }
 
-.leaflet-marker-circle b {
-    right: -7px;
-    top: 12px;
+.leaflet-marker-photo b {
+    right: 2px;
+    top: 2px;
 }
 
 .circle {

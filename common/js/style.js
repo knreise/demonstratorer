@@ -227,7 +227,7 @@ KR.Style = {};
             className: 'leaflet-marker-circle',
             html: html,
             iconSize: [50, 50],
-            iconAnchor: [25, 45]
+            iconAnchor: [25, 25]
         });
     }
 
@@ -257,7 +257,7 @@ KR.Style = {};
             className: 'leaflet-marker-photo',
             html: html,
             iconSize: [60, 60],
-            iconAnchor: [28, 45]
+            iconAnchor: [30, 30]
         });
 
     }
@@ -268,7 +268,7 @@ KR.Style = {};
             className: 'leaflet-marker-circle',
             html: '<div class="outer"><div class="circle" style="background-color: ' + rgbaColor + ';border-color:' + color + ';"></div></div><b>' + features.length + '</b>',
             iconSize: [20, 20],
-            iconAnchor: [10, 30]
+            iconAnchor: [10, 10]
         });
     }
 
