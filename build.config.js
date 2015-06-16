@@ -9,6 +9,11 @@ module.exports = {
     'common/js/util.js',
     'common/js/style.js'
   ],
+  commonCss: [
+    'bower_components/components-font-awesome/css/font-awesome.min.css',
+    'bower_components/leaflet/dist/leaflet.css',
+    'bower_components/bootstrap/dist/css/bootstrap.min.css',
+  ],
   demonstrators: [
       {
         key: 'dovre',
@@ -34,8 +39,6 @@ module.exports = {
           'common/js/L.Knreise.LocateButton.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -88,8 +91,6 @@ module.exports = {
           'common/js/L.Knreise.LocateButton.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -141,8 +142,6 @@ module.exports = {
           'common/js/L.Knreise.Icon.js',
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -177,8 +176,6 @@ module.exports = {
           'common/js/DatasetLoader.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -215,11 +212,9 @@ module.exports = {
           'common/js/L.Knreise.Icon.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/video.js/dist/video-js/video-js.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'common/css/L.Knreise.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Datasets.css',
           'common/css/fullscreenmap.css',
@@ -264,11 +259,9 @@ module.exports = {
           'common/js/L.Knreise.Icon.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Sidebar.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'common/css/L.Knreise.Control.Datasets.css',
           'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
@@ -313,8 +306,6 @@ module.exports = {
           'common/js/L.Control.MapClick.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -354,8 +345,6 @@ module.exports = {
           
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'common/css/fullscreenmap.css',
           'common/css/L.Knreise.Control.Datasets.css',
           'common/css/markers.css'
@@ -369,9 +358,7 @@ module.exports = {
         key: 'api_example',
         name: 'API-eksempel',
         scripts: [],
-        css: [
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
-        ],
+        css: [],
         templates: []
     },
     {
@@ -455,8 +442,6 @@ module.exports = {
           'common/js/DatasetLoader.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -493,8 +478,6 @@ module.exports = {
           'common/js/style.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
           'bower_components/Leaflet.Photo/Leaflet.Photo.css',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'common/css/markers.css'
