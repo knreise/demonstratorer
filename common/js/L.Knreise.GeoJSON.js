@@ -1,4 +1,4 @@
-/*global L: false, KR: false */
+/*global L: false, KR: false, turf: false */
 'use strict';
 
 L.Knreise = L.Knreise || {};
@@ -45,6 +45,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                     feature = parent.feature;
                 }
                 layer.setStyle(this._createFeatureIcon(feature, false));
+                if (layer.getParent) {
+                    var p = layer.getParent();
+                    p.setStyle(this._createFeatureIcon(feature, false));
+                }
             }
             this._selectedLayer = null;
         }
@@ -63,6 +67,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             layer.setZIndexOffset(1000);
         }
         if (layer.setStyle) {
+
             var feature = layer.feature;
             if (!feature) {
                 var parent = this.getParentLayer(layer._leaflet_id);
@@ -72,6 +77,12 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 layer.setStyle(this._createFeatureIcon(feature, true));
                 layer.bringToFront();
             }
+
+            if (layer.getParent) {
+                var p = layer.getParent();
+                p.setStyle(this._createFeatureIcon(feature, true));
+            }
+
         }
         this._selectedLayer = layer;
     },
@@ -148,6 +159,14 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         this.removedPaths = this.removedPaths.concat(removedTemp);
     },
 
+    _getCenter: function (feature) {
+        if (typeof turf !== 'undefined') {
+            var p = turf.pointOnSurface(feature.toGeoJSON());
+            return L.latLng(p.geometry.coordinates.reverse());
+        }
+        return feature.getBounds().getCenter();
+    },
+
     _layeradd: function (event) {
         var feature = event.layer;
         if (feature.feature.geometry.type !== 'Point' && !feature.isMarker) {
@@ -164,7 +183,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 var zoomThreshold = this.getZoomThreshold(feature);
                 var marker = this._pointToLayer(
                     feature.feature,
-                    feature.getBounds().getCenter()
+                    this._getCenter(feature)
                 );
                 marker.feature = feature.feature;
                 marker.on('click', function (e) {
@@ -183,6 +202,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 this.removedPaths.push(feature);
                 feature.marker = marker;
                 feature.marker.isMarker = true;
+                feature.marker.getParent = function () {
+                    return feature;
+                };
                 if (this._map.getZoom() <= zoomThreshold) {
                     this.removeLayer(feature);
                     if (!this.options.dataset.toPoint.showAlways) {
