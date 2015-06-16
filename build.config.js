@@ -28,7 +28,9 @@ module.exports = {
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
           'common/js/L.Knreise.Icon.js',
-          'common/js/DatasetLoader.js'
+          'common/js/DatasetLoader.js',
+          'bower_components/L.EasyButton/easy-button.js',
+          'common/js/L.Knreise.LocateButton.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
@@ -80,7 +82,9 @@ module.exports = {
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
           'common/js/L.Knreise.Icon.js',
-          'common/js/DatasetLoader.js'
+          'common/js/DatasetLoader.js',
+          'bower_components/L.EasyButton/easy-button.js',
+          'common/js/L.Knreise.LocateButton.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',

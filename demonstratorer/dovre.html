@@ -255,6 +255,8 @@
         <script src="../common/js/L.Knreise.Control.Datasets.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Icon.js" type="text/javascript"></script>
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
+        <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.LocateButton.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
@@ -295,12 +297,12 @@ var sidebar = L.Knreise.Control.sidebar('sidebar', {
 });
 map.addControl(sidebar);
 
+L.Knreise.LocateButton().addTo(map);
+
 KR.Config.templates = {
     'Musit': _.template($('#musit_template').html()),
     'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
 };
-
-
 
 
 //The datasets in use

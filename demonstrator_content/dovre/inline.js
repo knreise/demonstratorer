@@ -33,12 +33,12 @@ var sidebar = L.Knreise.Control.sidebar('sidebar', {
 });
 map.addControl(sidebar);
 
+L.Knreise.LocateButton().addTo(map);
+
 KR.Config.templates = {
     'Musit': _.template($('#musit_template').html()),
     'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
 };
-
-
 
 
 //The datasets in use
