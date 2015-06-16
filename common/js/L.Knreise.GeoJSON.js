@@ -1,4 +1,4 @@
-/*global L: false, KR: false */
+/*global L: false, KR: false, turf: false */
 'use strict';
 
 L.Knreise = L.Knreise || {};
@@ -38,16 +38,16 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 layer.setIcon(this._createFeatureIcon(layer.feature, false));
                 layer.setZIndexOffset(0);
             }
-            if (layer.setStyle && this.options.dataset.style) {
+            if (layer.setStyle) {
                 var feature = layer.feature;
                 if (!feature) {
                     var parent = this.getParentLayer(layer._leaflet_id);
                     feature = parent.feature;
                 }
-                if (this.options.dataset.toPoint && this.options.dataset.toPoint.circle) {
-                    layer.setStyle(this.options.dataset.toPoint.circle(feature));
-                } else {
-                    layer.setStyle(this.options.dataset.style(feature));
+                layer.setStyle(this._createFeatureIcon(feature, false));
+                if (layer.getParent) {
+                    var p = layer.getParent();
+                    p.setStyle(this._createFeatureIcon(feature, false));
                 }
             }
             this._selectedLayer = null;
@@ -55,8 +55,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _featureClicked: function (e) {
-        if (e.parent && this.options.dataset.toPoint.stopPolyClick) {
-            return;
+        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
+            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
+                return;
+            }
         }
         e.layer._map.fire('layerSelected');
         var layer = e.layer;
@@ -65,19 +67,22 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             layer.setZIndexOffset(1000);
         }
         if (layer.setStyle) {
+
             var feature = layer.feature;
             if (!feature) {
                 var parent = this.getParentLayer(layer._leaflet_id);
                 feature = parent.feature;
             }
-            if (this.options.dataset.selectedStyle) {
-                if (this.options.dataset.toPoint && this.options.dataset.toPoint.circleSelected) {
-                    layer.setStyle(this.options.dataset.toPoint.circleSelected(feature));
-                } else {
-                    layer.setStyle(this.options.dataset.selectedStyle(feature));
-                }
+            if (feature) {
+                layer.setStyle(this._createFeatureIcon(feature, true));
+                layer.bringToFront();
             }
-            layer.bringToFront();
+
+            if (layer.getParent) {
+                var p = layer.getParent();
+                p.setStyle(this._createFeatureIcon(feature, true));
+            }
+
         }
         this._selectedLayer = layer;
     },
@@ -154,23 +159,32 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         this.removedPaths = this.removedPaths.concat(removedTemp);
     },
 
+    _getCenter: function (feature) {
+        if (typeof turf !== 'undefined') {
+            var p = turf.pointOnSurface(feature.toGeoJSON());
+            return L.latLng(p.geometry.coordinates.reverse());
+        }
+        return feature.getBounds().getCenter();
+    },
+
     _layeradd: function (event) {
+        var feature = event.layer;
+        if (feature.feature.geometry.type !== 'Point' && !feature.isMarker) {
+            feature.setStyle(KR.Style.getPathStyle(feature.feature));
+            feature.bringToBack();
+        }
+
         if (this.options.dataset.toPoint) {
-            var feature = event.layer;
 
             if (feature.isMarker) {
                 return;
             }
-
             if (feature.getBounds && !feature.zoomThreshold && !feature.marker) {
                 var zoomThreshold = this.getZoomThreshold(feature);
-
-                var marker = this._createMarker(
+                var marker = this._pointToLayer(
                     feature.feature,
-                    feature.getBounds().getCenter(),
-                    this.options.dataset.toPoint.circle
+                    this._getCenter(feature)
                 );
-
                 marker.feature = feature.feature;
                 marker.on('click', function (e) {
                     feature.fire('click', {
@@ -188,6 +202,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                 this.removedPaths.push(feature);
                 feature.marker = marker;
                 feature.marker.isMarker = true;
+                feature.marker.getParent = function () {
+                    return feature;
+                };
                 if (this._map.getZoom() <= zoomThreshold) {
                     this.removeLayer(feature);
                     if (!this.options.dataset.toPoint.showAlways) {
@@ -201,72 +218,26 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         }
     },
 
-    onAdd: function (map) {
+    setMap: function (map) {
+        map.on('layerSelected', this._deselectAll, this);
+    },
 
+    onAdd: function (map) {
         L.GeoJSON.prototype.onAdd.apply(this, arguments);
         if (this.options.dataset && this.options.dataset.toPoint) {
             this._zoomend();
             map.on('zoomend', this._zoomend, this);
             this.on('layeradd', this._layeradd, this);
         }
-        map.on('layerSelected', this._deselectAll, this);
-    },
-
-    _getIconSize: function () {
-        if (this.options.dataset && this.options.dataset.smallMarker) {
-            return [20, 20];
-        }
-        return [50, 50];
+        this.setMap(map);
     },
 
     _createFeatureIcon: function (feature, selected) {
-        if (feature.properties.thumbnail && (this.options.dataset && this.options.dataset.thumbnails)) {
-            var borderColor = KR.Util.colorForFeature(feature, 'hex');
-
-            var styleDict = {
-                'border-color': borderColor,
-                'background-image': 'url(' + feature.properties.thumbnail + ')'
-            };
-            if (selected) {
-                styleDict['border-width'] = '3px';
-                styleDict['border-color'] = '#38A9DC';
-            }
-
-            return L.divIcon({
-                html: '<div class="single" style="' + KR.Util.createStyleString(styleDict) + '"></div>​',
-                className: 'leaflet-marker-photo',
-                iconSize: this._getIconSize()
-            });
-        }
-        if (this.options.dataset && this.options.dataset.smallMarker && !selected) {
-            var icon = KR.Util.iconForFeature(feature);
-            return new L.DivIcon({
-                className: 'leaflet-marker-favicon',
-                html: '<div class="outer"><i class="fa fa-' + icon + '"></i></div>',
-                iconSize: [12, 12]
-            });
-        }
-        return KR.Util.markerForFeature(feature, selected);
-    },
-
-    _createMarker: function (feature, latlng, circle) {
-        if (circle) {
-            if (typeof circle === 'function') {
-                circle = circle(feature);
-            }
-            return L.circleMarker(latlng, circle);
-        }
-        return L.marker(latlng, {
-            icon: this._createFeatureIcon(feature),
-            title: feature.properties.title
-        });
+        return KR.Style.getIcon(feature, selected);
     },
 
     _pointToLayer: function (feature, latlng) {
-        if (this.options.dataset && this.options.dataset.circle) {
-            return this._createMarker(feature, latlng, this.options.dataset.circle);
-        }
-        return this._createMarker(feature, latlng);
+        return KR.Style.getMarker(feature, latlng);
     }
 
 });

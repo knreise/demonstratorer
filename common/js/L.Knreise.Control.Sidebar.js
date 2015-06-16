@@ -6,16 +6,23 @@ L.Knreise.Control = L.Knreise.Control || {};
 
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
+    options: {
+        noListThreshold: 10
+    },
+
     initialize: function (placeholder, options) {
+        options = options || {};
+        options.autoPan = false;
         L.setOptions(this, options);
 
         this._template = options.template;
         // Find content container
         var content =  L.DomUtil.get(placeholder);
-
+        L.DomEvent.on(content, 'click', function (e) {
+            L.DomEvent.stopPropagation(e);
+        });
         // Remove the content container from its original parent
         content.parentNode.removeChild(content);
-
 
         var top = L.DomUtil.create('div', 'top-menu', content);
         this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);
@@ -25,13 +32,11 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var l = 'leaflet-';
 
         // Create sidebar container
-        var container = this._container =
-            L.DomUtil.create('div', l + 'sidebar ' + this.options.position);
+        var container = this._container = L.DomUtil.create('div', l + 'sidebar ' + this.options.position);
 
         // Create close button and attach it if configured
         if (this.options.closeButton) {
-            var close = this._closeButton =
-                L.DomUtil.create('a', 'close pull-right', top);
+            var close = this._closeButton = L.DomUtil.create('a', 'close pull-right', top);
             close.innerHTML = '&times;';
         }
         this._top = L.DomUtil.create('span', '', top);
@@ -80,6 +85,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
@@ -88,7 +94,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var content = '<span class="providertext">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 
-        if (this.options.footerTemplate) {
+        if (this.options.footerTemplate && feature.properties.link) {
             content += this.options.footerTemplate(feature.properties);
         }
 
@@ -113,7 +119,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             }
 
             var indexLabel = L.DomUtil.create('span', 'headertext pull-left', this._top);
-            indexLabel.innerHTML = index + 1 +' av';
+            indexLabel.innerHTML = index + 1 + ' av';
 
             var countLabel = L.DomUtil.create('span', 'circle pull-left', this._top);
             countLabel.innerHTML = numFeatures;
@@ -132,7 +138,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.show();
     },
 
-    _createListCallbacks: function (feature, index, template, getData, features) {
+    _createListCallbacks: function (feature, index, template, getData, features, close) {
         var prev;
         if (index > 0) {
             prev = _.bind(function (e) {
@@ -141,7 +147,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 }
                 index = index - 1;
                 feature = features[index];
-                var callbacks = this._createListCallbacks(feature, index, template, getData, features);
+                var callbacks = this._createListCallbacks(feature, index, template, getData, features, close);
                 this.showFeature(feature, template, getData, callbacks, index, features.length);
             }, this);
         }
@@ -153,32 +159,35 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 }
                 index = index + 1;
                 feature = features[index];
-                var callbacks = this._createListCallbacks(feature, index, template, getData, features);
+                var callbacks = this._createListCallbacks(feature, index, template, getData, features, close);
                 this.showFeature(feature, template, getData, callbacks, index, features.length);
+            }, this);
+        }
+
+        if (!close) {
+            close = _.bind(function () {
+                this.showFeatures(features, template, getData);
             }, this);
         }
 
         return {
             prev: prev,
-            close: _.bind(function () {
-                this.showFeatures(features, template, getData);
-            }, this),
+            close: close,
             next: next
         };
     },
 
     _createListElement: function (feature, index, template, getData, features) {
-
         var marker;
         if (feature.properties.thumbnail) {
             marker = this.options.thumbnailTemplate({
                 thumbnail: feature.properties.thumbnail,
-                color: KR.Util.colorForFeature(feature, 'hex')
+                color: KR.Style.colorForFeature(feature, true)
             });
         } else {
             marker = this.options.markerTemplate({
-                icon: KR.Util.iconForFeature(feature),
-                color: KR.Util.colorForFeature(feature)
+                icon: '',
+                color: KR.Style.colorForFeature(feature)
             });
         }
 
@@ -197,7 +206,20 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         return li;
     },
 
-    showFeatures: function (features, template, getData) {
+    showFeatures: function (features, template, getData, noListThreshold) {
+        noListThreshold = (noListThreshold === undefined) ? this.options.noListThreshold : noListThreshold;
+        var shouldSkipList = (features.length <= noListThreshold);
+        if (shouldSkipList) {
+            var feature = features[0];
+            $(this.getContainer()).html('');
+            var close = _.bind(function () {
+                this.hide();
+            }, this);
+            var callbacks = this._createListCallbacks(feature, 0, template, getData, features, close);
+            this.showFeature(feature, template, getData, callbacks, 0, features.length);
+            return;
+        }
+
         var count = $('<span class="circle">' + features.length + '</span>');
         $(this._top).html(count);
 
@@ -214,12 +236,12 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                     });
                     return this._createListElement(feature, index, template, getData, features);
                 }, this);
-                
+
                 list.append(elements);
                 wrapper.append('<h5 class="providertext">' + key + '</h5>');
                 wrapper.append(list);
                 return wrapper;
-            }, this).value()
+            }, this).value();
         $(this.getContainer()).html(grouped);
         this.show();
     },
