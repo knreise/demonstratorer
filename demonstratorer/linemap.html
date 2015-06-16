@@ -36,11 +36,9 @@
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
 <p><%= dataset %></p>
-<% if (image) { %>
-<a href="<%= link %>">
-    <img class="fullwidth" src="<%= image %>" />
-</a>
-<% }%>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
 <p><%= content %></p>
 <a href="<%= link %>">Mer info</a>
 </script>

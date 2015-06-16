@@ -102,7 +102,8 @@ KR.Style = {};
             circle: true
         },
         'wikipedia': {
-            fillcolor: '#D14020'
+            fillcolor: '#D14020',
+            thumbnail: true,
         }
     };
 

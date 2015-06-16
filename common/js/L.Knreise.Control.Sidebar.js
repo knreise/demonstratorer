@@ -170,7 +170,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     _createListElement: function (feature, index, template, getData, features) {
-
         var marker;
         if (feature.properties.thumbnail) {
             marker = this.options.thumbnailTemplate({
