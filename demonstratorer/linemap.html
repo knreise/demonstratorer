@@ -243,7 +243,7 @@
 
 
 <script type="text/template" id="marker_template">
-<div class="awesome-marker-icon-<%= color %> awesome-marker" style="width: 35px; height: 45px;">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
     <i class="fa fa-<%= icon %> icon-white"></i>
 </div>
 </script>
@@ -309,9 +309,10 @@
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
-        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
         <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
+        <script src="../common/js/style.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.GeoJSON.js" type="text/javascript"></script>
@@ -325,6 +326,7 @@
         <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
         <script src="../common/js/AlongLine.js" type="text/javascript"></script>
         <script src="../common/js/LineMap.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Icon.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
@@ -351,12 +353,16 @@ var api = new KR.API({
 
 var datasets = [
     {
-        api: 'norvegiana',
-        dataset: 'difo'
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'difo'
+        }
     },
     {
-        api: 'norvegiana',
-        dataset: 'MUSIT'
+        dataset:{
+            api: 'norvegiana',
+            dataset: 'MUSIT'
+        }
     }
 ];
 

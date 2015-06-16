@@ -4,63 +4,308 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
         <link href='../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css' rel='stylesheet' />
-        <style type="text/css">
-        .awesome-marker {
-            position: relative;
-            display: inline-block;
-        }
-        </style>
+        <link href='../common/css/markers.css' rel='stylesheet' />
+
     </head>
     <body>
-        <div id="style"></div>
+
+<table id="circle" class="table">
+    <tr>
+        <th>Datasett</th>
+        <th>Sirkel</th>
+        <th>Markør</th>
+        <th>Bilde</th>
+        <th>Cluster med bilde</th>
+        <th>Cluster</th>
+    </tr>
+</table>
+
+<script type="text/template" id="popup_template">
+<h3><%= title %></h3>
+<p><%= dataset %></p>
+<% if (image) { %>
+<a href="<%= link %>">
+    <img class="fullwidth" src="<%= image %>" />
+</a>
+<% }%>
+<p><%= content %></p>
+<a href="<%= link %>">Mer info</a>
+</script>
 
 
-        <script type="text/template" id="marker_template">
-            <div class="awesome-marker-icon-<%= color %> awesome-marker" style="width: 35px; height: 45px;">
-                <i class="fa fa-<%= icon %> icon-white"></i>
-            </div>
-        </script>
+<script type="text/template" id="verneomraader_template">
+<h3>Verneområde</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= title %></dd>
+
+    <dt>Faktaark</dt>
+    <dd><a href="<%= link %>">naturbase.no</a></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= content %></dd>
+</dl>
+</script>
 
 
-        <script type="text/template" id="list_template">
-            <h2><%= name %></h2>
-            <ul>
-            <%= list %>
-            </ul>
-        </script>
+<script type="text/template" id="kulturminne_template">
+<h3><%= title %></h3>
 
-        <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="../bower_components/underscore/underscore-min.js"></script>
-        <script src="../common/js/util.js"></script>
-        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js"></script>
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>
+</script>
+
+
+<script type="text/template" id="musit_template">
+<h3>MUSIT</h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<dl>
+    <dt>Artefakt</dt>
+    <dd><%= allProps.dc_subject %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
+
+    <dt>Funnsted</dt>
+    <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
+
+    <dt>Materiale</dt>
+    <dd><%= allProps.dcterms_medium %></dd>
+
+    <dt>Datering</dt>
+    <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
+
+    <dt>Museum</dt>
+    <dd><%= allProps.europeana_dataProvider %></dd>
+
+    <dt>Mer informasjon</dt>
+    <dd><a href="<%= link %>" target="_blank">link</a></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="digitalt_museum_template">
+<h3>Digitalt Museum</h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<dl>
+    <dt>Navn</dt>
+    <dd><%= title %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= allProps.delving_description.join('<br />') %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= allProps.europeana_dataProvider %></dd>
+
+    <dt>Mer informasjon</dt>
+    <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+<% if(contentType === 'VIDEO' && video) { %>
+    <% if (video.indexOf('mp4') !== -1) { %>
+        <video class="video-js vjs-default-skin fullwidth" controls
+         preload="auto" height="315" poster="<%= images[0] %>"
+         data-setup='{}'>
+          <source src="<%= videoEmbed %>" type='video/mp4'>
+        </video>
+    <% } else { %>
+        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    
+<% } else if(contentType === 'SOUND' && sound) { %>
+    <audio src="<%= sound %>" preload="auto"></audio>
+<% } else if(contentType === 'IMAGE' && images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<%= content %>
+
+
+<table class="sidebar-table">
+    <tr>
+      <td>Forfatter</td>
+      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Publisert</td>
+      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Lisens</td>
+      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+    </tr>
+</table>
+
+
+</script>
+
+
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
+</a>
+</script>
+
+
+<script type="text/template" id="fangstgrop_template">
+<h3>Fangstgrop</h3>
+
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
+
+
+        <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
+        <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
+        <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
+        <script src="../common/js/util.js" type="text/javascript"></script>
+        <script src="../common/js/style.js" type="text/javascript"></script>
+        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Icon.js" type="text/javascript"></script>
+        <script src="../common/js/style.js" type="text/javascript"></script>
+
         <script type="text/javascript">
+            (function () {
+                'use strict';
 
-        var lists = [];
-        var listTemplate = _.template($('#list_template').html());
-
-        var iconList = _.map(KR.Config.datasetIcons, function (icon, dataset) {
-            return '<li>' + dataset + ': <i class="fa fa-' + icon + '"></i></li>';
-        }).join('');
-        lists.push(listTemplate({list: iconList, name: 'Ikoner for datasett'}));
+                
+KR.Style.setDatasetStyle('Default', {});
+var datasets = KR.Style.datasets;
 
 
-        var contentList = _.map(KR.Config.contentIcons, function (icon, contentType) {
-            return '<li>' + contentType + ': <i class="fa fa-' + icon + '"></i></li>';
-        }).join('');
-        lists.push(listTemplate({list: contentList, name: 'Ikoner for mediatype'}));
 
-        var markerTemplate = _.template($('#marker_template').html());
-        var markers = _.map(KR.Config.providerColors, function (color, provider) {
-            return '<li>' + provider + ': ' + markerTemplate({icon: 'file-text', color: color.name}) +  '</li>';
-        }).join('');
-        lists.push(listTemplate({list: markers, name: 'Markers for datasett'}));
+$('#circle').append(_.map(datasets, function (style, name) {
+    return $('<tr>' + 
+                '<td style="vertical-align:top;">' + name + '</td>' +
+                '<td><div id="map_circle_' + name.replace(/ /g, '_') +'" style="width:100px;height:100px;"></div></td>' +
+                '<td><div id="map_marker_' + name.replace(/ /g, '_') +'" style="width:100px;height:100px;"></div></td>' +
+                '<td><div id="map_thumb_' + name.replace(/ /g, '_') +'" style="width:100px;height:100px;"></div></td>' +
+                '<td><div id="map_cluster_circle_' + name.replace(/ /g, '_') +'" style="width:100px;height:100px;"></div></td>' +
+                '<td><div id="map_cluster_thumb_' + name.replace(/ /g, '_') +'" style="width:100px;height:100px;"></div></td>' +
+            '</tr>');
+}));
 
-        $('#style').append(lists);
+function showFeature(ll, marker, id) {
+    var map = L.map(id, {attributionControl: false, zoomControl: false});
+    marker.addTo(map);
+    map.setView(ll, 10);
+}
+
+_.each(datasets, function (style, name) {
+    var id = name.replace(/ /g, '_');
+    var feature = {properties: {datasetId: name, thumbnail: 'http://lorempixel.com/100/100/', vernef_id: 'LVO'}};
+    var ll = L.latLng(60, 10);
+
+    var s = KR.Style.getDatasetStyle(name);
+    s.thumbnail = false;
+    s.circle = true;
+    var circleMarker = KR.Style.getMarker(feature, ll);
+
+    s.circle = false;
+    var marker = KR.Style.getMarker(feature, ll);
+
+    s.thumbnail = true;
+    var thumbMarker = KR.Style.getMarker(feature, ll);
+
+    showFeature(ll, circleMarker, 'map_circle_' + id);
+    showFeature(ll, marker, 'map_marker_' + id);
+    showFeature(ll, thumbMarker, 'map_thumb_' + id);
+
+    var clusterMarker = L.marker(ll);
+    clusterMarker.feature = feature;
+    var cluster = {getAllChildMarkers: function () {return [clusterMarker, clusterMarker, clusterMarker, clusterMarker]}};
+    clusterMarker.setIcon(KR.Style.getClusterIcon(cluster));
+    showFeature(ll, clusterMarker, 'map_cluster_circle_' + id);
 
 
+    s.thumbnail = false;
+    var clusterMarker2 = L.marker(ll);
+    clusterMarker2.feature = feature;
+    var cluster = {getAllChildMarkers: function () {return [clusterMarker2, clusterMarker2, clusterMarker2, clusterMarker2]}};
+    clusterMarker2.setIcon(KR.Style.getClusterIcon(cluster));
+    showFeature(ll, clusterMarker2, 'map_cluster_thumb_' + id);
+});
+            }());
         </script>
-
     </body>
 </html>

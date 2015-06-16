@@ -25,21 +25,26 @@ L.Control.Datasets = L.Control.extend({
         var dataset = layer.options.dataset;
 
         if (dataset.datasets) {
-            for (i = 0; i < dataset.datasets.length; i++) {
-                this._addDataset(dataset.datasets[i], layer, true);
+            if (dataset.grouped) {
+                this._addDataset(dataset, layer, false, true);
+            } else {
+                for (i = 0; i < dataset.datasets.length; i++) {
+                    this._addDataset(dataset.datasets[i], layer, true);
+                }
             }
         } else {
             this._addDataset(dataset, layer, false);
         }
     },
 
-    _addDataset: function (dataset, layer, multi) {
+    _addDataset: function (dataset, layer, multi, grouped) {
         var id = L.stamp(dataset);
         layer.on('changeEnabled', this._enabledChanged, this);
         this._datasets[id] = {
             layer: layer,
             dataset: dataset,
-            multi: multi
+            multi: multi,
+            grouped: grouped
         };
     },
 
@@ -105,17 +110,15 @@ L.Control.Datasets = L.Control.extend({
         for (i = 0; i < inputsLen; i++) {
             input = inputs[i];
             obj = this._datasets[input.datasetId];
-            //obj.dataset.visible = input.checked;
+
             if (obj.dataset.isStatic) {
                 this._toggleStaticDataset(input.checked, obj);
             } else {
                 if (input.checked !== obj.dataset.visible) {
                     obj.dataset.visible = input.checked;
                     if (input.checked) {
-
                         obj.layer.fire('show');
                     } else {
-
                         obj.layer.fire('hide');
                     }
                 }
@@ -144,13 +147,25 @@ L.Control.Datasets = L.Control.extend({
         label.appendChild(input);
         label.appendChild(name);
 
-        var datasetName = obj.dataset.dataset.dataset;
-        var iconMarker = KR.Util.iconForDataset(obj.dataset.dataset_name_override || datasetName);
-        if (iconMarker) {
-            var icon = document.createElement('i');
-            icon.className = 'layericon fa fa-' + iconMarker;
-            label.appendChild(icon);
+        var datasetName;
+        if (obj.grouped) {
+            datasetName = obj.dataset.name;
+        } else {
+             datasetName = obj.dataset.dataset.dataset;
         }
+        
+        var datasetId;
+        if (obj.dataset.cluster && obj.dataset.grouped) {
+            datasetId = obj.dataset.datasets[0].extras.datasetId;
+        } else {
+            datasetId = obj.dataset.extras.datasetId;
+        }
+
+        var icon = document.createElement('i');
+        icon.className = 'layericon fa fa-square';
+        icon.style.color = KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true);
+        label.appendChild(icon);
+
 
         this._overlaysList.appendChild(label);
 

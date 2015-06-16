@@ -20,10 +20,16 @@ Create a new API instance like this (usually only done once):
 
     var api = new KR.API({
         cartodb: {
-            apikey: 'API KEY',
+            apikey: 'CARTODB_API KEY',
             user: 'knreise'
+        },
+        flickr: {
+            apikey: 'FLICKR_API KEY'
         }
     });
+
+Note: The cartoDB and flickr config is only needed iof you intend to use thse
+APIS.
 
     
 ###Methods
@@ -96,7 +102,7 @@ The datasets object passed to the api is a simple JavaScript object, but these d
 
 Other than the __api__ parameter, the parameters depend on the api, see the table below:
 
-<<<<<<< HEAD
+
 | api                   | parameters                      |
 |-----------------------|---------------------------------|
 | norvegiana            | dataset, query                  |
@@ -105,6 +111,8 @@ Other than the __api__ parameter, the parameters depend on the api, see the tabl
 | kulturminnedataSparql | limit, filter, fylke, geomType  |
 | cartodb               | table, columns, query           |
 | folketelling          | dataset, limit                  |
+| utno                  | type, id                        |
+| flickr                | user_id, tags, tag_mode         |
 
 
 
@@ -114,8 +122,10 @@ Other than the __api__ parameter, the parameters depend on the api, see the tabl
 
 See the [norvegiana documentation][norvegiana-doc] for further info.
 
+
 ####wikipedia
 This dataset takes no parameters
+
 
 #### kulturminnedata
 * **layer**:  ``<string>`` the Layer name to query
@@ -141,6 +151,15 @@ To use this api you must provide a config-object when initializing the api.
 * ***dataset***: ``<string>`` Name of the dataset, currently only 'property'
 * ***limit***: ``<int>`` Number of hits, defaults to 1000
 
+#### utno
+* ***type***: ``<string>`` Type of data, currently only ``gpx``
+* ***id***: ``<string>`` Id of the route, corresponds to id on ut.no (i.e. http://ut.no/tur/2.8158/ gives id=2.8158)
+
+#### flickr
+* ***user_id***: ``<string>`` The Flickr user id to get photos from
+* ***tags***: ``<string[]>`` A list of tags to query by
+* ***tag_mode***: ``<string>`` Tag mode, as pr the [flickr documentation][flickrdoc] (default: ``all``)
+
 
 [bbox]: http://en.wikipedia.org/wiki/Minimum_bounding_box
 [4326]: http://epsg.io/4326
@@ -149,3 +168,4 @@ To use this api you must provide a config-object when initializing the api.
 [kulturminedata]: http://www.kulturminnedata.no/api.html 
 [kommunenummer]: http://no.wikipedia.org/wiki/Kommunenummer
 [fylkesnummer]: http://no.wikipedia.org/wiki/Fylkesnummer
+[flickrdoc]: https://www.flickr.com/services/api/flickr.photos.search.html

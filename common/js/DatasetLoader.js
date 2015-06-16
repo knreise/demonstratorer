@@ -10,8 +10,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         isStatic: true,
         bbox: true,
         cluster: true,
-        smallMarker: false,
-        thumbnails: true,
+      //  smallMarker: false,
+      //  thumbnails: true,
         visible: true
     };
 
@@ -32,12 +32,17 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'circle')) {
                     feature.properties.circle = dataset.circle;
                 }
-                if (_.has(dataset, 'dataset_name_override')) {
+/*                if (_.has(dataset, 'dataset_name_override')) {
                     feature.properties.dataset = dataset.dataset_name_override;
                 }
+*/
                 if (_.has(dataset, 'provider')) {
                     feature.properties.provider = dataset.provider;
                 }
+                if (_.has(dataset, 'extras')) {
+                    feature.properties = _.extend(feature.properties, dataset.extras);
+                }
+
             });
             return features;
         };
@@ -80,6 +85,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     function _resetClusterData(clusterLayer, featurecollections) {
         clusterLayer.clearLayers();
         var layers = _.reduce(featurecollections, function (acc, geoJSONLayer) {
+            geoJSONLayer.setMap(map);
             return acc.concat(geoJSONLayer.getLayers());
         }, []);
         clusterLayer.addLayers(layers);
@@ -122,7 +128,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function _getvisible(dataset) {
-        if (dataset.datasets) {
+        if (dataset.datasets && !dataset.grouped) {
             var numVisible = _.filter(dataset.datasets, function (d) {
                 return d.visible;
             }).length;
@@ -133,7 +139,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function _checkShouldLoad(dataset) {
-
         if (!dataset.minZoom) {
             return _getvisible(dataset);
         }
@@ -159,10 +164,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     function _addBboxDataset(dataset, initBounds) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
-        //copy properties from parent
-        if (dataset.datasets) {
-            _copyProperties(dataset);
-        }
+
 
         function checkData(geoJson, vectorLayer) {
             if (dataset.minFeatures) {
@@ -287,9 +289,31 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         return vectorLayer;
     }
 
+    function _setStyle(dataset) {
+        var id = KR.Util.getDatasetId(dataset);
+        dataset.extras = dataset.extras || {};
+        dataset.extras.datasetId = id;
+        if (dataset.style) {
+            KR.Style.setDatasetStyle(id, dataset.style);
+        }
+    }
+
     function loadDatasets(datasets, bounds) {
         var res = _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
+            //copy properties from parent
+            if (dataset.datasets) {
+                _copyProperties(dataset);
+            }
+
+            if (KR.Style.setDatasetStyle) {
+                if (dataset.datasets) {
+                    _.each(dataset.datasets, _setStyle);
+                } else {
+                    _setStyle(dataset);
+                }
+            }
+
             if (!dataset.visible) {
                 dataset.notLoaded = true;
             }

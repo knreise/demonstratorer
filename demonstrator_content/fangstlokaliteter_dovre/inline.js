@@ -38,7 +38,7 @@ var datasets = [
         template: _.template($('#fangstgrop_template').html()),
         smallMarker: true,
         cluster: false,
-        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
+        style: {radius: 1.5, opacity: 1, fillcolor: '#000', fillOpacity: 1, circle: true}
     }
 ];
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);

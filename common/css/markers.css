@@ -25,3 +25,42 @@
     -webkit-transform: rotate(10deg);
     transform: rotate(10deg);
 }
+
+.leaflet-marker-circle .outer {
+    position: relative;
+}
+.leaflet-marker-circle div {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+
+}
+
+.leaflet-marker-circle b, .leaflet-marker-photo b {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+    box-sizing: initial;
+    color: #555;
+    font-size: 8px;
+    height: 8px;
+    line-height: 8px;
+    min-width: 8px;
+    padding: 3px;
+    position: absolute;
+    text-align: center;
+    right: -8px;
+}
+
+.leaflet-marker-circle b {
+    right: -7px;
+    top: 12px;
+}
+
+.circle {
+    border-radius: 50%;
+    behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+    border: 1px solid white;
+}

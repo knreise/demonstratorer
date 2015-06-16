@@ -7,6 +7,8 @@ L.Knreise.Control = L.Knreise.Control || {};
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
+        options = options || {};
+        options.autoPan = false
         L.setOptions(this, options);
 
         this._template = options.template;
@@ -15,7 +17,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
         // Remove the content container from its original parent
         content.parentNode.removeChild(content);
-
 
         var top = L.DomUtil.create('div', 'top-menu', content);
         this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);
@@ -80,6 +81,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
@@ -88,7 +90,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var content = '<span class="providertext">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 
-        if (this.options.footerTemplate) {
+        if (this.options.footerTemplate && feature.properties.link) {
             content += this.options.footerTemplate(feature.properties);
         }
 
@@ -173,12 +175,12 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (feature.properties.thumbnail) {
             marker = this.options.thumbnailTemplate({
                 thumbnail: feature.properties.thumbnail,
-                color: KR.Util.colorForFeature(feature, 'hex')
+                color: KR.Style.colorForFeature(feature, true)
             });
         } else {
             marker = this.options.markerTemplate({
-                icon: KR.Util.iconForFeature(feature),
-                color: KR.Util.colorForFeature(feature)
+                icon: '',
+                color: KR.Style.colorForFeature(feature)
             });
         }
 

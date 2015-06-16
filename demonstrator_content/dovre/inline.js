@@ -12,6 +12,8 @@ var map = L.map('map');
 //add a background layer from kartverket
 L.tileLayer.kartverket('norges_grunnkart_graatone').addTo(map);
 
+//L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
 //set up an instance of the Norvegiana API
 var api = new KR.API({
     cartodb: {
@@ -56,6 +58,7 @@ var datasets = [
     {
         name: 'Digitalt fortalt',
         dataset: {dataset: 'difo', api: 'norvegiana'},
+        cluster: true,
         template: _.template($('#digitalt_fortalt_template').html())
     },
     {
@@ -67,23 +70,15 @@ var datasets = [
             query: 'delving_title:Fangstlokalitet'
         },
         template: _.template($('#kulturminne_template').html()),
-        smallMarker: true,
-        cluster: false,
-        visible: false,
-        circle: {radius: 1.5, opacity: 1, color: '#000', fillOpacity: 1}
-    },
-    {
-        name: 'Kulturminner',
-        dataset_name_override: 'Kulturminnesok',
-        dataset: {
-            api: 'norvegiana',
-            dataset: 'Kulturminnesok',
-            query: '-delving_title:Fangstlokalitet'
+        style: {
+            fillcolor: '#436978',
+            circle: true
         },
-        template: _.template($('#kulturminne_template').html()),
-        smallMarker: true
+        cluster: false,
+        visible: true
     },
     {
+        id: 'verneomraader',
         dataset: {
             api: 'cartodb',
             table: 'naturvernomrader_utm33_2',
@@ -92,21 +87,19 @@ var datasets = [
         provider: 'Naturbase',
         name: 'Verneområder',
         template: _.template($('#verneomraader_template').html()),
-        style: KR.Util.getVerneomrStyle(0.2),
-        selectedStyle: KR.Util.getVerneomrStyle(0.5),
         getFeatureData: function (feature, callback) {
             api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
         },
         toPoint: {
             showAlways: true,
             stopPolyClick: true,
-            minSize: 20,
-            circle: KR.Util.getVerneomrCircleStyle(),
-            circleSelected: KR.Util.getVerneomrCircleStyle("#f00"),
+            minSize: 20
         },
         cluster: false
     },
     {
+        grouped: true,
+        name: 'Historie',
         datasets: [
             {
                 name: 'MUSIT',
@@ -118,17 +111,25 @@ var datasets = [
             },
             {
                 name: 'DiMu',
-
                 dataset: {
                     api: 'norvegiana',
                     dataset: 'DiMu'
                 },
                 template: _.template($('#digitalt_museum_template').html())
+            },
+            {
+                name: 'Kulturminner',
+                id: 'Kulturminnesok',
+                dataset: {
+                    api: 'norvegiana',
+                    dataset: 'Kulturminnesok',
+                    query: '-delving_title:Fangstlokalitet'
+                },
+                template: _.template($('#kulturminne_template').html())
             }
         ],
-        minZoom: 12,
-        thumbnails: true,
-        smallMarker: true
+        isStatic: false,
+        minZoom: 12
     },
     {
         name: 'Artsobservasjoner',
@@ -136,7 +137,14 @@ var datasets = [
             api: 'norvegiana',
             dataset:'Artsdatabanken'
         },
-        smallMarker: true,
+        circle: {
+            radius: 7,
+            weight:1,
+            opacity: 1,
+            fillcolor: KR.Util.colorForProvider('Artsdatabanken', 'hex'),
+            fillOpacity: 0.4
+        },
+        cluster: false,
         minZoom: 14
     }
 ];
@@ -146,7 +154,7 @@ var datasets = [
 var errorHandler = KR.errorHandler($('#error_template').html());
 
 
-var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
+var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
 //get the are we are interested in
 var dovre = 511;

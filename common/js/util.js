@@ -1,4 +1,4 @@
-/*global L: false */
+/*global L: false, turf: false */
 
 var KR = this.KR || {};
 
@@ -22,15 +22,17 @@ KR.Config = {
     },
 
     providerColors: {
-        'Artsdatabanken': {name: 'darkpuple', hex: '#5B396B'},
+        'Artsdatabanken': {name: 'darkpurple', hex: '#5B396B'},
         'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
         'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
         'Industrimuseum': {name: 'darkred', hex: '#A23336'},
-        'MUSIT': {name: 'darkred', hex: '#A23336'},
+        'MUSIT': {name: 'cadetblue', hex: '#436978'},
         'Kulturminnesøk': {name: 'green', hex: '#72B026'},
         'Naturbase': {name: 'purple', hex: '#D252B9'},
         'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
-        'default': {name: 'blue', hex: '#38A9DC'}
+        'default': {name: 'blue', hex: '#38A9DC'},
+        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'},
+        'Trondheim byarkiv': {name: 'darkred', hex: '#A23336'}
     },
 
     templates: {}
@@ -95,19 +97,18 @@ KR.Util = KR.Util || {};
 
 
     ns.markerForFeature = function (feature, selected) {
-        var faIcon = ns.iconForFeature(feature);
+        //var faIcon = ns.iconForFeature(feature);
         var color = selected
                     ? 'blue'
                     : ns.colorForFeature(feature);
 
-        return L.AwesomeMarkers.icon({
-            icon: faIcon,
+        return L.Knreise.icon({
             markerColor: color,
             prefix: 'fa'
         });
     };
 
-     var verneomrTypes = {
+    var verneomrTypes = {
         landskapsvern: {
             ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV'],
             style: {
@@ -181,12 +182,18 @@ KR.Util = KR.Util || {};
             }
             return {stroke: false, fill: false};
         };
-    }
+    };
 
 
     ns.featureClick = function (sidebar) {
         return function _addFeatureClick(feature, layer, dataset) {
-            layer.on('click', function () {
+            layer.on('click', function (e) {
+                if (dataset.toPoint && dataset.toPoint.stopPolyClick) {
+                    if (!e.parent) {
+                        return;
+                    }
+                }
+
                 if (dataset) {
                     sidebar.showFeature(
                         feature,
@@ -224,9 +231,39 @@ KR.Util = KR.Util || {};
         };
     };
 
+    ns.hexToRgba = function (hex, transparency) {
+        transparency = transparency || 1;
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+        if (!result) {
+            return 0;
+        }
+        var rgb = {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        };
+        return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
+    };
+
     ns.filterByBbox = function (features, bbox) {
         var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
         return turf.within(features, boundPoly);
+    };
+
+    ns.getDatasetId = function (dataset) {
+        if (dataset.dataset.api === 'norvegiana') {
+            if (!dataset.dataset.query) {
+                return dataset.dataset.dataset;
+            }
+        }
+        if (dataset.dataset.api === 'wikipedia') {
+            return 'wikipedia';
+        }
+        if (dataset.id) {
+            return dataset.id;
+        }
+        return KR.Util.stamp(dataset);
     };
 
     if (typeof L !== 'undefined') {

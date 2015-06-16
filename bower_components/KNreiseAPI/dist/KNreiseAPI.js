@@ -6,6 +6,14 @@ KR.Util = {};
 (function (ns) {
     'use strict';
 
+    ns.dictWithout = function (dict) {
+        var keys = _.without(_.keys(dict), Array.prototype.slice.call(arguments, 1));
+        return _.reduce(keys, function (acc, key) {
+            acc[key] = dict[key];
+            return acc;
+        }, {});
+    };
+
     ns.createQueryParameterString = function (params) {
         return _.map(params, function (value, key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(value);
@@ -26,12 +34,14 @@ KR.Util = {};
             url: url,
             success: function (response) {
                 if (parser) {
-                    //try {
-                        callback(parser(response, errorCallback));
-                    /*} catch (e) {
+                    var parsed;
+                    try {
+                        parsed = parser(response, errorCallback);
+                    } catch (e) {
                         ns.handleError(errorCallback, e.message, response);
+                        return;
                     }
-                    */
+                    callback(parsed);
                 } else {
                     callback(response);
                 }
@@ -155,8 +165,8 @@ KR.ArcgisAPI = function (BASE_URL) {
         var layer = dataset.layer;
         var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
-            _parseArcGisResponse(response, callback, errorCallback);
-        }, errorCallback);
+             _parseArcGisResponse(response, callback, errorCallback);
+         }, errorCallback);
     }
 
     return {
@@ -275,6 +285,13 @@ KR.CartodbAPI = function (user, apikey) {
                distance + ');';
     }
 
+    function _getMapper(dataset) {
+        var mapper = dataset.mapper;
+        if (!mapper) {
+            mapper = mappers().cartodb_general;
+        }
+        return mapper;
+    }
 
     function getMunicipalityBounds(municipalities, callback, errorCallback) {
         if (!_.isArray(municipalities)) {
@@ -291,8 +308,9 @@ KR.CartodbAPI = function (user, apikey) {
     }
 
     function getData(dataset, callback, errorCallback) {
+        var mapper = _getMapper(dataset);
         if (dataset.query) {
-            _executeSQL(dataset.query, dataset.mapper, callback, errorCallback);
+            _executeSQL(dataset.query, mapper, callback, errorCallback);
         } else if (dataset.table) {
             var select = ['*'];
             if (_.has(columnList, dataset.table)) {
@@ -300,7 +318,7 @@ KR.CartodbAPI = function (user, apikey) {
             }
             select.push('ST_AsGeoJSON(the_geom) as geom');
             var sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
-            _executeSQL(sql, dataset.mapper, callback, errorCallback);
+            _executeSQL(sql, mapper, callback, errorCallback);
         }
     }
 
@@ -317,10 +335,7 @@ KR.CartodbAPI = function (user, apikey) {
             'ST_Intersects(the_geom, ST_MakeEnvelope(' + bbox + ', 4326))'
         );
 
-        var mapper = dataset.mapper;
-        if (!mapper) {
-            mapper = mappers().cartodb_general;
-        }
+        var mapper = _getMapper(dataset);
         _executeSQL(sql, mapper, callback, errorCallback);
     }
 
@@ -754,17 +769,9 @@ KR.FolketellingAPI = function () {
 
     var MAX_DISTANCE = 5000;
 
-    function _dictWithout(dict) {
-        var keys = _.without(_.keys(dict), Array.prototype.slice.call(arguments, 1));
-        return _.reduce(keys, function (acc, key) {
-            acc[key] = dict[key];
-            return acc;
-        }, {});
-    }
-
     function _parser(response) {
         var features = _.map(response.results, function (item) {
-            var properties = _dictWithout(item, 'latitude', 'longitude');
+            var properties = KR.Util.dictWithout(item, 'latitude', 'longitude');
             return KR.Util.createGeoJSONFeature({lat: item.latitude, lng: item.longitude}, properties);
         });
         return KR.Util.createFeatureCollection(features);
@@ -848,6 +855,13 @@ KR.SparqlAPI = function (BASE_URL) {
                 acc[key] = item[key].value;
                 return acc;
             }, {});
+
+            if (!attrs.lokimg) {
+                attrs.lokimg = false;
+            }
+            attrs.thumbnail = attrs.lokimg;
+            attrs.title = attrs.name;
+
             if (_.has(item, 'punkt')) {
                 return KR.Util.createGeoJSONFeatureFromGeom(
                     _parseGeom(item.punkt),
@@ -866,51 +880,32 @@ KR.SparqlAPI = function (BASE_URL) {
     }
 
     function _createQuery(dataset) {
-        var filter;
-        if (dataset.filter) {
-            filter = dataset.filter;
-        } else if (dataset.fylke) {
-            filter = 'regex(?kommune, "^.*' + dataset.fylke + '[1-9]{2}")';
+
+        var query = 'select ?id ?name ?beskrivelse ?loklab ?punkt ?lokimg ?kommune {' +
+        '?id a ?type .' +
+        '?id rdfs:label ?name .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori .' +
+        '?lokalitetskategori rdfs:label ?loklab .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt .';
+        if (dataset.fylke) {
+            query += ' FILTER regex(?kommune, "^.*' + dataset.fylke + '[1-9]{2}")';
+        } else if (dataset.kommune) {
+            query += ' FILTER (str(?kommune) = "https://data.kulturminne.no/difi/geo/kommune/' + dataset.kommune + '")';
+        } else if (dataset.filter) {
+            query += dataset.filter;
         } else {
             throw new Error('not enough parameters to api!');
         }
 
+        query += 'optional {' +
+        '?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+        '?picture <https://data.kulturminne.no/schema/source-link> ?link ' +
+        'BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
+        'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg)' +'}' +
+        '}';
 
-        var fields = [
-            '?lokid',
-            '?label',
-            '?beskrivelse',
-            '?loklab',
-            '?lokimg'
-        ];
-
-        var where = [
-            '?lok a <https://data.kulturminne.no/askeladden/schema/Lokalitet> .',
-            '?lok <http://www.w3.org/2000/01/rdf-schema#label> ?label .',
-            '?lok <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .',
-            '?lok <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse .',
-            '?lok <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori.'
-        ];
-
-        if (dataset.geomType === 'point') {
-            fields.push('?punkt');
-            where.push('?lok <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt .');
-        } else if (dataset.geomType === 'polygon') {
-            fields.push('?omraade');
-            where.push('?lok <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?omraade .');
-        } else {
-            throw new Error('Invalid geomType: ' + dataset.geomType);
-        }
-
-        var query = 'SELECT ' + fields.join(' ') +
-                    ' where {' +
-                    where.join('\n') +
-                    '?lokalitetskategori rdfs:label ?loklab .' +
-                    'FILTER ' + filter +
-                    'BIND(REPLACE(STR(?kommune), "http://psi.datanav.info/difi/geo/kommune/", "") AS ?kommuneid)' +
-                    'BIND(REPLACE(STR(?lok), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
-                    'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg)' +
-                    '}';
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
         }
@@ -935,7 +930,99 @@ KR.SparqlAPI = function (BASE_URL) {
         getData: getData
     };
 };
+/*global */
 
+var KR = this.KR || {};
+
+KR.FlickrAPI = function (apikey) {
+    'use strict';
+
+    var BASE_URL = 'https://api.flickr.com/services/rest/';
+
+    var imageTemplate = _.template('https://farm<%= farm %>.staticflickr.com/<%= server %>/<%= id %>_<%= secret %>_<%= size %>.jpg');
+
+    function getImageUrl(photo, size) {
+        return imageTemplate(_.extend({size: size}, photo));
+    }
+
+    function _parser(response) {
+        var features = _.map(response.photos.photo, function (item) {
+            var properties = KR.Util.dictWithout(item, 'latitude', 'longitude');
+
+            //see https://www.flickr.com/services/api/misc.urls.html for sizes
+            properties.thumbnail = getImageUrl(item, 's');
+            properties.image = getImageUrl(item, 'z');
+            return KR.Util.createGeoJSONFeature(
+                {
+                    lat: parseFloat(item.latitude),
+                    lng: parseFloat(item.longitude)
+                },
+                properties
+            );
+        });
+        return KR.Util.createFeatureCollection(features);
+    }
+
+    function getWithin(dataset, latLng, distance, callback, errorCallback, options) {
+        if (!_.has(dataset, 'user_id')) {
+            KR.Util.handleError(errorCallback, 'must specify user_id');
+            return;
+        }
+
+        var params = {
+            method: 'flickr.photos.search',
+            user_id: dataset.user_id,
+            api_key: apikey,
+            lat: latLng.lat,
+            lon: latLng.lng,
+            radius: distance / 1000, // convert to km
+            has_geo: true,
+            extras: 'geo,tags',
+            format: 'json',
+            nojsoncallback: 1
+        };
+
+        if (_.has(dataset, 'tags')) {
+            params.tags = dataset.tags.join(',');
+            params.tag_mode = dataset.tag_mode || 'all';
+        }
+
+        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, _parser, callback, errorCallback);
+    }
+
+    function getBbox(dataset, bbox, callback, errorCallback) {
+
+        if (!_.has(dataset, 'user_id')) {
+            KR.Util.handleError(errorCallback, 'must specify user_id');
+            return;
+        }
+
+        var params = {
+            method: 'flickr.photos.search',
+            user_id: dataset.user_id,
+            api_key: apikey,
+            bbox: bbox,
+            has_geo: true,
+            extras: 'geo,tags',
+            format: 'json',
+            nojsoncallback: 1
+        };
+
+        if (_.has(dataset, 'tags')) {
+            params.tags = dataset.tags.join(',');
+            params.tag_mode = dataset.tag_mode || 'all';
+        }
+
+        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, _parser, callback, errorCallback);
+    }
+
+    return {
+        getWithin: getWithin,
+        getBbox: getBbox
+    };
+};
 var KR = this.KR || {};
 
 KR.API = function (options) {
@@ -977,6 +1064,11 @@ KR.API = function (options) {
         folketellingAPI = new KR.FolketellingAPI();
     }
 
+    var flickrAPI;
+    if (KR.FlickrAPI && _.has(options, 'flickr')) {
+        flickrAPI = new KR.FlickrAPI(options.flickr.apikey);
+    }
+
     var apis = {
         norvegiana: norvegianaAPI,
         wikipedia: wikipediaAPI,
@@ -984,7 +1076,8 @@ KR.API = function (options) {
         kulturminnedata: kulturminnedataAPI,
         kulturminnedataSparql: kulturminnedataSparqlAPI,
         utno: utnoAPI,
-        folketelling: folketellingAPI
+        folketelling: folketellingAPI,
+        flickr: flickrAPI
     };
 
     var datasets = {

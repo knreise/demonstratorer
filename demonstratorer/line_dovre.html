@@ -243,7 +243,7 @@
 
 
 <script type="text/template" id="marker_template">
-<div class="awesome-marker-icon-<%= color %> awesome-marker" style="width: 35px; height: 45px;">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
     <i class="fa fa-<%= icon %> icon-white"></i>
 </div>
 </script>
@@ -309,9 +309,10 @@
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
-        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
         <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
+        <script src="../common/js/style.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js" type="text/javascript"></script>
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
@@ -326,6 +327,7 @@
         <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
         <script src="../common/js/AlongLine.js" type="text/javascript"></script>
         <script src="../common/js/FollowLineMap.js" type="text/javascript"></script>
+        <script src="../common/js/L.Knreise.Icon.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
@@ -360,10 +362,9 @@ var pilegrimsleden_dovre = {
 };
 
 var datasets = [
-    {dataset: 'difo', api: 'norvegiana'},
-    {dataset: 'Kulturminnesok', api: 'norvegiana'},
-  //  {dataset: ['MUSIT', 'DiMu'], api: 'norvegiana'},
-    {dataset: 'Artsdatabanken', api: 'norvegiana'}
+    {dataset: {dataset: 'difo', api: 'norvegiana'}},
+    {dataset: {dataset: 'Kulturminnesok', api: 'norvegiana'}},
+    {dataset: {dataset: 'Artsdatabanken', api: 'norvegiana'}},
 ];
 
 var icon = L.icon({
