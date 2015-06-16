@@ -41,7 +41,7 @@ KR.Config.templates = {
     'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
 };
 
-
+L.Knreise.LocateButton().addTo(map);
 
 
 //The datasets in use
