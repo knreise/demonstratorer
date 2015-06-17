@@ -106,10 +106,18 @@ function setupClick(element, municipalities, datasets, layer) {
             params.line = line;
             params.allstatic = true;
 
+
+
             var buffer = $('#buffer').val();
             if (buffer !== '') {
                 params.buffer = buffer;
             }
+
+            var linecolor = $('#linecolor').val();
+            if (buffer === '') {
+                linecolor = '#0033ff';
+            }
+            params.linecolor = linecolor;
         } else {
             params.komm =  municipalities.getSelected();
         }

@@ -28,6 +28,8 @@
             <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
             <h5>Buffer (km)</h5>
             <input id="buffer" type="number" class="form-control" value="2">
+            <h5>Linjefarge (hex)</h5>
+            <input id="linecolor" type="text" class="form-control" value="#0033ff">
         </div>
     </div>
     <div class="row">
@@ -409,10 +411,18 @@ function setupClick(element, municipalities, datasets, layer) {
             params.line = line;
             params.allstatic = true;
 
+
+
             var buffer = $('#buffer').val();
             if (buffer !== '') {
                 params.buffer = buffer;
             }
+
+            var linecolor = $('#linecolor').val();
+            if (buffer === '') {
+                linecolor = '#0033ff';
+            }
+            params.linecolor = linecolor;
         } else {
             params.komm =  municipalities.getSelected();
         }

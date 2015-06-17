@@ -4,10 +4,7 @@ var KR = this.KR || {};
 
 KR.setupMap = function (api, datasetIds, options) {
     'use strict';
-
     options = options || {};
-
-
 
     //template used for sidebar
     var popupTemplate = _.template($('#popup_template').html());
@@ -99,7 +96,11 @@ KR.setupMap = function (api, datasetIds, options) {
         gotBounds(options.bbox);
     } else if (options.line) {
         parseLine(options.line, function (line) {
-            var layer = L.geoJson(line).addTo(map);
+            var lineOptions = {};
+            if (options.linecolor) {
+                lineOptions.color = options.linecolor;
+            }
+            var layer = L.geoJson(line, lineOptions).addTo(map);
             var bounds = layer.getBounds().toBBoxString();
             gotBounds(bounds, line);
         });
