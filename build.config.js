@@ -470,6 +470,91 @@ module.exports = {
         ]
     },
     {
+        key: 'config',
+        name: 'Konfigurering, eksempel',
+        scripts: [
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
+          'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
+          'bower_components/turf/turf.min.js',
+          'bower_components/togeojson/togeojson.js',
+          'common/js/L.Knreise.MarkerClusterGroup.js',
+          'common/js/L.Knreise.GeoJSON.js',
+          'bower_components/CryptoJS/build/components/core.js',
+          'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/audiojs/audiojs/audio.min.js',
+          'bower_components/video.js/dist/video-js/video.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'common/js/L.Knreise.Control.Datasets.js',
+          'common/js/L.Knreise.Icon.js',
+          'common/js/DatasetLoader.js',
+          'bower_components/L.EasyButton/easy-button.js',
+          'common/js/L.Knreise.LocateButton.js',
+          'common/js/datasets.js',
+          'common/js/setupMap.js'
+        ],
+        css: [
+          'bower_components/leaflet/dist/leaflet.css',
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+          'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
+          'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
+          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
+          'bower_components/video.js/dist/video-js/video-js.css',
+          'common/css/fullscreenmap.css',
+          'common/css/markers.css',
+          'common/css/L.Knreise.Control.Sidebar.css',
+          'common/css/L.Knreise.Control.Datasets.css',
+          'common/css/audiojs.css'
+        ],
+        templates: [
+          'popup',
+          'verneomraader',
+          'kulturminne',
+          'musit',
+          'digitalt_museum',
+          'digitalt_fortalt',
+          'list_item',
+          'fangstgrop',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error',
+          'ra_sparql',
+          'flickr'
+        ]
+    },
+    {
+        key: 'generator',
+        name: 'Generering',
+        scripts: [
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'common/js/datasets.js'
+        ],
+        css: [
+          'bower_components/bootstrap/dist/css/bootstrap.min.css'
+        ],
+        templates: [
+          'popup',
+          'verneomraader',
+          'kulturminne',
+          'musit',
+          'digitalt_museum',
+          'digitalt_fortalt',
+          'list_item',
+          'fangstgrop',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error',
+          'ra_sparql',
+          'flickr'
+        ]
+    },
+    {
         key: 'style',
         name: 'Stiler',
         scripts: [

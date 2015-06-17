@@ -276,4 +276,13 @@ KR.Util = KR.Util || {};
         };
     }
 
+    ns.parseQueryString = function (qs) {
+        var queryString = decodeURIComponent(qs);
+        return _.reduce(queryString.replace('?', '').split('&'), function (acc, qs) {
+            qs = qs.split('=');
+            acc[qs[0]] = qs[1];
+            return acc;
+        }, {});
+    };
+
 }(KR.Util));
