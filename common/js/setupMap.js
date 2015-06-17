@@ -7,6 +7,13 @@ KR.setupMap = function (api, datasets, options) {
 
     options = options || {};
 
+    if (options.allstatic) {
+        datasets = _.map(datasets, function (dataset) {
+            dataset.isStatic = true;
+            return dataset;
+        });
+    }
+
     //template used for sidebar
     var popupTemplate = _.template($('#popup_template').html());
     var listElementTemplate = _.template($('#list_item_template').html());
@@ -43,8 +50,20 @@ KR.setupMap = function (api, datasets, options) {
 
     var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
 
-    function gotBounds(bbox) {
 
+    function parseLine(line, callback) {
+        if (line.indexOf('utno/') === 0) {
+            var id = line.replace('utno/', '');
+            var tur = {
+                api: 'utno',
+                id: id,
+                type: 'gpx'
+            };
+            api.getData(tur, callback);
+        }
+    }
+
+    function gotBounds(bbox) {
         var bounds = L.latLngBounds.fromBBoxString(bbox);
         map.fitBounds(bounds);
         var layers = datasetLoader.loadDatasets(datasets);
@@ -60,7 +79,11 @@ KR.setupMap = function (api, datasets, options) {
         api.getMunicipalityBounds(options.komm, gotBounds);
     } else if (options.bbox) {
         gotBounds(options.bbox);
-    } else {
-        alert('Missing parameters!');
+    } else if (options.line) {
+        parseLine(options.line, function (line) {
+            var layer = L.geoJson(line).addTo(map);
+            var bounds = layer.getBounds().toBBoxString()
+            gotBounds(bounds);
+        });
     }
 };

@@ -59,8 +59,7 @@ KR.Config = KR.Config || {};
                     dataset: 'Kulturminnesok'
                 },
                 template: _.template($('#kulturminne_template').html()),
-                isStatic: false,
-                minZoom: 12
+                isStatic: false
             },
             'artsdatabanken': {
                 name: 'Artsobservasjoner',
@@ -100,6 +99,29 @@ KR.Config = KR.Config || {};
                 },
                 template: _.template($('#flickr_template').html()),
                 style: {fillcolor: '#D252B9'}
+            },
+            'historie': {
+                grouped: true,
+                name: 'Historie',
+                datasets: [
+                    {
+                        name: 'MUSIT',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'MUSIT'
+                        },
+                        template: _.template($('#musit_template').html())
+                    },
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu'
+                        },
+                        template: _.template($('#digitalt_museum_template').html())
+                    }
+                ],
+                isStatic: false
             }
         };
     };

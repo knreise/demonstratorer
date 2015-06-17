@@ -477,6 +477,7 @@ module.exports = {
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
           'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
           'bower_components/turf/turf.min.js',
+          'bower_components/togeojson/togeojson.js',
           'common/js/L.Knreise.MarkerClusterGroup.js',
           'common/js/L.Knreise.GeoJSON.js',
           'bower_components/CryptoJS/build/components/core.js',

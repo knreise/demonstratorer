@@ -73,7 +73,20 @@ function buildDatasetList(element) {
     };
 }
 
+
 function setupClick(element, municipalities, datasets, layer) {
+
+            var lineElement = $('#line');
+        lineElement.keyup(function () {
+            console.log(lineElement.val());
+            if (lineElement.val() !== '') {
+                $('#municipalities').attr('disabled', 'disabled');
+            } else {
+                $('#municipalities').removeAttr('disabled');
+            }
+        })
+
+
     element.on('click', function () {
         var selectedDatasets = datasets.getSelected().join(',');
 
@@ -82,12 +95,20 @@ function setupClick(element, municipalities, datasets, layer) {
             return;
         }
 
-        var params = KR.Util.createQueryParameterString({
-            komm: municipalities.getSelected(),
+        var params = {
             layer: layer.getSelected(),
             datasets: selectedDatasets
-        });
+        };
 
+        var line = lineElement.val();
+        if (line !== '') {
+            params.line = line;
+            params.allstatic = true;
+        } else {
+            params.komm =  municipalities.getSelected();
+        }
+
+        params = KR.Util.createQueryParameterString(params);
         var path = window.location.pathname;
         var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + params;
 
