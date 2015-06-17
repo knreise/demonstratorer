@@ -17,4 +17,4 @@ var api = new KR.API({
 });
 
 
-KR.setupMap(api, qs.datasets.split(','), qs);
+KR.setupMapFromUrl(api, qs.datasets.split(','), qs);
