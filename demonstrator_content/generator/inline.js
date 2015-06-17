@@ -20,7 +20,9 @@ function buildMunicipalityList(element) {
     var dataset = {
         api: 'cartodb',
         query: 'SELECT komm, navn FROM kommuner ORDER BY navn',
-        mapper: function (data) {return data.rows; }
+        mapper: function (data) {
+            return data.rows;
+        }
     };
 
     api.getData(dataset, function (response) {
@@ -76,16 +78,15 @@ function buildDatasetList(element) {
 
 function setupClick(element, municipalities, datasets, layer) {
 
-            var lineElement = $('#line');
-        lineElement.keyup(function () {
-            console.log(lineElement.val());
-            if (lineElement.val() !== '') {
-                $('#municipalities').attr('disabled', 'disabled');
-            } else {
-                $('#municipalities').removeAttr('disabled');
-            }
-        })
+    var lineElement = $('#line');
+    lineElement.keyup(function () {
 
+        if (lineElement.val() !== '') {
+            $('#municipalities').attr('disabled', 'disabled');
+        } else {
+            $('#municipalities').removeAttr('disabled');
+        }
+    });
 
     element.on('click', function () {
         var selectedDatasets = datasets.getSelected().join(',');
@@ -104,6 +105,11 @@ function setupClick(element, municipalities, datasets, layer) {
         if (line !== '') {
             params.line = line;
             params.allstatic = true;
+
+            var buffer = $('#buffer').val();
+            if (buffer !== '') {
+                params.buffer = buffer;
+            }
         } else {
             params.komm =  municipalities.getSelected();
         }

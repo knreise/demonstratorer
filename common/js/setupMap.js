@@ -59,7 +59,18 @@ KR.setupMap = function (api, datasetIds, options) {
     }
 
 
-    function addDatasets(bbox) {
+    function addDatasets(bbox, line) {
+
+        function filter(features) {
+            if (line && options.buffer) {
+
+                var buffered = turf.buffer(line, options.buffer, 'kilometers');
+                var within = turf.within(features, buffered);
+                return within;
+            }
+            return features;
+        }
+
         var datasets = KR.Config.getDatasets(datasetIds, api, options.komm, bbox);
         if (options.allstatic) {
             datasets = _.map(datasets, function (dataset) {
@@ -67,14 +78,14 @@ KR.setupMap = function (api, datasetIds, options) {
                 return dataset;
             });
         }
-        var layers = datasetLoader.loadDatasets(datasets);
+        var layers = datasetLoader.loadDatasets(datasets, null, filter);
         L.control.datasets(layers).addTo(map);
     }
 
-    function gotBounds(bbox) {
+    function gotBounds(bbox, line) {
         var bounds = L.latLngBounds.fromBBoxString(bbox);
         map.fitBounds(bounds);
-        addDatasets(bbox);
+        addDatasets(bbox, line);
     }
 
     if (!datasetIds.length) {
@@ -90,7 +101,9 @@ KR.setupMap = function (api, datasetIds, options) {
         parseLine(options.line, function (line) {
             var layer = L.geoJson(line).addTo(map);
             var bounds = layer.getBounds().toBBoxString();
-            gotBounds(bounds);
+            gotBounds(bounds, line);
         });
+    } else {
+        alert('Missing parameters!');
     }
 };
