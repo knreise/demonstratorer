@@ -133,6 +133,22 @@ KR.Config = KR.Config || {};
                     }
                 ],
                 isStatic: false
+            },
+            'fangstlokaliteter': {
+                name: 'Fangstlokaliteter',
+                dataset_name_override: 'fangstlokaliteter',
+                dataset: {
+                    api: 'norvegiana',
+                    dataset: 'Kulturminnesok',
+                    query: 'delving_title:Fangstlokalitet'
+                },
+                template: _.template($('#kulturminne_template').html()),
+                style: {
+                    fillcolor: '#436978',
+                    circle: true
+                },
+                cluster: false,
+                visible: true
             }
         };
     };
