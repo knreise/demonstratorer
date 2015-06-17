@@ -21,7 +21,7 @@ var api = new KR.API({
         user: 'knreise'
     },
     flickr: {
-        apikey: '65a0d78867596f8ccfeb9718f4d915d0'
+        apikey: 'ab1f664476dabf83a289735f97a6d56c'
     }
 });
 
