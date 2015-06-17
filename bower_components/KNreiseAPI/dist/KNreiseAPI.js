@@ -34,11 +34,14 @@ KR.Util = {};
             url: url,
             success: function (response) {
                 if (parser) {
+                    var parsed;
                     try {
-                        callback(parser(response, errorCallback));
+                        parsed = parser(response, errorCallback);
                     } catch (e) {
                         ns.handleError(errorCallback, e.message, response);
+                        return;
                     }
+                    callback(parsed);
                 } else {
                     callback(response);
                 }
@@ -161,7 +164,9 @@ KR.ArcgisAPI = function (BASE_URL) {
         }
         var layer = dataset.layer;
         var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, _parseResponse, callback, errorCallback);
+        KR.Util.sendRequest(url, null, function (response) {
+             _parseArcGisResponse(response, callback, errorCallback);
+         }, errorCallback);
     }
 
     return {
@@ -850,6 +855,13 @@ KR.SparqlAPI = function (BASE_URL) {
                 acc[key] = item[key].value;
                 return acc;
             }, {});
+
+            if (!attrs.lokimg) {
+                attrs.lokimg = false;
+            }
+            attrs.thumbnail = attrs.lokimg;
+            attrs.title = attrs.name;
+
             if (_.has(item, 'punkt')) {
                 return KR.Util.createGeoJSONFeatureFromGeom(
                     _parseGeom(item.punkt),
@@ -868,51 +880,32 @@ KR.SparqlAPI = function (BASE_URL) {
     }
 
     function _createQuery(dataset) {
-        var filter;
-        if (dataset.filter) {
-            filter = dataset.filter;
-        } else if (dataset.fylke) {
-            filter = 'regex(?kommune, "^.*' + dataset.fylke + '[1-9]{2}")';
+
+        var query = 'select ?id ?name ?beskrivelse ?loklab ?punkt ?lokimg ?kommune {' +
+        '?id a ?type .' +
+        '?id rdfs:label ?name .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori .' +
+        '?lokalitetskategori rdfs:label ?loklab .' +
+        '?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt .';
+        if (dataset.fylke) {
+            query += ' FILTER regex(?kommune, "^.*' + dataset.fylke + '[1-9]{2}")';
+        } else if (dataset.kommune) {
+            query += ' FILTER (str(?kommune) = "https://data.kulturminne.no/difi/geo/kommune/' + dataset.kommune + '")';
+        } else if (dataset.filter) {
+            query += dataset.filter;
         } else {
             throw new Error('not enough parameters to api!');
         }
 
+        query += 'optional {' +
+        '?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+        '?picture <https://data.kulturminne.no/schema/source-link> ?link ' +
+        'BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
+        'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg)' +'}' +
+        '}';
 
-        var fields = [
-            '?lokid',
-            '?label',
-            '?beskrivelse',
-            '?loklab',
-            '?lokimg'
-        ];
-
-        var where = [
-            '?lok a <https://data.kulturminne.no/askeladden/schema/Lokalitet> .',
-            '?lok <http://www.w3.org/2000/01/rdf-schema#label> ?label .',
-            '?lok <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .',
-            '?lok <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse .',
-            '?lok <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori.'
-        ];
-
-        if (dataset.geomType === 'point') {
-            fields.push('?punkt');
-            where.push('?lok <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt .');
-        } else if (dataset.geomType === 'polygon') {
-            fields.push('?omraade');
-            where.push('?lok <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?omraade .');
-        } else {
-            throw new Error('Invalid geomType: ' + dataset.geomType);
-        }
-
-        var query = 'SELECT ' + fields.join(' ') +
-                    ' where {' +
-                    where.join('\n') +
-                    '?lokalitetskategori rdfs:label ?loklab .' +
-                    'FILTER ' + filter +
-                    'BIND(REPLACE(STR(?kommune), "http://psi.datanav.info/difi/geo/kommune/", "") AS ?kommuneid)' +
-                    'BIND(REPLACE(STR(?lok), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
-                    'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg)' +
-                    '}';
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
         }
@@ -937,7 +930,6 @@ KR.SparqlAPI = function (BASE_URL) {
         getData: getData
     };
 };
-
 /*global */
 
 var KR = this.KR || {};
