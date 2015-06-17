@@ -1,3 +1,14 @@
+var municipalityTemplate = _.template('<option value="<%= komm %>"><%= navn %></option>');
+var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
+var datasetTemplate = _.template(
+    '<div class="checkbox">' +
+        '<label>' +
+        '<input type="checkbox" name="datasets" id="<%= key %>" value="<%= key %>">' +
+        '<%= name %>' +
+        '</label>' +
+    '</div>'
+);
+
 var api = new KR.API({
     cartodb: {
         apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
@@ -5,55 +16,86 @@ var api = new KR.API({
     }
 });
 
+function buildMunicipalityList(element) {
+    var dataset = {
+        api: 'cartodb',
+        query: 'SELECT komm, navn FROM kommuner ORDER BY navn',
+        mapper: function (data) {return data.rows; }
+    };
 
-var dataset = {
-    api: 'cartodb',
-    query: 'SELECT komm, navn FROM kommuner ORDER BY navn',
-    mapper: function (data) {return data.rows; }
-};
-
-api.getData(dataset, function (response) {
-    var options = _.map(response, function (komm) {
-        return $('<option value="' + komm.komm + '">' + komm.navn + '</option>');
+    api.getData(dataset, function (response) {
+        element.html(_.map(response, municipalityTemplate));
     });
-    $('#municipalities').html(options);
-});
+
+    return {
+        getSelected: function () {
+            return element.val();
+        }
+    };
+}
 
 
-var datasetConfig = getDatasetList(api, null);
+function buildLayerList(element) {
+    var selected = 'norges_grunnkart_graatone';
 
-var radios = _.map(datasetConfig, function (value, key) {
+    var options = _.chain(L.tileLayer.kartverket.getLayers())
+        .map(function (layer) {
+            return {id: layer, selected: layer === selected};
+        })
+        .map(layerTemplate)
+        .value();
 
-    var name = value.name || key;
+    element.html(options);
 
-    return $('<div class="checkbox">' +
-        '<label>' +
-        '<input type="checkbox" name="datasets" id="' + key + '" value="' + key + '">' +
-        name +
-        '</label>' +
-    '</div>');
-});
+    return {
+        getSelected: function () {
+            return element.val();
+        }
+    };
+}
 
-$('#datasets').html(radios);
+function buildDatasetList(element) {
 
-$('#generate').on('click', function () {
+    var datasetConfig = KR.Config.getDatasetList(api, null);
+    var radios = _.map(datasetConfig, function (value, key) {
+        var name = value.name || key;
+        return datasetTemplate({name: name, key: key});
+    });
 
-    var komm = $('#municipalities').val();
-    var checkedVals = $('#datasets input[type=checkbox]:checked').map(function() {
-        return this.value;
-    }).get();
+    element.html(radios);
 
-    if (checkedVals.length) {
+    return {
+        getSelected: function () {
+            return element.find('input[type=checkbox]:checked').map(function () {
+                return this.value;
+            }).get();
+        }
+    };
+}
+
+function setupClick(element, municipalities, datasets, layer) {
+    element.on('click', function () {
+        var selectedDatasets = datasets.getSelected().join(',');
+
+        if (!selectedDatasets.length) {
+            $('#link').html('');
+            return;
+        }
+
         var params = KR.Util.createQueryParameterString({
-            komm: komm,
-            datasets: checkedVals.join(',')
+            komm: municipalities.getSelected(),
+            layer: layer.getSelected(),
+            datasets: selectedDatasets
         });
 
         var path = window.location.pathname;
         var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + params;
 
         $('#link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
-    } else {
-        $('#link').html('');
-    }
-});
+    });
+}
+
+var municipalities = buildMunicipalityList($('#municipalities'));
+var datasets = buildDatasetList($('#datasets'));
+var layer = buildLayerList($('#layers'));
+setupClick($('#generate'), municipalities, datasets, layer);

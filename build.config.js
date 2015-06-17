@@ -506,7 +506,8 @@ module.exports = {
           'common/js/DatasetLoader.js',
           'bower_components/L.EasyButton/easy-button.js',
           'common/js/L.Knreise.LocateButton.js',
-          'common/js/datasets.js'
+          'common/js/datasets.js',
+          'common/js/setupMap.js'
         ],
         css: [
           'bower_components/leaflet/dist/leaflet.css',
@@ -544,6 +545,7 @@ module.exports = {
         key: 'generator',
         name: 'Generering',
         scripts: [
+          'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'common/js/datasets.js'
         ],
         css: [
