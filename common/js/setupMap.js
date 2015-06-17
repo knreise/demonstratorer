@@ -2,17 +2,12 @@
 
 var KR = this.KR || {};
 
-KR.setupMap = function (api, datasets, options) {
+KR.setupMap = function (api, datasetIds, options) {
     'use strict';
 
     options = options || {};
 
-    if (options.allstatic) {
-        datasets = _.map(datasets, function (dataset) {
-            dataset.isStatic = true;
-            return dataset;
-        });
-    }
+
 
     //template used for sidebar
     var popupTemplate = _.template($('#popup_template').html());
@@ -24,9 +19,9 @@ KR.setupMap = function (api, datasets, options) {
     //create the map
     var map = L.map('map');
 
-    var layer = options.layer || 'norges_grunnkart_graatone';
+    var baseLayer = options.layer || 'norges_grunnkart_graatone';
     //add a background layer from kartverket
-    L.tileLayer.kartverket(layer).addTo(map);
+    L.tileLayer.kartverket(baseLayer).addTo(map);
 
     //the sidebar, used for displaying information
     var sidebar = L.Knreise.Control.sidebar('sidebar', {
@@ -63,14 +58,26 @@ KR.setupMap = function (api, datasets, options) {
         }
     }
 
-    function gotBounds(bbox) {
-        var bounds = L.latLngBounds.fromBBoxString(bbox);
-        map.fitBounds(bounds);
+
+    function addDatasets(bbox) {
+        var datasets = KR.Config.getDatasets(datasetIds, api, options.komm, bbox);
+        if (options.allstatic) {
+            datasets = _.map(datasets, function (dataset) {
+                dataset.isStatic = true;
+                return dataset;
+            });
+        }
         var layers = datasetLoader.loadDatasets(datasets);
         L.control.datasets(layers).addTo(map);
     }
 
-    if (!datasets.length) {
+    function gotBounds(bbox) {
+        var bounds = L.latLngBounds.fromBBoxString(bbox);
+        map.fitBounds(bounds);
+        addDatasets(bbox);
+    }
+
+    if (!datasetIds.length) {
         alert('No dataset specified!');
         return;
     }
@@ -82,7 +89,7 @@ KR.setupMap = function (api, datasets, options) {
     } else if (options.line) {
         parseLine(options.line, function (line) {
             var layer = L.geoJson(line).addTo(map);
-            var bounds = layer.getBounds().toBBoxString()
+            var bounds = layer.getBounds().toBBoxString();
             gotBounds(bounds);
         });
     }

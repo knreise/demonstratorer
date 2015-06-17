@@ -524,7 +524,8 @@ module.exports = {
           'footer',
           'error',
           'ra_sparql',
-          'flickr'
+          'flickr',
+          'husmann'
         ]
     },
     {
@@ -551,7 +552,8 @@ module.exports = {
           'footer',
           'error',
           'ra_sparql',
-          'flickr'
+          'flickr',
+          'husmann'
         ]
     },
     {

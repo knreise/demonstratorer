@@ -51,7 +51,7 @@ KR.Config = KR.Config || {};
                 template: _.template($('#digitalt_museum_template').html()),
                 isStatic: false
             },
-            'kulturminnesok': {
+            'kulturminnesok_norvegiana': {
                 name: 'Kulturminner',
                 id: 'Kulturminnesok',
                 dataset: {
@@ -78,7 +78,7 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13
             },
-            'kulturminnedata': {
+            'kulturminnesok_sparql': {
                 name: 'Riksantikvaren',
                 provider: 'Riksantikvaren',
                 dataset: {
@@ -87,6 +87,17 @@ KR.Config = KR.Config || {};
                 },
                 template: _.template($('#ra_sparql_template').html()),
                 bbox: false,
+                style: {fillcolor: '#728224'}
+            },
+            'husmann': {
+                name: 'Kulturminner (Lokaliteter)',
+                provider: 'Riksantikvaren',
+                dataset: {
+                    api: 'kulturminnedata',
+                    layer: 1
+                },
+                template: _.template($('#husmann_template').html()),
+                bbox: true,
                 style: {fillcolor: '#728224'}
             },
             'trd_byarkiv': {
@@ -127,6 +138,7 @@ KR.Config = KR.Config || {};
     };
 
     ns.getDatasets = function (ids, api, komm) {
+
         var datasetConfig = ns.getDatasetList(api, komm);
         return _.chain(ids)
             .map(function (dataset) {

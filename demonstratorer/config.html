@@ -247,6 +247,15 @@
 </script>
 
 
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -296,11 +305,7 @@ var api = new KR.API({
     }
 });
 
-var datasets = KR.Config.getDatasets(qs.datasets.split(','), api, qs.komm);
-
-
-
-KR.setupMap(api, datasets, qs);
+KR.setupMap(api, qs.datasets.split(','), qs);
 
             }());
         </script>

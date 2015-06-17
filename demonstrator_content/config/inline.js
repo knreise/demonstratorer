@@ -11,8 +11,4 @@ var api = new KR.API({
     }
 });
 
-var datasets = KR.Config.getDatasets(qs.datasets.split(','), api, qs.komm);
-
-
-
-KR.setupMap(api, datasets, qs);
+KR.setupMap(api, qs.datasets.split(','), qs);
