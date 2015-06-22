@@ -531,6 +531,7 @@ module.exports = {
           'ra_sparql',
           'flickr',
           'husmann',
+          'folketelling',
           'brukerminne'
         ]
     },
@@ -562,6 +563,7 @@ module.exports = {
           'ra_sparql',
           'flickr',
           'husmann',
+          'folketelling',
           'brukerminne'
         ]
     },
