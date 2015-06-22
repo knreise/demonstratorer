@@ -13,7 +13,7 @@
     </head>
     <body>
 
-
+<h1>Generer demonstrator</h1>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
@@ -26,6 +26,10 @@
             <h3>Linje</h3>
             <input id="line" type="text" class="form-control" placeholder="Linje">
             <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
+            <h5>Buffer (km)</h5>
+            <input id="buffer" type="number" class="form-control" value="2">
+            <h5>Linjefarge (hex)</h5>
+            <input id="linecolor" type="text" class="form-control" value="#0033ff">
         </div>
     </div>
     <div class="row">
@@ -273,6 +277,20 @@
 </script>
 
 
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="brukerminne_template">
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -312,7 +330,9 @@ function buildMunicipalityList(element) {
     var dataset = {
         api: 'cartodb',
         query: 'SELECT komm, navn FROM kommuner ORDER BY navn',
-        mapper: function (data) {return data.rows; }
+        mapper: function (data) {
+            return data.rows;
+        }
     };
 
     api.getData(dataset, function (response) {
@@ -368,16 +388,15 @@ function buildDatasetList(element) {
 
 function setupClick(element, municipalities, datasets, layer) {
 
-            var lineElement = $('#line');
-        lineElement.keyup(function () {
-            console.log(lineElement.val());
-            if (lineElement.val() !== '') {
-                $('#municipalities').attr('disabled', 'disabled');
-            } else {
-                $('#municipalities').removeAttr('disabled');
-            }
-        })
+    var lineElement = $('#line');
+    lineElement.keyup(function () {
 
+        if (lineElement.val() !== '') {
+            $('#municipalities').attr('disabled', 'disabled');
+        } else {
+            $('#municipalities').removeAttr('disabled');
+        }
+    });
 
     element.on('click', function () {
         var selectedDatasets = datasets.getSelected().join(',');
@@ -396,6 +415,19 @@ function setupClick(element, municipalities, datasets, layer) {
         if (line !== '') {
             params.line = line;
             params.allstatic = true;
+
+
+
+            var buffer = $('#buffer').val();
+            if (buffer !== '') {
+                params.buffer = buffer;
+            }
+
+            var linecolor = $('#linecolor').val();
+            if (buffer === '') {
+                linecolor = '#0033ff';
+            }
+            params.linecolor = linecolor;
         } else {
             params.komm =  municipalities.getSelected();
         }

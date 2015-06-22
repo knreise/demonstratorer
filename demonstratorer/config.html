@@ -247,6 +247,20 @@
 </script>
 
 
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="brukerminne_template">
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -285,6 +299,11 @@
 
                 var qs = KR.Util.parseQueryString(window.location.search);
 
+if (!qs) {
+    alert("Missing parameters!");
+    return;
+}
+
 //set up an instance of the Norvegiana API
 var api = new KR.API({
     cartodb: {
@@ -296,11 +315,8 @@ var api = new KR.API({
     }
 });
 
-var datasets = KR.Config.getDatasets(qs.datasets.split(','), api, qs.komm);
 
-
-
-KR.setupMap(api, datasets, qs);
+KR.setupMapFromUrl(api, qs.datasets.split(','), qs);
 
             }());
         </script>

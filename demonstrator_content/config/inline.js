@@ -1,5 +1,10 @@
 var qs = KR.Util.parseQueryString(window.location.search);
 
+if (!qs) {
+    alert("Missing parameters!");
+    return;
+}
+
 //set up an instance of the Norvegiana API
 var api = new KR.API({
     cartodb: {
@@ -11,8 +16,5 @@ var api = new KR.API({
     }
 });
 
-var datasets = KR.Config.getDatasets(qs.datasets.split(','), api, qs.komm);
 
-
-
-KR.setupMap(api, datasets, qs);
+KR.setupMapFromUrl(api, qs.datasets.split(','), qs);

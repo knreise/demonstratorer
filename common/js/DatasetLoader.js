@@ -161,7 +161,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
 
-    function _addBboxDataset(dataset, initBounds) {
+    function _addBboxDataset(dataset, initBounds, filter) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
 
@@ -214,6 +214,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     dataset.dataset,
                     newBounds,
                     function (geoJson) {
+                        if (filter) {
+                            geoJson = filter(geoJson);
+                        }
                         var geoJSONLayer;
                         if (dataset.cluster) {
                             geoJSONLayer = _createGeoJSONLayer(
@@ -263,13 +266,16 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
-    function _addFullDataset(dataset) {
+    function _addFullDataset(dataset, filter) {
         var mapper = _mapper(dataset);
         var vectorLayer = _createVectorLayer(dataset, map);
 
         api.getData(
             dataset.dataset,
             function (geoJson) {
+                if (filter) {
+                    geoJson = filter(geoJson);
+                }
                 var geoJSONLayer = _createGeoJSONLayer(
                     mapper(geoJson),
                     dataset
@@ -298,7 +304,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         }
     }
 
-    function loadDatasets(datasets, bounds) {
+    function loadDatasets(datasets, bounds, filter) {
         var res = _.map(datasets, function (dataset) {
             dataset = _.extend({}, _defaults, dataset);
             //copy properties from parent
@@ -321,9 +327,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 dataset.isStatic = false;
             }
             if (dataset.bbox) {
-                return _addBboxDataset(dataset, bounds);
+                return _addBboxDataset(dataset, bounds, filter);
             }
-            return {layer: _addFullDataset(dataset)};
+            return {layer: _addFullDataset(dataset, filter)};
         });
         reloads = _.pluck(res, 'reload');
         return _.pluck(res, 'layer');

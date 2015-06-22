@@ -36,7 +36,8 @@ module.exports = {
           'common/js/L.Knreise.Icon.js',
           'common/js/DatasetLoader.js',
           'bower_components/L.EasyButton/easy-button.js',
-          'common/js/L.Knreise.LocateButton.js'
+          'common/js/L.Knreise.LocateButton.js',
+          'common/js/setupMap.js'
         ],
         css: [
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
@@ -88,7 +89,8 @@ module.exports = {
           'common/js/L.Knreise.Icon.js',
           'common/js/DatasetLoader.js',
           'bower_components/L.EasyButton/easy-button.js',
-          'common/js/L.Knreise.LocateButton.js'
+          'common/js/L.Knreise.LocateButton.js',
+          'common/js/setupMap.js'
         ],
         css: [
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
@@ -524,7 +526,9 @@ module.exports = {
           'footer',
           'error',
           'ra_sparql',
-          'flickr'
+          'flickr',
+          'husmann',
+          'brukerminne'
         ]
     },
     {
@@ -551,7 +555,9 @@ module.exports = {
           'footer',
           'error',
           'ra_sparql',
-          'flickr'
+          'flickr',
+          'husmann',
+          'brukerminne'
         ]
     },
     {

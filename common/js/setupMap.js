@@ -1,89 +1,134 @@
-/*global L:false, alert:false, KR:false */
+/*global L:false, alert:false, KR:false, turf:false */
 
 var KR = this.KR || {};
-
-KR.setupMap = function (api, datasets, options) {
+(function (ns) {
     'use strict';
 
-    options = options || {};
+    function _setupSidebar(map) {
+        var popupTemplate = _.template($('#popup_template').html());
+        var listElementTemplate = _.template($('#list_item_template').html());
+        var markerTemplate = _.template($('#marker_template').html());
+        var thumbnailTemplate = _.template($('#thumbnail_template').html());
+        var footerTemplate = _.template($('#footer_template').html());
 
-    if (options.allstatic) {
-        datasets = _.map(datasets, function (dataset) {
-            dataset.isStatic = true;
-            return dataset;
+        //the sidebar, used for displaying information
+        var sidebar = L.Knreise.Control.sidebar('sidebar', {
+            position: 'left',
+            template: popupTemplate,
+            listElementTemplate: listElementTemplate,
+            markerTemplate: markerTemplate,
+            thumbnailTemplate: thumbnailTemplate,
+            footerTemplate: footerTemplate
+        });
+        map.addControl(sidebar);
+        return sidebar;
+    }
+
+
+    function _createMap(options) {
+        //create the map
+        var map = L.map('map');
+
+        var baseLayer = options.layer || 'norges_grunnkart_graatone';
+        //add a background layer from kartverket
+        L.tileLayer.kartverket(baseLayer).addTo(map);
+
+        L.Knreise.LocateButton().addTo(map);
+        return map;
+    }
+
+    function _loadDatasets(api, datasets, fromUrl, komm) {
+        if (fromUrl) {
+            datasets = KR.Config.getDatasets(datasets, api, komm);
+        }
+        return datasets;
+    }
+
+
+    function _municipalityHandler(options, api, datasets, fromUrl, callback) {
+        api.getMunicipalityBounds(options.komm, function (bbox) {
+            datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
+            var bounds = L.latLngBounds.fromBBoxString(bbox);
+            callback(bounds, datasets);
         });
     }
 
-    //template used for sidebar
-    var popupTemplate = _.template($('#popup_template').html());
-    var listElementTemplate = _.template($('#list_item_template').html());
-    var markerTemplate = _.template($('#marker_template').html());
-    var thumbnailTemplate = _.template($('#thumbnail_template').html());
-    var footerTemplate = _.template($('#footer_template').html());
+    function _bboxHandler(options, api, datasets, fromUrl, callback) {
+        datasets = _loadDatasets(api, datasets, fromUrl);
+        var bounds = L.latLngBounds.fromBBoxString(options.bbox);
+        callback(bounds, datasets);
+    }
 
-    //create the map
-    var map = L.map('map');
+    function _lineHandler(options, api, datasets, fromUrl, callback) {
+        if (options.line.indexOf('utno/') !== 0) {
+            return;
+        }
+        var id = options.line.replace('utno/', '');
+        var lineData = {
+            api: 'utno',
+            id: id,
+            type: 'gpx'
+        };
+        api.getData(lineData, function (line) {
+            var lineOptions = {};
+            if (options.linecolor) {
+                lineOptions.color = options.linecolor;
+            }
+            var lineLayer = L.geoJson(line, lineOptions);
+            var bounds = lineLayer.getBounds();
+            datasets = _loadDatasets(api, datasets, fromUrl);
 
-    var layer = options.layer || 'norges_grunnkart_graatone';
-    //add a background layer from kartverket
-    L.tileLayer.kartverket(layer).addTo(map);
+            function filter(features) {
+                if (line && options.buffer) {
+                    var buffered = turf.buffer(line, options.buffer, 'kilometers');
+                    var within = turf.within(features, buffered);
+                    return within;
+                }
+                return features;
+            }
 
-    //the sidebar, used for displaying information
-    var sidebar = L.Knreise.Control.sidebar('sidebar', {
-        position: 'left',
-        template: popupTemplate,
-        listElementTemplate: listElementTemplate,
-        markerTemplate: markerTemplate,
-        thumbnailTemplate: thumbnailTemplate,
-        footerTemplate: footerTemplate
-    });
-    map.addControl(sidebar);
+            callback(bounds, datasets, filter, lineLayer);
+        });
+    }
 
-    L.Knreise.LocateButton().addTo(map);
 
-    KR.Config.templates = {
-        'Musit': _.template($('#musit_template').html()),
-        'DigitaltMuseum': _.template($('#digitalt_museum_template').html()),
+    ns.setupMap = function (api, datasetIds, options, fromUrl) {
+        options = options || {};
+
+        var map = _createMap(options);
+        var errorHandler = KR.errorHandler($('#error_template').html());
+        var sidebar = _setupSidebar(map);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
+
+        function showDatasets(bounds, datasets, filter, lineLayer) {
+            if (options.allstatic) {
+                datasets = _.map(datasets, function (dataset) {
+                    dataset.isStatic = true;
+                    return dataset;
+                });
+            }
+
+            map.fitBounds(bounds);
+            var layers = datasetLoader.loadDatasets(datasets, null, filter);
+            if (lineLayer) {
+                lineLayer.addTo(map);
+            }
+            L.control.datasets(layers).addTo(map);
+        }
+
+        if (options.komm) {
+            _municipalityHandler(options, api, datasetIds, fromUrl, showDatasets);
+        } else if (options.line) {
+            _lineHandler(options, api, datasetIds, fromUrl, showDatasets);
+        } else if (options.bbox) {
+            _bboxHandler(options, api, datasetIds, fromUrl, showDatasets);
+        } else {
+            alert('Missing parameters!');
+        }
     };
 
-    var errorHandler = KR.errorHandler($('#error_template').html());
+    ns.setupMapFromUrl = function (api, datasetIds, options) {
+        ns.setupMap(api, datasetIds, options, true);
+    };
 
-    var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
-
-
-    function parseLine(line, callback) {
-        if (line.indexOf('utno/') === 0) {
-            var id = line.replace('utno/', '');
-            var tur = {
-                api: 'utno',
-                id: id,
-                type: 'gpx'
-            };
-            api.getData(tur, callback);
-        }
-    }
-
-    function gotBounds(bbox) {
-        var bounds = L.latLngBounds.fromBBoxString(bbox);
-        map.fitBounds(bounds);
-        var layers = datasetLoader.loadDatasets(datasets);
-        L.control.datasets(layers).addTo(map);
-    }
-
-    if (!datasets.length) {
-        alert('No dataset specified!');
-        return;
-    }
-
-    if (options.komm) {
-        api.getMunicipalityBounds(options.komm, gotBounds);
-    } else if (options.bbox) {
-        gotBounds(options.bbox);
-    } else if (options.line) {
-        parseLine(options.line, function (line) {
-            var layer = L.geoJson(line).addTo(map);
-            var bounds = layer.getBounds().toBBoxString()
-            gotBounds(bounds);
-        });
-    }
-};
+}(KR));
