@@ -8,7 +8,7 @@ KR.SplashScreen = function (map, title, description) {
     function getShouldStayClosed() {
         var url = window.location.href;
         var name = 'remember_' + url + '=';
-        var ca = document.cookie.split(';');
+        var ca = document.cookie.split('; ');
         var l = _.find(ca, function (cookie) {
             return cookie.indexOf(name) === 0;
         });
@@ -75,7 +75,6 @@ KR.SplashScreen = function (map, title, description) {
 
 
     var shouldStayClosed = getShouldStayClosed();
-
     if (!shouldStayClosed) {
         if (_.isUndefined(shouldStayClosed)) {
             setShouldStayClosed(true);

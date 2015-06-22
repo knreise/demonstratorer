@@ -115,6 +115,29 @@ function buildLayerList(element) {
     };
 }
 
+function getTitle(element) {
+    var callback;
+
+    element.on('change', function (e) {
+        callback();
+    });
+
+    return {
+        getValues: function () {
+            var title = element.val();
+            if (title !== '') {
+                return {title: title};
+            }
+            return {};
+        },
+        callback: function (cb) {
+            callback = cb;
+            cb();
+        }
+    };
+}
+
+
 function buildDatasetList(element) {
     var callback;
     var datasetConfig = KR.Config.getDatasetList(api, null);
@@ -147,10 +170,16 @@ function buildDatasetList(element) {
 }
 
 
-function setupClick(element, limits, layer, datasets) {
+function setupClick(element, limits, layer, datasets, title) {
 
     var generateUrl = function () {
-        var params = _.extend({}, limits.getValues(), layer.getValues(), datasets.getValues());
+        var params = _.extend(
+            {},
+            datasets.getValues(),
+            limits.getValues(),
+            layer.getValues(),
+            title.getValues()
+        );
         var path = window.location.pathname;
         var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + KR.Util.createQueryParameterString(params);
         $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
@@ -161,14 +190,16 @@ function setupClick(element, limits, layer, datasets) {
     layer.callback(generateUrl);
     datasets.callback(generateUrl);
 
+    title.callback(generateUrl);
+
     element.on('click', generateUrl);
 }
 
 
 getMunicipalityList(function (municipalities) {
     var limits = buildLimitSelections(['municipality', 'line', 'bbox'], municipalities);
-
+    var title = getTitle($('#title'));
     var datasets = buildDatasetList($('#datasets'));
     var layer = buildLayerList($('#layers'));
-    setupClick($('#generate'), limits, layer, datasets);
+    setupClick($('#generate'), limits, layer, datasets, title);
 });
