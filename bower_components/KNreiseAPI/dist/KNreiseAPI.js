@@ -41,7 +41,9 @@ KR.Util = {};
                         ns.handleError(errorCallback, e.message, response);
                         return;
                     }
-                    callback(parsed);
+                    if (!_.isUndefined(parsed)) {
+                        callback(parsed);
+                    }
                 } else {
                     callback(response);
                 }

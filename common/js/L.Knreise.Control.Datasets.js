@@ -191,7 +191,7 @@ L.Control.Datasets = L.Control.extend({
         }
 
         var datasetId;
-        if (obj.dataset.cluster && obj.dataset.grouped) {
+        if (obj.dataset.grouped) {
             datasetId = obj.dataset.datasets[0].extras.datasetId;
         } else {
             datasetId = obj.dataset.extras.datasetId;

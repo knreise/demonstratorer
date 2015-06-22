@@ -54,8 +54,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             acc[key] = dataset[key];
             return acc;
         }, {});
-        _.each(dataset.datasets, function (dataset) {
-            _.extend(dataset, params);
+        dataset.datasets  = _.map(dataset.datasets, function (dataset) {
+            return _.extend({}, params, dataset);
         });
         return dataset;
     }
@@ -161,6 +161,15 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         return true;
     }
 
+    function _isStatic(dataset) {
+        if (dataset.datasets) {
+            return _.filter(dataset.datasets, function (dataset) {
+                return (dataset.isStatic === false);
+            }).length === 0;
+        }
+        return dataset.isStatic;
+    }
+
 
     function _addBboxDataset(dataset, initBounds, filter) {
         var vectorLayer = _createVectorLayer(dataset, map);
@@ -179,6 +188,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         }
 
         var _reloadData = function (e, bbox, forceVisible, callback) {
+            var first = !e;
 
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
@@ -200,6 +210,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
             var featurecollections = [];
             var finished = _.after(toLoad.length, function () {
+                vectorLayer.isLoading = false;
+                vectorLayer.fire('dataloadend');
                 if (dataset.cluster) {
                     _resetClusterData(vectorLayer, featurecollections);
                 } else {
@@ -209,57 +221,79 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     callback();
                 }
             });
+
+            vectorLayer.isLoading = true;
+            vectorLayer.fire('dataloadstart');
             _.each(toLoad, function (dataset) {
                 var mapper = _mapper(dataset);
-                vectorLayer.isLoading = true;
-                vectorLayer.fire('dataloadstart');
-                api.getBbox(
-                    dataset.dataset,
-                    newBounds,
-                    function (geoJson) {
-                        vectorLayer.isLoading = false;
-                        vectorLayer.fire('dataloadend');
-                        if (filter) {
-                            geoJson = filter(geoJson);
-                        }
-                        var geoJSONLayer;
-                        if (dataset.cluster) {
-                            geoJSONLayer = _createGeoJSONLayer(
-                                mapper(checkData(geoJson, vectorLayer)),
-                                dataset
-                            );
-                            dataset.geoJSONLayer = geoJSONLayer;
-                        } else {
-                            geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
-                        }
-                        featurecollections.push(geoJSONLayer);
-                        finished();
-                    },
-                    function (error) {
-                        vectorLayer.isLoading = false;
-                        vectorLayer.fire('dataloadend');
-                        if (error.statusText === 'abort') {
-                            return;
-                        }
-                        if (errorCallback) {
-                            errorCallback({
-                                dataset: dataset.name,
-                                error: error
-                            });
-                        }
+
+                function dataLoaded(geoJson) {
+
+                    if (dataset.isStatic && first) {
+                        dataset.geoJson = geoJson;
                     }
-                );
+                    if (filter) {
+                        geoJson = filter(geoJson);
+                    }
+                    var geoJSONLayer;
+                    if (dataset.cluster) {
+                        geoJSONLayer = _createGeoJSONLayer(
+                            mapper(checkData(geoJson, vectorLayer)),
+                            dataset
+                        );
+                        dataset.geoJSONLayer = geoJSONLayer;
+                    } else {
+                        geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                    }
+                    featurecollections.push(geoJSONLayer);
+                    finished();
+                }
+
+                function loadError(error) {
+                    finished();
+                    if (error.statusText === 'abort') {
+                        return;
+                    }
+                    if (errorCallback) {
+                        errorCallback({
+                            dataset: dataset.name,
+                            error: error
+                        });
+                    }
+                }
+
+                if (!first && dataset.isStatic) {
+                    dataLoaded(dataset.geoJson);
+                    return;
+                }
+
+
+                if (dataset.bbox) {
+                    api.getBbox(
+                        dataset.dataset,
+                        newBounds,
+                        dataLoaded,
+                        loadError
+                    );
+                } else {
+                    api.getData(
+                        dataset.dataset,
+                        dataLoaded,
+                        loadError
+                    );
+                }
             });
+
+
         };
 
         _reloadData(null, initBounds);
 
-        if (!dataset.isStatic || dataset.minZoom) {
+        if (!_isStatic(dataset) || dataset.minZoom) {
             map.on('moveend', _reloadData);
         }
-
         _setupToggle(vectorLayer, _reloadData);
-        //reload = _reloadData;
+
         return {layer: vectorLayer, reload: _reloadData};
     }
 
@@ -276,6 +310,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
+    /*
     function _addFullDataset(dataset, filter) {
         var mapper = _mapper(dataset);
         var vectorLayer = _createVectorLayer(dataset, map);
@@ -311,6 +346,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         );
         return vectorLayer;
     }
+    */
 
     function _setStyle(dataset) {
         var id = KR.Util.getDatasetId(dataset);
@@ -320,6 +356,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             KR.Style.setDatasetStyle(id, dataset.style);
         }
     }
+
+    function _addDataset(dataset, bounds, filter) {
+        return _addBboxDataset(dataset, bounds, filter);
+    }
+
 
     function loadDatasets(datasets, bounds, filter) {
         var res = _.map(datasets, function (dataset) {
@@ -343,10 +384,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            if (dataset.bbox) {
-                return _addBboxDataset(dataset, bounds, filter);
-            }
-            return {layer: _addFullDataset(dataset, filter)};
+            return _addDataset(dataset, bounds, filter);
         });
         reloads = _.pluck(res, 'reload');
         return _.pluck(res, 'layer');

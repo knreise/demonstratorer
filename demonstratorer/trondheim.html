@@ -163,7 +163,7 @@ som finnes med geografisk tilknytning til Trondheim.</p>
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
-         preload="auto" height="315" poster="<%= images[0] %>"
+         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
          data-setup='{}'>
           <source src="<%= videoEmbed %>" type='video/mp4'>
         </video>
@@ -266,7 +266,7 @@ som finnes med geografisk tilknytning til Trondheim.</p>
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
-        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
+        <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.js" type="text/javascript"></script>
         <script src="../common/js/ErrorHandler.js" type="text/javascript"></script>
         <script src="../common/js/util.js" type="text/javascript"></script>
         <script src="../common/js/style.js" type="text/javascript"></script>

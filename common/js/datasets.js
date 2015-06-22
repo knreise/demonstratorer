@@ -5,6 +5,12 @@ KR.Config = KR.Config || {};
     'use strict';
 
     ns.getDatasetList = function (api, komm) {
+
+        console.log(komm);
+        if (komm.length === 3) {
+            komm = '0' + komm;
+        }
+
         return {
             'difo': {
                 name: 'Digitalt fortalt',
@@ -82,7 +88,8 @@ KR.Config = KR.Config || {};
                             api: 'norvegiana',
                             dataset: 'DiMu'
                         },
-                        template: _.template($('#digitalt_museum_template').html())
+                        template: _.template($('#digitalt_museum_template').html()),
+                        isStatic: false
                     },
                     {
                         name: 'Riksantikvaren',
@@ -90,14 +97,14 @@ KR.Config = KR.Config || {};
                         dataset: {
                             api: 'kulturminnedataSparql',
                             kommune: komm
+                            //fylke: '08'
                         },
                         template: _.template($('#ra_sparql_template').html()),
                         bbox: false,
-                        style: {fillcolor: '#728224'},
+                        style: {fillcolor: '#436978'},
                         isStatic: true
                     }
-                ],
-                isStatic: false
+                ]
             }
         };
     };
