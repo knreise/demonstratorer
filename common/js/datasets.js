@@ -149,6 +149,21 @@ KR.Config = KR.Config || {};
                 },
                 cluster: false,
                 visible: true
+            },
+            'brukerminne': {
+                name: 'Kulturminne (brukeropprettet)',
+                dataset_name_override: 'fangstlokaliteter',
+                dataset: {
+                    api: 'kulturminnedata',
+                    layer: 2
+                },
+                template: _.template($('#brukerminne_template').html()),
+                style: {
+                    fillcolor: '#436978',
+                    circle: true
+                },
+                visible: true
+
             }
         };
     };

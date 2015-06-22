@@ -527,7 +527,8 @@ module.exports = {
           'error',
           'ra_sparql',
           'flickr',
-          'husmann'
+          'husmann',
+          'brukerminne'
         ]
     },
     {
@@ -555,7 +556,8 @@ module.exports = {
           'error',
           'ra_sparql',
           'flickr',
-          'husmann'
+          'husmann',
+          'brukerminne'
         ]
     },
     {
