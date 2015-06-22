@@ -237,6 +237,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     function (error) {
                         vectorLayer.isLoading = false;
                         vectorLayer.fire('dataloadend');
+                        if (error.statusText === 'abort') {
+                            return;
+                        }
                         if (errorCallback) {
                             errorCallback({
                                 dataset: dataset.name,
