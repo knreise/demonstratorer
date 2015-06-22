@@ -210,10 +210,14 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             });
             _.each(toLoad, function (dataset) {
                 var mapper = _mapper(dataset);
+                vectorLayer.isLoading = true;
+                vectorLayer.fire('dataloadstart');
                 api.getBbox(
                     dataset.dataset,
                     newBounds,
                     function (geoJson) {
+                        vectorLayer.isLoading = false;
+                        vectorLayer.fire('dataloadend');
                         if (filter) {
                             geoJson = filter(geoJson);
                         }
@@ -231,6 +235,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                         finished();
                     },
                     function (error) {
+                        vectorLayer.isLoading = false;
+                        vectorLayer.fire('dataloadend');
                         if (errorCallback) {
                             errorCallback({
                                 dataset: dataset.name,
@@ -270,9 +276,14 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         var mapper = _mapper(dataset);
         var vectorLayer = _createVectorLayer(dataset, map);
 
+        vectorLayer.isLoading = true;
+        vectorLayer.fire('dataloadstart');
+
         api.getData(
             dataset.dataset,
             function (geoJson) {
+                vectorLayer.isLoading = false;
+                vectorLayer.fire('dataloadend');
                 if (filter) {
                     geoJson = filter(geoJson);
                 }
@@ -284,6 +295,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 vectorLayer.addLayers(geoJSONLayer.getLayers());
             },
             function (error) {
+                vectorLayer.isLoading = false;
+                vectorLayer.fire('dataloadend');
                 if (errorCallback) {
                     errorCallback({
                         dataset: dataset.name,

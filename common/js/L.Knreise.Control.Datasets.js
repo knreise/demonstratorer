@@ -12,6 +12,7 @@ L.Control.Datasets = L.Control.extend({
         this._datasets = {};
         this._handlingClick = false;
         this.expanded = false;
+        this.numLoading = 0;
         var i;
         for (i in layers) {
             if (layers.hasOwnProperty(i)) {
@@ -38,14 +39,49 @@ L.Control.Datasets = L.Control.extend({
     },
 
     _addDataset: function (dataset, layer, multi, grouped) {
+        if (layer.isLoading) {
+            this.numLoading += 1;
+            this._checkSpinner();
+        }
+
         var id = L.stamp(dataset);
+
+        layer.on('dataloadstart', function () {this._loadStart(id);}, this);
+        layer.on('dataloadend', function () {this._loadEnd(id);}, this);
+
         layer.on('changeEnabled', this._enabledChanged, this);
         this._datasets[id] = {
             layer: layer,
             dataset: dataset,
             multi: multi,
-            grouped: grouped
+            grouped: grouped,
+            id: id
         };
+    },
+
+    _loadStart: function (id) {
+        this.numLoading += 1;
+        this._checkSpinner();
+        var element = document.getElementById('dataset_chooser_icon_' + id);
+        element.className = element.className.replace(' fa-square', ' fa-spinner fa-pulse');
+    },
+
+    _loadEnd: function (id) {
+        this.numLoading -= 1;
+        this._checkSpinner();
+        var element = document.getElementById('dataset_chooser_icon_' + id);
+        element.className = element.className.replace(' fa-spinner fa-pulse', ' fa-square');
+    },
+
+    _checkSpinner: function () {
+        if (!this._btnIcon) {
+            return;
+        }
+        if (this.numLoading === 0) {
+            this._btnIcon.className = this._btnIcon.className.replace(' fa-spinner fa-pulse', ' fa-bars');
+        } else {
+            this._btnIcon.className = this._btnIcon.className.replace(' fa-bars', ' fa-spinner fa-pulse');
+        }
     },
 
     onAdd: function (map) {
@@ -153,7 +189,7 @@ L.Control.Datasets = L.Control.extend({
         } else {
              datasetName = obj.dataset.dataset.dataset;
         }
-        
+
         var datasetId;
         if (obj.dataset.cluster && obj.dataset.grouped) {
             datasetId = obj.dataset.datasets[0].extras.datasetId;
@@ -161,8 +197,14 @@ L.Control.Datasets = L.Control.extend({
             datasetId = obj.dataset.extras.datasetId;
         }
 
+
         var icon = document.createElement('i');
+        icon.id = 'dataset_chooser_icon_' + obj.id;
         icon.className = 'layericon fa fa-square';
+        if (obj.layer.isLoading) {
+            icon.className = 'layericon fa fa-spinner fa-pulse';
+        }
+
         icon.style.color = KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true);
         label.appendChild(icon);
 
@@ -203,7 +245,11 @@ L.Control.Datasets = L.Control.extend({
         L.DomEvent.on(closeBtn, 'click', function () {
             this._toggle();
         }, this);
-        var icon = L.DomUtil.create('i', 'fa fa-bars', closeBtn);
+        if (this.numLoading > 0) {
+            this._btnIcon = L.DomUtil.create('i', 'fa fa-spinner fa-pulse', closeBtn);
+        } else {
+            this._btnIcon = L.DomUtil.create('i', 'fa fa-bars', closeBtn);
+        }
 
         container.appendChild(this._closeDiv);
         container.appendChild(form);
