@@ -85,6 +85,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
@@ -188,11 +189,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 icon: '',
                 color: KR.Style.colorForFeature(feature)
             });
-        }
-
-        //hack for husmann
-        if (feature.properties.Navn) {
-            feature.properties.title = feature.properties.Navn;
         }
 
         var li = $(this.options.listElementTemplate({

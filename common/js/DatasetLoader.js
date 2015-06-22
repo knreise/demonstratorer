@@ -32,15 +32,16 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'circle')) {
                     feature.properties.circle = dataset.circle;
                 }
-/*                if (_.has(dataset, 'dataset_name_override')) {
-                    feature.properties.dataset = dataset.dataset_name_override;
-                }
-*/
                 if (_.has(dataset, 'provider')) {
                     feature.properties.provider = dataset.provider;
                 }
                 if (_.has(dataset, 'extras')) {
                     feature.properties = _.extend(feature.properties, dataset.extras);
+                }
+                if (_.has(dataset, 'mappings')) {
+                    _.each(dataset.mappings, function (value, key) {
+                        feature.properties[key] = feature.properties[value];
+                    });
                 }
 
             });

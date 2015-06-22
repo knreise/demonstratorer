@@ -102,7 +102,6 @@ KR.Config = KR.Config || {};
             },
             'trd_byarkiv': {
                 name: 'Trondheim byarkiv',
-                dataset_name_override: 'Trondheim byarkiv',
                 provider: 'Trondheim byarkiv',
                 dataset:  {
                     api: 'flickr',
@@ -136,7 +135,6 @@ KR.Config = KR.Config || {};
             },
             'fangstlokaliteter': {
                 name: 'Fangstlokaliteter',
-                dataset_name_override: 'fangstlokaliteter',
                 dataset: {
                     api: 'norvegiana',
                     dataset: 'Kulturminnesok',
@@ -152,7 +150,7 @@ KR.Config = KR.Config || {};
             },
             'brukerminne': {
                 name: 'Kulturminne (brukeropprettet)',
-                dataset_name_override: 'fangstlokaliteter',
+                provider: 'Kulturminne (brukeropprettet)',
                 dataset: {
                     api: 'kulturminnedata',
                     layer: 2
@@ -162,8 +160,10 @@ KR.Config = KR.Config || {};
                     fillcolor: '#436978',
                     circle: true
                 },
-                visible: true
-
+                visible: true,
+                mappings: {
+                    'title': 'Navn'
+                }
             }
         };
     };

@@ -257,7 +257,36 @@
 
 
 <script type="text/template" id="brukerminne_template">
+<h3><%= title %></h3>
 
+<% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
+<p><%= KortBeskrivelse %></p>
+<% } %>
+
+<p><%= Beskrivelse %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Datering</td>
+      <td><%= Datering %></td>
+    </tr>
+    <tr>
+      <td>Opprinnelig funksjon</td>
+      <td><%= OpprinneligFunksjon %></td>
+    </tr>
+    <% if(!_.isUndefined(arguments[0].NåværendeFunksjon)) { %>
+    <tr>
+      <td>Nåværende funksjon</td>
+      <td><%= NåværendeFunksjon %></td>
+    </tr>
+    <% } %>
+    <% if(!_.isUndefined(arguments[0].Kilder)) { %>
+    <tr>
+      <td>Kilder</td>
+      <td><%= Kilder %></td>
+    </tr>
+    <% } %>
+</table>
 </script>
 
 
