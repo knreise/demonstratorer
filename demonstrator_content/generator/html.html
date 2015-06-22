@@ -1,43 +1,54 @@
-<h1>Generer demonstrator</h1>
+<h1>Demonstratorgenerator</h1>
+<form autocomplete="off">
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-6">
-            <h3>Kommune</h3>
-            <select id="municipalities" class="form-control"></select>
+        <div class="col-md-2" id="municipality_container">
+        </div>
+        <div class="col-md-2" id="line_container">
+        </div>
+        <div class="col-md-2" id="bbox_container">
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <h3>Linje</h3>
-            <input id="line" type="text" class="form-control" placeholder="Linje">
-            <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
-            <h5>Buffer (km)</h5>
-            <input id="buffer" type="number" class="form-control" value="2">
-            <h5>Linjefarge (hex)</h5>
-            <input id="linecolor" type="text" class="form-control" value="#0033ff">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Bakgrunnskart</h3>
-            <select id="layers" class="form-control"></select>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <h3>Datasett</h3>
             <div id="datasets"></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <button id="generate" class="btn btn-primary">Generer!</button>
+        <div class="col-md-2">
+            <h3>Bakgrunnskart</h3>
+            <select id="layers" class="form-control"></select>
         </div>
+        
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h3>Link</h3>
             <div id="link"></div>
         </div>
     </div>
 </div>
+</form>
+
+<script type="text/template" id="municipality_template">
+    <h3>Kommune</h3>
+    <select id="komm" class="form-control">
+    <% _.each(municipalities, function (municipality) { %>
+        <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
+    <% }) %>
+    </select>
+</script>
+
+<script type="text/template" id="line_template">
+     <h3>Linje</h3>
+    <input id="line" type="text" class="form-control" placeholder="Linje">
+    <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
+    <h5>Buffer (km)</h5>
+    <input id="buffer" type="number" class="form-control" value="2">
+    <h5>Linjefarge (hex)</h5>
+    <input id="linecolor" type="text" class="form-control" value="#0033ff">
+</script>
+
+<script type="text/template" id="bbox_template">
+    <h3>BBox</h3>
+    <input id="bbox" type="text" class="form-control" placeholder="">
+</script>
