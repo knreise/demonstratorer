@@ -2,6 +2,12 @@
 <form autocomplete="off">
 <div class="container-fluid">
     <div class="row">
+        <div class="col-md-12">
+            <h3>Link</h3>
+            <div class="map-link"></div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-2" id="municipality_container">
         </div>
         <div class="col-md-2" id="line_container">
@@ -12,7 +18,17 @@
     <div class="row">
         <div class="col-md-4">
             <h3>Datasett</h3>
-            <div id="datasets"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Tilgengelige</h4>
+                    <ul id="datasets-available" class="droplist list-group connected sortable list"></ul>
+                </div>
+                <div class="col-md-6">
+                    <h4>Valgte</h4>
+                    <ul id="datasets-selected" class="droplist  list-group connected sortable list"></ul>
+                </div>
+            </div>
+            
         </div>
         <div class="col-md-2">
             <h3>Bakgrunnskart</h3>
@@ -23,7 +39,7 @@
     <div class="row">
         <div class="col-md-12">
             <h3>Link</h3>
-            <div id="link"></div>
+            <div class="map-link"></div>
         </div>
     </div>
 </div>
@@ -50,5 +66,5 @@
 
 <script type="text/template" id="bbox_template">
     <h3>BBox</h3>
-    <input id="bbox" type="text" class="form-control" placeholder="">
+    <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
 </script>

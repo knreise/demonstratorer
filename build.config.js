@@ -536,10 +536,12 @@ module.exports = {
         name: 'Generering',
         scripts: [
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
-          'common/js/datasets.js'
+          'common/js/datasets.js',
+          'bower_components/html.sortable/dist/html.sortable.min.js'
         ],
         css: [
-          'bower_components/bootstrap/dist/css/bootstrap.min.css'
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'common/css/generator.css'
         ],
         templates: [
           'popup',

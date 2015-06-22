@@ -9,6 +9,7 @@
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../common/css/generator.css' rel='stylesheet' />
 
     </head>
     <body>
@@ -16,6 +17,12 @@
 <h1>Demonstratorgenerator</h1>
 <form autocomplete="off">
 <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Link</h3>
+            <div class="map-link"></div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-2" id="municipality_container">
         </div>
@@ -27,7 +34,17 @@
     <div class="row">
         <div class="col-md-4">
             <h3>Datasett</h3>
-            <div id="datasets"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Tilgengelige</h4>
+                    <ul id="datasets-available" class="droplist list-group connected sortable list"></ul>
+                </div>
+                <div class="col-md-6">
+                    <h4>Valgte</h4>
+                    <ul id="datasets-selected" class="droplist  list-group connected sortable list"></ul>
+                </div>
+            </div>
+            
         </div>
         <div class="col-md-2">
             <h3>Bakgrunnskart</h3>
@@ -38,7 +55,7 @@
     <div class="row">
         <div class="col-md-12">
             <h3>Link</h3>
-            <div id="link"></div>
+            <div class="map-link"></div>
         </div>
     </div>
 </div>
@@ -65,7 +82,7 @@
 
 <script type="text/template" id="bbox_template">
     <h3>BBox</h3>
-    <input id="bbox" type="text" class="form-control" placeholder="">
+    <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
 </script>
 
 <script type="text/template" id="popup_template">
@@ -342,20 +359,14 @@
         <script src="../common/js/style.js" type="text/javascript"></script>
         <script src="../bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js" type="text/javascript"></script>
         <script src="../common/js/datasets.js" type="text/javascript"></script>
+        <script src="../bower_components/html.sortable/dist/html.sortable.min.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
                 'use strict';
 
                 var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
-var datasetTemplate = _.template(
-    '<div class="checkbox">' +
-        '<label>' +
-        '<input type="checkbox" name="datasets" id="<%= key %>" value="<%= key %>">' +
-        '<%= name %>' +
-        '</label>' +
-    '</div>'
-);
+var datasetTemplate = _.template('<li draggable="true" class="list-group-item" value="<%= key %>"><%= name %></li>');
 
 var api = new KR.API({
     cartodb: {
@@ -363,7 +374,6 @@ var api = new KR.API({
         user: 'knreise'
     }
 });
-
 
 function buildLimitSelections(ids, municipalities) {
     var callback;
@@ -475,25 +485,23 @@ function buildLayerList(element) {
 function buildDatasetList(element) {
     var callback;
     var datasetConfig = KR.Config.getDatasetList(api, null);
-    var checkboxes = _.map(datasetConfig, function (value, key) {
+    var datasets = _.map(datasetConfig, function (value, key) {
         var name = value.name || key;
         return datasetTemplate({name: name, key: key});
     });
+    $('#datasets-available').html(datasets);
 
-    element.html(checkboxes);
-
-    _.each(element.find('input'), function (checkbox) {
-        $(checkbox).on('change', function () {
-            callback();
-        });
-    })
+    $('#datasets-available, #datasets-selected').sortable({
+        connectWith: '.connected'
+    }).bind('sortupdate', function () {
+        callback();
+    });
 
     return {
         getValues: function () {
-            var checked = element.find('input[type=checkbox]:checked').map(function () {
-                return this.value;
-            }).get();
-            console.log(checked);
+            var checked = _.map($('#datasets-selected').find('li'), function (li) {
+                return $(li).attr('value');
+            });
             return {
                 datasets: checked.join(',')
             };
@@ -512,7 +520,7 @@ function setupClick(element, limits, layer, datasets) {
         var params = _.extend({}, limits.getValues(), layer.getValues(), datasets.getValues());
         var path = window.location.pathname;
         var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + KR.Util.createQueryParameterString(params);
-        $('#link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
+        $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
     };
 
 

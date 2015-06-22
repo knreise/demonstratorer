@@ -1,12 +1,5 @@
 var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
-var datasetTemplate = _.template(
-    '<div class="checkbox">' +
-        '<label>' +
-        '<input type="checkbox" name="datasets" id="<%= key %>" value="<%= key %>">' +
-        '<%= name %>' +
-        '</label>' +
-    '</div>'
-);
+var datasetTemplate = _.template('<li draggable="true" class="list-group-item" value="<%= key %>"><%= name %></li>');
 
 var api = new KR.API({
     cartodb: {
@@ -14,7 +7,6 @@ var api = new KR.API({
         user: 'knreise'
     }
 });
-
 
 function buildLimitSelections(ids, municipalities) {
     var callback;
@@ -126,25 +118,23 @@ function buildLayerList(element) {
 function buildDatasetList(element) {
     var callback;
     var datasetConfig = KR.Config.getDatasetList(api, null);
-    var checkboxes = _.map(datasetConfig, function (value, key) {
+    var datasets = _.map(datasetConfig, function (value, key) {
         var name = value.name || key;
         return datasetTemplate({name: name, key: key});
     });
+    $('#datasets-available').html(datasets);
 
-    element.html(checkboxes);
-
-    _.each(element.find('input'), function (checkbox) {
-        $(checkbox).on('change', function () {
-            callback();
-        });
-    })
+    $('#datasets-available, #datasets-selected').sortable({
+        connectWith: '.connected'
+    }).bind('sortupdate', function () {
+        callback();
+    });
 
     return {
         getValues: function () {
-            var checked = element.find('input[type=checkbox]:checked').map(function () {
-                return this.value;
-            }).get();
-            console.log(checked);
+            var checked = _.map($('#datasets-selected').find('li'), function (li) {
+                return $(li).attr('value');
+            });
             return {
                 datasets: checked.join(',')
             };
@@ -163,7 +153,7 @@ function setupClick(element, limits, layer, datasets) {
         var params = _.extend({}, limits.getValues(), layer.getValues(), datasets.getValues());
         var path = window.location.pathname;
         var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + KR.Util.createQueryParameterString(params);
-        $('#link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
+        $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
     };
 
 
