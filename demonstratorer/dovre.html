@@ -26,6 +26,27 @@
 <div id="sidebar"></div>
 <div id="map"></div>
 
+<script type="text/template" id="description_template">
+
+<p>Løsning som fokuserer på ett område og spesielt på arbeidet som er
+gjort med produksjon og bearbeiding av innhold og på samarbeidet
+med SNO om naturdata. Delvis en overlapp med
+Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg og
+bredde i innhold ved begrensning til ett definert område.</p>
+
+
+<h3>Målsettinger</h3>
+<ul>
+<li>Nyprodusert innhold - med fokus på video</li>
+<li>Vise naturinnhold</li>
+<li>Vise verneområder som polygoner - data fra Miljødirektoratet og Norge Digitalt</li>
+<li>Visning av innhold fra Riksantikvaren sammen med innhold</li>
+knyttet til arkeologiske funn</li>
+<li>Demonstrere kobling til og visning av reiselivsdata</li>
+</ul>
+
+</script>
+
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
 <p><%= dataset %></p>
@@ -256,6 +277,7 @@
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.LocateButton.js" type="text/javascript"></script>
+        <script src="../common/js/SplashScreen.js" type="text/javascript"></script>
         <script src="../common/js/setupMap.js" type="text/javascript"></script>
 
         <script type="text/javascript">
@@ -378,7 +400,11 @@ var api = new KR.API({
     }
 });
 
-KR.setupMap(api, datasets, {komm: 511});
+KR.setupMap(api, datasets, {
+    komm: 511,
+    title: 'Dovre',
+    description: $('#description_template').html()
+});
 
             }());
         </script>

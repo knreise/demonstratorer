@@ -114,4 +114,8 @@ var api = new KR.API({
     }
 });
 
-KR.setupMap(api, datasets, {komm: 511});
+KR.setupMap(api, datasets, {
+    komm: 511,
+    title: 'Dovre',
+    description: $('#description_template').html()
+});

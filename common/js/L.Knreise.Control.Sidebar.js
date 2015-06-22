@@ -32,7 +32,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var l = 'leaflet-';
 
         // Create sidebar container
-        var container = this._container = L.DomUtil.create('div', l + 'sidebar ' + this.options.position);
+        var container = this._container = L.DomUtil.create('div', l + 'sidebar knreise-sidebar ' + this.options.position);
 
         // Create close button and attach it if configured
         if (this.options.closeButton) {
