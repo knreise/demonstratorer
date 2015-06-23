@@ -6,8 +6,8 @@ KR.Config = KR.Config || {};
 
     ns.getDatasetList = function (api, komm) {
 
-        console.log(komm);
-        if (komm.length === 3) {
+
+        if (komm && komm.length === 3) {
             komm = '0' + komm;
         }
 
