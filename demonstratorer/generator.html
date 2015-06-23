@@ -68,7 +68,7 @@
 </form>
 
 <script type="text/template" id="municipality_template">
-    <h3>Kommune</h3>
+    <h3><input type="radio" name="inputType" /> Kommune</h3>
     <select id="komm" class="form-control">
     <% _.each(municipalities, function (municipality) { %>
         <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
@@ -77,7 +77,7 @@
 </script>
 
 <script type="text/template" id="line_template">
-     <h3>Linje</h3>
+    <h3><input type="radio" name="inputType" /> Linje</h3>
     <input id="line" type="text" class="form-control" placeholder="Linje">
     <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
     <h5>Buffer (km)</h5>
@@ -87,7 +87,7 @@
 </script>
 
 <script type="text/template" id="bbox_template">
-    <h3>BBox</h3>
+    <h3><input type="radio" name="inputType" /> BBox</h3>
     <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
 </script>
 
@@ -386,6 +386,17 @@ var api = new KR.API({
     }
 });
 
+function toggleInputs(element, disabled) {
+    var inputs = element.find('select, input:not([type="radio"])');
+    if (disabled)  {
+        inputs.attr('disabled', 'disabled');
+    } else {
+        inputs.removeAttr('disabled');
+        element.find('input[type="radio"]').prop('checked', true);
+    }
+}
+
+
 function buildLimitSelections(ids, municipalities) {
     var callback;
     var selected = 0;
@@ -402,7 +413,9 @@ function buildLimitSelections(ids, municipalities) {
             municipalities: municipalities
         }));
         if (idx !== selected) {
-            element.find('select, input').attr('disabled', 'disabled');
+            toggleInputs(element, true);
+        } else {
+            toggleInputs(element, false);
         }
         return element;
     });
@@ -411,10 +424,10 @@ function buildLimitSelections(ids, municipalities) {
         element.on('click', function () {
             _.each(elements, function (e, idx) {
                 if (idx === index) {
-                    elements[idx].find('select, input').removeAttr('disabled');
+                    toggleInputs(elements[idx], false);
                     selected = index;
                 } else {
-                    elements[idx].find('select, input').attr('disabled', 'disabled');
+                    toggleInputs(elements[idx], true);
                 }
                 if (callback) {
                     callback();
@@ -468,7 +481,10 @@ function buildLayerList(element) {
     var callback;
     var selected = 'norges_grunnkart_graatone';
 
-    var options = _.chain(L.tileLayer.kartverket.getLayers())
+    var layers = L.tileLayer.kartverket.getLayers();
+    layers = layers.concat(['nib', 'hist']);
+
+    var options = _.chain(layers)
         .map(function (layer) {
             return {id: layer, selected: layer === selected};
         })

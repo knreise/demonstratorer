@@ -8,6 +8,17 @@ var api = new KR.API({
     }
 });
 
+function toggleInputs(element, disabled) {
+    var inputs = element.find('select, input:not([type="radio"])');
+    if (disabled)  {
+        inputs.attr('disabled', 'disabled');
+    } else {
+        inputs.removeAttr('disabled');
+        element.find('input[type="radio"]').prop('checked', true);
+    }
+}
+
+
 function buildLimitSelections(ids, municipalities) {
     var callback;
     var selected = 0;
@@ -24,7 +35,9 @@ function buildLimitSelections(ids, municipalities) {
             municipalities: municipalities
         }));
         if (idx !== selected) {
-            element.find('select, input').attr('disabled', 'disabled');
+            toggleInputs(element, true);
+        } else {
+            toggleInputs(element, false);
         }
         return element;
     });
@@ -33,10 +46,10 @@ function buildLimitSelections(ids, municipalities) {
         element.on('click', function () {
             _.each(elements, function (e, idx) {
                 if (idx === index) {
-                    elements[idx].find('select, input').removeAttr('disabled');
+                    toggleInputs(elements[idx], false);
                     selected = index;
                 } else {
-                    elements[idx].find('select, input').attr('disabled', 'disabled');
+                    toggleInputs(elements[idx], true);
                 }
                 if (callback) {
                     callback();
@@ -90,7 +103,10 @@ function buildLayerList(element) {
     var callback;
     var selected = 'norges_grunnkart_graatone';
 
-    var options = _.chain(L.tileLayer.kartverket.getLayers())
+    var layers = L.tileLayer.kartverket.getLayers();
+    layers = layers.concat(['nib', 'hist']);
+
+    var options = _.chain(layers)
         .map(function (layer) {
             return {id: layer, selected: layer === selected};
         })

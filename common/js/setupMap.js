@@ -24,14 +24,33 @@ var KR = this.KR || {};
         return sidebar;
     }
 
+    function _getBaseLayer(layerName, callback) {
+        var layers = {
+            'nib': KR.getNibLayer,
+            'hist': function (callback) {
+                callback(L.tileLayer.wms('http://wms.geonorge.no/skwms1/wms.historiskekart', {
+                    layers: 'historiskekart',
+                    format: 'image/png',
+                    attribution: 'Kartverket'
+                }));
+            }
+        };
+        if (_.has(layers, layerName)) {
+            layers[layerName](callback);
+        } else {
+            callback(L.tileLayer.kartverket(layerName));
+        }
+    }
 
     function _createMap(options) {
         //create the map
-        var map = L.map('map');
+        var map = L.map('map', {maxZoom: 21});
 
         var baseLayer = options.layer || 'norges_grunnkart_graatone';
-        //add a background layer from kartverket
-        L.tileLayer.kartverket(baseLayer).addTo(map);
+
+        _getBaseLayer(baseLayer, function (layer) {
+            layer.addTo(map);
+        });
 
         L.Knreise.LocateButton().addTo(map);
         return map;
