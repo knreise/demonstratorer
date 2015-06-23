@@ -28,7 +28,7 @@ L.TileLayer.WMTS=L.TileLayer.extend({defaultWmtsParams:{service:"WMTS",request:"
                 layer = L.tileLayer.wms('http://gatekeeper2.geonorge.no/BaatGatekeeper/gk/gk.nibcache', {
                     layers: 'NiB',
                     format: 'image/jpeg',
-                    transparent: true,
+                    transparent: false,
                     attribution: 'Kartverket'
                 });
             } else {

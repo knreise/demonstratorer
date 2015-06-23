@@ -50,7 +50,6 @@ function buildLimitSelections(ids, municipalities) {
                     selected = index;
                 } else {
                     toggleInputs(elements[idx], true);
-
                 }
                 if (callback) {
                     callback();
@@ -104,7 +103,10 @@ function buildLayerList(element) {
     var callback;
     var selected = 'norges_grunnkart_graatone';
 
-    var options = _.chain(L.tileLayer.kartverket.getLayers())
+    var layers = L.tileLayer.kartverket.getLayers();
+    layers = layers.concat(['nib', 'hist']);
+
+    var options = _.chain(layers)
         .map(function (layer) {
             return {id: layer, selected: layer === selected};
         })
