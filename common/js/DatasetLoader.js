@@ -10,8 +10,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         isStatic: true,
         bbox: true,
         cluster: true,
-      //  smallMarker: false,
-      //  thumbnails: true,
         visible: true
     };
 
@@ -43,7 +41,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                         feature.properties[key] = feature.properties[value];
                     });
                 }
-
             });
             return features;
         };
@@ -171,10 +168,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
 
-    function _addBboxDataset(dataset, initBounds, filter) {
+    function _addDataset(dataset, filter, initBounds) {
         var vectorLayer = _createVectorLayer(dataset, map);
-
-
 
         function checkData(geoJson, vectorLayer) {
             if (dataset.minFeatures) {
@@ -251,6 +246,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
                 function loadError(error) {
                     finished();
+
+                    //do not display errors for abort
                     if (error.statusText === 'abort') {
                         return;
                     }
@@ -262,12 +259,13 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     }
                 }
 
+                //if this is not the first load, and dataset i static: do not load
                 if (!first && dataset.isStatic) {
                     dataLoaded(dataset.geoJson);
                     return;
                 }
 
-
+                //load according to strategy
                 if (dataset.bbox) {
                     api.getBbox(
                         dataset.dataset,
@@ -283,8 +281,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     );
                 }
             });
-
-
         };
 
         _reloadData(null, initBounds);
@@ -295,6 +291,15 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         _setupToggle(vectorLayer, _reloadData);
 
         return {layer: vectorLayer, reload: _reloadData};
+    }
+
+    function _setStyle(dataset) {
+        var id = KR.Util.getDatasetId(dataset);
+        dataset.extras = dataset.extras || {};
+        dataset.extras.datasetId = id;
+        if (dataset.style) {
+            KR.Style.setDatasetStyle(id, dataset.style);
+        }
     }
 
     function reload(setVisible, callback) {
@@ -310,66 +315,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
-    /*
-    function _addFullDataset(dataset, filter) {
-        var mapper = _mapper(dataset);
-        var vectorLayer = _createVectorLayer(dataset, map);
-
-        vectorLayer.isLoading = true;
-        vectorLayer.fire('dataloadstart');
-
-        api.getData(
-            dataset.dataset,
-            function (geoJson) {
-                vectorLayer.isLoading = false;
-                vectorLayer.fire('dataloadend');
-                if (filter) {
-                    geoJson = filter(geoJson);
-                }
-                var geoJSONLayer = _createGeoJSONLayer(
-                    mapper(geoJson),
-                    dataset
-                );
-                vectorLayer.clearLayers();
-                vectorLayer.addLayers(geoJSONLayer.getLayers());
-            },
-            function (error) {
-                vectorLayer.isLoading = false;
-                vectorLayer.fire('dataloadend');
-                if (errorCallback) {
-                    errorCallback({
-                        dataset: dataset.name,
-                        error: error
-                    });
-                }
-            }
-        );
-        return vectorLayer;
-    }
-    */
-
-    function _setStyle(dataset) {
-        var id = KR.Util.getDatasetId(dataset);
-        dataset.extras = dataset.extras || {};
-        dataset.extras.datasetId = id;
-        if (dataset.style) {
-            KR.Style.setDatasetStyle(id, dataset.style);
-        }
-    }
-
-    function _addDataset(dataset, bounds, filter) {
-        return _addBboxDataset(dataset, bounds, filter);
-    }
-
-
     function loadDatasets(datasets, bounds, filter) {
         var res = _.map(datasets, function (dataset) {
+
+            //extend with defaults
             dataset = _.extend({}, _defaults, dataset);
+
             //copy properties from parent
             if (dataset.datasets) {
                 _copyProperties(dataset);
             }
 
+            //set default style
             if (KR.Style.setDatasetStyle) {
                 if (dataset.datasets) {
                     _.each(dataset.datasets, _setStyle);
@@ -384,7 +341,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            return _addDataset(dataset, bounds, filter);
+            return _addDataset(dataset, filter, bounds);
         });
         reloads = _.pluck(res, 'reload');
         return _.pluck(res, 'layer');
