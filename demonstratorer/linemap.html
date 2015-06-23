@@ -49,7 +49,7 @@
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
-         preload="auto" height="315" poster="<%= images[0] %>"
+         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
          data-setup='{}'>
           <source src="<%= videoEmbed %>" type='video/mp4'>
         </video>
@@ -180,7 +180,7 @@
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
-         preload="auto" height="315" poster="<%= images[0] %>"
+         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
          data-setup='{}'>
           <source src="<%= videoEmbed %>" type='video/mp4'>
         </video>
