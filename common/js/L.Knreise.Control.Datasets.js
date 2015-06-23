@@ -107,35 +107,6 @@ L.Control.Datasets = L.Control.extend({
         }
     },
 
-    _toggleStaticDataset: function (visible, obj) {
-
-        if (obj.multi) {
-            //TODO: Move
-            if (visible && !obj.dataset.visible) {
-                obj.layer.addLayers(obj.dataset.geoJSONLayer.getLayers());
-                obj.dataset.visible = true;
-            } else if (!visible && obj.dataset.visible) {
-                var id = KR.Util.stamp(obj.dataset);
-                obj.layer.eachLayer(function (layer) {
-                    if (layer.feature.properties.datasetID === id) {
-                        obj.layer.removeLayer(layer);
-                    }
-                });
-                obj.dataset.visible = false;
-            }
-        } else {
-            obj.dataset.visible = visible;
-            if (visible && !this._map.hasLayer(obj.layer)) {
-                this._map.addLayer(obj.layer);
-            } else if (!visible && this._map.hasLayer(obj.layer)) {
-                this._map.removeLayer(obj.layer);
-            } else if (obj.dataset.notLoaded) {
-                obj.dataset.notLoaded = false;
-                obj.layer.fire('show');
-            }
-        }
-    },
-
     _onInputClick: function () {
         var i, input, obj,
             inputs = this._form.getElementsByTagName('input'),
@@ -147,16 +118,12 @@ L.Control.Datasets = L.Control.extend({
             input = inputs[i];
             obj = this._datasets[input.datasetId];
 
-            if (obj.dataset.isStatic) {
-                this._toggleStaticDataset(input.checked, obj);
-            } else {
-                if (input.checked !== obj.dataset.visible) {
-                    obj.dataset.visible = input.checked;
-                    if (input.checked) {
-                        obj.layer.fire('show');
-                    } else {
-                        obj.layer.fire('hide');
-                    }
+            if (input.checked !== obj.dataset.visible) {
+                obj.dataset.visible = input.checked;
+                if (input.checked) {
+                    obj.layer.fire('show');
+                } else {
+                    obj.layer.fire('hide');
                 }
             }
         }

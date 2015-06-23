@@ -74,7 +74,7 @@ KR.Config = KR.Config || {};
                 grouped: true,
                 name: 'Arkeologi og historie',
                 datasets: [
-                    {
+                   {
                         name: 'MUSIT',
                         dataset: {
                             api: 'norvegiana',
@@ -97,7 +97,6 @@ KR.Config = KR.Config || {};
                         dataset: {
                             api: 'kulturminnedataSparql',
                             kommune: komm
-                            //fylke: '08'
                         },
                         template: _.template($('#ra_sparql_template').html()),
                         bbox: false,

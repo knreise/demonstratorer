@@ -91,11 +91,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
     function _setupToggle(layer, reloadFunc) {
         layer.on('hide', function () {
-            reloadFunc();
+            reloadFunc(true);
         });
 
         layer.on('show', function () {
-            reloadFunc();
+            reloadFunc(true);
         });
     }
 
@@ -182,7 +182,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             return geoJson;
         }
 
+        var lastBounds;
+
         var _reloadData = function (e, bbox, forceVisible, callback) {
+
             var first = !e;
 
             vectorLayer.enabled = _checkEnabled(dataset);
@@ -223,10 +226,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 var mapper = _mapper(dataset);
 
                 function dataLoaded(geoJson) {
-
-                    if (dataset.isStatic && first) {
-                        dataset.geoJson = geoJson;
-                    }
+                    dataset.geoJson = geoJson;
                     if (filter) {
                         geoJson = filter(geoJson);
                     }
@@ -259,8 +259,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     }
                 }
 
-                //if this is not the first load, and dataset i static: do not load
-                if (!first && dataset.isStatic) {
+                //if this is not the first load, and dataset is static: do not load
+                if ((!first && dataset.isStatic) || lastBounds === newBounds) {
                     dataLoaded(dataset.geoJson);
                     return;
                 }
@@ -281,6 +281,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     );
                 }
             });
+            lastBounds = newBounds;
         };
 
         _reloadData(null, initBounds);
