@@ -83,4 +83,8 @@ var api = new KR.API({
 
 
 var bbox = '10.338650,63.408816,10.555458,63.462016';
-KR.setupMap(api, datasets, {bbox: bbox});
+KR.setupMap(api, datasets, {
+    bbox: bbox,
+    title: 'Trondheim',
+    description: $('#description_template').html()
+});

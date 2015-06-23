@@ -16,31 +16,31 @@
     top: 50px;
 }
 
-.leaflet-sidebar .prev {
+.knreise-sidebar .prev {
     color: white !important;
 }
 
 
-.leaflet-sidebar .next {
+.knreise-sidebar .next {
     color: white !important;
 }
 
-.leaflet-sidebar .next.active, .leaflet-sidebar .prev.active {
+.knreise-sidebar .next.active, .knreise-sidebar .prev.active {
     background-color: #A5A5A5;
     cursor: pointer;
 }
 
-.leaflet-sidebar .awesome-marker {
+.knreise-sidebar .awesome-marker {
     position: relative;
 }
 
-.leaflet-sidebar .thumbnail {
+.knreise-sidebar .thumbnail {
     margin-bottom: 0;
     padding: 0;
     border-width: 2px;
 }
 
-.leaflet-sidebar .circle {
+.knreise-sidebar .circle {
     background-color: #ddd;
     border-radius: 15px;
     box-shadow: 1px 1px 5px #888888;
@@ -56,7 +56,7 @@
     margin-top: 10px;
 }
 
-.leaflet-sidebar .headertext {
+.knreise-sidebar .headertext {
     color: black;
     display: block;
     font-size: 1.5em;
@@ -67,14 +67,14 @@
     margin-top: 10px;
 }
 
-.leaflet-sidebar .providertext {
+.knreise-sidebar .providertext {
     color: #666;
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-.leaflet-sidebar .top-menu {
+.knreise-sidebar .top-menu {
     background: white none repeat scroll 0 0;
     height: 50px;
     left: 0;
@@ -84,7 +84,7 @@
     z-index: 5000;
 }
 
-.leaflet-sidebar .close {
+.knreise-sidebar .close {
     position: relative;
     margin-right: 10px;
     margin-top: 10px;
@@ -92,20 +92,20 @@
     right: 0;
 }
 
-.leaflet-sidebar .sidebar-content h3 {
+.knreise-sidebar .sidebar-content h3 {
     margin-top: 0;
 }
 
-.leaflet-sidebar .sidebar-link {
+.knreise-sidebar .sidebar-link {
     color: #333;
 }
 
-.leaflet-sidebar .sidebar-table {
+.knreise-sidebar .sidebar-table {
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.leaflet-sidebar .sidebar-table tr td:first-child {
+.knreise-sidebar .sidebar-table tr td:first-child {
     font-weight: bold;
     padding-right: 10px;
 }

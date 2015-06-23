@@ -37,6 +37,7 @@ module.exports = {
           'common/js/DatasetLoader.js',
           'bower_components/L.EasyButton/easy-button.js',
           'common/js/L.Knreise.LocateButton.js',
+          'common/js/SplashScreen.js',
           'common/js/setupMap.js'
         ],
         css: [
@@ -90,6 +91,7 @@ module.exports = {
           'common/js/DatasetLoader.js',
           'bower_components/L.EasyButton/easy-button.js',
           'common/js/L.Knreise.LocateButton.js',
+          'common/js/SplashScreen.js',
           'common/js/setupMap.js'
         ],
         css: [
@@ -495,6 +497,7 @@ module.exports = {
           'bower_components/L.EasyButton/easy-button.js',
           'common/js/L.Knreise.LocateButton.js',
           'common/js/datasets.js',
+          'common/js/SplashScreen.js',
           'common/js/setupMap.js'
         ],
         css: [

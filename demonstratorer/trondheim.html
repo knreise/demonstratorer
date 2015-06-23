@@ -26,6 +26,21 @@
 <div id="sidebar"></div>
 <div id="map"></div>
 
+<script type="text/template" id="description_template">
+
+<p>Blant annet gjennom arbeidet med Gudbrandsdalsleden har det
+dukket opp mange potensielle datasett og behov som kan knyttes til
+Trondheim. En generell løsning for stedsbegrenset visning av
+innhold her kan derfor bli aktuell, men en del arbeid gjenstår i
+forhold til kartlegging og spesifikasjon..</p>
+
+
+<h3>Målsettinger</h3>
+<p>Tilgjengeliggjøre den store bredden og det store volumet av innhold
+som finnes med geografisk tilknytning til Trondheim.</p>
+
+</script>
+
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
 <p><%= dataset %></p>
@@ -274,6 +289,7 @@
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.LocateButton.js" type="text/javascript"></script>
+        <script src="../common/js/SplashScreen.js" type="text/javascript"></script>
         <script src="../common/js/setupMap.js" type="text/javascript"></script>
 
         <script type="text/javascript">
@@ -365,7 +381,11 @@ var api = new KR.API({
 
 
 var bbox = '10.338650,63.408816,10.555458,63.462016';
-KR.setupMap(api, datasets, {bbox: bbox});
+KR.setupMap(api, datasets, {
+    bbox: bbox,
+    title: 'Trondheim',
+    description: $('#description_template').html()
+});
 
             }());
         </script>

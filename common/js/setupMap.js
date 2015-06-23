@@ -114,6 +114,9 @@ var KR = this.KR || {};
                 lineLayer.addTo(map);
             }
             L.control.datasets(layers).addTo(map);
+            if (options.title) {
+                KR.SplashScreen(map, options.title, options.description);
+            }
         }
 
         if (options.komm) {
