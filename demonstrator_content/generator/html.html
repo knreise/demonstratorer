@@ -52,7 +52,7 @@
 </form>
 
 <script type="text/template" id="municipality_template">
-    <h3>Kommune</h3>
+    <h3><input type="radio" name="inputType" /> Kommune</h3>
     <select id="komm" class="form-control">
     <% _.each(municipalities, function (municipality) { %>
         <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
@@ -61,7 +61,7 @@
 </script>
 
 <script type="text/template" id="line_template">
-     <h3>Linje</h3>
+    <h3><input type="radio" name="inputType" /> Linje</h3>
     <input id="line" type="text" class="form-control" placeholder="Linje">
     <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
     <h5>Buffer (km)</h5>
@@ -71,6 +71,6 @@
 </script>
 
 <script type="text/template" id="bbox_template">
-    <h3>BBox</h3>
+    <h3><input type="radio" name="inputType" /> BBox</h3>
     <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
 </script>

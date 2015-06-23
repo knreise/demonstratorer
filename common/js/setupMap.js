@@ -24,14 +24,20 @@ var KR = this.KR || {};
         return sidebar;
     }
 
-
     function _createMap(options) {
         //create the map
-        var map = L.map('map');
+        var map = L.map('map', {maxZoom: 21});
 
         var baseLayer = options.layer || 'norges_grunnkart_graatone';
-        //add a background layer from kartverket
-        L.tileLayer.kartverket(baseLayer).addTo(map);
+
+        if (baseLayer === 'nib') {
+            KR.getNibLayer(function (layer) {
+                layer.addTo(map);
+            });
+        } else {
+            //add a background layer from kartverket
+            L.tileLayer.kartverket(baseLayer).addTo(map);
+        }
 
         L.Knreise.LocateButton().addTo(map);
         return map;
