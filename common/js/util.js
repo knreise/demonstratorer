@@ -226,7 +226,12 @@ KR.Util = KR.Util || {};
                     feature.template = _getTemplateForFeature(feature, dataset);
                     return feature;
                 });
-                sidebar.showFeatures(features, null, null, dataset.noListThreshold);
+                sidebar.showFeatures(
+                    features,
+                    dataset.template,
+                    dataset.getFeatureData,
+                    dataset.noListThreshold
+                );
             });
         };
     };
@@ -287,5 +292,19 @@ KR.Util = KR.Util || {};
             return acc;
         }, {});
     };
+
+    var personsTemplate = _.template('<%= totalt %> (<%= menn %> menn, <%= kvinner %> kvinner)');
+
+    ns.formatPersons = function (persons) {
+        var split = persons.split('-');
+        if (split.length < 2) {
+            return persons;
+        }
+        return personsTemplate({
+            totalt: split[0],
+            menn: split[1],
+            kvinner: split[2]
+        });
+    }
 
 }(KR.Util));

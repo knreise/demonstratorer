@@ -85,6 +85,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
             return;
         }
+        console.log(feature, template);
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {

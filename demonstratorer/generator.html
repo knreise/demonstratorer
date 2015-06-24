@@ -320,7 +320,88 @@
 
 
 <script type="text/template" id="folketelling_template">
-<h3><%= gaardsnavn_gateadr %></h3>
+<% if (property.id.indexOf('g') === 0) { %> 
+    <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <p><%= property.bildelenke %></p>
+
+    <table class="sidebar-table">
+        <tr>
+          <td>Hustype</td>
+          <td><%= property.hustype %></td>
+        </tr>
+        <tr>
+          <td>Bebodd?</td>
+          <td><% if(property.ubebodd === 'n') {print("Ja")} else {print("Nei")} %></td>
+        </tr>
+        <tr>
+          <td>Antall hjemmehørende personer</td>
+          <td><%= property.antall_hjemmehorende_personer %></td>
+        </tr>
+        <tr>
+          <td>Antall tilstedeværende personer</td>
+          <td><%= property.antall_tilstedevarende_personer %></td>
+        </tr>
+        <tr>
+          <td>Antall etasjer</td>
+          <td><%= property.antall_etasjer %></td>
+        </tr>
+        <tr>
+          <td>Antall kvist-/loftleiligheter</td>
+          <td><%= property.antall_kvistleiligheter || 0 %></td>
+        </tr>
+        <tr>
+          <td>Antall kjellerleiligheter</td>
+          <td><%= property.antall_kjellerbekvemmeligheter || 0 %></td>
+        </tr>
+        <% if (property.gaardens_eier) { %> 
+        <tr>
+          <td>Eier</td>
+          <td><%= property.gaardens_eier %></td>
+        </tr>
+        <%} %>
+    </table>
+
+    <% if(apartments) { %> 
+    <h4>Leiligheter</h4>
+    <ul class="list-group">
+        <% _.each(apartments.sort(function (a) {return parseInt(a.property.leilighetsnummer, 10)}), function (apartment) { %>
+        <li class="list-group-item">
+             <h4 class="list-group-item-heading">Leilighet <%= apartment.property.leilighetsnummer %></h4>
+             <p class="list-group-item-text">
+                <table class="sidebar-table">
+                    <tr>
+                      <td>Beliggenhet</td>
+                      <td><%= apartment.property.bekvemmelighetens_beliggenhet %></td>
+                    </tr>
+                    <tr>
+                      <td>Husleie</td>
+                      <td><%= apartment.property.husleie %></td>
+                    </tr>
+                </table>
+             </p>
+        </li>
+        <% }) %>
+    </ul>
+
+<% } %>
+
+<% } else { %> 
+
+    <h3><%= property.bostedets_navn %></h3>
+    <table class="sidebar-table">
+        <tr>
+          <td>Antall hjemmehørende personer</td>
+          <td><%= KR.Util.formatPersons(property.antall_hjemmehorende_personer) %></td>
+        </tr>
+        <tr>
+          <td>Antall tilstedeværende personer</td>
+          <td><%= KR.Util.formatPersons(property.antall_tilstedevarende_personer) %></td>
+        </tr>
+    </table>
+
+<% } %>
+
 </script>
 
 
