@@ -5,7 +5,11 @@ KR.PathTracer = function (viewer, line, geojson) {
     'use strict';
 
     var SPEED = 1.4; // m/s
-    var MULTIPLIER = 50;
+    var MULTIPLIER = 35;
+
+    var running = false;
+
+    var pitchCorr = 0;
 
     function _addClock(start, stop) {
         //Set the random number seed for consistent results.
@@ -21,12 +25,12 @@ KR.PathTracer = function (viewer, line, geojson) {
 
     function _createEntity(startTime, stopTime, position) {
         var entity = viewer.entities.add({
-            availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
-                start : startTime,
-                stop : stopTime
+            availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                start: startTime,
+                stop: stopTime
             })]),
-            position : position,
-            orientation : new Cesium.VelocityOrientationProperty(position)/*,
+            position: position,
+            orientation: new Cesium.VelocityOrientationProperty(position)/*,
             path : {
                 resolution : 1,
                 material : new Cesium.PolylineGlowMaterialProperty({
@@ -61,6 +65,10 @@ KR.PathTracer = function (viewer, line, geojson) {
 
     function _setupCamera(entity) {
         viewer.clock.onTick.addEventListener(function (clock) {
+
+            if (!running) {
+                return;
+            }
 
             //get 2 positions close together timewise
             var CC3 = Cesium.Cartesian3;
@@ -108,7 +116,7 @@ KR.PathTracer = function (viewer, line, geojson) {
             pitch += -20 / 180 * Math.PI;
 
             var range = 800;
-            var offset = new Cesium.HeadingPitchRange(angle, pitch, range);
+            var offset = new Cesium.HeadingPitchRange(angle, pitch + pitchCorr, range);
             viewer.scene.camera.lookAt(
                 entity.position.getValue(clock.currentTime),
                 offset
@@ -127,22 +135,22 @@ KR.PathTracer = function (viewer, line, geojson) {
 
         var position = _getFlight(startTime, line, feature);
         var entity = _createEntity(startTime, stopTime, position);
+        entity.position.setInterpolationOptions({
+            interpolationDegree : 5,
+            interpolationAlgorithm : Cesium.LagrangePolynomialApproximation
+        });
 
         viewer.trackedEntity = undefined;
         _setupCamera(entity);
-        /*
-        viewer.zoomTo(
-            viewer.entities,
-            new Cesium.HeadingPitchRange(0, Cesium.Math.toRadians(-90))
-        );
-        */
     }
 
     function start() {
+        running = true;
         viewer.clock.shouldAnimate = true;
     }
 
     function stop() {
+        running = false;
         viewer.clock.shouldAnimate = false;
     }
 
@@ -151,6 +159,8 @@ KR.PathTracer = function (viewer, line, geojson) {
 
     return {
         start: start,
-        stop: stop
+        stop: stop,
+        isRunning: function () {return running; },
+        setPitchCorr: function (corr) {pitchCorr = corr; }
     };
 };

@@ -1,7 +1,7 @@
 /*global Cesium:false */
 var KR = this.KR || {};
 
-KR.CesiumSidebar = function (element, templates) {
+KR.CesiumSidebar = function (element, templates, closeCallback) {
     'use strict';
 
     function show(properties) {
@@ -15,6 +15,9 @@ KR.CesiumSidebar = function (element, templates) {
 
     function _close() {
         element.hide('slide', {direction: 'left'}, 100);
+        if (closeCallback) {
+            closeCallback();
+        }
     }
 
     element.find('.close-sidebar').on('click', function () {

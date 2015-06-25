@@ -87,28 +87,38 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
     }
 
     function addNorgeIBilder() {
-        var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
+        //var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
+        var SKTokenUrl = 'http://knreise.no/nib/?type=token';
+
         KR.Util.sendRequest(SKTokenUrl, null, function (token) {
 
-            var urlParams = {
-                SERVICE: 'WMTS',
-                REQUEST: 'GetTile',
-                LAYER: 'NiB',
-                STYLE: 'normal',
-                TILEMATRIXSET: 'EPSG:900913',
-                TILEMATRIX: 'EPSG:900913:{TileMatrix}',
-                TILEROW: '{TileRow}',
-                TILECOL: '{TileCol}',
-                FORMAT: 'image/jpeg',
-                GKT: token
-            };
-            var url = 'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts';
-            url = url + '?' + createQueryParams(urlParams);
-            addImagery({
-                url : url,
-                layer : 'matrikkel_bakgrunn',
-                tileMatrixSetID : 'EPSG:3857'
-            });
+            if (token.indexOf('**') === 0) {
+                addImagery({
+                    url : 'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts?SERVICE=WMTS&REQUEST=GetTile&LAYER=matrikkel_bakgrunn&STYLE={Style}&TILEMATRIXSET=EPSG:3857&TILEMATRIX=EPSG:3857:{TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&FORMAT=image/png',
+                    layer : 'matrikkel_bakgrunn',
+                    tileMatrixSetID : 'EPSG:3857'
+                });
+            } else {
+                var urlParams = {
+                    SERVICE: 'WMTS',
+                    REQUEST: 'GetTile',
+                    LAYER: 'NiB',
+                    STYLE: 'normal',
+                    TILEMATRIXSET: 'EPSG:900913',
+                    TILEMATRIX: 'EPSG:900913:{TileMatrix}',
+                    TILEROW: '{TileRow}',
+                    TILECOL: '{TileCol}',
+                    FORMAT: 'image/jpeg',
+                    GKT: token
+                };
+                var url = 'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts';
+                url = url + '?' + createQueryParams(urlParams);
+                addImagery({
+                    url : url,
+                    layer : 'matrikkel_bakgrunn',
+                    tileMatrixSetID : 'EPSG:3857'
+                });
+            }
         });
     }
 
