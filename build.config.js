@@ -391,6 +391,7 @@ module.exports = {
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/jquery-ui/jquery-ui.min.js',
           'bower_components/turf/turf.min.js',
+          'common/js/PathTracer.js',
           'common/js/CesiumMap.js',
           'common/js/CesiumSidebar.js',
           'common/js/DatasetLoader.js'

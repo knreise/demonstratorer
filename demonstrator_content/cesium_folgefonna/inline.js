@@ -35,6 +35,27 @@ var tur = {
     type: 'gpx'
 };
 
+function simplify(geojson) {
+    return turf.featurecollection([turf.simplify(
+        geojson.features[0], 0.001, false
+    )]);
+}
+
+
+function createPolyline(heightCurve, options) {
+    options = options || {};
+    return {
+        polyline: {
+            positions: heightCurve,
+            width: options.width || 10.0,
+            material: new Cesium.PolylineGlowMaterialProperty({
+                color: options.color || Cesium.Color.BLUE ,
+                glowPower: options.glow || 0.1,
+            })
+        }
+    };
+}
+
 
 // Setting up API and retrieving the Folgefonna geojson
 var api = new KR.API();
@@ -46,19 +67,24 @@ api.getData(tur, function (geojson) {
         cesiumOptions,
         bbox
     );
+
     map.viewer.scene.imageryLayers.removeAll();
     map.addNorgeIBilder();
+    map.stopLoading();
+
+    var simple = simplify(geojson);
+    map.build3DLine(simple, function (heightCurve) {
+        var pathTracer = new KR.PathTracer(map.viewer, heightCurve, simple);
+        pathTracer.start();
+    });
+
     map.build3DLine(geojson, function (heightCurve) {
-        var folgefonna = map.viewer.entities.add({
-            polyline: {
-                positions: heightCurve,
-                width: 10.0,
-                material: new Cesium.PolylineGlowMaterialProperty({
-                    color: Cesium.Color.DEEPSKYBLUE,
-                    glowPower: 0.25
-                })
-            }
+
+        var line = createPolyline(heightCurve, {
+            color: Cesium.Color.DEEPSKYBLUE,
+            glow: 0.25
         });
+        var folgefonna = map.viewer.entities.add(line);
 
         map.viewer.zoomTo(folgefonna);
 
@@ -71,4 +97,5 @@ api.getData(tur, function (geojson) {
         map.stopLoading();
         map.addClickhandler(sidebar.show);
     });
+
 });
