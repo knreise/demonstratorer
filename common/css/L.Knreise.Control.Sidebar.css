@@ -133,3 +133,18 @@
     background-color: black;
     opacity: 0.4;
 }
+
+.leaflet-sidebar .splash-image {
+    width: 100%;
+}
+
+
+#splashscreen {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#splashscreen h2, #splashscreen .splash-content {
+    padding-left: 24px;
+    padding-right: 24px;
+}

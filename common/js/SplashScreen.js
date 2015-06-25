@@ -2,7 +2,7 @@
 
 var KR = this.KR || {};
 
-KR.SplashScreen = function (map, title, description) {
+KR.SplashScreen = function (map, title, description, image) {
     'use strict';
 
     function getShouldStayClosed() {
@@ -31,9 +31,7 @@ KR.SplashScreen = function (map, title, description) {
     };
 
     function showSidebar (e) {
-
         this._gray = L.DomUtil.create('div', 'gray', this._container);
-
         L.Control.Sidebar.prototype.show.apply(this, arguments);
     };
 
@@ -53,8 +51,11 @@ KR.SplashScreen = function (map, title, description) {
         map.addControl(sidebar);
 
         var content = '<h2>' + title + '</h2>';
+        if (image) {
+            content += '<img class="splash-image" src="' + image +'" />';
+        }
         if (description) {
-            content += description;
+            content += '<div class="splash-content">'+ description + '</div>';
         }
         sidebar.setContent(content);
         return sidebar;
@@ -65,7 +66,7 @@ KR.SplashScreen = function (map, title, description) {
         var checkbox = $('<input type="checkbox">');
 
         checkbox.prop('checked', getShouldStayClosed());
-        var label = $('<label></label');
+        var label = $('<label class="splash-content"></label');
         label.append([
             checkbox,
             ' Ikke vis ved oppstart.'
