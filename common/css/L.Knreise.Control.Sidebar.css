@@ -109,3 +109,27 @@
     font-weight: bold;
     padding-right: 10px;
 }
+
+.leaflet-sidebar.center {
+    right: -500px;
+    transition: right 0.5s, width 0.5s;
+    padding-left: 0;
+    margin-right: -500px;
+}
+
+.leaflet-sidebar.center.visible {
+    left:0;
+    right:0;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.leaflet-sidebar .gray {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: black;
+    opacity: 0.4;
+}
