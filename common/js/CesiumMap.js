@@ -3,7 +3,7 @@ var KR = this.KR || {};
 
 KR.CesiumMap = function (div, cesiumOptions, bounds) {
     'use strict';
-
+    Cesium.BingMapsApi.defaultKey = '';
     var config = {
         cesiumViewerOpts: _.extend({
             timeline: false,
