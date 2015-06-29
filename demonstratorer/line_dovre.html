@@ -62,21 +62,20 @@
 <% } else if(contentType === 'IMAGE' && images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
-<%= content %>
 
+<p><%= allProps.abm_introduction %></p>
+
+<p><%= allProps.dc_description %></p>
 
 <table class="sidebar-table">
+
     <tr>
-      <td>Forfatter</td>
-      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
     </tr>
     <tr>
-      <td>Publisert</td>
-      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Lisens</td>
-      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
     </tr>
 </table>
 
@@ -193,21 +192,20 @@
 <% } else if(contentType === 'IMAGE' && images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
-<%= content %>
 
+<p><%= allProps.abm_introduction %></p>
+
+<p><%= allProps.dc_description %></p>
 
 <table class="sidebar-table">
+
     <tr>
-      <td>Forfatter</td>
-      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
     </tr>
     <tr>
-      <td>Publisert</td>
-      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Lisens</td>
-      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
     </tr>
 </table>
 
@@ -253,7 +251,12 @@
 
 
 <script type="text/template" id="footer_template">
-<a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/>
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
 </script>
 
 

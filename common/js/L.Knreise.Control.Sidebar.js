@@ -85,11 +85,20 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
         }
+
+        if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
+            feature.properties.license = feature.properties.allProps.europeana_rights[0];
+        } else {
+            feature.properties.license = null;
+        }
+
+
         var color = KR.Style.colorForFeature(feature, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
