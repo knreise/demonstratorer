@@ -134,7 +134,7 @@ var KR = this.KR || {};
             }
             L.control.datasets(layers).addTo(map);
             if (options.title) {
-                KR.SplashScreen(map, options.title, options.description);
+                KR.SplashScreen(map, options.title, options.description, options.image);
             }
         }
 
