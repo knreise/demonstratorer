@@ -251,7 +251,7 @@ KR.Style = {};
         var html = '<div class="outer">' +
             '<div class="circle" style="' + KR.Util.createStyleString(styleDict) + '"></div>' +
             '</div>' +
-            '<b>' + photos.length + '</b>';
+            '<b>' + features.length + '</b>';
 
         return new L.DivIcon({
             className: 'leaflet-marker-photo',
