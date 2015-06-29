@@ -913,21 +913,21 @@ KR.SparqlAPI = function (BASE_URL) {
         }
 
         var features = _.map(response.results.bindings, function (item) {
-            var keys = _.without(_.keys(item), 'punkt', 'omraade');
+            var keys = _.without(_.keys(item), 'point', 'omraade');
             var attrs = _.reduce(keys, function (acc, key) {
                 acc[key] = item[key].value;
                 return acc;
             }, {});
 
-            if (!attrs.lokimg) {
-                attrs.lokimg = false;
+            if (!attrs.img) {
+                attrs.img = false;
             }
-            attrs.thumbnail = attrs.lokimg;
+            attrs.thumbnail = attrs.img;
             attrs.title = attrs.name;
 
-            if (_.has(item, 'punkt')) {
+            if (_.has(item, 'point')) {
                 return KR.Util.createGeoJSONFeatureFromGeom(
-                    _parseGeom(item.punkt),
+                    _parseGeom(item.point),
                     attrs
                 );
             }
@@ -940,36 +940,31 @@ KR.SparqlAPI = function (BASE_URL) {
             return null;
         });
 
-        //Hack untill we get the query right (removes duplicates)
-        features = _.uniq(_.compact(features), function (feature) {
-            return feature.properties.id;
-        });
-
         return KR.Util.createFeatureCollection(features);
     }
 
-    function _createQuery(dataset) {
+    function _createQuery(dataset, errorCallback) {
 
-
-        var query = 'select  ?id ?name ?beskrivelse ?loklab ?punkt ?lokimg { ' +
-            '?id a ?type . ' +
-            '?id rdfs:label ?name . ';
-        if (dataset.kommune) {
-            query += '?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune . ' +
-                '?id ?p <http://psi.datanav.info/difi/geo/kommune/' + dataset.kommune + '> . ';
+        if (!dataset.kommune) {
+            KR.Util.handleError(errorCallback, 'missing parameter kommune');
+            return;
         }
-        query += '?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?beskrivelse . ' +
-            '?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori . ' +
-            '?lokalitetskategori rdfs:label ?loklab . ' +
-            '?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?punkt . ' +
-            'optional { ' +
-            '?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id . ' +
-            '?picture <https://data.kulturminne.no/schema/source-link> ?link ' +
-            'BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
-            'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?lokimg) ' +
-            '   } ' +
-            '} ';
 
+        var query = 'select distinct ?id ?name ?description ?loccatlabel ?img (SAMPLE(?point) as ?point)  {' +
+            ' ?id a ?type ;' +
+            ' rdfs:label ?name ;' +
+            ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
+            ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
+            ' ?p <http://psi.datanav.info/difi/geo/kommune/' + dataset.kommune + '> ;' +
+            ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
+            ' ?loccat rdfs:label ?loccatlabel .' +
+            ' optional {' +
+            '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+            '  ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
+            '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+            ' }' +
+            '}';
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
         }
@@ -978,9 +973,15 @@ KR.SparqlAPI = function (BASE_URL) {
 
     function getData(dataset, callback, errorCallback, options) {
         dataset = _.extend({}, {geomType: 'point'}, dataset);
+        var query = _createQuery(dataset);
+
+        if (!query) {
+            return;
+        }
+
         var params = {
             'default-graph-uri': '',
-            'query': _createQuery(dataset),
+            'query': query,
             'format': 'application/sparql-results+json',
             'timeout': 0,
             'debug': 'off'

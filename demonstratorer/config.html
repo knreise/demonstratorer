@@ -91,34 +91,35 @@
 
 
 <script type="text/template" id="musit_template">
-<h3>MUSIT</h3>
+<h3><%= allProps.dc_title %></h3>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
 
-<dl>
-    <dt>Artefakt</dt>
-    <dd><%= allProps.dc_subject %></dd>
+<p><%= allProps.dc_description %></p>
 
-    <dt>Beskrivelse</dt>
-    <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
+<table class="sidebar-table">
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] %></td>
+    </tr>
 
-    <dt>Funnsted</dt>
-    <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
+    <% if (allProps.dc_date) { %>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] %></td>
+    </tr>
+    <% } %>
 
-    <dt>Materiale</dt>
-    <dd><%= allProps.dcterms_medium %></dd>
+    <% if (allProps.dc_creator) { %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <% } %>
+</table>
 
-    <dt>Datering</dt>
-    <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
-
-    <dt>Museum</dt>
-    <dd><%= allProps.europeana_dataProvider %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">link</a></dd>
-</dl>
 </script>
 
 
@@ -255,10 +256,18 @@
 
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
-<% if (lokimg) { %>
-<img class="fullwidth" src="<%= lokimg %>" />
+<% if (img) { %>
+<img class="fullwidth" src="<%= img %>" />
 <% } %>
-<p><%= beskrivelse %></p>
+
+<p><%= description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+</table>
 
 </script>
 

@@ -87,6 +87,7 @@ KR.Config = KR.Config || {};
                 datasets: [
                     {
                         name: 'MUSIT',
+                        provider: 'Universitetsmuseene',
                         dataset: {
                             api: 'norvegiana',
                             dataset: 'MUSIT'

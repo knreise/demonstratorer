@@ -32,5 +32,8 @@
     "L.TileLayer.Kartverket": "~1.0.0",
     "KNreiseAPI": "1.4.1",
     "html.sortable": "~0.2.9"
+  },
+  "resolutions": {
+    "KNreiseAPI": "1.4.2"
   }
 }
