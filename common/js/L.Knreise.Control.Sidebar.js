@@ -81,13 +81,13 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (getData) {
             this.setContent('');
             var self = this;
-            getData(feature, function (feature) {
-                self.showFeature(feature, template, null, callbacks, index, numFeatures);
+            getData(feature, function (newFeature) {
+                newFeature.properties = _.extend(feature.properties, newFeature.properties);
+                self.showFeature(newFeature, template, null, callbacks, index, numFeatures);
             });
             return;
         }
 
-        //console.log(feature);
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
@@ -101,7 +101,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         }
 
 
-        var color = KR.Style.colorForFeature(feature, true);
+        var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 

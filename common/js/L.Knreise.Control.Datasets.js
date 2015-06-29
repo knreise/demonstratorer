@@ -172,7 +172,7 @@ L.Control.Datasets = L.Control.extend({
             icon.className = 'layericon fa fa-spinner fa-pulse';
         }
 
-        icon.style.color = KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true);
+        icon.style.color = KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true, true);
         label.appendChild(icon);
 
 

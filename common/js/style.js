@@ -84,18 +84,22 @@ KR.Style = {};
         },
         'verneomraader': {
             fillcolor: function (feature) {
-                var c = getVerneOmrcolor(feature);
-                if (c) {
-                    return c.style.fillColor;
+                if (feature) {
+                    var c = getVerneOmrcolor(feature);
+                    if (c) {
+                        return c.style.fillColor;
+                    }
                 }
-                return "#000000";
+                return "#009300";
             },
             bordercolor: function (feature) {
-                var c = getVerneOmrcolor(feature);
-                if (c) {
-                    return c.style.color;
+                if (feature) {
+                    var c = getVerneOmrcolor(feature);
+                    if (c) {
+                        return c.style.color;
+                    }
                 }
-                return "#000000";
+                return "#009300";
             },
             thumbnail: false,
             circle: true
@@ -142,14 +146,20 @@ KR.Style = {};
         return colors[hex] || 'blue';
     }
 
-    function valueOrfunc(dict, key, feature) {
+    function valueOrfunc(dict, key, feature, dropFeature) {
         if (_.isFunction(dict[key])) {
+            if (dropFeature) {
+                return dict[key]();
+            }
             return dict[key](feature);
         }
         return dict[key];
     }
 
-    function getFillColor(config, feature) {
+    function getFillColor(config, feature, useBaseColor) {
+        if (useBaseColor) {
+            return valueOrfunc(config, 'fillcolor', feature, true);
+        }
         return valueOrfunc(config, 'fillcolor', feature);
     }
 
@@ -320,11 +330,11 @@ KR.Style = {};
         return createMarker(feature, latlng, ns.getIcon(feature, false));
     };
 
-    ns.colorForFeature = function (feature, hex) {
+    ns.colorForFeature = function (feature, hex, useBaseColor) {
         var config = getConfig(feature);
         if (config) {
             if (hex) {
-                return getFillColor(config, feature);
+                return getFillColor(config, feature, useBaseColor);
             }
             return hexToName(getFillColor(config, feature));
         }

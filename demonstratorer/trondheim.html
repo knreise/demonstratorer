@@ -53,17 +53,17 @@ som finnes med geografisk tilknytning til Trondheim.</p>
 
 
 <script type="text/template" id="verneomraader_template">
-<h3>Verneområde</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<h3><%= title %></h3>
 
-    <dt>Faktaark</dt>
-    <dd><a href="<%= link %>">naturbase.no</a></dd>
+<p><%= content %></p>
 
-    <dt>Beskrivelse</dt>
-    <dd><%= content %></dd>
-</dl>
+<table class="sidebar-table">
+    <tr>
+      <td>Verneform</td>
+      <td><%= verneform %></td>
+    </tr>
+</table>
+
 </script>
 
 
