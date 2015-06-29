@@ -675,9 +675,15 @@ KR.WikipediaAPI = function () {
         if (_.has(extraData, 'thumbnail')) {
             thumbnail = extraData.thumbnail.source;
         }
+
+        var images = null;
+        if (extraData.pageimage) {
+            images = [_getWikimediaImageUrl(extraData.pageimage)]
+        }
+
         var params = {
             thumbnail: thumbnail,
-            images: [_getWikimediaImageUrl(extraData.pageimage)],
+            images: images,
             title: item.title,
             content: extraData.extract,
             link: 'http://no.wikipedia.org/?curid=' + item.pageid,
