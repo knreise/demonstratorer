@@ -152,25 +152,44 @@
 
 
 <script type="text/template" id="digitalt_museum_template">
-<h3>Digitalt Museum</h3>
+<h3><%= title %></h3>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
 
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<p><%= allProps.dc_description %></p>
 
-    <dt>Beskrivelse</dt>
-    <dd><%= allProps.delving_description.join('<br />') %></dd>
+<table class="sidebar-table">
 
-    <dt>Kategori</dt>
-    <dd><%= allProps.europeana_dataProvider %></dd>
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
 
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
-</dl>
+    <% if (allProps.abm_address) { %>
+    <tr>
+      <td>Adresse</td>
+      <td><%= allProps.abm_address[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator){ %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_subject) { %>
+    <tr>
+      <td>Emneord</td>
+      <td><%= allProps.dc_subject.join(', ')%></td>
+    </tr>
+    <% } %>
+
+</table>
+
 </script>
 
 
