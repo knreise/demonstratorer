@@ -802,10 +802,71 @@ KR.FolketellingAPI = function () {
         KR.Util.sendRequest(url, _parser, callback, errorCallback);
     }
 
+    function _propertyParserWithPersons(res, callback, errorCallback) {
+        if (res.property.id.indexOf('gf') === 0) {
+            if (!res.apartments) {
+                res.apartments = null;
+                callback({properties: res});
+                return;
+            }
+            var apartments = [];
+
+            var finished = _.after(res.apartments.length, function () {
+                res.apartments = apartments;
+                callback({properties: res});
+            });
+
+            _.each(res.apartments, function (apartment) {
+                getData(
+                    {
+                        type: 'apartmentData',
+                        apartmentId: apartment.id
+                    },
+                    function (apartmentData) {
+                        apartments.push(apartmentData);
+                        finished();
+                    }
+                );
+            });
+            return;
+        }
+
+        callback({properties: res});
+        return;
+    }
+
+    function _propertyParser(res) {
+        if (!res.apartments) {
+            res.apartments = null;
+        }
+        return {properties: res};
+    }
+
+    function getData(dataset, callback, errorCallback, options) {
+        var url;
+        if (dataset.type === 'propertyData' && dataset.propertyId) {
+            url = BASE_URL + 'property/' + dataset.propertyId;
+            if (dataset.withPersons) {
+                KR.Util.sendRequest(url, null, function (response) {
+                    _propertyParserWithPersons(response, callback, errorCallback);
+                }, errorCallback);
+            } else {
+                KR.Util.sendRequest(url, _propertyParser, callback, errorCallback);
+            }
+        } else if (dataset.type === 'apartmentData' && dataset.apartmentId) {
+            url = BASE_URL + 'property/' + dataset.apartmentId;
+            KR.Util.sendRequest(url, null, callback, errorCallback);
+        } else {
+            KR.Util.handleError(errorCallback, 'Not enough parameters');
+        }
+    }
+
     return {
+        getData: getData,
         getWithin: getWithin
     };
 };
+
 /*global proj4:false, wellknown:false */
 var KR = this.KR || {};
 

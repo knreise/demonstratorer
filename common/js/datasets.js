@@ -57,9 +57,20 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 minZoom: 14,
                 template: _.template($('#folketelling_template').html()),
+                getFeatureData: function (feature, callback) {
+                    api.getData({
+                        api: 'folketelling',
+                        type: 'propertyData',
+                        propertyId: feature.properties.efid
+                    }, function (feature) {
+                        feature.properties.provider = 'Folketelling 1910';
+                        callback(feature);
+                    });
+                },
                 mappings: {
                     'title': 'gaardsnavn_gateadr'
-                }
+                },
+                noListThreshold: 0
             },
             'wikipedia': {
                 name: 'Wikipedia',
@@ -74,7 +85,7 @@ KR.Config = KR.Config || {};
                 grouped: true,
                 name: 'Arkeologi og historie',
                 datasets: [
-                   {
+                    {
                         name: 'MUSIT',
                         dataset: {
                             api: 'norvegiana',

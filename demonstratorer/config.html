@@ -257,7 +257,87 @@
 
 
 <script type="text/template" id="folketelling_template">
-<h3><%= gaardsnavn_gateadr %></h3>
+<% if (property.id.indexOf('g') === 0) { %> 
+    <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <p><%= property.bildelenke %></p>
+
+    <table class="sidebar-table">
+        <tr>
+          <td>Hjemmehørende</td>
+          <td><%= property.antall_hjemmehorende_personer || 0 %> personer</td>
+        </tr>
+        <tr>
+          <td>Etasjer</td>
+          <td><%= property.antall_etasjer %></td>
+        </tr>
+    </table>
+
+    <% if(apartments) { %> 
+        <% _.each(apartments.sort(function (a) {return parseInt(a.leilighetsnummer, 10)}), function (apartment) { %>
+            <table class="sidebar-table">
+                <tr colspan="2">
+                  <td><h4>Leilighet <%= apartment.leilighetsnummer %></h4></td>
+                </tr>
+                <tr>
+                  <td>Plassering</td>
+                  <td><%= apartment.bekvemmelighetens_beliggenhet %></td>
+                </tr>
+                <tr>
+                  <td>Etasje</td>
+                  <td><%= apartment.etasje %></td>
+                </tr>
+                <tr>
+                  <td>Husleie</td>
+                  <td><%= apartment.husleie %></td>
+                </tr>
+                <tr>
+                  <td>Beboere</td>
+                  <td><%= KR.Util.formatPersons(apartment.antall_hjemmehorende_personer) %></td>
+                </tr>
+                <tr colspan="2">
+                  <td>
+                    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/leilighet/<%= apartment.id %>" target="_blank">
+                      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+                    </a>
+                  </td>
+                </tr>
+            </table>
+        <% }) %>
+    </ul>
+
+<% } %>
+
+<% } else { %> 
+
+    <h3><%= property.bostedets_navn %></h3>
+
+    <% _.each(residents, function (resident) { %>
+      <table class="sidebar-table">
+          <tr colspan="2">
+            <td><h4><%= resident.fornavn %> <%= resident.patronymikon %> <%= resident.slektsnavn %></h4></td>
+          </tr>
+          <tr>
+            <td>Født</td>
+            <td><%= resident.fodselsaar %></td>
+          </tr>
+          <tr>
+            <td>Fødested</td>
+            <td><%= resident.fodested %></td>
+          </tr>
+          <tr>
+            <td>Yrke</td>
+            <td><%= resident.yrke %></td>
+          </tr>
+      </table>
+    <% }) %>
+    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/bosted_land/<%= property.id %>" target="_blank">
+      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+    </a>
+    
+
+<% } %>
+
 </script>
 
 
