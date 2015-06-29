@@ -16,6 +16,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         L.setOptions(this, options);
 
         this._template = options.template;
+
         // Find content container
         var content =  L.DomUtil.get(placeholder);
         L.DomEvent.on(content, 'click', function (e) {
@@ -85,6 +86,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             });
             return;
         }
+
         //console.log(feature);
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
@@ -108,12 +110,17 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         }
 
         if (callbacks && callbacks.close) {
-            L.DomEvent.off(this._closeButton, 'click', this.hide, this);
-            L.DomEvent.on(this._closeButton, 'click', function (e) {
+            L.DomEvent.off(this._closeButton, 'click', this.hide);
+            if (this._prevClose) {
+                L.DomEvent.off(this._closeButton, 'click', this._prevClose);
+            }
+            this._prevClose = function (e) {
                 L.DomEvent.stopPropagation(e);
                 L.DomEvent.on(this._closeButton, 'click', this.hide, this);
                 callbacks.close();
-            }, this);
+            };
+
+            L.DomEvent.on(this._closeButton, 'click', this._prevClose, this);
         }
         this.setContent(content);
         this._setupSwipe(callbacks);
