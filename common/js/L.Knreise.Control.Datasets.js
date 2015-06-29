@@ -164,7 +164,6 @@ L.Control.Datasets = L.Control.extend({
             datasetId = obj.dataset.extras.datasetId;
         }
 
-
         var icon = document.createElement('i');
         icon.id = 'dataset_chooser_icon_' + obj.id;
         icon.className = 'layericon fa fa-square';
@@ -174,7 +173,6 @@ L.Control.Datasets = L.Control.extend({
 
         icon.style.color = KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true, true);
         label.appendChild(icon);
-
 
         this._overlaysList.appendChild(label);
 
@@ -187,8 +185,8 @@ L.Control.Datasets = L.Control.extend({
     },
 
     _initLayout: function () {
-        var className = 'leaflet-control-layers',
-            container = this._container = L.DomUtil.create('div', className);
+        var className = 'leaflet-control-layers';
+        var container = this._container = L.DomUtil.create('div', '')
 
         //Makes this work on IE10 Touch devices by stopping it from firing a mouseout event when the touch is released
         container.setAttribute('aria-haspopup', true);
@@ -200,6 +198,7 @@ L.Control.Datasets = L.Control.extend({
         } else {
             L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
         }
+
 
         var form = this._form = L.DomUtil.create('form', className + '-list');
 
@@ -219,7 +218,10 @@ L.Control.Datasets = L.Control.extend({
         }
 
         container.appendChild(this._closeDiv);
-        container.appendChild(form);
+
+        this._listContainer = L.DomUtil.create('div', className);
+        this._listContainer.appendChild(form);
+        container.appendChild(this._listContainer);
     },
 
     _toggle: function () {
@@ -231,15 +233,14 @@ L.Control.Datasets = L.Control.extend({
     },
 
     _expand: function () {
-        L.DomUtil.addClass(this._container, 'leaflet-control-layers-expanded');
+        L.DomUtil.addClass(this._listContainer, 'leaflet-control-layers-expanded');
         this.expanded = true;
     },
 
     _collapse: function () {
-        this._container.className = this._container.className.replace(' leaflet-control-layers-expanded', '');
+        this._listContainer.className = this._listContainer.className.replace(' leaflet-control-layers-expanded', '');
         this.expanded = false;
     }
-
 });
 
 L.control.datasets = function (layers, options) {
