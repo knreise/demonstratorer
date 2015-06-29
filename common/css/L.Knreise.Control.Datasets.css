@@ -5,8 +5,15 @@
 
 .leaflet-control-layers .layericon {
     margin-left: 5px;
+    font-size: 18px;
+    cursor: pointer;
 }
 
 .leaflet-control-layers label.disabled {
     color: #ddd;
+}
+
+
+.leaflet-control-layers i.fa-square-o {
+    padding-right: 3px !important;
 }
