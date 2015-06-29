@@ -90,7 +90,8 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (_.isArray(img)) {
             img = img[0];
         }
-        var content = '<span class="providertext">' + feature.properties.provider + '</span>' +
+        var color = KR.Style.colorForFeature(feature, true);
+        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 
         if (this.options.footerTemplate && feature.properties.link) {
