@@ -79,7 +79,8 @@ KR.Config = KR.Config || {};
                     api: 'wikipedia'
                 },
                 style: {thumbnail: true},
-                minZoom: 13
+                minZoom: 13,
+                template: _.template($('#wikipedia_template').html())
             },
             'ark_hist': {
                 grouped: true,
