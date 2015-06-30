@@ -1,6 +1,6 @@
 //The datasets in use
 var datasets = [
-    /*{
+    {
         dataset: {
             api: 'cartodb',
             table: 'pilegrimsleden_dovre',
@@ -54,7 +54,7 @@ var datasets = [
             minSize: 20
         },
         cluster: false
-    },*/
+    },
     {
         grouped: true,
         name: 'Historie',
@@ -88,7 +88,7 @@ var datasets = [
         ],
         isStatic: false,
         minZoom: 12
-    }/*,
+    },
     {
         name: 'Artsobservasjoner',
         dataset: {
@@ -104,7 +104,7 @@ var datasets = [
         },
         cluster: false,
         minZoom: 14
-    }*/
+    }
 ];
 
 var api = new KR.API({

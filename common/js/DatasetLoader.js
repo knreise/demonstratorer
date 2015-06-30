@@ -185,7 +185,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         var lastBounds;
 
         var _reloadData = function (e, bbox, forceVisible, callback) {
-
             var first = !e;
 
             vectorLayer.enabled = _checkEnabled(dataset);
@@ -227,6 +226,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
                 function dataLoaded(geoJson) {
                     dataset.geoJson = geoJson;
+                    vectorLayer.error = null;
                     if (filter) {
                         geoJson = filter(geoJson);
                     }
@@ -245,8 +245,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 }
 
                 function loadError(error) {
+                    vectorLayer.error = error;
                     finished();
-
                     //do not display errors for abort
                     if (error.statusText === 'abort') {
                         return;
@@ -254,8 +254,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                     if (errorCallback) {
                         errorCallback({
                             dataset: dataset.name,
-                            error: error
+                            error: error,
+                            layer: vectorLayer
                         });
+                    } else {
+                        vectorLayer.fire('error', error);
                     }
                 }
 

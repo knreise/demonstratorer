@@ -372,7 +372,6 @@ var datasets = [
             limit: 10
         }
     }
-
 ];
 
 
@@ -380,7 +379,7 @@ var datasets = [
 var errorHandler = KR.errorHandler($('#error_template').html());
 
 
-var datasetLoader = new KR.DatasetLoader(api, map, null, errorHandler);
+var datasetLoader = new KR.DatasetLoader(api, map, null);
 
 //get the are we are interested in
 var dovre = 511;
@@ -388,7 +387,6 @@ api.getMunicipalityBounds(dovre, function (bbox) {
     var bounds = L.latLngBounds.fromBBoxString(bbox);
     map.fitBounds(bounds);
     var layers = datasetLoader.loadDatasets(datasets);
-
     L.control.datasets(layers).addTo(map);
 });
             }());

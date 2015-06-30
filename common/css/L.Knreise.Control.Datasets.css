@@ -17,3 +17,7 @@
 .leaflet-control-layers i.fa-square-o {
     padding-right: 3px !important;
 }
+
+i.error-icon {
+    color: #a94442;
+}

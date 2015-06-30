@@ -506,9 +506,6 @@ module.exports = {
           'common/js/setupMap.js'
         ],
         css: [
-          'bower_components/leaflet/dist/leaflet.css',
-          'bower_components/bootstrap/dist/css/bootstrap.min.css',
-          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',

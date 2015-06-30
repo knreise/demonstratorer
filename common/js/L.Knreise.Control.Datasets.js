@@ -9,6 +9,7 @@
 
     var Label = function (dataset, layer) {
         var enabled = layer.enabled;
+        var _error = null;
         var label, _icon;
 
         function _getDatasetId() {
@@ -18,13 +19,16 @@
             return dataset.extras.datasetId;
         }
 
-        function _getIcon() {
+        function _getIcon(iconAppend) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa';
             if (dataset.visible) {
                 icon.className += ' fa-check-square-o';
             } else {
                 icon.className += ' fa-square-o';
+            }
+            if (iconAppend) {
+                icon.className += ' ' + iconAppend;
             }
 
             if (layer.isLoading) {
@@ -57,8 +61,14 @@
             }
         }
 
+        function _showError(error) {
+            _error = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
+            _error.setAttribute('title', KR.parseError(error));
+            label.insertBefore(_error, label.childNodes[0]);
+        }
+
         function _createLabel() {
-            var _label = document.createElement('label');
+            label = document.createElement('label');
             if (_.isUndefined(dataset.visible)) {
                 dataset.visible = true;
             }
@@ -67,20 +77,23 @@
             name.innerHTML = ' ' + dataset.name;
 
             _icon = _getIcon();
-            _label.appendChild(_icon);
-            _label.appendChild(name);
+            label.appendChild(_icon);
+            label.appendChild(name);
 
-            if (!layer.enabled) {
-                _label.className = 'disabled';
+            if (layer.error) {
+                _showError(layer.error);
             }
 
-            L.DomEvent.on(_label, 'click', function () {
+            if (!layer.enabled) {
+                label.className = 'disabled';
+            }
+
+            L.DomEvent.on(label, 'click', function () {
                 var canToggle = layer.enabled && !layer.isLoading;
                 if (canToggle) {
                     _toggle();
                 }
             });
-            return _label;
         }
 
         function _enabledChanged() {
@@ -98,17 +111,26 @@
             }
         }
 
-        label = _createLabel();
+        _createLabel();
         layer.on('changeEnabled', _enabledChanged);
-        layer.on('dataloadstart', _redrawIcon);
+        layer.on('dataloadstart', function () {
+            if (_error) {
+                label.removeChild(_error);
+                _error = null;
+            }
+            _redrawIcon();
+        });
         layer.on('dataloadend', _redrawIcon);
-
+        layer.on('error', _showError);
         function getLabel() {
             return label;
         }
 
         return {
-            getLabel: getLabel
+            getLabel: getLabel,
+            hasError: function () {
+                return !!layer.error;
+            }
         };
     };
 
@@ -169,6 +191,25 @@
             this._checkSpinner();
         },
 
+        _hasErrors: function () {
+            return !!_.find(this._labels, function (label) {
+                return label.hasError();
+            });
+        },
+
+        _checkError: function () {
+            if (this._hasErrors()) {
+                this._errorIcon.className = this._errorIcon.className.replace(
+                    ' hidden',
+                    ''
+                );
+            } else {
+                if (this._errorIcon.className.indexOf('hidden') < 0) {
+                    this._errorIcon.className += ' hidden';
+                }
+            }
+        },
+
         _checkSpinner: function () {
             if (!this._btnIcon) {
                 return;
@@ -178,7 +219,11 @@
                     ' fa-spinner fa-pulse',
                     ' fa-bars'
                 );
+                this._checkError();
             } else {
+                if (this._errorIcon.className.indexOf('hidden') < 0) {
+                    this._errorIcon.className += ' hidden';
+                }
                 this._btnIcon.className = this._btnIcon.className.replace(
                     ' fa-bars',
                     ' fa-spinner fa-pulse'
@@ -205,6 +250,7 @@
                 label = this._labels[i];
                 this._overlaysList.appendChild(label.getLabel());
             }
+            this._checkError();
         },
 
         _initLayout: function () {
@@ -247,6 +293,8 @@
                 this._toggle();
             }, this);
 
+            this._errorIcon = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle hidden', closeBtn);
+            closeBtn.appendChild(document.createTextNode(' '));
             if (this.numLoading > 0) {
                 this._btnIcon = L.DomUtil.create('i', 'fa fa-spinner fa-pulse', closeBtn);
             } else {
@@ -255,7 +303,7 @@
 
             this._container.appendChild(this._closeDiv);
 
-            this._listContainer = L.DomUtil.create('div', className);
+            this._listContainer = L.DomUtil.create('div', className + ' hidden');
             this._listContainer.appendChild(this._form);
             this._container.appendChild(this._listContainer);
         },
@@ -274,12 +322,20 @@
                 'leaflet-control-layers-expanded'
             );
             this.expanded = true;
+            this._listContainer.className = this._listContainer.className.replace(
+                ' hidden',
+                ''
+            );
         },
 
         _collapse: function () {
             this._listContainer.className = this._listContainer.className.replace(
                 ' leaflet-control-layers-expanded',
                 ''
+            );
+            L.DomUtil.addClass(
+                this._listContainer,
+                'hidden'
             );
             this.expanded = false;
         }

@@ -2,7 +2,7 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
-    function parseError(error) {
+    ns.parseError = function (error) {
         if (error.responseJSON) {
             if (error.responseJSON.error) {
                 return error.responseJSON.error.join(', ');
@@ -15,7 +15,6 @@ var KR = this.KR || {};
             return error.statusText;
         }
         if (error.error) {
-            
             if (error.error.info) {
                 return error.error.info;
             }
@@ -25,7 +24,7 @@ var KR = this.KR || {};
             return error.error;
         }
         return 'Unknown error';
-    }
+    };
 
     ns.errorHandler = function (template) {
 
@@ -39,7 +38,7 @@ var KR = this.KR || {};
 
             var message = templ({
                 dataset: error.dataset,
-                error: parseError(error.error)
+                error: ns.parseError(error.error)
             });
             if (alert.parent()) {
                 alert.find('.content').append(message);
