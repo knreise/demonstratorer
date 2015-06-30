@@ -103,6 +103,18 @@ module.exports = {
     }
   ],
   generatedDemos: [
+    {
+      id: 'gudbrandsdalsleden',
+      name: 'Gudbrandsdalsleden',
+      description: 'Innhold langs Gudbrandsdalsleden',
+      url: 'demonstratorer/config.html?datasets=verneomr%2Cartobs%2Cwikipedia&allstatic=true&=on&line=http%3A%2F%2Fpilegrimsleden.no%2Fassets%2Fkml%2Fgudbrands_062015_r.kml&buffer=2&linecolor=%23000000&layer=norges_grunnkart_graatone'
+    }, 
+    {
+      id: 'keiserstien ',
+      name: 'Keiserstien ',
+      description: 'Innhold langs Keiserstien',
+      url: 'demonstratorer/config.html?datasets=difo%2Cark_hist%2Cwikipedia&allstatic=true&=on&line=utno%2F2.8158&buffer=2&linecolor=%230033ff&layer=norges_grunnkart_graatone'
+    }
   ],
   experiments: [
     {
