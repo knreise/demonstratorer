@@ -41,6 +41,21 @@
     border-width: 2px;
 }
 
+.knreise-sidebar .list-btn {
+    margin-top: 15px;
+    color: #333;
+    margin-left: 15px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.knreise-sidebar .top-text {
+    margin-left: 15px;
+    margin-top: 15px;
+    color: #333;
+}
+
+
 .knreise-sidebar .circle {
     background-color: #ddd;
     border-radius: 15px;
@@ -76,7 +91,7 @@
 }
 
 .knreise-sidebar .top-menu {
-    background: white none repeat scroll 0 0;
+    background: #F6F6F6 none repeat scroll 0 0;
     height: 50px;
     left: 0;
     position: absolute;

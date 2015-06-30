@@ -109,6 +109,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             content += this.options.footerTemplate(feature.properties);
         }
 
+        /*
         if (callbacks && callbacks.close) {
             L.DomEvent.off(this._closeButton, 'click', this.hide);
             if (this._prevClose) {
@@ -122,11 +123,24 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
             L.DomEvent.on(this._closeButton, 'click', this._prevClose, this);
         }
+        */
+
         this.setContent(content);
         this._setupSwipe(callbacks);
 
         this._top.innerHTML = '';
         if (callbacks) {
+            var list = L.DomUtil.create('a', 'pull-left list-btn', this._top);
+            list.innerHTML = '<i class="fa fa-bars"></i>';
+
+            var text = L.DomUtil.create('div', 'top-text pull-left', this._top);
+            text.innerHTML = index + 1 + ' av ' + numFeatures;
+
+            L.DomEvent.on(list, 'click', function () {
+                callbacks.close();
+            });
+
+            /*
             var prev = L.DomUtil.create('a', 'prev circle pull-left', this._top);
             prev.innerHTML = '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
             if (callbacks.prev) {
@@ -146,12 +160,14 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 L.DomEvent.on(next, 'click', callbacks.next);
                 L.DomUtil.addClass(next, 'active');
             }
+            */
         }
 
         if (typeof audiojs !== 'undefined') {
             audiojs.createAll();
         }
         this.show();
+        $(this.getContainer()).scrollTop(0);
     },
 
     _createListCallbacks: function (feature, index, template, getData, features, close) {
@@ -182,7 +198,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
         if (!close) {
             close = _.bind(function () {
-                this.showFeatures(features, template, getData);
+                this.showFeatures(features, template, getData, this.options.noListThreshold, true);
             }, this);
         }
 
@@ -222,16 +238,13 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         return li;
     },
 
-    showFeatures: function (features, template, getData, noListThreshold) {
+    showFeatures: function (features, template, getData, noListThreshold, forceList) {
         noListThreshold = (noListThreshold === undefined) ? this.options.noListThreshold : noListThreshold;
         var shouldSkipList = (features.length <= noListThreshold);
-        if (shouldSkipList) {
+        if (shouldSkipList && forceList !== true) {
             var feature = features[0];
             $(this.getContainer()).html('');
-            var close = _.bind(function () {
-                this.hide();
-            }, this);
-            var callbacks = this._createListCallbacks(feature, 0, template, getData, features, close);
+            var callbacks = this._createListCallbacks(feature, 0, template, getData, features);
             this.showFeature(feature, template, getData, callbacks, 0, features.length);
             return;
         }
@@ -260,6 +273,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             }, this).value();
         $(this.getContainer()).html(grouped);
         this.show();
+        $(this.getContainer()).scrollTop(0);
     },
 
     _removeContent: function () {

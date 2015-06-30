@@ -507,6 +507,7 @@ module.exports = {
         ],
         css: [
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
           'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
           'bower_components/Leaflet.Photo/Leaflet.Photo.css',
