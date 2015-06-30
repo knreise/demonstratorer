@@ -30,7 +30,7 @@
     "L.EasyButton": "*",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
     "L.TileLayer.Kartverket": "~1.0.0",
-    "KNreiseAPI": "1.4.4",
+    "KNreiseAPI": "1.4.5",
     "html.sortable": "~0.2.9"
   }
 }

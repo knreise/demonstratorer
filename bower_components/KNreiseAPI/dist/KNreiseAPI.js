@@ -949,10 +949,38 @@ KR.SparqlAPI = function (BASE_URL) {
         return KR.Util.createFeatureCollection(features);
     }
 
-    function _createQuery(dataset, errorCallback) {
+    function _parselokalitetPoly(response, errorCallback) {
+        try {
+            response = JSON.parse(response);
+        } catch (e) {
+            KR.Util.handleError(errorCallback, response);
+            return;
+        }
+        var bindings = response.results.bindings;
+        if (!bindings || bindings.length === 0) {
+            KR.Util.handleError(errorCallback);
+            return;
+        }
+        bindings[0].lok.type = 'Polygon';
+        return KR.Util.createGeoJSONFeatureFromGeom(_parseGeom(bindings[0].lok), {});
+    }
+
+    function _sendQuery(query, parse, callback, errorCallback) {
+        var params = {
+            'default-graph-uri': '',
+            'query': query,
+            'format': 'application/sparql-results+json',
+            'timeout': 0,
+            'debug': 'off'
+        };
+
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, parse, callback, errorCallback);
+    }
+
+    function _createKommuneQuery(dataset) {
 
         if (!dataset.kommune) {
-            KR.Util.handleError(errorCallback, 'missing parameter kommune');
             return;
         }
 
@@ -977,24 +1005,48 @@ KR.SparqlAPI = function (BASE_URL) {
         return query;
     }
 
-    function getData(dataset, callback, errorCallback, options) {
-        dataset = _.extend({}, {geomType: 'point'}, dataset);
-        var query = _createQuery(dataset, errorCallback);
+    function _polyForLokalitetQuery(lokalitet) {
+        return 'SELECT ?lok where ' +
+            '{ ' +
+            '  <' + lokalitet + '> <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?lok . ' +
+            '}';
+    }
 
-        if (!query) {
-            return;
+    function _polyForLokalitet(dataset, callback, errorCallback) {
+
+        var lokalitet = [];
+        if (_.isArray(dataset.lokalitet)) {
+            lokalitet = dataset.lokalitet;
+        } else {
+            lokalitet.push(dataset.lokalitet)
         }
 
-        var params = {
-            'default-graph-uri': '',
-            'query': query,
-            'format': 'application/sparql-results+json',
-            'timeout': 0,
-            'debug': 'off'
-        };
 
-        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, _parseResponse, callback, errorCallback);
+        var features = [];
+        var finished = _.after(lokalitet.length, function () {
+            callback(KR.Util.createFeatureCollection(features));
+        });
+
+        _.each(lokalitet, function (lok) {
+            _sendQuery(_polyForLokalitetQuery(lok), _parselokalitetPoly, function (geoJson) {
+                geoJson.properties.lok = lok;
+                features.push(geoJson);
+                finished();
+            }, errorCallback);
+        });
+    }
+
+
+    function getData(dataset, callback, errorCallback, options) {
+        dataset = _.extend({}, {geomType: 'point'}, dataset);
+        if (dataset.kommune) {
+            var query = _createKommuneQuery(dataset, errorCallback);
+            _sendQuery(query, _parseResponse, callback, errorCallback);
+        } else if (dataset.lokalitet && dataset.type === 'lokalitetpoly') {
+            _polyForLokalitet(dataset, callback, errorCallback);
+        } else {
+            KR.Util.handleError(errorCallback, 'not enough parameters');
+        }
     }
 
     return {

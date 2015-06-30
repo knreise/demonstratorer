@@ -53,7 +53,8 @@ KR.Style = {};
         'DiMu': 'DigitaltMuseum',
         'MUSIT': 'Musit',
         'Artsdatabanken': 'Artsdatabanken',
-        'wikipedia': 'wikipedia'
+        'wikipedia': 'wikipedia',
+        'riksantikvaren': 'riksantikvaren'
     };
 
     ns.datasets = {
@@ -81,6 +82,11 @@ KR.Style = {};
             fillcolor: '#5B396B',
             thumbnail: false,
             circle: true
+        },
+        'riksantikvaren': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: true
         },
         'verneomraader': {
             fillcolor: function (feature) {
@@ -340,7 +346,8 @@ KR.Style = {};
         }
     };
 
-    ns.getPathStyle = function (feature) {
+    ns.getPathStyle = function (feature, clickable) {
+        clickable = clickable || false;
         var config = getConfig(feature);
         var fill = getFillColor(config, feature);
         var border = getBorderColor(config, feature);
@@ -348,7 +355,7 @@ KR.Style = {};
             weight: 1,
             color: border,
             fillColor: fill,
-            clickable: false,
+            clickable: clickable,
             opacity: 0.8,
             fillOpacity: 0.4
         };

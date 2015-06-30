@@ -1,4 +1,4 @@
-/*global L:false */
+/*global L:false, turf:false */
 var KR = this.KR || {};
 
 KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
@@ -118,7 +118,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function _toggleEnabled(vectorLayer, enabled) {
-
         if (vectorLayer.enabled !== enabled) {
             vectorLayer.enabled = enabled;
             vectorLayer.fire('changeEnabled');
@@ -167,9 +166,52 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         return dataset.isStatic;
     }
 
+    function _checkLoadWhenLessThan(dataset) {
+        var datasetList = [];
+        if (dataset.datasets) {
+            datasetList = dataset.datasets;
+        } else {
+            datasetList.push(dataset);
+        }
+
+        _.each(datasetList, function (dataset) {
+            if (dataset.loadWhenLessThan) {
+
+                var check = function () {
+                    if (!dataset.geoJson) {
+                        return;
+                    }
+                    var poly = turf.bboxPolygon(KR.Util.splitBbox(map.getBounds().toBBoxString()));
+                    var inside = _.filter(dataset.geoJson.features, function (p) {
+                        return turf.inside(p, poly);
+                    });
+                    if (inside.length <= dataset.loadWhenLessThan.count) {
+                        dataset.loadWhenLessThan.callback(map, dataset, inside);
+                    } else {
+                        dataset.loadWhenLessThan.callback(map, dataset);
+                    }
+                };
+                map.on('moveend', check);
+                check();
+            }
+        });
+    }
+
+
+    function _initDataset(dataset) {
+        if (dataset.init) {
+            dataset.init(map, dataset);
+        }
+    }
 
     function _addDataset(dataset, filter, initBounds) {
         var vectorLayer = _createVectorLayer(dataset, map);
+
+        if (dataset.datasets) {
+            _.each(dataset.datasets, _initDataset);
+        } else {
+            _initDataset(dataset);
+        }
 
         function checkData(geoJson, vectorLayer) {
             if (dataset.minFeatures) {
@@ -287,11 +329,14 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             lastBounds = newBounds;
         };
 
-        _reloadData(null, initBounds);
+        _reloadData(null, initBounds, undefined, function () {
+            _checkLoadWhenLessThan(dataset);
+        });
 
         if (!_isStatic(dataset) || dataset.minZoom) {
             map.on('moveend', _reloadData);
         }
+
         _setupToggle(vectorLayer, _reloadData);
 
         return {layer: vectorLayer, reload: _reloadData};
@@ -307,13 +352,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function reload(setVisible, callback) {
-
         var finished = _.after(reloads.length, function () {
             if (callback) {
                 callback();
             }
         });
-
         _.each(reloads, function (reload) {
             reload(null, null, setVisible, finished);
         });

@@ -1,3 +1,4 @@
+/*global L:false*/
 var KR = this.KR || {};
 KR.Config = KR.Config || {};
 
@@ -6,6 +7,43 @@ KR.Config = KR.Config || {};
 
     ns.getDatasetList = function (api, komm) {
 
+        function loadKulturminnePoly(map, dataset, features) {
+            if (!features) {
+                dataset.extraFeatures.clearLayers();
+            }
+            if (features) {
+                var ids = _.map(features, function (feature) {
+                    return feature.properties.id;
+                });
+                if (ids.length) {
+                    var q = {
+                        api: 'kulturminnedataSparql',
+                        type: 'lokalitetpoly',
+                        lokalitet: ids
+                    };
+                    api.getData(q, function (geoJson) {
+                        dataset.extraFeatures.clearLayers().addData(geoJson);
+                    });
+                }
+            }
+        }
+
+        function initKulturminnePoly(map, dataset) {
+            dataset.extraFeatures = L.geoJson(null, {
+                onEachFeature: function (feature, layer) {
+                    feature.properties.datasetId = dataset.id;
+                    layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    layer.on('click', function () {
+                        var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
+                            return (parentLayer.feature.properties.id === feature.properties.lok);
+                        });
+                        if (parent) {
+                            parent.fire('click');
+                        }
+                    });
+                }
+            }).addTo(map);
+        }
 
         if (komm && komm.length === 3) {
             komm = '0' + komm;
@@ -105,6 +143,7 @@ KR.Config = KR.Config || {};
                         isStatic: false
                     },
                     {
+                        id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
                         dataset: {
@@ -113,8 +152,12 @@ KR.Config = KR.Config || {};
                         },
                         template: _.template($('#ra_sparql_template').html()),
                         bbox: false,
-                        style: {fillcolor: '#436978'},
-                        isStatic: true
+                        isStatic: true,
+                        init: initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: loadKulturminnePoly
+                        }
                     }
                 ]
             }
