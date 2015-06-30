@@ -17,20 +17,6 @@
     width: 100%;
 }
 
-.knreise-sidebar .prev {
-    color: white !important;
-}
-
-
-.knreise-sidebar .next {
-    color: white !important;
-}
-
-.knreise-sidebar .next.active, .knreise-sidebar .prev.active {
-    background-color: #A5A5A5;
-    cursor: pointer;
-}
-
 .knreise-sidebar .awesome-marker {
     position: relative;
 }
@@ -53,6 +39,29 @@
     margin-left: 15px;
     margin-top: 15px;
     color: #333;
+}
+
+
+.knreise-sidebar .prev-next-arrows {
+    position: absolute;
+    top: 50%;
+    z-index: 4000;
+}
+
+.knreise-sidebar .prev {
+    color: white !important;
+    left: -10px;
+}
+
+
+.knreise-sidebar .next {
+    color: white !important;
+    right: -10px;
+}
+
+.knreise-sidebar .next.active, .knreise-sidebar .prev.active {
+    background-color: #A5A5A5;
+    cursor: pointer;
 }
 
 

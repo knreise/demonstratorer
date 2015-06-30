@@ -109,24 +109,10 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             content += this.options.footerTemplate(feature.properties);
         }
 
-        /*
-        if (callbacks && callbacks.close) {
-            L.DomEvent.off(this._closeButton, 'click', this.hide);
-            if (this._prevClose) {
-                L.DomEvent.off(this._closeButton, 'click', this._prevClose);
-            }
-            this._prevClose = function (e) {
-                L.DomEvent.stopPropagation(e);
-                L.DomEvent.on(this._closeButton, 'click', this.hide, this);
-                callbacks.close();
-            };
-
-            L.DomEvent.on(this._closeButton, 'click', this._prevClose, this);
-        }
-        */
-
         this.setContent(content);
         this._setupSwipe(callbacks);
+
+        $(this._container).find('.prev-next-arrows').remove();
 
         this._top.innerHTML = '';
         if (callbacks) {
@@ -140,27 +126,19 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 callbacks.close();
             });
 
-            /*
-            var prev = L.DomUtil.create('a', 'prev circle pull-left', this._top);
+            var prev = L.DomUtil.create('a', 'prev-next-arrows prev circle', this._container);
             prev.innerHTML = '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
             if (callbacks.prev) {
                 L.DomEvent.on(prev, 'click', callbacks.prev);
                 L.DomUtil.addClass(prev, 'active');
             }
 
-            var indexLabel = L.DomUtil.create('span', 'headertext pull-left', this._top);
-            indexLabel.innerHTML = index + 1 + ' av';
-
-            var countLabel = L.DomUtil.create('span', 'circle pull-left', this._top);
-            countLabel.innerHTML = numFeatures;
-
-            var next = L.DomUtil.create('a', 'next circle pull-left', this._top);
+            var next = L.DomUtil.create('a', 'prev-next-arrows next circle', this._container);
             next.innerHTML = '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
             if (callbacks.next) {
                 L.DomEvent.on(next, 'click', callbacks.next);
                 L.DomUtil.addClass(next, 'active');
             }
-            */
         }
 
         if (typeof audiojs !== 'undefined') {
