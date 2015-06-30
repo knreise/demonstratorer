@@ -1,3 +1,4 @@
+/*global L:false*/
 var KR = this.KR || {};
 KR.Config = KR.Config || {};
 
@@ -25,6 +26,23 @@ KR.Config = KR.Config || {};
                     });
                 }
             }
+        }
+
+        function initKulturminnePoly(map, dataset) {
+            dataset.extraFeatures = L.geoJson(null, {
+                onEachFeature: function (feature, layer) {
+                    feature.properties.datasetId = dataset.id;
+                    layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    layer.on('click', function () {
+                        var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
+                            return (parentLayer.feature.properties.id === feature.properties.lok);
+                        });
+                        if (parent) {
+                            parent.fire('click');
+                        }
+                    });
+                }
+            }).addTo(map);
         }
 
         if (komm && komm.length === 3) {
@@ -106,7 +124,7 @@ KR.Config = KR.Config || {};
                 grouped: true,
                 name: 'Arkeologi og historie',
                 datasets: [
-                    /*{
+                    {
                         name: 'MUSIT',
                         provider: 'Universitetsmuseene',
                         dataset: {
@@ -123,8 +141,9 @@ KR.Config = KR.Config || {};
                         },
                         template: _.template($('#digitalt_museum_template').html()),
                         isStatic: false
-                    },*/
+                    },
                     {
+                        id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
                         dataset: {
@@ -133,11 +152,8 @@ KR.Config = KR.Config || {};
                         },
                         template: _.template($('#ra_sparql_template').html()),
                         bbox: false,
-                        style: {fillcolor: '#436978'},
                         isStatic: true,
-                        init: function (map, dataset) {
-                            dataset.extraFeatures = L.geoJson().addTo(map);
-                        },
+                        init: initKulturminnePoly,
                         loadWhenLessThan: {
                             count: 5,
                             callback: loadKulturminnePoly
