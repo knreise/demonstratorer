@@ -4,6 +4,11 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
+    function _stringEndsWith(a, str) {
+        var lastIndex = a.lastIndexOf(str);
+        return (lastIndex !== -1) && (lastIndex + str.length === a.length);
+    }
+
     function _setupSidebar(map) {
         var popupTemplate = _.template($('#popup_template').html());
         var listElementTemplate = _.template($('#list_item_template').html());
@@ -78,36 +83,78 @@ var KR = this.KR || {};
         callback(bounds, datasets);
     }
 
-    function _lineHandler(options, api, datasets, fromUrl, callback) {
-        if (options.line.indexOf('utno/') !== 0) {
-            return;
-        }
-        var id = options.line.replace('utno/', '');
-        var lineData = {
-            api: 'utno',
-            id: id,
-            type: 'gpx'
-        };
-        api.getData(lineData, function (line) {
-            var lineOptions = {};
-            if (options.linecolor) {
-                lineOptions.color = options.linecolor;
-            }
-            var lineLayer = L.geoJson(line, lineOptions);
-            var bounds = lineLayer.getBounds();
-            datasets = _loadDatasets(api, datasets, fromUrl);
+    function _flattenCollections(featureCollection) {
 
-            function filter(features) {
-                if (line && options.buffer) {
-                    var buffered = turf.buffer(line, options.buffer, 'kilometers');
-                    var within = turf.within(features, buffered);
-                    return within;
-                }
-                return features;
-            }
+        var features = [];
 
-            callback(bounds, datasets, filter, lineLayer);
+        _.each(featureCollection.features, function (feature) {
+            if (feature.geometry.type === 'GeometryCollection') {
+                _.each(feature.geometry.geometries, function (geometry) {
+                    features.push(KR.Util.createGeoJSONFeatureFromGeom(geometry, feature.properties));
+                });
+            } else {
+                features.push(feature);
+            }
         });
+        return KR.Util.createFeatureCollection(features);
+    }
+
+    function _simplify(featureCollection) {
+        var features = _.map(featureCollection.features, function (feature) {
+            return turf.simplify(feature, 0.01, false);
+        });
+        return KR.Util.createFeatureCollection(features);
+    }
+
+    function _gotLine(line, api, options, datasets, fromUrl, callback) {
+        var lineOptions = {};
+        if (options.linecolor) {
+            lineOptions.color = options.linecolor;
+        }
+        var lineLayer = L.geoJson(line, lineOptions);
+        var bounds = lineLayer.getBounds();
+        datasets = _loadDatasets(api, datasets, fromUrl);
+
+        function filter(features) {
+            if (line && options.buffer) {
+                line = _flattenCollections(line);
+                if (line.features.length > 5) {
+                    line = _simplify(line);
+                }
+                var buffered = turf.buffer(line, options.buffer, 'kilometers');
+                var within = turf.within(features, buffered);
+                return within;
+            }
+            return features;
+        }
+
+        callback(bounds, datasets, filter, lineLayer);
+    }
+
+    function _lineHandler(options, api, datasets, fromUrl, callback) {
+
+        var lineData;
+
+        if (options.line.indexOf('utno/') === 0) {
+            var id = options.line.replace('utno/', '');
+            lineData = {
+                api: 'utno',
+                id: id,
+                type: 'gpx'
+            };
+        } else if (options.line.indexOf('http') === 0) {
+            if (_stringEndsWith(options.line, 'kml')) {
+                lineData = {
+                    api: 'kml',
+                    url: options.line
+                };
+            }
+        }
+        if (lineData) {
+            api.getData(lineData, function (line) {
+                _gotLine(line, api, options, datasets, fromUrl, callback);
+            });
+        }
     }
 
 
