@@ -16,6 +16,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         L.setOptions(this, options);
 
         this._template = options.template;
+
         // Find content container
         var content =  L.DomUtil.get(placeholder);
         L.DomEvent.on(content, 'click', function (e) {
@@ -80,17 +81,28 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         if (getData) {
             this.setContent('');
             var self = this;
-            getData(feature, function (feature) {
-                self.showFeature(feature, template, null, callbacks, index, numFeatures);
+            getData(feature, function (newFeature) {
+                newFeature.properties = _.extend(feature.properties, newFeature.properties);
+                self.showFeature(newFeature, template, null, callbacks, index, numFeatures);
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
         }
-        var content = '<span class="providertext">' + feature.properties.provider + '</span>' +
+
+        if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
+            feature.properties.license = feature.properties.allProps.europeana_rights[0];
+        } else {
+            feature.properties.license = null;
+        }
+
+
+        var color = KR.Style.colorForFeature(feature, true, true);
+        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 
         if (this.options.footerTemplate && feature.properties.link) {
@@ -98,12 +110,17 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         }
 
         if (callbacks && callbacks.close) {
-            L.DomEvent.off(this._closeButton, 'click', this.hide, this);
-            L.DomEvent.on(this._closeButton, 'click', function (e) {
+            L.DomEvent.off(this._closeButton, 'click', this.hide);
+            if (this._prevClose) {
+                L.DomEvent.off(this._closeButton, 'click', this._prevClose);
+            }
+            this._prevClose = function (e) {
                 L.DomEvent.stopPropagation(e);
                 L.DomEvent.on(this._closeButton, 'click', this.hide, this);
                 callbacks.close();
-            }, this);
+            };
+
+            L.DomEvent.on(this._closeButton, 'click', this._prevClose, this);
         }
         this.setContent(content);
         this._setupSwipe(callbacks);

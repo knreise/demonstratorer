@@ -103,17 +103,17 @@
 
 
 <script type="text/template" id="verneomraader_template">
-<h3>Verneområde</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<h3><%= title %></h3>
 
-    <dt>Faktaark</dt>
-    <dd><a href="<%= link %>">naturbase.no</a></dd>
+<p><%= content %></p>
 
-    <dt>Beskrivelse</dt>
-    <dd><%= content %></dd>
-</dl>
+<table class="sidebar-table">
+    <tr>
+      <td>Verneform</td>
+      <td><%= verneform %></td>
+    </tr>
+</table>
+
 </script>
 
 
@@ -154,57 +154,77 @@
 
 
 <script type="text/template" id="musit_template">
-<h3>MUSIT</h3>
+<h3><%= allProps.dc_title %></h3>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
 
-<dl>
-    <dt>Artefakt</dt>
-    <dd><%= allProps.dc_subject %></dd>
+<p><%= allProps.dc_description %></p>
 
-    <dt>Beskrivelse</dt>
-    <dd><% print(allProps.dc_description ? allProps.dc_description : '-') %></dd>
+<table class="sidebar-table">
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] %></td>
+    </tr>
 
-    <dt>Funnsted</dt>
-    <dd><% print(allProps.abm_estateName ? allProps.abm_estateName : '-') %></dd>
+    <% if (allProps.dc_date) { %>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] %></td>
+    </tr>
+    <% } %>
 
-    <dt>Materiale</dt>
-    <dd><%= allProps.dcterms_medium %></dd>
+    <% if (allProps.dc_creator) { %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <% } %>
+</table>
 
-    <dt>Datering</dt>
-    <dd><% print(allProps.dc_date ? allProps.dc_date : '-') %></dd>
-
-    <dt>Museum</dt>
-    <dd><%= allProps.europeana_dataProvider %></dd>
-
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">link</a></dd>
-</dl>
 </script>
 
 
 <script type="text/template" id="digitalt_museum_template">
-<h3>Digitalt Museum</h3>
+<h3><%= title %></h3>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
 
-<dl>
-    <dt>Navn</dt>
-    <dd><%= title %></dd>
+<p><%= allProps.dc_description %></p>
 
-    <dt>Beskrivelse</dt>
-    <dd><%= allProps.delving_description.join('<br />') %></dd>
+<table class="sidebar-table">
 
-    <dt>Kategori</dt>
-    <dd><%= allProps.europeana_dataProvider %></dd>
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
 
-    <dt>Mer informasjon</dt>
-    <dd><a href="<%= link %>" target="_blank">digitaltmuseum.no</a></dd>
-</dl>
+    <% if (allProps.abm_address) { %>
+    <tr>
+      <td>Adresse</td>
+      <td><%= allProps.abm_address[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator){ %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_subject) { %>
+    <tr>
+      <td>Emneord</td>
+      <td><%= allProps.dc_subject.join(', ')%></td>
+    </tr>
+    <% } %>
+
+</table>
+
 </script>
 
 
@@ -226,21 +246,20 @@
 <% } else if(contentType === 'IMAGE' && images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
-<%= content %>
 
+<p><%= allProps.abm_introduction %></p>
+
+<p><%= allProps.dc_description %></p>
 
 <table class="sidebar-table">
+
     <tr>
-      <td>Forfatter</td>
-      <td><%= allProps.delving_creator[0] || allProps.dc_creator[0] || 'n/a' %></td>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
     </tr>
     <tr>
-      <td>Publisert</td>
-      <td><%= allProps.abm_digitised[0] || allProps.dcterms_created[0] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Lisens</td>
-      <td><%= allProps.europeana_rights[0] || 'Opphavsrett' %></td>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
     </tr>
 </table>
 
@@ -281,7 +300,12 @@
 
 
 <script type="text/template" id="footer_template">
-<a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/>
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
 </script>
 
 
@@ -295,10 +319,18 @@
 
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
-<% if (lokimg) { %>
-<img class="fullwidth" src="<%= lokimg %>" />
+<% if (img) { %>
+<img class="fullwidth" src="<%= img %>" />
 <% } %>
-<p><%= beskrivelse %></p>
+
+<p><%= description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+</table>
 
 </script>
 
@@ -435,6 +467,17 @@
     </tr>
     <% } %>
 </table>
+</script>
+
+
+<script type="text/template" id="wikipedia_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
 </script>
 
 

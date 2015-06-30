@@ -65,7 +65,8 @@ module.exports = {
           'marker',
           'thumbnail',
           'footer',
-          'error'
+          'error',
+          'wikipedia'
         ]
     },
     {
@@ -121,7 +122,8 @@ module.exports = {
           'thumbnail',
           'footer',
           'error',
-          'ra_sparql'
+          'ra_sparql',
+          'wikipedia'
         ]
     },
     {
@@ -535,7 +537,8 @@ module.exports = {
           'flickr',
           'husmann',
           'folketelling',
-          'brukerminne'
+          'brukerminne',
+          'wikipedia'
         ]
     },
     {
@@ -567,7 +570,8 @@ module.exports = {
           'flickr',
           'husmann',
           'folketelling',
-          'brukerminne'
+          'brukerminne',
+          'wikipedia'
         ]
     },
     {

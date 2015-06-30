@@ -1,5 +1,13 @@
 <h3><%= name %></h3>
-<% if (lokimg) { %>
-<img class="fullwidth" src="<%= lokimg %>" />
+<% if (img) { %>
+<img class="fullwidth" src="<%= img %>" />
 <% } %>
-<p><%= beskrivelse %></p>
+
+<p><%= description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+</table>
