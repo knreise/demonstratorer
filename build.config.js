@@ -12,9 +12,99 @@ module.exports = {
   commonCss: [
     'bower_components/components-font-awesome/css/font-awesome.min.css',
     'bower_components/leaflet/dist/leaflet.css',
-    'bower_components/bootstrap/dist/css/bootstrap.min.css',
+    'bower_components/bootstrap/dist/css/bootstrap.min.css'
   ],
+  demoScriptsExternal: [
+    'bower_components/jquery/dist/jquery.min.js',
+    'bower_components/underscore/underscore-min.js',
+    'bower_components/leaflet/dist/leaflet.js',
+    'bower_components/esri2geo/esri2geo.js',
+    'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
+    'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js',
+    'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
+    'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
+    'bower_components/turf/turf.min.js',
+    'bower_components/togeojson/togeojson.js',
+    'bower_components/wellknown/wellknown.js',
+    'bower_components/proj4/dist/proj4.js',
+    'bower_components/CryptoJS/build/components/core.js',
+    'bower_components/CryptoJS/build/components/md5.js',
+    'bower_components/audiojs/audiojs/audio.min.js',
+    'bower_components/video.js/dist/video-js/video.js',
+    'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+    'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+    'bower_components/L.EasyButton/easy-button.js',
+  ],
+  demoScripts: [
+    'common/js/ErrorHandler.js',
+    'common/js/util.js',
+    'common/js/style.js',
+    'common/js/L.Knreise.MarkerClusterGroup.js',
+    'common/js/L.Knreise.GeoJSON.js',
+    'common/js/L.Knreise.Control.Sidebar.js',
+    'common/js/L.Knreise.Control.Datasets.js',
+    'common/js/L.Knreise.Icon.js',
+    'common/js/DatasetLoader.js',
+    'common/js/L.Knreise.LocateButton.js',
+    'common/js/norgeibilder.js',
+    'common/js/datasets.js',
+    'common/js/SplashScreen.js',
+    'common/js/setupMap.js'
+  ],
+  demoCssExternal: [
+    'bower_components/components-font-awesome/css/font-awesome.min.css',
+    'bower_components/leaflet/dist/leaflet.css',
+    'bower_components/bootstrap/dist/css/bootstrap.min.css',
+    'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+    'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+    'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
+    'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
+    'bower_components/Leaflet.Photo/Leaflet.Photo.css',
+    'bower_components/video.js/dist/video-js/video-js.css',
+  ],
+  demoCss: [
+    'common/css/fullscreenmap.css',
+    'common/css/markers.css',
+    'common/css/L.Knreise.Control.Sidebar.css',
+    'common/css/L.Knreise.Control.Datasets.css',
+    'common/css/audiojs.css'
+  ],
+  demoTemplates: [
+    'popup',
+    'verneomraader',
+    'kulturminne',
+    'musit',
+    'digitalt_museum',
+    'digitalt_fortalt',
+    'list_item',
+    'fangstgrop',
+    'marker',
+    'thumbnail',
+    'footer',
+    'error',
+    'ra_sparql',
+    'flickr',
+    'husmann',
+    'folketelling',
+    'brukerminne',
+    'wikipedia'
+  ],
+
   demonstrators: [
+    {
+      id: 'dovre',
+      name: 'Dovre',
+      description: 'Demonstrator med fokus på Dovre'
+    },
+    {
+      id: 'trondheim',
+      name: 'Trondheim',
+      description: 'Demonstrator med fokus på Trondheim'
+    }
+  ],
+  generatedDemos: [
+  ],
+  experiments: [
       {
         key: 'dovre',
         name: 'Dovre',
