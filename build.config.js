@@ -284,6 +284,7 @@ module.exports = {
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
+          'common/js/L.Knreise.Icon.js',
           'common/js/L.NorvegianaGeoJSON.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/L.Knreise.Control.Datasets.js',
@@ -325,6 +326,7 @@ module.exports = {
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
           'common/js/L.Knreise.GeoJSON.js',
+          'common/js/L.Knreise.Icon.js',
           'common/js/L.Knreise.Control.Datasets.js',
           'common/js/DatasetLoader.js'
           
@@ -441,6 +443,34 @@ module.exports = {
           'common/css/L.Knreise.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Datasets.css',
           'common/css/audiojs.css'
+        ],
+        templates: [
+          'popup',
+          'verneomraader',
+          'kulturminne',
+          'musit',
+          'digitalt_museum',
+          'digitalt_fortalt',
+          'list_item',
+          'fangstgrop',
+          'marker',
+          'thumbnail',
+          'footer',
+          'error'
+        ]
+    },
+    {
+        key: 'style',
+        name: 'Stiler',
+        scripts: [
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'common/js/L.Knreise.Icon.js',
+          'common/js/style.js'
+        ],
+        css: [
+          'bower_components/Leaflet.Photo/Leaflet.Photo.css',
+          'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
+          'common/css/markers.css'
         ],
         templates: [
           'popup',

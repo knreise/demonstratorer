@@ -39,12 +39,8 @@ module.exports = function(grunt) {
                 }).join('\n');
 
                 demonstrator.desc = fs.readFileSync('demonstratorer/desc_' + demonstrator.id + '.txt', 'utf8');
-
-                //demonstrator.html = fs.readFileSync('./demonstrator_content/' + demonstrator.key + '/html.html', 'utf8');
                 demonstrator.inline_js = fs.readFileSync('demonstratorer/' + demonstrator.id + '.js', 'utf8');
-
                 demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
-
                 demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
 
                 fs.writeSync(fd, t(demonstrator));
@@ -102,7 +98,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['./demonstrator_content/**/*.*', './templates/**/*.*', './build.config.js'],
+        files: ['./experiments_content/**/*.*', './templates/**/*.*', './build.config.js'],
         tasks: ['default'],
         options: {
           spawn: true,
