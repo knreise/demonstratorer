@@ -1,5 +1,5 @@
 var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
-var datasetTemplate = _.template('<li draggable="true" class="list-group-item" value="<%= key %>"><%= name %></li>');
+var datasetTemplate = _.template($('#dataset_template').html());
 
 var api = new KR.API({
     cartodb: {
@@ -159,21 +159,36 @@ function buildDatasetList(element) {
     var datasetConfig = KR.Config.getDatasetList(api, null);
     var datasets = _.map(datasetConfig, function (value, key) {
         var name = value.name || key;
-        return datasetTemplate({name: name, key: key});
+        var description = value.description || 'Ingen beskrivelse';
+        return datasetTemplate({
+            name: name,
+            key: key,
+            description: description
+        });
     });
-    $('#datasets-available').html(datasets);
-
-    $('#datasets-available, #datasets-selected').sortable({
-        connectWith: '.connected'
-    }).bind('sortupdate', function () {
-        callback();
-    });
+    $('#datasets')
+        .html(datasets)
+        .sortable().bind('sortupdate', function () {
+            callback();
+        })
+        .find('input[name="datasetsCheckbox"]')
+        .change(function (a) {
+            callback();
+        });
 
     return {
         getValues: function () {
-            var checked = _.map($('#datasets-selected').find('li'), function (li) {
-                return $(li).attr('value');
-            });
+            var checkboxes = $('#datasets').find('input[name="datasetsCheckbox"]');
+            var checked = _.chain(checkboxes)
+                .filter(function (checkbox) {
+                    return checkbox.checked;
+                })
+                .map(function (checkbox) {
+                    return $(checkbox).val();
+                })
+                .value();
+            console.log(checked);
+
             return {
                 datasets: checked.join(',')
             };

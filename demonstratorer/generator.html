@@ -40,17 +40,7 @@
     <div class="row">
         <div class="col-md-4">
             <h3>Datasett</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>Tilgengelige</h4>
-                    <ul id="datasets-available" class="droplist list-group connected sortable list"></ul>
-                </div>
-                <div class="col-md-6">
-                    <h4>Valgte</h4>
-                    <ul id="datasets-selected" class="droplist  list-group connected sortable list"></ul>
-                </div>
-            </div>
-            
+            <ul id="datasets" class="list-group"></ul>
         </div>
         <div class="col-md-2">
             <h3>Bakgrunnskart</h3>
@@ -66,6 +56,18 @@
     </div>
 </div>
 </form>
+
+<script type="text/template" id="dataset_template">
+    <li class="list-group-item">
+        <h4 class="list-group-item-heading">
+            <input type="checkbox" value="<%= key %>" name="datasetsCheckbox" />
+            <%= name %>
+        </h4>
+        <p class="list-group-item-text">
+            <%= description %>
+        </p>
+    </li>
+</script>
 
 <script type="text/template" id="municipality_template">
     <h3><input type="radio" name="inputType" /> Kommune</h3>
@@ -500,7 +502,7 @@
                 'use strict';
 
                 var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
-var datasetTemplate = _.template('<li draggable="true" class="list-group-item" value="<%= key %>"><%= name %></li>');
+var datasetTemplate = _.template($('#dataset_template').html());
 
 var api = new KR.API({
     cartodb: {
@@ -660,21 +662,36 @@ function buildDatasetList(element) {
     var datasetConfig = KR.Config.getDatasetList(api, null);
     var datasets = _.map(datasetConfig, function (value, key) {
         var name = value.name || key;
-        return datasetTemplate({name: name, key: key});
+        var description = value.description || 'Ingen beskrivelse';
+        return datasetTemplate({
+            name: name,
+            key: key,
+            description: description
+        });
     });
-    $('#datasets-available').html(datasets);
-
-    $('#datasets-available, #datasets-selected').sortable({
-        connectWith: '.connected'
-    }).bind('sortupdate', function () {
-        callback();
-    });
+    $('#datasets')
+        .html(datasets)
+        .sortable().bind('sortupdate', function () {
+            callback();
+        })
+        .find('input[name="datasetsCheckbox"]')
+        .change(function (a) {
+            callback();
+        });
 
     return {
         getValues: function () {
-            var checked = _.map($('#datasets-selected').find('li'), function (li) {
-                return $(li).attr('value');
-            });
+            var checkboxes = $('#datasets').find('input[name="datasetsCheckbox"]');
+            var checked = _.chain(checkboxes)
+                .filter(function (checkbox) {
+                    return checkbox.checked;
+                })
+                .map(function (checkbox) {
+                    return $(checkbox).val();
+                })
+                .value();
+            console.log(checked);
+
             return {
                 datasets: checked.join(',')
             };

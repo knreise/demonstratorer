@@ -55,7 +55,8 @@ KR.Config = KR.Config || {};
                 dataset: {dataset: 'difo', api: 'norvegiana'},
                 cluster: true,
                 template: _.template($('#digitalt_fortalt_template').html()),
-                noListThreshold: Infinity
+                noListThreshold: Infinity,
+                description: 'Digitalt fortalt'
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -75,7 +76,8 @@ KR.Config = KR.Config || {};
                     stopPolyClick: true,
                     minSize: 20
                 },
-                cluster: false
+                cluster: false,
+                description: 'Verneområder fra Naturbase, polygoner og punkter'
             },
             'artobs': {
                 name: 'Artsobservasjoner',
@@ -83,7 +85,8 @@ KR.Config = KR.Config || {};
                     api: 'norvegiana',
                     dataset: 'Artsdatabanken'
                 },
-                cluster: false
+                cluster: false,
+                description: 'Artsobservasjoner fra Artsdatabanken'
             },
             'folketelling': {
                 name: 'Folketelling 1910',
@@ -108,7 +111,8 @@ KR.Config = KR.Config || {};
                 mappings: {
                     'title': 'gaardsnavn_gateadr'
                 },
-                noListThreshold: 0
+                noListThreshold: 0,
+                description: 'Eiendommer fra folketelling 1910'
             },
             'wikipedia': {
                 name: 'Wikipedia',
@@ -118,7 +122,8 @@ KR.Config = KR.Config || {};
                 },
                 style: {thumbnail: true},
                 minZoom: 13,
-                template: _.template($('#wikipedia_template').html())
+                template: _.template($('#wikipedia_template').html()),
+                description: 'Geotaggede artikler fra bokmålswikipedia'
             },
             'ark_hist': {
                 grouped: true,
@@ -159,7 +164,8 @@ KR.Config = KR.Config || {};
                             callback: loadKulturminnePoly
                         }
                     }
-                ]
+                ],
+                description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
             }
         };
     };
