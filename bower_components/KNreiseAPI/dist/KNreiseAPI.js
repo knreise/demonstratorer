@@ -979,7 +979,7 @@ KR.SparqlAPI = function (BASE_URL) {
 
     function getData(dataset, callback, errorCallback, options) {
         dataset = _.extend({}, {geomType: 'point'}, dataset);
-        var query = _createQuery(dataset);
+        var query = _createQuery(dataset, errorCallback);
 
         if (!query) {
             return;

@@ -115,9 +115,8 @@ var KR = this.KR || {};
         options = options || {};
 
         var map = _createMap(options);
-        var errorHandler = KR.errorHandler($('#error_template').html());
         var sidebar = _setupSidebar(map);
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, errorHandler);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
