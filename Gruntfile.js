@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     "file-creator": {
 
       "build-index": {
-        'index.html': function(fs, fd, done) {
+        'demonstratorer/index.html': function(fs, fd, done) {
             grunt.util._.templateSettings.interpolate = /\{\{=(.+?)\}\}/g;
             grunt.util._.templateSettings.evaluate =  /\{\{(.+?)\}\}/g;
             var t = grunt.util._.template(fs.readFileSync('grunt_templates/index.html.tpl', 'utf8'));

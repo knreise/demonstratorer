@@ -513,7 +513,7 @@ var api = new KR.API({
 
 function toggleInputs(element, disabled) {
     var inputs = element.find('select, input:not([type="radio"])');
-    if (disabled)  {
+    if (disabled) {
         inputs.attr('disabled', 'disabled');
     } else {
         inputs.removeAttr('disabled');
@@ -562,7 +562,7 @@ function buildLimitSelections(ids, municipalities) {
     });
 
     _.each(elements, function (element) {
-        element.find('select, input').on('change', function (e) {
+        element.find('select, input').on('change', function () {
             if (callback) {
                 callback();
             }
@@ -690,7 +690,6 @@ function buildDatasetList(element) {
                     return $(checkbox).val();
                 })
                 .value();
-            console.log(checked);
 
             return {
                 datasets: checked.join(',')
