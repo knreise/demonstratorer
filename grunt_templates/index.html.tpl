@@ -50,7 +50,7 @@
         <div class="col-md-6">
           <h2>Demonstratorgenerator</h2>
           <p>Det er enkelt å generere sin egen demonstrator ved hjelp av et web-verktøy!</p>
-          <p><a class="btn btn-default" href="experiments/generator.html" role="button">Prøv her &raquo;</a></p>
+          <p><a class="btn btn-default" href="demonstratorer/generator.html" role="button">Prøv her &raquo;</a></p>
        </div>
     </div>
     <div class="row">
