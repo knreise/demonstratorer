@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     "file-creator": {
 
       "build-index": {
-        'demonstratorer/index.html': function(fs, fd, done) {
+        'experiments/index.html': function(fs, fd, done) {
             grunt.util._.templateSettings.interpolate = /\{\{=(.+?)\}\}/g;
             grunt.util._.templateSettings.evaluate =  /\{\{(.+?)\}\}/g;
             var t = grunt.util._.template(fs.readFileSync('grunt_templates/index.html.tpl', 'utf8'));
@@ -22,7 +22,7 @@ module.exports = function(grunt) {
       "build-demos": {
         files: grunt.util._.map(userConfig.demonstrators, function (demonstrator) {
             return {
-              file: 'demonstratorer/' + demonstrator.key + '.html',
+              file: 'experiments/' + demonstrator.key + '.html',
               method: function(fs, fd, done) {
                   grunt.util._.templateSettings.interpolate = /\{\{=(.+?)\}\}/g;
                   grunt.util._.templateSettings.evaluate =  /\{\{(.+?)\}\}/g;
