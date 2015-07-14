@@ -371,7 +371,10 @@ KR.Style = {};
 
     var verneomrTypes = {
         landskapsvern: {
-            ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV', 'NM', 'BVV'],
+            ids: [
+                'LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV',
+                'NM', 'BVV', 'PO', 'DO', 'D'
+            ],
             style: {
                 fillColor: '#d8cb7a',
                 color: '#9c8f1b'
