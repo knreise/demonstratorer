@@ -2496,10 +2496,41 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
+    var WORLD = {
+        'type': 'Feature',
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [[
+                [-180, -90],
+                [-180,  90],
+                [ 180,  90],
+                [ 180, -90],
+                [-180, -90]
+            ]]
+        }
+    };
+
+
     function _stringEndsWith(a, str) {
         var lastIndex = a.lastIndexOf(str);
         return (lastIndex !== -1) && (lastIndex + str.length === a.length);
     }
+
+    function _getFilter(buffer) {
+        return function (features) {
+
+            if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
+                return turf.within(features, buffer);
+            }
+            var intersects =  _.filter(features.features, function (feature) {
+                var bbox = turf.extent(feature);
+                var bboxPolygon = turf.bboxPolygon(bbox);
+                return !!turf.intersect(bboxPolygon, buffer.features[0]);
+            });
+            return KR.Util.createFeatureCollection(intersects);
+        };
+    }
+
 
     function _setupSidebar(map) {
         var popupTemplate = _.template($('#popup_template').html());
@@ -2541,7 +2572,11 @@ var KR = this.KR || {};
 
     function _createMap(options) {
         //create the map
-        var map = L.map('map', {maxZoom: 21});
+        var map = L.map('map', {
+            minZoom: 3,
+            maxZoom: 21,
+            maxBounds: L.geoJson(WORLD).getBounds()
+        });
 
         var baseLayer = options.layer || 'norges_grunnkart_graatone';
 
@@ -2560,12 +2595,36 @@ var KR = this.KR || {};
         return datasets;
     }
 
+    function _addInverted(map, feature) {
+        var style = {
+            stroke: false,
+            fillColor: '#ddd',
+            fillOpacity: 0.8
+        };
+        L.geoJson(turf.erase(WORLD, feature), style).addTo(map);
+    }
+
 
     function _municipalityHandler(options, api, datasets, fromUrl, callback) {
         api.getMunicipalityBounds(options.komm, function (bbox) {
             datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
             var bounds = L.latLngBounds.fromBBoxString(bbox);
             callback(bounds, datasets);
+        });
+    }
+
+    function _countyHandler(options, api, datasets, fromUrl, callback) {
+        var county = {
+            api: 'cartodb',
+            query: 'SELECT ST_AsGeoJSON(the_geom) as geom FROM fylker WHERE fylkesnr = ' + options.fylke
+        };
+
+        api.getData(county, function (geoJson) {
+            _addInverted(options.map, geoJson.features[0]);
+            var layer = L.geoJson(geoJson);
+            datasets = _loadDatasets(api, datasets, fromUrl);
+            var filter = _getFilter(geoJson);
+            callback(layer.getBounds(), datasets, filter);
         });
     }
 
@@ -2607,26 +2666,15 @@ var KR = this.KR || {};
         var bounds = lineLayer.getBounds();
         datasets = _loadDatasets(api, datasets, fromUrl);
 
-        function filter(features) {
-            if (line && options.buffer) {
-                line = _flattenCollections(line);
-                if (line.features.length > 5) {
-                    line = _simplify(line);
-                }
-                var buffered = turf.buffer(line, options.buffer, 'kilometers');
-                if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
-                    return turf.within(features, buffered);
-                }
-                var intersects =  _.filter(features.features, function (feature) {
-                    var bbox = turf.extent(feature);
-                    var bboxPolygon = turf.bboxPolygon(bbox);
-                    return !!turf.intersect(bboxPolygon, buffered.features[0]);
-                });
-                return KR.Util.createFeatureCollection(intersects);
+        var filter;
+        if (line && options.buffer) {
+            line = _flattenCollections(line);
+            if (line.features.length > 5) {
+                line = _simplify(line);
             }
-            return features;
+            var buffer = turf.buffer(line, options.buffer, 'kilometers');
+            filter = _getFilter(buffer);
         }
-
         callback(bounds, datasets, filter, lineLayer);
     }
 
@@ -2683,7 +2731,7 @@ var KR = this.KR || {};
             }
 
             map.fitBounds(bounds);
-            var layers = datasetLoader.loadDatasets(datasets, null, filter);
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter);
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
@@ -2694,8 +2742,11 @@ var KR = this.KR || {};
             }
         }
 
+        options.map = map;
         if (options.komm) {
             _municipalityHandler(options, api, datasetIds, fromUrl, showDatasets);
+        } else if (options.fylke) {
+            _countyHandler(options, api, datasetIds, fromUrl, showDatasets);
         } else if (options.line) {
             _lineHandler(options, api, datasetIds, fromUrl, showDatasets);
         } else if (options.bbox) {
