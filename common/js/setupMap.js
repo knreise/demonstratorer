@@ -169,6 +169,12 @@ var KR = this.KR || {};
             if (options.allstatic) {
                 datasets = _.map(datasets, function (dataset) {
                     dataset.isStatic = true;
+                    if (dataset.datasets) {
+                        dataset.datasets = _.map(dataset.datasets, function (dataset) {
+                            dataset.isStatic = true;
+                            return dataset;
+                        });
+                    }
                     return dataset;
                 });
             }

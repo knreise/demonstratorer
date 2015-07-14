@@ -98,7 +98,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['./experiments_content/**/*.*', './templates/**/*.*', './build.config.js'],
+        files: ['./common/js/*.*', './experiments_content/**/*.*', './templates/**/*.*', './build.config.js'],
         tasks: ['default'],
         options: {
           spawn: true,
@@ -135,7 +135,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('demos', ['concat', 'uglify', 'file-creator:build-demos', 'file-creator:build-index2']);
 
-  grunt.registerTask('default', ['file-creator:build-experiments', 'file-creator:build-index']);
+  grunt.registerTask('default', ['file-creator:build-experiments', 'file-creator:build-index', 'concat', 'uglify']);
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');

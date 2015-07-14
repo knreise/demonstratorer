@@ -1890,6 +1890,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
         if (dataset.datasets) {
+
+            dataset.datasets = _.filter(dataset.datasets, function (dataset) {
+                return !dataset.noLoad;
+            });
             _.each(dataset.datasets, _initDataset);
         } else {
             _initDataset(dataset);
@@ -2045,6 +2049,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function loadDatasets(datasets, bounds, filter) {
+
+        datasets = _.filter(datasets, function (dataset) {
+            return !dataset.noLoad;
+        });
+
         var res = _.map(datasets, function (dataset) {
 
             //extend with defaults
@@ -2227,7 +2236,7 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
-        return {
+        var list = {
             'difo': {
                 name: 'Digitalt fortalt',
                 dataset: {dataset: 'difo', api: 'norvegiana'},
@@ -2346,6 +2355,11 @@ KR.Config = KR.Config || {};
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
             }
         };
+        if (!komm) {
+            list.ark_hist.datasets[2].noLoad = true;
+        }
+
+        return list;
     };
 
     ns.getDatasets = function (ids, api, komm) {
@@ -2643,6 +2657,12 @@ var KR = this.KR || {};
             if (options.allstatic) {
                 datasets = _.map(datasets, function (dataset) {
                     dataset.isStatic = true;
+                    if (dataset.datasets) {
+                        dataset.datasets = _.map(dataset.datasets, function (dataset) {
+                            dataset.isStatic = true;
+                            return dataset;
+                        });
+                    }
                     return dataset;
                 });
             }

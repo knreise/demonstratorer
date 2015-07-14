@@ -49,7 +49,7 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
-        return {
+        var list = {
             'difo': {
                 name: 'Digitalt fortalt',
                 dataset: {dataset: 'difo', api: 'norvegiana'},
@@ -168,6 +168,11 @@ KR.Config = KR.Config || {};
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
             }
         };
+        if (!komm) {
+            list.ark_hist.datasets[2].noLoad = true;
+        }
+
+        return list;
     };
 
     ns.getDatasets = function (ids, api, komm) {

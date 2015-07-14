@@ -208,6 +208,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
         if (dataset.datasets) {
+
+            dataset.datasets = _.filter(dataset.datasets, function (dataset) {
+                return !dataset.noLoad;
+            });
             _.each(dataset.datasets, _initDataset);
         } else {
             _initDataset(dataset);
@@ -363,6 +367,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
     function loadDatasets(datasets, bounds, filter) {
+
+        datasets = _.filter(datasets, function (dataset) {
+            return !dataset.noLoad;
+        });
+
         var res = _.map(datasets, function (dataset) {
 
             //extend with defaults
