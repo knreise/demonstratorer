@@ -652,6 +652,7 @@ KR.WikipediaAPI = function () {
     }
 
     function _getWikimediaDetails(pageIds, callback) {
+
         //this is a bit strange, we use a genrator for extraxts and pageImages,
         //but since the API limits response length we'll have to repeat it
         //see wikiGeneratorQuery
@@ -700,13 +701,18 @@ KR.WikipediaAPI = function () {
         try {
             //since the wikipedia API does not include details, we have to ask for 
             //them seperately (based on page id), and then join them
-            var pageIds = _.pluck(response.query.geosearch, 'pageid').join('|');
-            _getWikimediaDetails(pageIds, function (pages) {
-                var features = _.map(response.query.geosearch, function (item) {
-                    return _parseWikimediaItem(item, pages);
+            var pageIds = _.pluck(response.query.geosearch, 'pageid');
+
+            if (!pageIds.length) {
+                callback(KR.Util.createFeatureCollection([]));
+            } else {
+                _getWikimediaDetails(pageIds.join('|'), function (pages) {
+                    var features = _.map(response.query.geosearch, function (item) {
+                        return _parseWikimediaItem(item, pages);
+                    });
+                    callback(KR.Util.createFeatureCollection(features));
                 });
-                callback(KR.Util.createFeatureCollection(features));
-            });
+            }
         } catch (error) {
             KR.Util.handleError(errorCallback, response.error.info);
         }
@@ -911,12 +917,6 @@ KR.SparqlAPI = function (BASE_URL) {
     }
 
     function _parseResponse(response, errorCallback) {
-        try {
-            response = JSON.parse(response);
-        } catch (e) {
-            KR.Util.handleError(errorCallback, response);
-            return;
-        }
 
         var features = _.map(response.results.bindings, function (item) {
             var keys = _.without(_.keys(item), 'point', 'omraade');
@@ -1186,7 +1186,7 @@ KR.API = function (options) {
     var kulturminnedataSparqlAPI;
     if (KR.SparqlAPI) {
         kulturminnedataSparqlAPI = new KR.SparqlAPI(
-            'http://crossorigin.me/https://sparql.kulturminne.no/'
+            'https://sparql.kulturminne.no/'
         );
     }
 
