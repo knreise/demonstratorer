@@ -139,9 +139,14 @@ var KR = this.KR || {};
     }
 
     function _lineHandler(options, api, datasets, fromUrl, callback) {
+        if (_.isFunction(options.line)) {
+            options.line(function (line) {
+                _gotLine(line, api, options, datasets, fromUrl, callback);
+            });
+            return;
+        }
 
         var lineData;
-
         if (options.line.indexOf('utno/') === 0) {
             var id = options.line.replace('utno/', '');
             lineData = {
@@ -163,7 +168,6 @@ var KR = this.KR || {};
             });
         }
     }
-
 
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
@@ -207,6 +211,7 @@ var KR = this.KR || {};
         } else {
             alert('Missing parameters!');
         }
+        return map;
     };
 
     ns.setupMapFromUrl = function (api, datasetIds, options) {

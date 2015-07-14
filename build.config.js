@@ -100,6 +100,11 @@ module.exports = {
       id: 'trondheim',
       name: 'Trondheim',
       description: 'Demonstrator med fokus på Trondheim'
+    },
+    {
+      id: 'kjaerlighetsstien',
+      name: 'Kjærlighetsstien med Gamlegata',
+      description: 'Brukergenerert og bearbeidet innhold knyttet til turrunde som omfatter Kjærlighetsstien og Gamlegata i Gvarv i Telemark'
     }
   ],
   generatedDemos: [

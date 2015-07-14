@@ -23,6 +23,7 @@
 {{ _.each(scriptLinks, function (script) { }}
         <script src="../{{= script }}" type="text/javascript"></script>{{ }) }}
         <script type="text/javascript">
+            var title = '{{= name }}';
             {{= inline_js }}
         </script>
     </body>
