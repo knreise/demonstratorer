@@ -582,7 +582,9 @@ function buildLimitSelections(ids, municipalities) {
                 values = extras[ids[selected]];
             }
             return _.reduce(elements[selected].find('select, input'), function (acc, el) {
-                acc[el.id] = $(el).val();
+                if (el.id) {
+                  acc[el.id] = $(el).val();
+                }
                 return acc;
             }, values);
         },
@@ -719,6 +721,7 @@ function setupClick(element, limits, layer, datasets, title) {
             layer.getValues(),
             title.getValues()
         );
+
         var path = window.location.pathname;
         var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') +  '/config.html?' + KR.Util.createQueryParameterString(params);
         $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
