@@ -105,6 +105,11 @@ module.exports = {
       id: 'kjaerlighetsstien',
       name: 'Kjærlighetsstien med Gamlegata',
       description: 'Brukergenerert og bearbeidet innhold knyttet til turrunde som omfatter Kjærlighetsstien og Gamlegata i Gvarv i Telemark'
+    },
+    {
+      id: 'folkemusikk',
+      name: 'Folkemusikk',
+      description: 'Tematisk demo knyttet til folkemusikk i Bø og Sauherad'
     }
   ],
   generatedDemos: [
