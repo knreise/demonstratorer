@@ -76,6 +76,7 @@ KR.Config = KR.Config || {};
                     stopPolyClick: true,
                     minSize: 20
                 },
+                minZoom: 10,
                 cluster: false,
                 description: 'Verneområder fra Naturbase, polygoner og punkter'
             },

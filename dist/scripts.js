@@ -2263,6 +2263,7 @@ KR.Config = KR.Config || {};
                     stopPolyClick: true,
                     minSize: 20
                 },
+                minZoom: 10,
                 cluster: false,
                 description: 'Verneområder fra Naturbase, polygoner og punkter'
             },
@@ -2610,8 +2611,15 @@ var KR = this.KR || {};
                     line = _simplify(line);
                 }
                 var buffered = turf.buffer(line, options.buffer, 'kilometers');
-                var within = turf.within(features, buffered);
-                return within;
+                if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
+                    return turf.within(features, buffered);
+                }
+                var intersects =  _.filter(features.features, function (feature) {
+                    var bbox = turf.extent(feature);
+                    var bboxPolygon = turf.bboxPolygon(bbox);
+                    return !!turf.intersect(bboxPolygon, buffered.features[0]);
+                });
+                return KR.Util.createFeatureCollection(intersects);
             }
             return features;
         }
@@ -2672,6 +2680,7 @@ var KR = this.KR || {};
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
+
             L.control.datasets(layers).addTo(map);
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
