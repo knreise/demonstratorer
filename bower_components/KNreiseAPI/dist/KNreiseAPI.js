@@ -295,29 +295,28 @@ KR.CartodbAPI = function (user, apikey) {
         return mapper;
     }
 
-    function getMunicipalityBounds(municipalities, callback, errorCallback) {
-        if (!_.isArray(municipalities)) {
-            municipalities = [municipalities];
+    function _toArray(value) {
+        if (!_.isArray(value)) {
+            return [value];
         }
+        return value;
+    }
 
+    function getMunicipalityBounds(municipalities, callback, errorCallback) {
         var sql = _createSelect(
             'ST_Extent(the_geom)',
             'kommuner',
-            'komm in (' + municipalities.join(', ') + ')'
+            'komm in (' + _toArray(municipalities).join(', ') + ')'
         );
 
         _executeSQL(sql, _parseExtent, callback, errorCallback);
     }
 
     function getCountyBounds(counties, callback, errorCallback) {
-        if (!_.isArray(counties)) {
-            counties = [counties];
-        }
-
         var sql = _createSelect(
             'ST_Extent(the_geom)',
             'fylker',
-            'fylkesnr in (' + counties.join(', ') + ')'
+            'fylkesnr in (' + _toArray(counties).join(', ') + ')'
         );
 
         _executeSQL(sql, _parseExtent, callback, errorCallback);
@@ -339,13 +338,14 @@ KR.CartodbAPI = function (user, apikey) {
             sql = _createSelect(
                 'ST_AsGeoJSON(the_geom) as geom',
                 'fylker',
-                'fylkesnr = ' + dataset.county
+                'fylkesnr in (' + _toArray(dataset.county).join(', ') + ')'
             );
         } else if (dataset.municipality) {
+
             sql = _createSelect(
                 'ST_AsGeoJSON(the_geom) as geom',
                 'kommuner',
-                'komm = ' + dataset.county
+                'komm in (' + _toArray(dataset.municipality).join(', ') + ')'
             );
         }
         if (sql) {

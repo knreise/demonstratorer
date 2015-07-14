@@ -288,7 +288,13 @@ KR.Util = KR.Util || {};
         }
         return _.reduce(queryString.replace('?', '').split('&'), function (acc, qs) {
             qs = qs.split('=');
-            acc[qs[0]] = qs[1];
+            var value = qs[1];
+            if (value === 'true') {
+                value = true;
+            } else if (value === 'false') {
+                value = false;
+            }
+            acc[qs[0]] = value;
             return acc;
         }, {});
     };

@@ -124,7 +124,7 @@ module.exports = {
       id: 'telemark',
       name: 'Telemark',
       description: 'Telemark',
-      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Cark_hist&fylke=8&layer=norges_grunnkart_graatone'
+      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Cark_hist&fylke=8&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
     }
   ],
   experiments: [

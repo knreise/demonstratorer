@@ -339,7 +339,13 @@ KR.Util = KR.Util || {};
         }
         return _.reduce(queryString.replace('?', '').split('&'), function (acc, qs) {
             qs = qs.split('=');
-            acc[qs[0]] = qs[1];
+            var value = qs[1];
+            if (value === 'true') {
+                value = true;
+            } else if (value === 'false') {
+                value = false;
+            }
+            acc[qs[0]] = value;
             return acc;
         }, {});
     };
@@ -2595,37 +2601,69 @@ var KR = this.KR || {};
         return datasets;
     }
 
-    function _addInverted(map, feature) {
+    function _addInverted(map, geoJson) {
         var style = {
             stroke: false,
             fillColor: '#ddd',
             fillOpacity: 0.8
         };
-        L.geoJson(turf.erase(WORLD, feature), style).addTo(map);
+
+        var data = _.reduce(geoJson.features, function (geom, feature) {
+            return turf.erase(geom, feature);
+        }, WORLD);
+        L.geoJson(data, style).addTo(map);
     }
+
+
+    function _getloader(options, api, datasets, boundsFunc, id, paramName, callback) {
+        if (options.geomFilter) {
+            var dataset = {
+                api: 'cartodb'
+            };
+            dataset[paramName] = id;
+            api.getData(dataset, function (geoJson) {
+                if (options.showGeom) {
+                    _addInverted(options.map, geoJson);
+                }
+                var layer = L.geoJson(geoJson);
+
+                var filter = _getFilter(geoJson);
+                callback(layer.getBounds(), datasets, filter);
+            });
+        } else {
+            boundsFunc(id, function (bbox) {
+                var bounds = L.latLngBounds.fromBBoxString(bbox);
+                callback(bounds, datasets);
+            });
+        }
+    }
+
 
 
     function _municipalityHandler(options, api, datasets, fromUrl, callback) {
-        api.getMunicipalityBounds(options.komm, function (bbox) {
-            datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
-            var bounds = L.latLngBounds.fromBBoxString(bbox);
-            callback(bounds, datasets);
-        });
+        datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
+        _getloader(
+            options,
+            api,
+            datasets,
+            api.getMunicipalityBounds,
+            options.komm.split(','),
+            'municipality',
+            callback
+        );
     }
 
     function _countyHandler(options, api, datasets, fromUrl, callback) {
-        var county = {
-            api: 'cartodb',
-            county: options.fylke
-        };
-
-        api.getData(county, function (geoJson) {
-            _addInverted(options.map, geoJson.features[0]);
-            var layer = L.geoJson(geoJson);
-            datasets = _loadDatasets(api, datasets, fromUrl);
-            var filter = _getFilter(geoJson);
-            callback(layer.getBounds(), datasets, filter);
-        });
+        datasets = _loadDatasets(api, datasets, fromUrl);
+        _getloader(
+            options,
+            api,
+            datasets,
+            api.getCountyBounds,
+            options.fylke.split(','),
+            'county',
+            callback
+        );
     }
 
     function _bboxHandler(options, api, datasets, fromUrl, callback) {
@@ -2711,6 +2749,7 @@ var KR = this.KR || {};
 
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
+        options = _.extend({geomFilter: false, showGeom: false}, options);
 
         var map = _createMap(options);
         var sidebar = _setupSidebar(map);
