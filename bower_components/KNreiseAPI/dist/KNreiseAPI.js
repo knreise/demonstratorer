@@ -263,7 +263,7 @@ KR.CartodbAPI = function (user, apikey) {
         KR.Util.sendRequest(url, mapper, callback, errorCallback);
     }
 
-    function _parseMunicipalities(response) {
+    function _parseExtent(response) {
         var extent = response.rows[0].st_extent;
         return extent.replace('BOX(', '').replace(')', '').replace(/ /g, ',');
     }
@@ -306,20 +306,49 @@ KR.CartodbAPI = function (user, apikey) {
             'komm in (' + municipalities.join(', ') + ')'
         );
 
-        _executeSQL(sql, _parseMunicipalities, callback, errorCallback);
+        _executeSQL(sql, _parseExtent, callback, errorCallback);
+    }
+
+    function getCountyBounds(counties, callback, errorCallback) {
+        if (!_.isArray(counties)) {
+            counties = [counties];
+        }
+
+        var sql = _createSelect(
+            'ST_Extent(the_geom)',
+            'fylker',
+            'fylkesnr in (' + counties.join(', ') + ')'
+        );
+
+        _executeSQL(sql, _parseExtent, callback, errorCallback);
     }
 
     function getData(dataset, callback, errorCallback) {
         var mapper = _getMapper(dataset);
+        var sql;
         if (dataset.query) {
-            _executeSQL(dataset.query, mapper, callback, errorCallback);
+            sql = dataset.query;
         } else if (dataset.table) {
             var select = ['*'];
             if (_.has(columnList, dataset.table)) {
                 select = _.keys(columnList[dataset.table]);
             }
             select.push('ST_AsGeoJSON(the_geom) as geom');
-            var sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
+            sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
+        } else if (dataset.county) {
+            sql = _createSelect(
+                'ST_AsGeoJSON(the_geom) as geom',
+                'fylker',
+                'fylkesnr = ' + dataset.county
+            );
+        } else if (dataset.municipality) {
+            sql = _createSelect(
+                'ST_AsGeoJSON(the_geom) as geom',
+                'kommuner',
+                'komm = ' + dataset.county
+            );
+        }
+        if (sql) {
             _executeSQL(sql, mapper, callback, errorCallback);
         }
     }
@@ -359,6 +388,7 @@ KR.CartodbAPI = function (user, apikey) {
         getData: getData,
         getWithin: getWithin,
         getMunicipalityBounds: getMunicipalityBounds,
+        getCountyBounds: getCountyBounds,
         mappers: mappers
     };
 };
@@ -1317,12 +1347,26 @@ KR.API = function (options) {
         );
     }
 
+    function getCountyBounds(counties, callback, errorCallback) {
+        if (!cartodbAPI) {
+            throw new Error('CartoDB api not configured!');
+        }
+        cartodbAPI.getCountyBounds(
+            counties,
+            callback,
+            errorCallback
+        );
+    }
+
     return {
-        getWithin: getWithin,
-        datasets: function () {return _.extend({}, datasets); },
-        getMunicipalityBounds: getMunicipalityBounds,
         getData: getData,
+        getWithin: getWithin,
         getBbox: getBbox,
+        getMunicipalityBounds: getMunicipalityBounds,
+        getCountyBounds: getCountyBounds,
+        datasets: function () {
+            return _.extend({}, datasets);
+        },
         getNorvegianaItem: function (item, callback) {
             apis.norvegiana.getItem(item, callback);
         }

@@ -2616,7 +2616,7 @@ var KR = this.KR || {};
     function _countyHandler(options, api, datasets, fromUrl, callback) {
         var county = {
             api: 'cartodb',
-            query: 'SELECT ST_AsGeoJSON(the_geom) as geom FROM fylker WHERE fylkesnr = ' + options.fylke
+            county: options.fylke
         };
 
         api.getData(county, function (geoJson) {

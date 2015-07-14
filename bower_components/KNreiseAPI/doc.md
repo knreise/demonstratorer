@@ -145,7 +145,8 @@ To use this api you must provide a config-object when initializing the api.
 * **table** The table to query
 * **columns** ``<string[]> `` a list of columns to fetch (default = ``*``)
 * **query** ``<string>`` A complete SQL query to CartoDB (must include a the_geom column in GeoJSON format)
-
+* **county** ``<string>`` A norwegian county number (returns just geom)
+* **municipality** ``<string>`` A norwegian municipality number (returns just geom)
 
 #### folketelling
 * ***dataset***: ``<string>`` Name of the dataset, currently only 'property'
