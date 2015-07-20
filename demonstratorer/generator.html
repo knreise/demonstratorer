@@ -721,15 +721,23 @@ function getTitle(element) {
 function buildDatasetList(element) {
     var callback;
     var datasetConfig = KR.Config.getDatasetList(api, null);
-    var datasets = _.map(datasetConfig, function (value, key) {
-        var name = value.name || key;
-        var description = value.description || 'Ingen beskrivelse';
-        return datasetTemplate({
-            name: name,
-            key: key,
-            description: description
-        });
-    });
+    
+
+    var datasets = _.chain(datasetConfig)
+      .filter(function (dataset) {
+          return !dataset.hideFromGenerator;
+      })
+      .map(function (value, key) {
+          var name = value.name || key;
+          var description = value.description || 'Ingen beskrivelse';
+          return datasetTemplate({
+              name: name,
+              key: key,
+              description: description
+          });
+      })
+      .value();
+
     $('#datasets')
         .html(datasets)
         .sortable().bind('sortupdate', function () {

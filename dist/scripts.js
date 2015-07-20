@@ -2372,6 +2372,24 @@ KR.Config = KR.Config || {};
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
+            },
+            'riksantikvaren': {
+                id: 'riksantikvaren',
+                name: 'Riksantikvaren',
+                hideFromGenerator: true,
+                provider: 'Riksantikvaren',
+                dataset: {
+                    api: 'kulturminnedataSparql',
+                    kommune: komm
+                },
+                template: _.template($('#ra_sparql_template').html()),
+                bbox: false,
+                isStatic: true,
+                init: kulturminneFunctions.initKulturminnePoly,
+                loadWhenLessThan: {
+                    count: 5,
+                    callback: kulturminneFunctions.loadKulturminnePoly
+                }
             }
         };
         if (!komm) {
