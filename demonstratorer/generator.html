@@ -28,7 +28,9 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2" id="municipality_container">
+        <div class="col-md-2">
+          <div id="municipality_container"></div>
+          <div id="county_container"></div>
         </div>
         <div class="col-md-2" id="line_container">
         </div>
@@ -69,12 +71,22 @@
 
 <script type="text/template" id="municipality_template">
     <h3><input type="radio" name="inputType" /> Kommune</h3>
-    <select id="komm" class="form-control">
+    <select id="komm" class="form-control" multiple>
     <% _.each(municipalities, function (municipality) { %>
         <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
     <% }) %>
     </select>
 </script>
+
+<script type="text/template" id="county_template">
+    <h3><input type="radio" name="inputType" /> Fylke</h3>
+    <select id="fylke" class="form-control" multiple>
+    <% _.each(counties, function (county) { %>
+        <option value="<%= county.fylkesnr %>"><%= county.navn %></option>
+    <% }) %>
+    </select>
+</script>
+
 
 <script type="text/template" id="line_template">
     <h3><input type="radio" name="inputType" /> Linje</h3>
@@ -528,7 +540,7 @@ function toggleInputs(element, disabled) {
 }
 
 
-function buildLimitSelections(ids, municipalities) {
+function buildLimitSelections(ids, municipalities, counties) {
     var callback;
     var selected = 0;
 
@@ -541,7 +553,8 @@ function buildLimitSelections(ids, municipalities) {
     var elements = _.map(ids, function (id, idx) {
         var template = _.template($('#' + id + '_template').html());
         var element = $('#' + id + '_container').html(template({
-            municipalities: municipalities
+            municipalities: municipalities,
+            counties: counties
         }));
         if (idx !== selected) {
             toggleInputs(element, true);
@@ -596,6 +609,17 @@ function buildLimitSelections(ids, municipalities) {
 
 }
 
+function getCountyList(callback) {
+    var dataset = {
+        api: 'cartodb',
+        query: 'SELECT fylkesnr, navn FROM fylker ORDER BY navn',
+        mapper: function (data) {
+            return data.rows;
+        }
+    };
+
+    api.getData(dataset, callback);
+}
 
 function getMunicipalityList(callback) {
     var dataset = {
@@ -738,12 +762,26 @@ function setupClick(element, limits, layer, datasets, title) {
 }
 
 
-getMunicipalityList(function (municipalities) {
-    var limits = buildLimitSelections(['municipality', 'line', 'bbox'], municipalities);
+var counties, municipalities;
+
+var fetched = _.after(2, function () {
+    var limits = buildLimitSelections(['municipality', 'county', 'line', 'bbox'], municipalities, counties);
     var title = getTitle($('#title'));
     var datasets = buildDatasetList($('#datasets'));
     var layer = buildLayerList($('#layers'));
     setupClick($('#generate'), limits, layer, datasets, title);
+});
+
+
+getCountyList(function (res) {
+    counties = res;
+    fetched();
+});
+
+
+getMunicipalityList(function (res) {
+    municipalities = res;
+    fetched();
 });
 
             }());
