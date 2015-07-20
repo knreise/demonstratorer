@@ -55,6 +55,7 @@
         <div class="col-md-2">
             <h3>Bakgrunnskart</h3>
             <select id="layers" class="form-control"></select>
+            <div id="layers_map"></div>
         </div>
     </div>
     <div class="row">
@@ -657,10 +658,21 @@ function buildLayerList(element) {
         .map(layerTemplate)
         .value();
 
+    var map = L.map('layers_map').setView([65.5, 17.0], 4);
+    var layer = L.tileLayer.kartverket(selected).addTo(map);
 
     element.html(options);
 
     element.on('change', function (e) {
+        if (layer) {
+          map.removeLayer(layer);
+        }
+        var layerName = element.val();
+        if (L.tileLayer.kartverket.getLayers().indexOf(layerName) !== -1) {
+          layer = L.tileLayer.kartverket(layerName).addTo(map);
+        } else {
+          layer = null;
+        }
         callback();
     });
 
