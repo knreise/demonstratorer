@@ -980,12 +980,6 @@ KR.SparqlAPI = function (BASE_URL) {
     }
 
     function _parselokalitetPoly(response, errorCallback) {
-        try {
-            response = JSON.parse(response);
-        } catch (e) {
-            KR.Util.handleError(errorCallback, response);
-            return;
-        }
         var bindings = response.results.bindings;
         if (!bindings || bindings.length === 0) {
             KR.Util.handleError(errorCallback);

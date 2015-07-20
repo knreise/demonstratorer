@@ -5,9 +5,9 @@ KR.Config = KR.Config || {};
 (function (ns) {
     'use strict';
 
-    ns.getDatasetList = function (api, komm) {
+    ns.getKulturminneFunctions = function (api) {
 
-        function loadKulturminnePoly(map, dataset, features) {
+        var loadKulturminnePoly = function (map, dataset, features) {
             if (!features) {
                 dataset.extraFeatures.clearLayers();
             }
@@ -26,9 +26,9 @@ KR.Config = KR.Config || {};
                     });
                 }
             }
-        }
+        };
 
-        function initKulturminnePoly(map, dataset) {
+        var initKulturminnePoly = function (map, dataset) {
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
                     feature.properties.datasetId = dataset.id;
@@ -43,7 +43,17 @@ KR.Config = KR.Config || {};
                     });
                 }
             }).addTo(map);
-        }
+        };
+
+        return {
+            loadKulturminnePoly: loadKulturminnePoly,
+            initKulturminnePoly: initKulturminnePoly
+        };
+    };
+
+    ns.getDatasetList = function (api, komm) {
+
+        var kulturminneFunctions = ns.getKulturminneFunctions(api);
 
         if (komm && komm.length === 3) {
             komm = '0' + komm;
@@ -159,10 +169,10 @@ KR.Config = KR.Config || {};
                         template: _.template($('#ra_sparql_template').html()),
                         bbox: false,
                         isStatic: true,
-                        init: initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly,
                         loadWhenLessThan: {
                             count: 5,
-                            callback: loadKulturminnePoly
+                            callback: kulturminneFunctions.loadKulturminnePoly
                         }
                     }
                 ],
