@@ -92,14 +92,27 @@ module.exports = {
 
   demonstrators: [
     {
-      id: 'dovre',
-      name: 'Dovre',
-      description: 'Demonstrator med fokus på Dovre'
+      id: 'gudbrandsdalsleden',
+      name: 'Gudbrandsdalsleden',
+      description: 'Hele pilegrimsleden med alt relevant innhold langs og i en viss avstand til denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.',
+      url: 'demonstratorer/config.html?datasets=verneomr%2Cartobs%2Cwikipedia&allstatic=true&line=http%3A%2F%2Fpilegrimsleden.no%2Fassets%2Fkml%2Fgudbrands_062015_r.kml&buffer=2&linecolor=%23000000&layer=norges_grunnkart_graatone'
+    }, 
+    {
+      id: 'telemark',
+      name: 'Telemark',
+      description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
+      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Cark_hist&fylke=8&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
     },
     {
-      id: 'trondheim',
-      name: 'Trondheim',
-      description: 'Demonstrator med fokus på Trondheim'
+      id: 'dovre',
+      name: 'Dovre',
+      description: 'Løsning som fokuserer på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold - spesielt fra samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.'
+    },
+    {
+      id: 'keiserstien ',
+      name: 'Keiserstien ',
+      description: 'Samarbeid med DNT og Riksantikvaren om å velge ut en av de rutene de arbeider med. Visning av data for en utvalgt historisk vandrerute og utvalgte data fra aktuelle kilder i nærheten av denne.',
+      url: 'demonstratorer/config.html?datasets=difo%2Cark_hist%2Cwikipedia&allstatic=true&line=utno%2F2.8158&buffer=2&linecolor=%230033ff&layer=norges_grunnkart_graatone'
     },
     {
       id: 'kjaerlighetsstien',
@@ -107,29 +120,20 @@ module.exports = {
       description: 'Brukergenerert og bearbeidet innhold knyttet til turrunde som omfatter Kjærlighetsstien og Gamlegata i Gvarv i Telemark'
     },
     {
+      id: 'oslo',
+      name: 'Oslo',
+      description: 'Stedsbegrenset demonstrator med spesiell fokus på kunst og arkitektur, men også innhold fra pilotarbeidet knyttet til Akerselva og integrasjon med andre lokale kilder.',
+      url: 'demonstratorer/config.html?datasets=difo%2Cfolketelling&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
+    },
+    {
       id: 'folkemusikk',
       name: 'Folkemusikk',
       description: 'Tematisk demo knyttet til folkemusikk i Bø og Sauherad'
-    }
-  ],
-  generatedDemos: [
-    {
-      id: 'gudbrandsdalsleden',
-      name: 'Gudbrandsdalsleden',
-      description: 'Innhold langs Gudbrandsdalsleden',
-      url: 'demonstratorer/config.html?datasets=verneomr%2Cartobs%2Cwikipedia&allstatic=true&line=http%3A%2F%2Fpilegrimsleden.no%2Fassets%2Fkml%2Fgudbrands_062015_r.kml&buffer=2&linecolor=%23000000&layer=norges_grunnkart_graatone'
-    }, 
-    {
-      id: 'keiserstien ',
-      name: 'Keiserstien ',
-      description: 'Innhold langs Keiserstien',
-      url: 'demonstratorer/config.html?datasets=difo%2Cark_hist%2Cwikipedia&allstatic=true&line=utno%2F2.8158&buffer=2&linecolor=%230033ff&layer=norges_grunnkart_graatone'
     },
     {
-      id: 'telemark',
-      name: 'Telemark',
-      description: 'Telemark',
-      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Cark_hist&fylke=8&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
+      id: 'trondheim',
+      name: 'Trondheim',
+      description: 'Demonstrator med fokus på Trondheim'
     }
   ],
   experiments: [

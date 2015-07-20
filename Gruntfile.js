@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         },
 
       "build-demos": {
-        files: grunt.util._.map(userConfig.demonstrators, function (demonstrator) {
+        files: grunt.util._.map(grunt.util._.filter(userConfig.demonstrators, function (d) {return !d.url;}), function (demonstrator) {
             return {
               file: 'demonstratorer/' + demonstrator.id + '.html',
               method: function(fs, fd, done) {
@@ -57,9 +57,11 @@ module.exports = function(grunt) {
             var t = grunt.util._.template(fs.readFileSync('grunt_templates/index.html.tpl', 'utf8'));
             var demos = userConfig.demonstrators;
             grunt.util._.map(demos, function (d) {
-              d.url = 'demonstratorer/' + d.id + '.html';
+              if (!d.url) {
+                d.url = 'demonstratorer/' + d.id + '.html';
+              }
             });
-            demos = demos.concat(userConfig.generatedDemos);
+            //demos = demos.concat(userConfig.generatedDemos);
             fs.writeSync(fd, t({demos: demos}));
             done(); 
           }
