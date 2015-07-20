@@ -2250,7 +2250,6 @@ KR.Config = KR.Config || {};
     ns.getDatasetList = function (api, komm) {
 
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
-
         if (komm && komm.length === 3) {
             komm = '0' + komm;
         }

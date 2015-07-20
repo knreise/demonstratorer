@@ -5,6 +5,9 @@
         cartodb: {
             apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
             user: 'knreise'
+        },
+        flickr: {
+            apikey: 'ab1f664476dabf83a289735f97a6d56c'
         }
     });
 
@@ -56,7 +59,7 @@
             provider: 'Riksantikvaren',
             dataset: {
                 api: 'kulturminnedataSparql',
-                kommune: komm
+                kommune: '0511'
             },
             template: _.template($('#ra_sparql_template').html()),
             bbox: false,
@@ -66,6 +69,17 @@
                 count: 5,
                 callback: kulturminneFunctions.loadKulturminnePoly
             }
+        },
+        {
+            name: 'Trondheim byarkiv',
+            dataset_name_override: 'Trondheim byarkiv',
+            provider: 'Trondheim byarkiv',
+            dataset:  {
+                api: 'flickr',
+                user_id: 'trondheim_byarkiv'
+            },
+            template: _.template($('#flickr_template').html()),
+            style: {fillcolor: '#D252B9'}
         }
     ];
 
