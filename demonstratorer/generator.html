@@ -55,7 +55,7 @@
         <div class="col-md-2">
             <h3>Bakgrunnskart</h3>
             <select id="layers" class="form-control"></select>
-            <div id="layers_map"></div>
+            <div class="map" id="layers_map"></div>
         </div>
     </div>
     <div class="row">
@@ -111,6 +111,7 @@
 <script type="text/template" id="bbox_template">
     <h3><input type="radio" name="inputType" /> BBox</h3>
     <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
+    <div class="map" id="bbox_map"></div>
 </script>
 
 <script type="text/template" id="popup_template">
@@ -596,6 +597,13 @@ function buildLimitSelections(ids, municipalities, counties) {
                 callback();
             }
         });
+    });
+
+    var map = L.map('bbox_map').fitBounds(L.latLngBounds.fromBBoxString('3.779297,57.751076,31.464844,71.357067'));
+    var layer = L.tileLayer.kartverket('norges_grunnkart').addTo(map);
+    map.on('moveend', function () {
+        $('#bbox').val(map.getBounds().toBBoxString());
+        callback();
     });
 
     return {
