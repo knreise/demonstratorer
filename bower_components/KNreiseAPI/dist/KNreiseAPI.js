@@ -1019,7 +1019,7 @@ KR.SparqlAPI = function (BASE_URL) {
             ' rdfs:label ?name ;' +
             ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
             ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
-            ' ?p <http://psi.datanav.info/difi/geo/kommune/' + dataset.kommune + '> ;' +
+            ' ?p <https://data.kulturminne.no/difi/geo/kommune/' + dataset.kommune + '> ;' +
             ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
             ' ?loccat rdfs:label ?loccatlabel .' +
             ' optional {' +
