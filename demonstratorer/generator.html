@@ -31,6 +31,16 @@
         <div class="col-md-2">
           <div id="municipality_container"></div>
           <div id="county_container"></div>
+          <div>
+            <ul class="list-unstyled">
+              <li>
+                <input id="geomFilter_cb" type="checkbox" name="geomFilter" checked/> Begrens utvalg til kommune/fylke
+              </li>
+              <li>
+                <input id="showGeom_cb" type="checkbox" name="showGeom" checked/> Vis kommune/fylke</li>
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="col-md-2" id="line_container">
         </div>
@@ -46,7 +56,6 @@
             <h3>Bakgrunnskart</h3>
             <select id="layers" class="form-control"></select>
         </div>
-        
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -734,16 +743,51 @@ function buildDatasetList(element) {
     };
 }
 
+function buildFilter() {
+    var callback;
 
-function setupClick(element, limits, layer, datasets, title) {
+    var geomFilter = $('#geomFilter_cb');
+    var showGeom = $('#showGeom_cb');
+    geomFilter.click(function () {
+      console.log("?")
+        if (showGeom.is(':checked')) {
+            showGeom.prop('checked', false);
+        }
+        callback();
+    });
 
+    showGeom.click(function () {
+
+        if (!geomFilter.is(':checked')) {
+            geomFilter.prop('checked', true);
+            console.log(geomFilter.is(':checked'))
+        }
+        callback();
+    });
+
+    return {
+        getValues: function () {
+            return {
+                geomFilter: geomFilter.is(':checked'),
+                showGeom: showGeom.is(':checked')
+            };
+        },
+        callback: function (cb) {
+            callback = cb;
+            cb();
+        }
+    }
+}
+
+function setupClick(element, limits, layer, datasets, title, filters) {
     var generateUrl = function () {
         var params = _.extend(
             {},
             datasets.getValues(),
             limits.getValues(),
             layer.getValues(),
-            title.getValues()
+            title.getValues(),
+            filters.getValues()
         );
 
         var path = window.location.pathname;
@@ -755,8 +799,8 @@ function setupClick(element, limits, layer, datasets, title) {
     limits.callback(generateUrl);
     layer.callback(generateUrl);
     datasets.callback(generateUrl);
-
     title.callback(generateUrl);
+    filters.callback(generateUrl);
 
     element.on('click', generateUrl);
 }
@@ -769,7 +813,8 @@ var fetched = _.after(2, function () {
     var title = getTitle($('#title'));
     var datasets = buildDatasetList($('#datasets'));
     var layer = buildLayerList($('#layers'));
-    setupClick($('#generate'), limits, layer, datasets, title);
+    var filters = buildFilter();
+    setupClick($('#generate'), limits, layer, datasets, title, filters);
 });
 
 
