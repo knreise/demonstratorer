@@ -26,6 +26,9 @@ var KR = this.KR || {};
 
     function _getFilter(buffer) {
         return function (features) {
+            if (!features || !features.length) {
+                return features;
+            }
 
             if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
                 return turf.within(features, buffer);
