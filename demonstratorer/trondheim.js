@@ -26,6 +26,7 @@
             dataset: {
                 api: 'wikipedia'
             },
+            template: _.template($('#wikipedia_template').html()),
             style: {template: true},
             minZoom: 13
         },
