@@ -8,14 +8,30 @@
         }
     });
 
-
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
     var datasets = [
-            {
+        {
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
             cluster: true,
             template: _.template($('#digitalt_fortalt_template').html()),
             noListThreshold: Infinity
+        },
+        {
+            name: 'Riksantikvaren',
+            provider: 'Riksantikvaren',
+            dataset: {
+                api: 'kulturminnedataSparql',
+                kommune: '0822'
+            },
+            template: _.template($('#ra_sparql_template').html()),
+            bbox: false,
+            isStatic: true,
+            init: kulturminneFunctions.initKulturminnePoly,
+            loadWhenLessThan: {
+                count: 5,
+                callback: kulturminneFunctions.loadKulturminnePoly
+            }
         }
     ];
 
