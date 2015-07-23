@@ -98,6 +98,37 @@ var sidebar = KR.CesiumSidebar($('#cesium-sidebar'), {
     sparqlKulturminneTemplate: _.template($('#cesium_sparql_kulturminne_template').html())
 }, closed);
 
+function addNorgeIBilder(map) {
+
+    var SKTokenUrl = 'http://knreise.no/nib/?type=token';
+    //var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
+
+    KR.Util.sendRequest(SKTokenUrl, null, function (token) {
+        if (token.indexOf('**') === 0) {
+            map.addWmts(
+                'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
+                'topo2',
+                {
+                    TILEMATRIXSET: 'EPSG:3857',
+                    TILEMATRIX: 'EPSG:3857:{TileMatrix}',
+                    FORMAT: 'image/png'
+                }
+            );
+        } else {
+            map.addWmts(
+                'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
+                'NiB',
+                {
+                    TILEMATRIXSET: 'EPSG:900913',
+                    TILEMATRIX: 'EPSG:900913:{TileMatrix}',
+                    FORMAT: 'image/jpeg',
+                    GKT: token
+                }
+            );
+        }
+    });
+}
+
 
 api.getData(tur, function (geojson) {
     var bbox = KR.CesiumUtils.getBounds(geojson);
@@ -108,7 +139,11 @@ api.getData(tur, function (geojson) {
     );
 
     map.viewer.scene.imageryLayers.removeAll();
-    map.addNorgeIBilder();
+
+    addNorgeIBilder(map);
+
+    //map.addTiles('http://crossorigin.me/http://www.webatlas.no/wacloud/servicerepository/combine.aspx?X={x}&Y={y}&Z={z}&layers=TMS_WEBATLAS_STANDARD:1');
+
     map.stopLoading();
 
     var simple = simplify(geojson);
