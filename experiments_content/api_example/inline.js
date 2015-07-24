@@ -1,10 +1,5 @@
 //create an API instance:
-var api = new KR.API({
-    cartodb: {
-        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-        user: 'knreise'
-    }
-});
+var api = new KR.API();
 
 
 //a bbok to use for ourt queries

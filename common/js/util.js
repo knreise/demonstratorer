@@ -331,6 +331,11 @@ KR.Util = KR.Util || {};
         }
     };
 
+    function _stringEndsWith(a, str) {
+        var lastIndex = a.lastIndexOf(str);
+        return (lastIndex !== -1) && (lastIndex + str.length === a.length);
+    }
+
     ns.getLine = function (api, line, callback) {
         if (_.isFunction(line)) {
             line(function (res) {

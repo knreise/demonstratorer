@@ -301,12 +301,7 @@ L.tileLayer.kartverket('topo2graatone').addTo(map);
 map.setView(new L.LatLng(59.910586, 10.734329), 16);
 
 //set up an instance of the Norvegiana API
-var api = new KR.API({
-    cartodb: {
-        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-        user: 'knreise'
-    }
-});
+var api = new KR.API();
 
 //the sidebar, used for displaying information
 var sidebar = L.Knreise.Control.sidebar('sidebar', {

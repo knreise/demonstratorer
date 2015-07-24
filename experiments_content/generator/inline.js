@@ -1,12 +1,7 @@
 var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
 var datasetTemplate = _.template($('#dataset_template').html());
 
-var api = new KR.API({
-    cartodb: {
-        apikey: 'e6b96c1e6a71b8b2c6f8dbb611c08da5842f5ff5',
-        user: 'knreise'
-    }
-});
+var api = new KR.API();
 
 function toggleInputs(element, disabled) {
     var inputs = element.find('select, input:not([type="radio"])');

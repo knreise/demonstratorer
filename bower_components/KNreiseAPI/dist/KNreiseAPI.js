@@ -180,7 +180,7 @@ KR.ArcgisAPI = function (BASE_URL) {
 
 var KR = this.KR || {};
 
-KR.CartodbAPI = function (user, apikey) {
+KR.CartodbAPI = function (user) {
     'use strict';
 
     var BASE_URL = 'http://' + user + '.cartodb.com/api/v2/sql';
@@ -256,8 +256,7 @@ KR.CartodbAPI = function (user, apikey) {
 
     function _executeSQL(sql, mapper, callback, errorCallback) {
         var params = {
-            q: sql,
-            api_key: apikey
+            q: sql
         };
         var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, mapper, callback, errorCallback);
@@ -1215,8 +1214,12 @@ KR.API = function (options) {
     }
 
     var cartodbAPI;
-    if (_.has(options, 'cartodb')) {
-        cartodbAPI = new KR.CartodbAPI(options.cartodb.user, options.cartodb.apikey);
+    if (KR.CartodbAPI) {
+        var cartouser = 'knreise';
+        if (_.has(options, 'cartodb')) {
+            cartouser = options.cartodb.user;
+        }
+        cartodbAPI = new KR.CartodbAPI(cartouser);
         _.extend(KR.API.mappers, cartodbAPI.mappers());
     }
 

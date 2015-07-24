@@ -382,6 +382,11 @@ KR.Util = KR.Util || {};
         }
     };
 
+    function _stringEndsWith(a, str) {
+        var lastIndex = a.lastIndexOf(str);
+        return (lastIndex !== -1) && (lastIndex + str.length === a.length);
+    }
+
     ns.getLine = function (api, line, callback) {
         if (_.isFunction(line)) {
             line(function (res) {
@@ -2591,12 +2596,6 @@ var KR = this.KR || {};
         }
     };
 
-
-    function _stringEndsWith(a, str) {
-        var lastIndex = a.lastIndexOf(str);
-        return (lastIndex !== -1) && (lastIndex + str.length === a.length);
-    }
-
     function _getFilter(buffer) {
         return function (features) {
             if (!features || !features.length) {
@@ -2703,12 +2702,17 @@ var KR = this.KR || {};
 
     function _municipalityHandler(options, api, datasets, fromUrl, callback) {
         datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
+
+        if (_.isString(options.komm)) {
+            options.komm = options.komm.split(',');
+        }
+
         _getloader(
             options,
             api,
             datasets,
             api.getMunicipalityBounds,
-            options.komm.split(','),
+            options.komm,
             'municipality',
             callback
         );
