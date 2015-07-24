@@ -214,6 +214,18 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         });
     }
 
+    function loadDataset2(dataset, bbox, api, extraProps, callback) {
+        api.getBbox(dataset, bbox, function (res) {
+            _.each(res.features, function (feature) {
+                feature.properties = _.extend(feature.properties, extraProps);
+            });
+            _getHeightsForGeoJsonPoints(res, function (data) {
+                var dataSource = Cesium.GeoJsonDataSource.load(data);
+                callback(dataSource);
+            });
+        });
+    }
+
     function stopLoading() {
         $('.spinner-wrapper').delay(2000).fadeOut({duration: 200});
     }
@@ -226,6 +238,7 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         build3DLine: build3DLine,
         addClickhandler: addClickhandler,
         loadDataset: loadDataset,
+        loadDataset2: loadDataset2,
         stopLoading: stopLoading,
         getTiles: getTiles,
         getWmts: getWmts,

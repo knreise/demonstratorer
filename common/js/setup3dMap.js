@@ -127,15 +127,13 @@ var KR = this.KR || {};
             return _.chain(datasets)
                 .map(function (dataset) {
                     if (dataset.datasets) {
-                        return _.map(dataset.datasets, function (d) {
-                            return d.dataset;
-                        });
+                        return dataset.datasets;
                     }
-                    return dataset.dataset;
+                    return dataset;
                 })
                 .flatten()
                 .filter(function (dataset) {
-                    if (_.has(dataset, 'kommune') && _.isUndefined(dataset.kommune)) {
+                    if (_.has(dataset.dataset, 'kommune') && _.isUndefined(dataset.dataset.kommune)) {
                         return false;
                     }
                     return true;
@@ -153,7 +151,8 @@ var KR = this.KR || {};
 
         function _addDatasets(datasets, bbox, callback) {
             _.each(datasets, function (dataset) {
-                map.loadDataset(dataset, bbox, api, function (res) {
+                var props = {template: dataset.template};
+                map.loadDataset2(dataset.dataset, bbox, api, props, function (res) {
                     map.viewer.dataSources.add(res);
                 });
             });
