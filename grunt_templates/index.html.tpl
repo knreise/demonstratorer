@@ -7,12 +7,11 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
 
     <title>KNReise - demonstratorer</title>
 
-    <link href='../bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
-    <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+    <link href='bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
+    <link href='bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
   </head>
 
   <body>
