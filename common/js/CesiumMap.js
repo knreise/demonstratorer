@@ -116,11 +116,11 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             url : url,
             layers: layer,
             parameters: {
-                service: "WMS", 
-                version: "1.1.1", 
-                request: "GetMap", 
-                styles: "", 
-                format: "image/png", 
+                service: "WMS",
+                version: "1.1.1",
+                request: "GetMap",
+                styles: "",
+                format: "image/png",
                 transparent: true
             }
         });
@@ -195,11 +195,12 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
 
                 //Update the collection of picked entities.
                 pickedEntities.removeAll();
-                _.each(pickedObjects, function (pickedObj) {
+                var objects = _.map(pickedObjects, function (pickedObj) {
                     var entity = pickedObj.id;
                     pickedEntities.add(entity);
-                    callback(entity.properties);
+                    return entity.properties;
                 });
+                callback(objects);
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     }

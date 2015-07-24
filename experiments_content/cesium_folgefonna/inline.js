@@ -150,7 +150,7 @@ api.getData(tur, function (geojson) {
     //map.addTiles('http://crossorigin.me/http://www.webatlas.no/wacloud/servicerepository/combine.aspx?X={x}&Y={y}&Z={z}&layers=TMS_WEBATLAS_STANDARD:1');
 
     map.stopLoading();
-/*
+
     var simple = simplify(geojson);
     map.build3DLine(simple, function (heightCurve) {
         pathTracer = new KR.PathTracer(map.viewer, heightCurve, simple);
@@ -186,5 +186,5 @@ api.getData(tur, function (geojson) {
             sidebar.show(properties);
         });
     });
-*/
+
 });

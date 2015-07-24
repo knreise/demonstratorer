@@ -1,115 +1,227 @@
-var cesiumOptions = {
-    animation: false,
-   // baseLayerPicker: false,
-    fullscreenButton: false,
-    geocoder: false,
-    homeButton: false,
-    infoBox: false,
-    sceneModePicker: false,
-    selectionIndicator: false,
-    timeline: false,
-    navigationHelpButton: true,
-    navigationInstructionsInitiallyVisible: false,
-    orderIndependentTranslucency: false
-};
-
-
-function getDatasets(ids, api, komm) {
-    var datasets = KR.Config.getDatasets(ids, api, komm);
-    return _.flatten(_.map(datasets, function (dataset) {
-
-        if (dataset.datasets) {
-            return _.map(dataset.datasets, function (d) {
-                return d.dataset;
-            });
-        }
-        return dataset.dataset;
-    }));
-}
-
-function simplify(geojson) {
-    return turf.featurecollection([turf.simplify(
-        geojson.features[0], 0.001, false
-    )]);
-}
-
-function createPolyline(heightCurve, options) {
+var setupMap3d = function (api, datasetIds, options) {
     options = options || {};
-    return {
-        polyline: {
-            positions: heightCurve,
-            width: options.width || 10.0,
-            material: new Cesium.PolylineGlowMaterialProperty({
-                color: options.color || Cesium.Color.BLUE ,
-                glowPower: options.glow || 0.1,
-            })
-        }
+    options = _.extend({player: true}, options);
+
+    var cesiumOptions = {
+        animation: false,
+        baseLayerPicker: false,
+        fullscreenButton: false,
+        geocoder: false,
+        homeButton: false,
+        infoBox: false,
+        sceneModePicker: false,
+        selectionIndicator: false,
+        timeline: false,
+        navigationHelpButton: true,
+        navigationInstructionsInitiallyVisible: false,
+        orderIndependentTranslucency: false
     };
-}
+
+    var map, bbox;
+    var sidebar = KR.CesiumSidebar($('#cesium-sidebar'), {
+        /*wikipediaTemplate: _.template($('#cesium_wikipedia_template').html()),
+        arcKulturminneTemplate: _.template($('#cesium_arc_kulturminne_template').html()),
+        sparqlKulturminneTemplate: _.template($('#cesium_sparql_kulturminne_template').html())
+        */
+    });
 
 
-function createMap(div, bbox) {
-    return new KR.CesiumMap(
-        div,
-        cesiumOptions,
-        bbox
-    );
-}
+    function _simplify(geojson) {
+        return turf.featurecollection([turf.simplify(
+            geojson.features[0], 0.001, false
+        )]);
+    }
 
-function addBaseLayer(map, options, callback) {
-    var layer = options.layer || 'topo2';
-    var provider;
-    if (layer === 'hist') {
-        callback(map.getWms(
-            'http://wms.geonorge.no/skwms1/wms.historiskekart',
-            'historiskekart'
-        ));
-    } else if (layer === 'nib') {
-            //var SKTokenUrl = 'http://knreise.no/nib/?type=token';
-            var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
-            KR.Util.sendRequest(SKTokenUrl, null, function (token) {
-                if (token.indexOf('**') !== 0) {
-                    callback(map.getWmts(
-                        'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
-                        'NiB',
-                        {
-                            TILEMATRIXSET: 'EPSG:900913',
-                            TILEMATRIX: 'EPSG:900913:{TileMatrix}',
-                            FORMAT: 'image/jpeg',
-                            GKT: token
-                        }
-                    ));
-                } else { //fallback 
-                    callback(map.getWms(
-                        'http://wms.geonorge.no/skwms1/wms.historiskekart',
-                        'historiskekart'
-                    ));
+    function _createPolyline(heightCurve, options) {
+        options = options || {};
+        return {
+            polyline: {
+                positions: heightCurve,
+                width: options.width || 10.0,
+                material: new Cesium.PolylineGlowMaterialProperty({
+                    color: options.color || Cesium.Color.BLUE ,
+                    glowPower: options.glow || 0.1,
+                })
+            }
+        };
+    }
+
+    function _getDatasets() {
+        var datasets = KR.Config.getDatasets(datasetIds, api);
+        return _.chain(datasets)
+            .map(function (dataset) {
+                if (dataset.datasets) {
+                    return _.map(dataset.datasets, function (d) {
+                        return d.dataset;
+                    });
+                }
+                return dataset.dataset;
+            })
+            .flatten()
+            .filter(function (dataset) {
+                if (_.has(dataset, 'kommune') && _.isUndefined(dataset.kommune)) {
+                    return false;
+                }
+                return true;
+            })
+            .value();
+    }
+
+    function _createMap(div, bbox) {
+        return new KR.CesiumMap(
+            div,
+            cesiumOptions,
+            bbox
+        );
+    }
+
+    function _addDatasets(datasets, bbox, callback) {
+        _.each(datasets, function (dataset) {
+            map.loadDataset(dataset, bbox, api, function (res) {
+                map.viewer.dataSources.add(res);
+            });
+        });
+
+        map.addClickhandler(function (properties) {
+            //console.log(properties);
+            sidebar.show(properties);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+
+
+    function _addBaseLayer(callback) {
+        var layer = options.layer || 'topo2';
+        var provider;
+        if (layer === 'hist') {
+            callback(map.getWms(
+                'http://wms.geonorge.no/skwms1/wms.historiskekart',
+                'historiskekart'
+            ));
+        } else if (layer === 'nib') {
+                //var SKTokenUrl = 'http://knreise.no/nib/?type=token';
+                var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
+                KR.Util.sendRequest(SKTokenUrl, null, function (token) {
+                    if (token.indexOf('**') !== 0) {
+                        callback(map.getWmts(
+                            'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
+                            'NiB',
+                            {
+                                TILEMATRIXSET: 'EPSG:900913',
+                                TILEMATRIX: 'EPSG:900913:{TileMatrix}',
+                                FORMAT: 'image/jpeg',
+                                GKT: token
+                            }
+                        ));
+                    } else { //fallback 
+                        callback(map.getWms(
+                            'http://wms.geonorge.no/skwms1/wms.historiskekart',
+                            'historiskekart'
+                        ));
+                    }
+                });
+        } else {
+            callback(map.getWmts(
+                'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
+                layer,
+                {
+                    TILEMATRIXSET: 'EPSG:3857',
+                    TILEMATRIX: 'EPSG:3857:{TileMatrix}',
+                    FORMAT: 'image/png'
+                }
+            ));
+        }
+    }
+
+    function _setupLine() {
+        var pathTracer;
+        var playpause;
+        var wasRunning = false;
+
+        KR.Util.getLine(api, options.line, function (line) {
+            bbox = KR.CesiumUtils.getBounds(line);
+            map = _createMap('cesium-viewer', bbox);
+
+            map.viewer.scene.imageryLayers.removeAll();
+
+            _addBaseLayer(map.addImageryProvider);
+
+            _addDatasets(_getDatasets(), bbox, function () {
+                if (options.player) {
+                    wasRunning = pathTracer.isRunning();
+                    playpause.pause();
+                    pathTracer.stop();
                 }
             });
-    } else {
-        callback(map.getWmts(
-            'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
-            layer,
-            {
-                TILEMATRIXSET: 'EPSG:3857',
-                TILEMATRIX: 'EPSG:3857:{TileMatrix}',
-                FORMAT: 'image/png'
+
+            map.build3DLine(line, function (heightCurve) {
+                var line = _createPolyline(heightCurve, {
+                    color: Cesium.Color.DEEPSKYBLUE,
+                    glow: 0.25
+                });
+                map.viewer.zoomTo(map.viewer.entities.add(line));
+                map.stopLoading();
+            });
+
+
+            if (options.player) {
+                var simple = _simplify(line);
+                map.build3DLine(simple, function (heightCurve) {
+                    pathTracer = new KR.PathTracer(map.viewer, heightCurve, simple);
+                    pathTracer.setPitchCorr(0.1);
+                    playpause = new Playpause(pathTracer);
+                    $('#playpause').removeClass('hidden');
+                    $('#playpause').click(playpause.toggle);
+                });
+
+                sidebar.addCloseCb(function () {
+                    if (wasRunning) {
+                        playpause.play();
+                    }
+                });
             }
-        ));
-    }
-}
-
-function showLine(map, geojson, callback) {
-    map.build3DLine(geojson, function (heightCurve) {
-
-        var line = createPolyline(heightCurve, {
-            color: Cesium.Color.DEEPSKYBLUE,
-            glow: 0.25
         });
-        map.viewer.zoomTo(map.viewer.entities.add(line));
-        callback();
-    });
+    }
+
+
+    function init () {
+        if (options.line) {
+           _setupLine();
+        } else {
+            alert('Missing parameters!');
+        }
+    }
+
+    init();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function Playpause(pathTracer) {
     var btn = $('#playpause');
@@ -139,76 +251,11 @@ function Playpause(pathTracer) {
     };
 }
 
-function closed() {
-    /*if (pathTracer && wasRunning) {
-        playpause.play();
-    }*/
-}
-
-var sidebar = KR.CesiumSidebar($('#cesium-sidebar'), {
-    /*wikipediaTemplate: _.template($('#cesium_wikipedia_template').html()),
-    arcKulturminneTemplate: _.template($('#cesium_arc_kulturminne_template').html()),
-    sparqlKulturminneTemplate: _.template($('#cesium_sparql_kulturminne_template').html())
-    */
-}, closed);
-
-
-function setupLine(api, datasetIds, options) {
-    var pathTracer;
-    var playpause;
-    var wasRunning = false;
-    var datasets = getDatasets(datasetIds, api);
-    KR.Util.getLine(api, options.line, function (line) {
-        var bbox = KR.CesiumUtils.getBounds(line);
-        var map = createMap('cesium-viewer', bbox);
-        map.viewer.scene.imageryLayers.removeAll();
-        addBaseLayer(map, options, map.addImageryProvider);
-        showLine(map, line, function () {
-            map.stopLoading();
-
-            _.each(datasets, function (dataset) {
-                map.loadDataset(dataset, bbox, api, function (res) {
-                    map.viewer.dataSources.add(res);
-                });
-            });
-
-            map.addClickhandler(function (properties) {
-                wasRunning = pathTracer.isRunning();
-                playpause.pause();
-
-                pathTracer.stop();
-                sidebar.show(properties);
-            });
-
-        });
-
-        if (options.player) {
-            var simple = simplify(line);
-            map.build3DLine(simple, function (heightCurve) {
-                pathTracer = new KR.PathTracer(map.viewer, heightCurve, simple);
-                pathTracer.setPitchCorr(0.1);
-                playpause  = new Playpause(pathTracer);
-                $('#playpause').removeClass('hidden');
-                $('#playpause').click(playpause.toggle);
-            });
-        }
-    });
-
-}
 
 
 function setupCesiumMapFromUrl(api, datasetIds, options) {
-    options = options || {};
-    options = _.extend({player: true}, options);
-
-    if (options.line) {
-       setupLine(api, datasetIds, options);
-    } else {
-        alert('Missing parameters!');
-    }
+    setupMap3d(api, datasetIds, options);
 }
-
-
 
 
 var qs = KR.Util.parseQueryString(window.location.search);
