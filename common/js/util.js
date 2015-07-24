@@ -311,6 +311,54 @@ KR.Util = KR.Util || {};
             menn: split[1],
             kvinner: split[2]
         });
-    }
+    };
+
+    ns.getBaseLayer = function (layerName, callback) {
+        var layers = {
+            'nib': KR.getNibLayer,
+            'hist': function (callback) {
+                callback(L.tileLayer.wms('http://wms.geonorge.no/skwms1/wms.historiskekart', {
+                    layers: 'historiskekart',
+                    format: 'image/png',
+                    attribution: 'Kartverket'
+                }));
+            }
+        };
+        if (_.has(layers, layerName)) {
+            layers[layerName](callback);
+        } else {
+            callback(L.tileLayer.kartverket(layerName));
+        }
+    };
+
+    ns.getLine = function (api, line, callback) {
+        if (_.isFunction(line)) {
+            line(function (res) {
+                callback(res);
+            });
+            return;
+        }
+        var lineData;
+        if (line.indexOf('utno/') === 0) {
+            var id = line.replace('utno/', '');
+            lineData = {
+                api: 'utno',
+                id: id,
+                type: 'gpx'
+            };
+        } else if (line.indexOf('http') === 0) {
+            if (_stringEndsWith(line, 'kml')) {
+                lineData = {
+                    api: 'kml',
+                    url: line
+                };
+            }
+        }
+        if (lineData) {
+            api.getData(lineData, function (line) {
+                callback(line);
+            });
+        }
+    };
 
 }(KR.Util));

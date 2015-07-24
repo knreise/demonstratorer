@@ -676,11 +676,17 @@ function buildLayerList(element) {
           map.removeLayer(layer);
         }
         var layerName = element.val();
-        if (L.tileLayer.kartverket.getLayers().indexOf(layerName) !== -1) {
-          layer = L.tileLayer.kartverket(layerName).addTo(map);
-        } else {
-          layer = null;
-        }
+
+        KR.Util.getBaseLayer(layerName, function (l) {
+            if (l)  {
+              layer = l;
+              layer.addTo(map);
+            } else {
+              layer = null;
+            }
+            
+        });
+
         callback();
     });
 

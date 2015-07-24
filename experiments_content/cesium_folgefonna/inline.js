@@ -29,7 +29,7 @@ var cesiumOptions = {
     sceneModePicker: false,
     selectionIndicator: false,
     timeline: false,
-    navigationHelpButton: false,
+    navigationHelpButton: true,
     navigationInstructionsInitiallyVisible: false,
     orderIndependentTranslucency: false
 };
@@ -104,8 +104,9 @@ function addNorgeIBilder(map) {
     //var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
 
     KR.Util.sendRequest(SKTokenUrl, null, function (token) {
+        var provider;
         if (token.indexOf('**') === 0) {
-            map.addWmts(
+            provider = map.getWmts(
                 'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
                 'topo2',
                 {
@@ -115,7 +116,7 @@ function addNorgeIBilder(map) {
                 }
             );
         } else {
-            map.addWmts(
+            provider = map.getWmts(
                 'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
                 'NiB',
                 {
@@ -126,6 +127,8 @@ function addNorgeIBilder(map) {
                 }
             );
         }
+
+        map.addImageryProvider(provider);
     });
 }
 
@@ -142,10 +145,12 @@ api.getData(tur, function (geojson) {
 
     addNorgeIBilder(map);
 
+    //map.addWms('http://wms.geonorge.no/skwms1/wms.historiskekart', 'historiskekart');
+
     //map.addTiles('http://crossorigin.me/http://www.webatlas.no/wacloud/servicerepository/combine.aspx?X={x}&Y={y}&Z={z}&layers=TMS_WEBATLAS_STANDARD:1');
 
     map.stopLoading();
-
+/*
     var simple = simplify(geojson);
     map.build3DLine(simple, function (heightCurve) {
         pathTracer = new KR.PathTracer(map.viewer, heightCurve, simple);
@@ -181,5 +186,5 @@ api.getData(tur, function (geojson) {
             sidebar.show(properties);
         });
     });
-
+*/
 });

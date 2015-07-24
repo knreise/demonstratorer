@@ -27,6 +27,9 @@ body {
     
 }
 
+.cesium-viewer-toolbar {
+  top: 60px;
+}
 
 
 /* foreground */

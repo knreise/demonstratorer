@@ -362,7 +362,55 @@ KR.Util = KR.Util || {};
             menn: split[1],
             kvinner: split[2]
         });
-    }
+    };
+
+    ns.getBaseLayer = function (layerName, callback) {
+        var layers = {
+            'nib': KR.getNibLayer,
+            'hist': function (callback) {
+                callback(L.tileLayer.wms('http://wms.geonorge.no/skwms1/wms.historiskekart', {
+                    layers: 'historiskekart',
+                    format: 'image/png',
+                    attribution: 'Kartverket'
+                }));
+            }
+        };
+        if (_.has(layers, layerName)) {
+            layers[layerName](callback);
+        } else {
+            callback(L.tileLayer.kartverket(layerName));
+        }
+    };
+
+    ns.getLine = function (api, line, callback) {
+        if (_.isFunction(line)) {
+            line(function (res) {
+                callback(res);
+            });
+            return;
+        }
+        var lineData;
+        if (line.indexOf('utno/') === 0) {
+            var id = line.replace('utno/', '');
+            lineData = {
+                api: 'utno',
+                id: id,
+                type: 'gpx'
+            };
+        } else if (line.indexOf('http') === 0) {
+            if (_stringEndsWith(line, 'kml')) {
+                lineData = {
+                    api: 'kml',
+                    url: line
+                };
+            }
+        }
+        if (lineData) {
+            api.getData(lineData, function (line) {
+                callback(line);
+            });
+        }
+    };
 
 }(KR.Util));
 
@@ -2588,23 +2636,7 @@ var KR = this.KR || {};
         return sidebar;
     }
 
-    function _getBaseLayer(layerName, callback) {
-        var layers = {
-            'nib': KR.getNibLayer,
-            'hist': function (callback) {
-                callback(L.tileLayer.wms('http://wms.geonorge.no/skwms1/wms.historiskekart', {
-                    layers: 'historiskekart',
-                    format: 'image/png',
-                    attribution: 'Kartverket'
-                }));
-            }
-        };
-        if (_.has(layers, layerName)) {
-            layers[layerName](callback);
-        } else {
-            callback(L.tileLayer.kartverket(layerName));
-        }
-    }
+
 
     function _createMap(options) {
         //create the map
@@ -2615,8 +2647,7 @@ var KR = this.KR || {};
         });
 
         var baseLayer = options.layer || 'norges_grunnkart_graatone';
-
-        _getBaseLayer(baseLayer, function (layer) {
+        KR.Util.getBaseLayer(baseLayer, function (layer) {
             layer.addTo(map);
         });
 
@@ -2747,34 +2778,10 @@ var KR = this.KR || {};
     }
 
     function _lineHandler(options, api, datasets, fromUrl, callback) {
-        if (_.isFunction(options.line)) {
-            options.line(function (line) {
-                _gotLine(line, api, options, datasets, fromUrl, callback);
-            });
-            return;
-        }
 
-        var lineData;
-        if (options.line.indexOf('utno/') === 0) {
-            var id = options.line.replace('utno/', '');
-            lineData = {
-                api: 'utno',
-                id: id,
-                type: 'gpx'
-            };
-        } else if (options.line.indexOf('http') === 0) {
-            if (_stringEndsWith(options.line, 'kml')) {
-                lineData = {
-                    api: 'kml',
-                    url: options.line
-                };
-            }
-        }
-        if (lineData) {
-            api.getData(lineData, function (line) {
-                _gotLine(line, api, options, datasets, fromUrl, callback);
-            });
-        }
+        KR.Util.getLine(api, options.line, function (line) {
+            _gotLine(line, api, options, datasets, fromUrl, callback);
+        });
     }
 
     ns.setupMap = function (api, datasetIds, options, fromUrl) {

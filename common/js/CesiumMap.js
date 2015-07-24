@@ -26,6 +26,7 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
     }
 
     function init() {
+
         viewer = new Cesium.Viewer(div, config.cesiumViewerOpts);
 
         var scene = viewer.scene;
@@ -73,11 +74,10 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         }).join('&');
     }
 
-    function addTiles(url) {
-        var provider = new Cesium.UrlTemplateImageryProvider({
+    function getTiles(url) {
+        return new Cesium.UrlTemplateImageryProvider({
             url : url
         });
-        viewer.imageryLayers.addImageryProvider(provider);
     }
 
     function _createWmtsParams(url, layer, params) {
@@ -97,7 +97,7 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         };
     }
 
-    function addWmts(url, layer, params) {
+    function getWmts(url, layer, params) {
 
         var defaultParams = {
             style : 'default',
@@ -106,10 +106,24 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             maximumLevel: 19
         };
 
-        var provider = new Cesium.WebMapTileServiceImageryProvider(
+        return new Cesium.WebMapTileServiceImageryProvider(
             _.extend({}, defaultParams, _createWmtsParams(url, layer, params))
         );
-        viewer.imageryLayers.addImageryProvider(provider);
+    }
+
+    function getWms(url, layer) {
+        return new Cesium.WebMapServiceImageryProvider({
+            url : url,
+            layers: layer,
+            parameters: {
+                service: "WMS", 
+                version: "1.1.1", 
+                request: "GetMap", 
+                styles: "", 
+                format: "image/png", 
+                transparent: true
+            }
+        });
     }
 
 
@@ -212,8 +226,12 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         addClickhandler: addClickhandler,
         loadDataset: loadDataset,
         stopLoading: stopLoading,
-        addTiles: addTiles,
-        addWmts: addWmts
+        getTiles: getTiles,
+        getWmts: getWmts,
+        getWms: getWms,
+        addImageryProvider: function (provider) {
+            viewer.imageryLayers.addImageryProvider(provider);
+        }
     };
 };
 
