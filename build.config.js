@@ -437,7 +437,8 @@ module.exports = {
           'common/js/CesiumMap.js',
           'common/js/CesiumSidebar.js',
           'common/js/DatasetLoader.js',
-          'common/js/datasets.js'
+          'common/js/datasets.js',
+          'common/js/setup3dMap.js',
         ],
         css: [
             'common/css/cesium_base.css',
