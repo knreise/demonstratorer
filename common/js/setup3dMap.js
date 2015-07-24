@@ -42,6 +42,11 @@ var KR = this.KR || {};
 
     function getBaseLayer(options, map, callback) {
         var layer = options.layer || 'topo2';
+
+        if (layer === 'norges_grunnkart_graatone') {
+            layer = 'norges_grunnkart';
+        }
+
         if (layer === 'hist') {
             callback(map.getWms(
                 'http://wms.geonorge.no/skwms1/wms.historiskekart',
@@ -165,6 +170,16 @@ var KR = this.KR || {};
             });
         }
 
+        function _setupBounds(bbox) {
+            map = _createMap('cesium-viewer', bbox);
+
+            map.viewer.scene.imageryLayers.removeAll();
+
+            getBaseLayer(options, map, map.addImageryProvider);
+
+            _addDatasets(_getDatasets(), bbox);
+            map.stopLoading();
+        }
 
         function _setupLine() {
             var pathTracer;
@@ -217,7 +232,11 @@ var KR = this.KR || {};
         }
 
         function init() {
-            if (options.line) {
+            if (options.bbox) {
+                _setupBounds(options.bbox);
+            } else if (options.komm) {
+                api.getMunicipalityBounds(options.komm, _setupBounds);
+            } else if (options.line) {
                 _setupLine();
             } else {
                 alert('Missing parameters!');
