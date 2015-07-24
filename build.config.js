@@ -384,7 +384,7 @@ module.exports = {
         key: 'cesium_base',
         name: 'Cesium base example',
         scripts: [
-          'bower_components/cesium1.9/Build/CesiumUnminified/Cesium.js',
+          'bower_components/Cesium-1.11/Build/Cesium/Cesium.js',
           'bower_components/togeojson/togeojson.js',
           'common/js/CesiumMap.js'
         ],
@@ -398,7 +398,7 @@ module.exports = {
         key: 'cesium_folgefonna',
         name: 'Folgefonna 3D',
         scripts: [
-          'bower_components/cesium1.9/Build/CesiumUnminified/Cesium.js',
+          'bower_components/Cesium-1.11/Build/Cesium/Cesium.js',
           'bower_components/togeojson/togeojson.js',
           'bower_components/wellknown/wellknown.js',
           'bower_components/proj4/dist/proj4.js',
@@ -422,10 +422,54 @@ module.exports = {
         ]
     },
     {
+        key: 'gen_3d',
+        name: 'generator_3d',
+        scripts: [
+          'bower_components/Cesium-1.11/Build/Cesium/Cesium.js',
+          'bower_components/togeojson/togeojson.js',
+          'bower_components/wellknown/wellknown.js',
+          'bower_components/proj4/dist/proj4.js',
+          'bower_components/CryptoJS/build/components/core.js',
+          'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/jquery-ui/jquery-ui.min.js',
+          'bower_components/turf/turf.min.js',
+          'common/js/PathTracer.js',
+          'common/js/CesiumMap.js',
+          'common/js/CesiumSidebar.js',
+          'common/js/DatasetLoader.js',
+          'common/js/datasets.js',
+          'common/js/setup3dMap.js',
+        ],
+        css: [
+            'common/css/cesium_base.css',
+            'common/css/cesium_sidebar.css'
+        ],
+        templates: [
+    'popup',
+    'verneomraader',
+    'kulturminne',
+    'musit',
+    'digitalt_museum',
+    'digitalt_fortalt',
+    'list_item',
+    'fangstgrop',
+    'marker',
+    'thumbnail',
+    'footer',
+    'error',
+    'ra_sparql',
+    'flickr',
+    'husmann',
+    'folketelling',
+    'brukerminne',
+    'wikipedia'
+        ]
+    },
+    {
         key: 'cesium_terrain',
         name: 'Terrain',
         scripts: [
-          'bower_components/cesium1.9/Build/CesiumUnminified/Cesium.js',
+          'bower_components/Cesium-1.11/Build/Cesium/Cesium.js',
           'bower_components/togeojson/togeojson.js',
           'bower_components/wellknown/wellknown.js',
           'bower_components/proj4/dist/proj4.js',

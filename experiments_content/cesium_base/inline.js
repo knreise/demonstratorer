@@ -1,4 +1,35 @@
-var map = new KR.CesiumMap('cesium');
+
+var cesiumOptions = {
+    animation: false,
+    baseLayerPicker: false,
+    fullscreenButton: false,
+    geocoder: false,
+    homeButton: false,
+    infoBox: false,
+    sceneModePicker: false,
+    selectionIndicator: false,
+    timeline: false,
+    navigationHelpButton: false,
+    navigationInstructionsInitiallyVisible: false,
+    orderIndependentTranslucency: false
+};
+
+
+var map = new KR.CesiumMap(
+    'cesium',
+    cesiumOptions
+);
+
+map.viewer.scene.imageryLayers.removeAll();
+map.addWmts(
+    'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
+    'topo2',
+    {
+        TILEMATRIXSET: 'EPSG:3857',
+        TILEMATRIX: 'EPSG:3857:{TileMatrix}',
+        FORMAT: 'image/png'
+    }
+);
 
 map.addMarkers([
     {
@@ -23,10 +54,5 @@ var strynBuilding = map.viewer.entities.add({
     }
 });
 
-map.addImagery({
-    url : 'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts?SERVICE=WMTS&REQUEST=GetTile&LAYER=matrikkel_bakgrunn&STYLE={Style}&TILEMATRIXSET=EPSG:3857&TILEMATRIX=EPSG:3857:{TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&FORMAT=image/png',
-    layer : 'matrikkel_bakgrunn',
-    tileMatrixSetID : 'EPSG:3857'
-});
-
 map.viewer.zoomTo(strynBuilding);
+map.stopLoading();

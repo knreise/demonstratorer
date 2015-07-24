@@ -3,20 +3,48 @@ var KR = this.KR || {};
 
 KR.CesiumSidebar = function (element, templates, closeCallback) {
     'use strict';
+    var closeCb = closeCallback;
+
+    function _setContent(content) {
+        element.find('.cesium-sidebar-body').html(content);
+    }
+
+    function showFeature(feature) {
+        _setContent(feature.template(feature));
+    }
+
+    function _createListElement(feature) {
+        var li = $('<a href="#" class="list-group-item">' + feature.title + '</a>');
+        li.on('click', function (e) {
+            e.preventDefault();
+            showFeature(feature);
+            return false;
+        });
+        return li;
+    }
+
+    function showList(features) {
+        var list = $('<div class="list-group"></ul>');
+        var elements = _.map(_.compact(features), _createListElement);
+        list.append(elements);
+        _setContent(list);
+    }
 
     function show(properties) {
+
         element.show('slide', {direction: 'left'}, 100);
-        if (properties.dataset === 'Wikipedia') {
-            element.find('.cesium-sidebar-body').html($(templates.wikipediaTemplate(properties)));
+        if (properties.length === 1) {
+            showFeature(properties[0]);
         } else {
-            element.find('.cesium-sidebar-body').html($(templates.arcKulturminneTemplate(properties)));
+            showList(properties);
         }
     }
 
     function _close() {
         element.hide('slide', {direction: 'left'}, 100);
-        if (closeCallback) {
-            closeCallback();
+        _setContent('');
+        if (closeCb) {
+            closeCb();
         }
     }
 
@@ -25,6 +53,9 @@ KR.CesiumSidebar = function (element, templates, closeCallback) {
     });
 
     return {
-        show: show
+        show: show,
+        addCloseCb: function (cb) {
+            closeCb = cb;
+        }
     };
 };

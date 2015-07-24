@@ -25,16 +25,8 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         });
     }
 
-    function getImageryProvider(mapOptions) {
-        return new Cesium.WebMapTileServiceImageryProvider(_.extend({
-            style : 'default',
-            version : '1.0.0',
-            format : 'image/png',
-            maximumLevel: 19
-        }, mapOptions));
-    }
-
     function init() {
+
         viewer = new Cesium.Viewer(div, config.cesiumViewerOpts);
 
         var scene = viewer.scene;
@@ -62,10 +54,6 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         }
     }
 
-    function addImagery(imageryLayerParams) {
-        viewer.imageryLayers.addImageryProvider(getImageryProvider(imageryLayerParams));
-    }
-
     function build3DLine(geojson, callback) {
 
         var coordinates = geojson.features[0].geometry.coordinates;
@@ -86,41 +74,58 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         }).join('&');
     }
 
-    function addNorgeIBilder() {
-        //var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
-        var SKTokenUrl = 'http://knreise.no/nib/?type=token';
+    function getTiles(url) {
+        return new Cesium.UrlTemplateImageryProvider({
+            url : url
+        });
+    }
 
-        KR.Util.sendRequest(SKTokenUrl, null, function (token) {
+    function _createWmtsParams(url, layer, params) {
+        var urlParams = {
+            SERVICE: 'WMTS',
+            REQUEST: 'GetTile',
+            TILEROW: '{TileRow}',
+            TILECOL: '{TileCol}',
+            STYLE: '{Style}',
+            LAYER: layer
+        };
 
-            if (token.indexOf('**') === 0) {
-                addImagery({
-                    url : 'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts?SERVICE=WMTS&REQUEST=GetTile&LAYER=matrikkel_bakgrunn&STYLE={Style}&TILEMATRIXSET=EPSG:3857&TILEMATRIX=EPSG:3857:{TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&FORMAT=image/png',
-                    layer : 'matrikkel_bakgrunn',
-                    tileMatrixSetID : 'EPSG:3857'
-                });
-            } else {
-                var urlParams = {
-                    SERVICE: 'WMTS',
-                    REQUEST: 'GetTile',
-                    LAYER: 'NiB',
-                    STYLE: 'normal',
-                    TILEMATRIXSET: 'EPSG:900913',
-                    TILEMATRIX: 'EPSG:900913:{TileMatrix}',
-                    TILEROW: '{TileRow}',
-                    TILECOL: '{TileCol}',
-                    FORMAT: 'image/jpeg',
-                    GKT: token
-                };
-                var url = 'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts';
-                url = url + '?' + createQueryParams(urlParams);
-                addImagery({
-                    url : url,
-                    layer : 'matrikkel_bakgrunn',
-                    tileMatrixSetID : 'EPSG:3857'
-                });
+        return {
+            url: url + '?' + createQueryParams(_.extend({}, urlParams, params || {})),
+            layer: '',
+            tileMatrixSetID : ''
+        };
+    }
+
+    function getWmts(url, layer, params) {
+
+        var defaultParams = {
+            style : 'default',
+            version : '1.0.0',
+            format : 'image/png',
+            maximumLevel: 19
+        };
+
+        return new Cesium.WebMapTileServiceImageryProvider(
+            _.extend({}, defaultParams, _createWmtsParams(url, layer, params))
+        );
+    }
+
+    function getWms(url, layer) {
+        return new Cesium.WebMapServiceImageryProvider({
+            url : url,
+            layers: layer,
+            parameters: {
+                service: "WMS",
+                version: "1.1.1",
+                request: "GetMap",
+                styles: "",
+                format: "image/png",
+                transparent: true
             }
         });
     }
+
 
     function addMarkers(markers) {
         return _.map(markers, function (marker) {
@@ -186,25 +191,34 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
 
             // get an array of all primitives at the mouse position
             var pickedObjects = viewer.scene.drillPick(movement.position);
-            //var pickedObject = viewer.scene.pick(movement.position);
-
             if (Cesium.defined(pickedObjects)) {
 
                 //Update the collection of picked entities.
                 pickedEntities.removeAll();
-                //for (var i = 0; i < pickedObjects.length; ++i) {
-                _.each(pickedObjects, function (pickedObj) {
+                var objects = _.map(pickedObjects, function (pickedObj) {
                     var entity = pickedObj.id;
                     pickedEntities.add(entity);
-                    callback(entity.properties);
+                    return entity.properties;
                 });
-
+                callback(objects);
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     }
 
     function loadDataset(dataset, bbox, api, callback) {
         api.getBbox(dataset, bbox, function (res) {
+            _getHeightsForGeoJsonPoints(res, function (data) {
+                var dataSource = Cesium.GeoJsonDataSource.load(data);
+                callback(dataSource);
+            });
+        });
+    }
+
+    function loadDataset2(dataset, bbox, api, extraProps, callback) {
+        api.getBbox(dataset, bbox, function (res) {
+            _.each(res.features, function (feature) {
+                feature.properties = _.extend(feature.properties, extraProps);
+            });
             _getHeightsForGeoJsonPoints(res, function (data) {
                 var dataSource = Cesium.GeoJsonDataSource.load(data);
                 callback(dataSource);
@@ -219,15 +233,19 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
     init();
 
     return {
-        getImageryProvider: getImageryProvider,
         viewer: viewer,
         addMarkers: addMarkers,
-        addImagery: addImagery,
         build3DLine: build3DLine,
-        addNorgeIBilder: addNorgeIBilder,
         addClickhandler: addClickhandler,
         loadDataset: loadDataset,
-        stopLoading: stopLoading
+        loadDataset2: loadDataset2,
+        stopLoading: stopLoading,
+        getTiles: getTiles,
+        getWmts: getWmts,
+        getWms: getWms,
+        addImageryProvider: function (provider) {
+            viewer.imageryLayers.addImageryProvider(provider);
+        }
     };
 };
 
