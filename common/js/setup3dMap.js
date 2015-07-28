@@ -117,15 +117,10 @@ var KR = this.KR || {};
 
     ns.setupMap3d = function (api, datasetIds, options) {
         options = options || {};
-        options = _.extend({player: true}, options);
+        options = _.extend({player: true, limitBounds: false}, options);
 
         var map, bbox;
-        var sidebar = KR.CesiumSidebar($('#cesium-sidebar'), {
-            /*wikipediaTemplate: _.template($('#cesium_wikipedia_template').html()),
-            arcKulturminneTemplate: _.template($('#cesium_arc_kulturminne_template').html()),
-            sparqlKulturminneTemplate: _.template($('#cesium_sparql_kulturminne_template').html())
-            */
-        });
+        var sidebar = KR.CesiumSidebar($('#cesium-sidebar'), {});
 
         function _getDatasets() {
             var datasets = KR.Config.getDatasets(datasetIds, api);
@@ -149,7 +144,7 @@ var KR = this.KR || {};
         function _createMap(div, bbox) {
             return new KR.CesiumMap(
                 div,
-                CESIUM_OPTS,
+                _.extend(CESIUM_OPTS, {limitBounds: options.limitBounds}),
                 bbox
             );
         }

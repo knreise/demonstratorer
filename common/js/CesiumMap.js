@@ -3,6 +3,7 @@ var KR = this.KR || {};
 
 KR.CesiumMap = function (div, cesiumOptions, bounds) {
     'use strict';
+
     Cesium.BingMapsApi.defaultKey = '';
     var config = {
         cesiumViewerOpts: _.extend({
@@ -25,6 +26,32 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         });
     }
 
+    function _setupLimit(extent) {
+
+        var camera = viewer.scene.camera;
+
+        var lastPosition;
+
+        //listen for move event
+        camera.moveEnd.addEventListener(function () {
+
+            //get current position as lat/lon
+            var pos = Cesium.Ellipsoid.WGS84.cartesianToCartographic(
+                camera.position
+            );
+
+            //check if is outside
+            var isOutsideExtent = !Cesium.Rectangle.contains(extent, pos);
+            if (isOutsideExtent && lastPosition) {
+                //reposition
+                camera.position = lastPosition;
+            }
+
+            //store last pos
+            lastPosition = camera.position.clone();
+        });
+    }
+
     function init() {
 
         viewer = new Cesium.Viewer(div, config.cesiumViewerOpts);
@@ -41,18 +68,26 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         // Add the terrain provider (AGI)
         viewer.terrainProvider = _getTerrainProvider();
 
+        var camera = scene.camera;
+
+        var extent;
         if (bounds) {
             bounds = KR.Util.splitBbox(bounds);
             var ellipsoid = Cesium.Ellipsoid.WGS84;
-            var extent = new Cesium.Rectangle(
+            extent = new Cesium.Rectangle(
                 Cesium.Math.toRadians(bounds[0]),
                 Cesium.Math.toRadians(bounds[1]),
                 Cesium.Math.toRadians(bounds[2]),
                 Cesium.Math.toRadians(bounds[3])
             );
-            scene.camera.viewRectangle(extent, ellipsoid);
+            camera.viewRectangle(extent, ellipsoid);
+        }
+        if (extent && config.cesiumViewerOpts.limitBounds) {
+            _setupLimit(extent);
         }
     }
+
+
 
     function build3DLine(geojson, callback) {
 
