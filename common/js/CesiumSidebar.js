@@ -4,6 +4,8 @@ var KR = this.KR || {};
 KR.CesiumSidebar = function (element, templates, closeCallback) {
     'use strict';
     var closeCb = closeCallback;
+    console.log(element)
+    element.addClass('knreise-sidebar');
 
     function _setContent(content) {
         element.find('.cesium-sidebar-body').html(content);

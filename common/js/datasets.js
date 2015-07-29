@@ -64,7 +64,7 @@ KR.Config = KR.Config || {};
                 dataset: {dataset: 'difo', api: 'norvegiana'},
                 cluster: true,
                 template: _.template($('#digitalt_fortalt_template').html()),
-                noListThreshold: Infinity,
+                noListThreshold: 2,//Infinity,
                 description: 'Digitalt fortalt'
             },
             'verneomr': {
