@@ -52,11 +52,13 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         });
     }
 
-    function init() {
 
+
+    function init() {
         viewer = new Cesium.Viewer(div, config.cesiumViewerOpts);
 
         var scene = viewer.scene;
+        scene.imageryLayers.removeAll();
         var globe = scene.globe;
 
         // Will use local time to estimate actual daylight 
@@ -82,9 +84,13 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             );
             camera.viewRectangle(extent, ellipsoid);
         }
+
+
         if (extent && config.cesiumViewerOpts.limitBounds) {
             _setupLimit(extent);
         }
+
+        CesiumMiniMap(viewer);
     }
 
 

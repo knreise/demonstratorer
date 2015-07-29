@@ -406,12 +406,14 @@ module.exports = {
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/jquery-ui/jquery-ui.min.js',
           'bower_components/turf/turf.min.js',
+          'bower_components/cesium-minimap/cesium-minimap.min.js',
           'common/js/PathTracer.js',
           'common/js/CesiumMap.js',
           'common/js/CesiumSidebar.js',
           'common/js/DatasetLoader.js'
         ],
         css: [
+            'bower_components/cesium-minimap/cesium-minimap.css',
             'common/css/cesium_base.css',
             'common/css/cesium_sidebar.css'
         ],
@@ -433,6 +435,7 @@ module.exports = {
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/jquery-ui/jquery-ui.min.js',
           'bower_components/turf/turf.min.js',
+          'bower_components/cesium-minimap/cesium-minimap.min.js',
           'common/js/PathTracer.js',
           'common/js/CesiumMap.js',
           'common/js/CesiumSidebar.js',
@@ -441,6 +444,7 @@ module.exports = {
           'common/js/setup3dMap.js',
         ],
         css: [
+            'bower_components/cesium-minimap/cesium-minimap.css',
             'common/css/cesium_base.css',
             'common/css/cesium_sidebar.css'
         ],

@@ -1,0 +1,32 @@
+{
+  "name": "cesium-minimap",
+  "main": "cesium-minimap.js",
+  "version": "0.0.2",
+  "authors": [
+    "Atle Frenvik Sveen <atle.sveen@norkart.no>"
+  ],
+  "keywords": [
+    "Cesiumjs",
+    "Minimap"
+  ],
+  "license": "Apache 1.1",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "Cesium-1.11"
+  ],
+  "homepage": "https://github.com/knreise/cesium-minimap",
+  "_release": "0.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.0.2",
+    "commit": "0e8c72983e79482ce268a312b8055313ac38f6e1"
+  },
+  "_source": "git://github.com/knreise/cesium-minimap.git",
+  "_target": "0.0.2",
+  "_originalSource": "cesium-minimap",
+  "_direct": true
+}
