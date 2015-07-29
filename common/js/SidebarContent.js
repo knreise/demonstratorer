@@ -112,7 +112,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             });
             return;
         }
-
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset);
         var img = feature.properties.images;
         if (_.isArray(img)) {

@@ -442,6 +442,9 @@ module.exports = {
           'bower_components/jquery-ui/jquery-ui.min.js',
           'bower_components/turf/turf.min.js',
           'bower_components/cesium-minimap/cesium-minimap.min.js',
+          'bower_components/audiojs/audiojs/audio.min.js',
+          'bower_components/video.js/dist/video-js/video.js',
+          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'common/js/PathTracer.js',
           'common/js/CesiumMap.js',
           'common/js/CesiumSidebar.js',
@@ -452,6 +455,7 @@ module.exports = {
         ],
         css: [
             'bower_components/cesium-minimap/cesium-minimap.css',
+            'bower_components/video.js/dist/video-js/video-js.css',
             'common/css/L.Knreise.Control.Sidebar.css',
             'common/css/cesium_base.css',
             'common/css/cesium_sidebar.css'
