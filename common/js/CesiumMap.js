@@ -241,7 +241,9 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                     pickedEntities.add(entity);
                     return entity.properties;
                 });
-                callback(objects);
+                if (objects.length) {
+                    callback(objects);
+                }
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     }
