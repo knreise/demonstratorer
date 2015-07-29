@@ -151,9 +151,11 @@ var KR = this.KR || {};
 
         function _addDatasets(datasets, bbox, callback) {
             _.each(datasets, function (dataset) {
+                var datasetId = KR.Util.getDatasetId(dataset);
                 var props = {
                     template: dataset.template,
-                    datasetId: KR.Util.getDatasetId(dataset)
+                    datasetId: datasetId,
+                    'marker-color': KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true)
                 };
                 map.loadDataset2(dataset.dataset, bbox, api, props, function (res) {
                     map.viewer.dataSources.add(res);
