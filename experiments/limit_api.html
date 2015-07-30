@@ -18,17 +18,6 @@
 <div id="sidebar"></div>
 <div id="map"></div>
 
-<script type="text/template" id="popup_template">
-<h3><%= title %></h3>
-<p><%= dataset %></p>
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-<p><%= content %></p>
-<a href="<%= link %>">Mer info</a>
-</script>
-
-
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
     <div class="media">
@@ -40,6 +29,369 @@
         </div>
     </div>
 </a>
+</script>
+
+<script type="text/template" id="verneomraader_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Verneform</td>
+      <td><%= verneform %></td>
+    </tr>
+</table>
+
+</script>
+
+
+<script type="text/template" id="kulturminne_template">
+<h3><%= title %></h3>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>
+</script>
+
+
+<script type="text/template" id="kulturminne2_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= LokalitetNavn %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= Kategori %></dd>
+
+    <dt>Vernestatus</dt>
+    <dd><%= Vernestatus %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= Beskrivelse %></dd>
+
+</dl>
+</script>
+
+
+<script type="text/template" id="musit_template">
+<h3><%= allProps.dc_title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] %></td>
+    </tr>
+
+    <% if (allProps.dc_date) { %>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator) { %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <% } %>
+</table>
+
+</script>
+
+
+<script type="text/template" id="digitalt_museum_template">
+<h3><%= title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
+
+    <% if (allProps.abm_address) { %>
+    <tr>
+      <td>Adresse</td>
+      <td><%= allProps.abm_address[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator){ %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_subject) { %>
+    <tr>
+      <td>Emneord</td>
+      <td><%= allProps.dc_subject.join(', ')%></td>
+    </tr>
+    <% } %>
+
+</table>
+
+</script>
+
+
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+<% if(contentType === 'VIDEO' && video) { %>
+    <% if (video.indexOf('mp4') !== -1) { %>
+        <video class="video-js vjs-default-skin fullwidth" controls
+         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
+         data-setup='{}'>
+          <source src="<%= videoEmbed %>" type='video/mp4'>
+        </video>
+    <% } else { %>
+        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    
+<% } else if(contentType === 'SOUND' && sound) { %>
+    <audio src="<%= sound %>" preload="auto"></audio>
+<% } else if(contentType === 'IMAGE' && images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.abm_introduction %></p>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+</table>
+
+
+</script>
+
+
+<script type="text/template" id="folketelling_template">
+<% if (property.id.indexOf('g') === 0) { %> 
+    <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <p><%= property.bildelenke %></p>
+
+    <table class="sidebar-table">
+        <tr>
+          <td>Hjemmehørende</td>
+          <td><%= property.antall_hjemmehorende_personer || 0 %> personer</td>
+        </tr>
+        <tr>
+          <td>Etasjer</td>
+          <td><%= property.antall_etasjer %></td>
+        </tr>
+    </table>
+
+    <% if(apartments) { %> 
+        <% _.each(apartments.sort(function (a) {return parseInt(a.leilighetsnummer, 10)}), function (apartment) { %>
+            <table class="sidebar-table">
+                <tr colspan="2">
+                  <td><h4>Leilighet <%= apartment.leilighetsnummer %></h4></td>
+                </tr>
+                <tr>
+                  <td>Plassering</td>
+                  <td><%= apartment.bekvemmelighetens_beliggenhet %></td>
+                </tr>
+                <tr>
+                  <td>Etasje</td>
+                  <td><%= apartment.etasje %></td>
+                </tr>
+                <tr>
+                  <td>Husleie</td>
+                  <td><%= apartment.husleie %></td>
+                </tr>
+                <tr>
+                  <td>Beboere</td>
+                  <td><%= KR.Util.formatPersons(apartment.antall_hjemmehorende_personer) %></td>
+                </tr>
+                <tr colspan="2">
+                  <td>
+                    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/leilighet/<%= apartment.id %>" target="_blank">
+                      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+                    </a>
+                  </td>
+                </tr>
+            </table>
+        <% }) %>
+    </ul>
+
+<% } %>
+
+<% } else { %> 
+
+    <h3><%= property.bostedets_navn %></h3>
+
+    <% _.each(residents, function (resident) { %>
+      <table class="sidebar-table">
+          <tr colspan="2">
+            <td><h4><%= resident.fornavn %> <%= resident.patronymikon %> <%= resident.slektsnavn %></h4></td>
+          </tr>
+          <tr>
+            <td>Født</td>
+            <td><%= resident.fodselsaar %></td>
+          </tr>
+          <tr>
+            <td>Fødested</td>
+            <td><%= resident.fodested %></td>
+          </tr>
+          <tr>
+            <td>Yrke</td>
+            <td><%= resident.yrke %></td>
+          </tr>
+      </table>
+    <% }) %>
+    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/bosted_land/<%= property.id %>" target="_blank">
+      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+    </a>
+    
+
+<% } %>
+
+</script>
+
+
+<script type="text/template" id="wikipedia_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
+</script>
+
+
+<script type="text/template" id="ra_sparql_template">
+<h3><%= name %></h3>
+<% if (img) { %>
+<img class="fullwidth" src="<%= img %>" />
+<% } %>
+
+<p><%= description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+</table>
+
+</script>
+
+
+<script type="text/template" id="fangstgrop_template">
+<h3>Fangstgrop</h3>
+
+</script>
+
+
+<script type="text/template" id="flickr_template">
+<h3><%= title %></h3>
+<img class="fullwidth" src="<%= image %>" />
+
+</script>
+
+
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="brukerminne_template">
+<h3><%= title %></h3>
+
+<% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
+<p><%= KortBeskrivelse %></p>
+<% } %>
+
+<p><%= Beskrivelse %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Datering</td>
+      <td><%= Datering %></td>
+    </tr>
+    <tr>
+      <td>Opprinnelig funksjon</td>
+      <td><%= OpprinneligFunksjon %></td>
+    </tr>
+    <% if(!_.isUndefined(arguments[0].NåværendeFunksjon)) { %>
+    <tr>
+      <td>Nåværende funksjon</td>
+      <td><%= NåværendeFunksjon %></td>
+    </tr>
+    <% } %>
+    <% if(!_.isUndefined(arguments[0].Kilder)) { %>
+    <tr>
+      <td>Kilder</td>
+      <td><%= Kilder %></td>
+    </tr>
+    <% } %>
+</table>
+</script>
+
+
+<script type="text/template" id="popup_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<p><%= content %></p>
+
 </script>
 
 

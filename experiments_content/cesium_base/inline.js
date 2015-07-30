@@ -21,7 +21,7 @@ var map = new KR.CesiumMap(
 );
 
 map.viewer.scene.imageryLayers.removeAll();
-map.addWmts(
+var provider = map.getWmts(
     'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
     'topo2',
     {
@@ -30,6 +30,7 @@ map.addWmts(
         FORMAT: 'image/png'
     }
 );
+map.addImageryProvider(provider);
 
 map.addMarkers([
     {

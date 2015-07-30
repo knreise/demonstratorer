@@ -53,8 +53,8 @@ var KR = this.KR || {};
                 'historiskekart'
             ));
         } else if (layer === 'nib') {
-            //var SKTokenUrl = 'http://knreise.no/nib/?type=token';
-            var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
+            var SKTokenUrl = 'http://knreise.no/nib/?type=token';
+            //var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
             KR.Util.sendRequest(SKTokenUrl, null, function (token) {
                 if (token.indexOf('**') !== 0) {
                     callback(map.getWmts(
@@ -68,10 +68,7 @@ var KR = this.KR || {};
                         }
                     ));
                 } else { //fallback 
-                    callback(map.getWms(
-                        'http://wms.geonorge.no/skwms1/wms.historiskekart',
-                        'historiskekart'
-                    ));
+                    callback(map.getTiles('http://www.webatlas.no/wacloud/servicerepository/combine.aspx?X={x}&Y={y}&Z={z}&layers=TMS_WEBATLAS_STANDARD:1'));
                 }
             });
         } else {

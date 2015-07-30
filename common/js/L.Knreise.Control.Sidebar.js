@@ -5,15 +5,12 @@ L.Knreise = L.Knreise || {};
 L.Knreise.Control = L.Knreise.Control || {};
 
 
-
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
         options = options || {};
         options.autoPan = false;
         L.setOptions(this, options);
-
-        this._template = options.template;
 
         // Find content container
         var content =  L.DomUtil.get(placeholder);

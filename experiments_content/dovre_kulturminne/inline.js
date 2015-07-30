@@ -1,6 +1,6 @@
 //template used for sidebar
 
-var popupTemplate = _.template($('#popup_template').html());
+var popupTemplate = KR.Util.getDatasetTemplate('popup');
 var listElementTemplate = _.template($('#list_item_template').html());
 
 //create the map
@@ -34,14 +34,9 @@ var datasets = [
         toPoint: 10,
         cluster: false,
         template: _.template($('#kulturminne2_template').html()),
-        /*
-        style: function (feature) {
-            return {color: '#7570b3', weight: 1, fillOpacity: 0.7, fillColor: KR.Util.colorForProvider('Kulturminnesøk', 'hex')};
-        },
-        */
         style: {
             circle: true,
-            fillcolor: KR.Util.colorForProvider('Kulturminnesøk', 'hex'),
+            fillcolor: KR.Util.colorForProvider('Kulturminnesok', 'hex'),
             bordercolor: '#7570b3'
         }
     }

@@ -5,6 +5,8 @@ var KR = this.KR || {};
 KR.SidebarContent = function (wrapper, element, top, options) {
     'use strict';
 
+    var defaultTemplate = KR.Util.getDatasetTemplate('popup');
+
     element = $(element);
     wrapper = $(wrapper);
     top = $(top);
@@ -112,7 +114,8 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             });
             return;
         }
-        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset);
+        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
+
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];

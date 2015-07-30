@@ -27,16 +27,48 @@
 </script>
 
 
-<script type="text/template" id="popup_template">
-<h3><%= title %></h3>
-<p><%= dataset %></p>
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-<p><%= content %></p>
-<a href="<%= link %>">Mer info</a>
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
+</a>
 </script>
 
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
 
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
@@ -86,6 +118,25 @@
       <td>??</td>
     </tr>
 </table>
+</script>
+
+
+<script type="text/template" id="kulturminne2_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= LokalitetNavn %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= Kategori %></dd>
+
+    <dt>Vernestatus</dt>
+    <dd><%= Vernestatus %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= Beskrivelse %></dd>
+
+</dl>
 </script>
 
 
@@ -203,90 +254,6 @@
 </script>
 
 
-<script type="text/template" id="list_item_template">
-<a href="#" class="list-group-item">
-    <div class="media">
-        <div class="media-left media-middle">
-            <%= marker %>
-        </div>
-        <div class="media-body">
-            <%= title %>
-        </div>
-    </div>
-</a>
-</script>
-
-
-<script type="text/template" id="fangstgrop_template">
-<h3>Fangstgrop</h3>
-
-</script>
-
-
-<script type="text/template" id="marker_template">
-<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
-    <i class="fa fa-<%= icon %> icon-white"></i>
-</div>
-</script>
-
-
-<script type="text/template" id="thumbnail_template">
-<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
-</script>
-
-
-<script type="text/template" id="footer_template">
-<ul class="list-unstyled">
-<% if (license) { %>
-    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
-<% } %>
-    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
-</ul>
-</script>
-
-
-<script type="text/template" id="error_template">
-<div class="alert alert-danger alert-dismissible" role="alert">
-  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  <strong>Feil!</strong> <span class="content"></span>
-</div>
-</script>
-
-
-<script type="text/template" id="ra_sparql_template">
-<h3><%= name %></h3>
-<% if (img) { %>
-<img class="fullwidth" src="<%= img %>" />
-<% } %>
-
-<p><%= description %></p>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Type</td>
-      <td><%= loccatlabel %></td>
-    </tr>
-</table>
-
-</script>
-
-
-<script type="text/template" id="flickr_template">
-<h3><%= title %></h3>
-<img class="fullwidth" src="<%= image %>" />
-
-</script>
-
-
-<script type="text/template" id="husmann_template">
-<h3>Kulturminne</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= Navn %></dd>
-</dl>
-</script>
-
-
 <script type="text/template" id="folketelling_template">
 <% if (property.id.indexOf('g') === 0) { %> 
     <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
@@ -372,6 +339,57 @@
 </script>
 
 
+<script type="text/template" id="wikipedia_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
+</script>
+
+
+<script type="text/template" id="ra_sparql_template">
+<h3><%= name %></h3>
+<% if (img) { %>
+<img class="fullwidth" src="<%= img %>" />
+<% } %>
+
+<p><%= description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+</table>
+
+</script>
+
+
+<script type="text/template" id="fangstgrop_template">
+<h3>Fangstgrop</h3>
+
+</script>
+
+
+<script type="text/template" id="flickr_template">
+<h3><%= title %></h3>
+<img class="fullwidth" src="<%= image %>" />
+
+</script>
+
+
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
 <script type="text/template" id="brukerminne_template">
 <h3><%= title %></h3>
 
@@ -406,12 +424,11 @@
 </script>
 
 
-<script type="text/template" id="wikipedia_template">
+<script type="text/template" id="popup_template">
 <h3><%= title %></h3>
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
-
 <p><%= content %></p>
 
 </script>
@@ -452,7 +469,7 @@
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
             cluster: true,
-            template: _.template($('#digitalt_fortalt_template').html()),
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
         },
         {
@@ -462,7 +479,7 @@
                 api: 'kulturminnedataSparql',
                 kommune: '0822'
             },
-            template: _.template($('#ra_sparql_template').html()),
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
             bbox: false,
             isStatic: true,
             init: kulturminneFunctions.initKulturminnePoly,

@@ -9,6 +9,8 @@
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/cesium-minimap/cesium-minimap.css' rel='stylesheet' />
+        <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
+        <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
         <link href='../common/css/cesium_base.css' rel='stylesheet' />
         <link href='../common/css/cesium_sidebar.css' rel='stylesheet' />
 
@@ -29,16 +31,7 @@
 </div>
 
 
-<div id="cesium-sidebar">
-
-<div class="close-sidebar">
-    <div class="lr">
-        <div class="rl">
-        </div>
-    </div>
-</div>
-
-<div class="cesium-sidebar-body"></div></div>
+<div id="cesium-sidebar"></div>
 
 <div class="spinner-wrapper">
     <div class="spinner"></div>
@@ -83,6 +76,413 @@
 </script>
 
 
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
+</a>
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+<script type="text/template" id="verneomraader_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Verneform</td>
+      <td><%= verneform %></td>
+    </tr>
+</table>
+
+</script>
+
+
+<script type="text/template" id="kulturminne_template">
+<h3><%= title %></h3>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>
+</script>
+
+
+<script type="text/template" id="kulturminne2_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= LokalitetNavn %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= Kategori %></dd>
+
+    <dt>Vernestatus</dt>
+    <dd><%= Vernestatus %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= Beskrivelse %></dd>
+
+</dl>
+</script>
+
+
+<script type="text/template" id="musit_template">
+<h3><%= allProps.dc_title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] %></td>
+    </tr>
+
+    <% if (allProps.dc_date) { %>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator) { %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <% } %>
+</table>
+
+</script>
+
+
+<script type="text/template" id="digitalt_museum_template">
+<h3><%= title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
+
+    <% if (allProps.abm_address) { %>
+    <tr>
+      <td>Adresse</td>
+      <td><%= allProps.abm_address[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator){ %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_subject) { %>
+    <tr>
+      <td>Emneord</td>
+      <td><%= allProps.dc_subject.join(', ')%></td>
+    </tr>
+    <% } %>
+
+</table>
+
+</script>
+
+
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+<% if(contentType === 'VIDEO' && video) { %>
+    <% if (video.indexOf('mp4') !== -1) { %>
+        <video class="video-js vjs-default-skin fullwidth" controls
+         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
+         data-setup='{}'>
+          <source src="<%= videoEmbed %>" type='video/mp4'>
+        </video>
+    <% } else { %>
+        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    
+<% } else if(contentType === 'SOUND' && sound) { %>
+    <audio src="<%= sound %>" preload="auto"></audio>
+<% } else if(contentType === 'IMAGE' && images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.abm_introduction %></p>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+</table>
+
+
+</script>
+
+
+<script type="text/template" id="folketelling_template">
+<% if (property.id.indexOf('g') === 0) { %> 
+    <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <p><%= property.bildelenke %></p>
+
+    <table class="sidebar-table">
+        <tr>
+          <td>Hjemmehørende</td>
+          <td><%= property.antall_hjemmehorende_personer || 0 %> personer</td>
+        </tr>
+        <tr>
+          <td>Etasjer</td>
+          <td><%= property.antall_etasjer %></td>
+        </tr>
+    </table>
+
+    <% if(apartments) { %> 
+        <% _.each(apartments.sort(function (a) {return parseInt(a.leilighetsnummer, 10)}), function (apartment) { %>
+            <table class="sidebar-table">
+                <tr colspan="2">
+                  <td><h4>Leilighet <%= apartment.leilighetsnummer %></h4></td>
+                </tr>
+                <tr>
+                  <td>Plassering</td>
+                  <td><%= apartment.bekvemmelighetens_beliggenhet %></td>
+                </tr>
+                <tr>
+                  <td>Etasje</td>
+                  <td><%= apartment.etasje %></td>
+                </tr>
+                <tr>
+                  <td>Husleie</td>
+                  <td><%= apartment.husleie %></td>
+                </tr>
+                <tr>
+                  <td>Beboere</td>
+                  <td><%= KR.Util.formatPersons(apartment.antall_hjemmehorende_personer) %></td>
+                </tr>
+                <tr colspan="2">
+                  <td>
+                    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/leilighet/<%= apartment.id %>" target="_blank">
+                      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+                    </a>
+                  </td>
+                </tr>
+            </table>
+        <% }) %>
+    </ul>
+
+<% } %>
+
+<% } else { %> 
+
+    <h3><%= property.bostedets_navn %></h3>
+
+    <% _.each(residents, function (resident) { %>
+      <table class="sidebar-table">
+          <tr colspan="2">
+            <td><h4><%= resident.fornavn %> <%= resident.patronymikon %> <%= resident.slektsnavn %></h4></td>
+          </tr>
+          <tr>
+            <td>Født</td>
+            <td><%= resident.fodselsaar %></td>
+          </tr>
+          <tr>
+            <td>Fødested</td>
+            <td><%= resident.fodested %></td>
+          </tr>
+          <tr>
+            <td>Yrke</td>
+            <td><%= resident.yrke %></td>
+          </tr>
+      </table>
+    <% }) %>
+    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/bosted_land/<%= property.id %>" target="_blank">
+      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+    </a>
+    
+
+<% } %>
+
+</script>
+
+
+<script type="text/template" id="wikipedia_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
+</script>
+
+
+<script type="text/template" id="ra_sparql_template">
+<h3><%= name %></h3>
+<% if (img) { %>
+<img class="fullwidth" src="<%= img %>" />
+<% } %>
+
+<p><%= description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+</table>
+
+</script>
+
+
+<script type="text/template" id="fangstgrop_template">
+<h3>Fangstgrop</h3>
+
+</script>
+
+
+<script type="text/template" id="flickr_template">
+<h3><%= title %></h3>
+<img class="fullwidth" src="<%= image %>" />
+
+</script>
+
+
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="brukerminne_template">
+<h3><%= title %></h3>
+
+<% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
+<p><%= KortBeskrivelse %></p>
+<% } %>
+
+<p><%= Beskrivelse %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Datering</td>
+      <td><%= Datering %></td>
+    </tr>
+    <tr>
+      <td>Opprinnelig funksjon</td>
+      <td><%= OpprinneligFunksjon %></td>
+    </tr>
+    <% if(!_.isUndefined(arguments[0].NåværendeFunksjon)) { %>
+    <tr>
+      <td>Nåværende funksjon</td>
+      <td><%= NåværendeFunksjon %></td>
+    </tr>
+    <% } %>
+    <% if(!_.isUndefined(arguments[0].Kilder)) { %>
+    <tr>
+      <td>Kilder</td>
+      <td><%= Kilder %></td>
+    </tr>
+    <% } %>
+</table>
+</script>
+
+
+<script type="text/template" id="popup_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<p><%= content %></p>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -102,206 +502,29 @@
         <script src="../bower_components/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
         <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
         <script src="../bower_components/cesium-minimap/cesium-minimap.min.js" type="text/javascript"></script>
+        <script src="../bower_components/audiojs/audiojs/audio.min.js" type="text/javascript"></script>
+        <script src="../bower_components/video.js/dist/video-js/video.js" type="text/javascript"></script>
+        <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.js" type="text/javascript"></script>
         <script src="../common/js/PathTracer.js" type="text/javascript"></script>
         <script src="../common/js/CesiumMap.js" type="text/javascript"></script>
         <script src="../common/js/CesiumSidebar.js" type="text/javascript"></script>
+        <script src="../common/js/SidebarContent.js" type="text/javascript"></script>
         <script src="../common/js/DatasetLoader.js" type="text/javascript"></script>
+        <script src="../common/js/datasets.js" type="text/javascript"></script>
+        <script src="../common/js/setup3dMap.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
                 'use strict';
 
-                function simplify(geojson) {
-    return turf.featurecollection([turf.simplify(
-        geojson.features[0], 0.001, false
-    )]);
-}
+                var api = new KR.API();
 
-
-function createPolyline(heightCurve, options) {
-    options = options || {};
-    return {
-        polyline: {
-            positions: heightCurve,
-            width: options.width || 10.0,
-            material: new Cesium.PolylineGlowMaterialProperty({
-                color: options.color || Cesium.Color.BLUE ,
-                glowPower: options.glow || 0.1,
-            })
-        }
-    };
-}
-
-var cesiumOptions = {
-    animation: false,
-    baseLayerPicker: false,
-    fullscreenButton: false,
-    geocoder: false,
-    homeButton: false,
-    infoBox: false,
-    sceneModePicker: false,
-    selectionIndicator: false,
-    timeline: false,
-    navigationHelpButton: true,
-    navigationInstructionsInitiallyVisible: false,
-    orderIndependentTranslucency: false
+var options = {
+    line: 'utno/2.8158',
+    layer: 'nib'
 };
 
-var datasets = [
-    {
-        api: 'kulturminnedata',
-        layer: 0
-    },
-    {
-        api: 'wikipedia'
-    }
-];
-
-var tur = {
-    api: 'utno',
-    id: '2.8158',
-    type: 'gpx'
-};
-
-
-function Playpause() {
-    var btn = $('#playpause');
-
-    function play() {
-        btn.find('.glyphicon').removeClass('glyphicon-play').addClass('glyphicon-pause');
-        pathTracer.start();
-    }
-
-    function pause () {
-        btn.find('.glyphicon').removeClass('glyphicon-pause').addClass('glyphicon-play');
-        pathTracer.stop();
-    }
-
-    function toggle() {
-        if (pathTracer.isRunning()) {
-            pause();
-        } else {
-            play();
-        }
-    }
-
-    return {
-        play: play,
-        pause: pause,
-        toggle: toggle
-    };
-}
-
-var wasRunning = false;
-var playpause = new Playpause();
-
-
-function closed() {
-    if (pathTracer && wasRunning) {
-        playpause.play();
-    }
-}
-
-// Setting up API and retrieving the Folgefonna geojson
-var api = new KR.API();
-var pathTracer;
-var sidebar = KR.CesiumSidebar($('#cesium-sidebar'), {
-    wikipediaTemplate: _.template($('#cesium_wikipedia_template').html()),
-    arcKulturminneTemplate: _.template($('#cesium_arc_kulturminne_template').html()),
-    sparqlKulturminneTemplate: _.template($('#cesium_sparql_kulturminne_template').html())
-}, closed);
-
-function addNorgeIBilder(map) {
-
-    var SKTokenUrl = 'http://knreise.no/nib/?type=token';
-    //var SKTokenUrl = 'http://localhost:8001/html/baat/?type=token';
-
-    KR.Util.sendRequest(SKTokenUrl, null, function (token) {
-        var provider;
-        if (token.indexOf('**') === 0) {
-            provider = map.getWmts(
-                'http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts',
-                'topo2',
-                {
-                    TILEMATRIXSET: 'EPSG:3857',
-                    TILEMATRIX: 'EPSG:3857:{TileMatrix}',
-                    FORMAT: 'image/png'
-                }
-            );
-        } else {
-            provider = map.getWmts(
-                'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
-                'NiB',
-                {
-                    TILEMATRIXSET: 'EPSG:900913',
-                    TILEMATRIX: 'EPSG:900913:{TileMatrix}',
-                    FORMAT: 'image/jpeg',
-                    GKT: token
-                }
-            );
-        }
-
-        map.addImageryProvider(provider);
-    });
-}
-
-
-api.getData(tur, function (geojson) {
-    var bbox = KR.CesiumUtils.getBounds(geojson);
-    var map = new KR.CesiumMap(
-        'cesium-viewer',
-        cesiumOptions,
-        bbox
-    );
-
-    map.viewer.scene.imageryLayers.removeAll();
-
-    addNorgeIBilder(map);
-
-    //map.addWms('http://wms.geonorge.no/skwms1/wms.historiskekart', 'historiskekart');
-
-    //map.addTiles('http://crossorigin.me/http://www.webatlas.no/wacloud/servicerepository/combine.aspx?X={x}&Y={y}&Z={z}&layers=TMS_WEBATLAS_STANDARD:1');
-
-    map.stopLoading();
-
-    var simple = simplify(geojson);
-    map.build3DLine(simple, function (heightCurve) {
-        pathTracer = new KR.PathTracer(map.viewer, heightCurve, simple);
-        pathTracer.setPitchCorr(0.1);
-        $('#playpause').click(playpause.toggle);
-    });
-
-    map.build3DLine(geojson, function (heightCurve) {
-
-        var line = createPolyline(heightCurve, {
-            color: Cesium.Color.DEEPSKYBLUE,
-            glow: 0.25
-        });
-        var folgefonna = map.viewer.entities.add(line);
-
-        map.viewer.zoomTo(folgefonna);
-
-        _.each(datasets, function (dataset) {
-            map.loadDataset(dataset, bbox, api, function (res) {
-                map.viewer.dataSources.add(res);
-            });
-        });
-
-        map.stopLoading();
-        $('#playpause').removeClass('hidden');
-
-        map.addClickhandler(function (properties) {
-
-            wasRunning = pathTracer.isRunning();
-            playpause.pause();
-
-            pathTracer.stop();
-            sidebar.show(properties);
-        });
-    });
-
-});
-
+KR.setupMap3d(api, ['difo', 'ark_hist', 'wikipedia'], options);
             }());
         </script>
     </body>

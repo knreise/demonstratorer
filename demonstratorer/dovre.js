@@ -19,7 +19,7 @@
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
             cluster: true,
-            template: _.template($('#digitalt_fortalt_template').html()),
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
         },
         {
@@ -30,7 +30,7 @@
                 dataset: 'Kulturminnesok',
                 query: 'delving_title:Fangstlokalitet'
             },
-            template: _.template($('#kulturminne_template').html()),
+            template: KR.Util.getDatasetTemplate('kulturminne'),
             style: {
                 fillcolor: '#436978',
                 circle: true
@@ -47,7 +47,7 @@
             },
             provider: 'Naturbase',
             name: 'Verneområder',
-            template: _.template($('#verneomraader_template').html()),
+            template: KR.Util.getDatasetTemplate('verneomraader'),
             getFeatureData: function (feature, callback) {
                 api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
             },
@@ -68,7 +68,7 @@
                         api: 'norvegiana',
                         dataset: 'MUSIT'
                     },
-                    template: _.template($('#musit_template').html())
+                    template: KR.Util.getDatasetTemplate('musit')
                 },
                 {
                     name: 'DiMu',
@@ -76,7 +76,7 @@
                         api: 'norvegiana',
                         dataset: 'DiMu'
                     },
-                    template: _.template($('#digitalt_museum_template').html())
+                    template: KR.Util.getDatasetTemplate('digitalt_museum')
                 },
                 {
                     name: 'Kulturminner',
@@ -86,7 +86,7 @@
                         dataset: 'Kulturminnesok',
                         query: '-delving_title:Fangstlokalitet'
                     },
-                    template: _.template($('#kulturminne_template').html())
+                    template: KR.Util.getDatasetTemplate('kulturminne')
                 }
             ],
             isStatic: false,
@@ -106,7 +106,8 @@
                 fillOpacity: 0.4
             },
             cluster: false,
-            minZoom: 14
+            minZoom: 14,
+            template: KR.Util.getDatasetTemplate('popup')
         }
     ];
 

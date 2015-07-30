@@ -30,21 +30,31 @@ module.exports = function(grunt) {
 
                   var t = grunt.util._.template(fs.readFileSync('./grunt_templates/new_demo.html.tpl', 'utf8'));
 
-                  demonstrator.template_markup = grunt.util._.map(userConfig.demoTemplates, function (template) {
-                    var arr = ['<script type="text/template" id="' + template + '_template">'];
-                    arr.push(fs.readFileSync('templates/' + template + '.tmpl', 'utf8'));
-                    arr.push('</script>');
-                    arr.push('\n');
-                    return arr.join('\n');
-                }).join('\n');
+                  var template_markup = grunt.util._.map(userConfig.demoTemplates, function (template) {
+                      var arr = ['<script type="text/template" id="' + template + '_template">'];
+                      arr.push(fs.readFileSync('templates/' + template + '.tmpl', 'utf8'));
+                      arr.push('</script>');
+                      arr.push('\n');
+                      return arr.join('\n');
+                  }).join('\n');
 
-                demonstrator.desc = fs.readFileSync('demonstratorer/desc_' + demonstrator.id + '.txt', 'utf8');
-                demonstrator.inline_js = fs.readFileSync('demonstratorer/' + demonstrator.id + '.js', 'utf8');
-                demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
-                demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
+                  var demo_template_markup = grunt.util._.map(userConfig.demoDatasetTemplates, function (template) {
+                      var arr = ['<script type="text/template" id="' + template + '_template">'];
+                      arr.push(fs.readFileSync('templates/datasets/' + template + '.tmpl', 'utf8'));
+                      arr.push('</script>');
+                      arr.push('\n');
+                      return arr.join('\n');
+                  }).join('\n');
 
-                fs.writeSync(fd, t(demonstrator));
-                done(); 
+                  demonstrator.template_markup = template_markup.concat(demo_template_markup);
+
+                  demonstrator.desc = fs.readFileSync('demonstratorer/desc_' + demonstrator.id + '.txt', 'utf8');
+                  demonstrator.inline_js = fs.readFileSync('demonstratorer/' + demonstrator.id + '.js', 'utf8');
+                  demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
+                  demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
+
+                  fs.writeSync(fd, t(demonstrator));
+                  done(); 
               }
             };
           })
@@ -77,22 +87,32 @@ module.exports = function(grunt) {
 
                   var t = grunt.util._.template(fs.readFileSync('./grunt_templates/demonstrator.html.tpl', 'utf8'));
                   demonstrator.template_markup = grunt.util._.map(demonstrator.templates, function (template) {
-                    var arr = ['<script type="text/template" id="' + template + '_template">'];
-                    arr.push(fs.readFileSync('templates/' + template + '.tmpl', 'utf8'));
-                    arr.push('</script>');
-                    arr.push('\n');
-                    return arr.join('\n');
-                }).join('\n');
+                      var arr = ['<script type="text/template" id="' + template + '_template">'];
+                      arr.push(fs.readFileSync('templates/' + template + '.tmpl', 'utf8'));
+                      arr.push('</script>');
+                      arr.push('\n');
+                      return arr.join('\n');
+                  }).join('\n');
 
-                demonstrator.html = fs.readFileSync('./experiments_content/' + demonstrator.key + '/html.html', 'utf8');
-                demonstrator.inline_js = fs.readFileSync('./experiments_content/' + demonstrator.key + '/inline.js', 'utf8');
+                  var demo_template_markup = grunt.util._.map(userConfig.demoDatasetTemplates, function (template) {
+                      var arr = ['<script type="text/template" id="' + template + '_template">'];
+                      arr.push(fs.readFileSync('templates/datasets/' + template + '.tmpl', 'utf8'));
+                      arr.push('</script>');
+                      arr.push('\n');
+                      return arr.join('\n');
+                  }).join('\n');
 
-                demonstrator.scriptLinks = userConfig.commonScripts.concat(demonstrator.scripts);
+                  demonstrator.template_markup = demonstrator.template_markup.concat(demo_template_markup);
 
-                demonstrator.cssLinks = userConfig.commonCss.concat(demonstrator.css);
+                  demonstrator.html = fs.readFileSync('./experiments_content/' + demonstrator.key + '/html.html', 'utf8');
+                  demonstrator.inline_js = fs.readFileSync('./experiments_content/' + demonstrator.key + '/inline.js', 'utf8');
 
-                fs.writeSync(fd, t(demonstrator));
-                done(); 
+                  demonstrator.scriptLinks = userConfig.commonScripts.concat(demonstrator.scripts);
+
+                  demonstrator.cssLinks = userConfig.commonCss.concat(demonstrator.css);
+
+                  fs.writeSync(fd, t(demonstrator));
+                  done(); 
               }
             };
           })

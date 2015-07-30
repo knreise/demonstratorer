@@ -1,6 +1,6 @@
 //template used for sidebar
 
-var popupTemplate = _.template($('#popup_template').html());
+var popupTemplate = KR.Util.getDatasetTemplate('popup');
 var listElementTemplate = _.template($('#list_item_template').html());
 var markerTemplate = _.template($('#marker_template').html());
 var thumbnailTemplate = _.template($('#thumbnail_template').html());

@@ -1,4 +1,4 @@
-var popupTemplate = _.template($('#popup_template').html());
+var popupTemplate = KR.Util.getDatasetTemplate('popup');
 var listElementTemplate = _.template($('#list_item_template').html());
 
 var map = L.map('map');

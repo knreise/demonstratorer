@@ -10,31 +10,6 @@ KR.Config = {
         'TEXT': 'file-text',
         'default': 'file-o'
     },
-
-    datasetIcons: {
-        'Artsdatabanken': 'paw',
-        'Kulturminnesok': 'archive',
-        'Naturbase': 'tree',
-        'MUSIT_DiMu': 'flag',
-        'Musit': 'flag',
-        'DigitaltMuseum': 'flag',
-        'fangstlokaliteter': 'circle'
-    },
-
-    providerColors: {
-        'Artsdatabanken': {name: 'darkpurple', hex: '#5B396B'},
-        'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
-        'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
-        'Industrimuseum': {name: 'darkred', hex: '#A23336'},
-        'MUSIT': {name: 'cadetblue', hex: '#436978'},
-        'Kulturminnesøk': {name: 'green', hex: '#72B026'},
-        'Naturbase': {name: 'purple', hex: '#D252B9'},
-        'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
-        'default': {name: 'blue', hex: '#38A9DC'},
-        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'},
-        'Trondheim byarkiv': {name: 'darkred', hex: '#A23336'}
-    },
-
     templates: {}
 };
 
@@ -42,6 +17,21 @@ KR.Util = KR.Util || {};
 
 (function (ns) {
     'use strict';
+
+    ns.iconForContentType = function (feature) {
+        var contentType = feature.properties.contentType;
+        if (_.has(KR.Config.contentIcons, contentType)) {
+            return KR.Config.contentIcons[contentType];
+        }
+        return KR.Config.contentIcons['default'];
+    };
+
+    ns.getDatasetTemplate = function (name) {
+        var content = $('#' + name + '_template').html();
+        if (content) {
+            return _.template(content);
+        }
+    };
 
     ns.templateForDataset = function (dataset) {
         if (_.has(KR.Config.templates, dataset)) {
@@ -65,123 +55,13 @@ KR.Util = KR.Util || {};
     };
 
 
-    ns.iconForContentType = function (feature) {
-        var contentType = feature.properties.contentType;
-        if (_.has(KR.Config.contentIcons, contentType)) {
-            return KR.Config.contentIcons[contentType];
-        }
-        return KR.Config.contentIcons['default'];
-    };
-
-    ns.iconForFeature = function (feature) {
-        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
-        if (datasetIcon) {
-            return datasetIcon;
-        }
-        return ns.iconForContentType(feature);
-    };
-
-
     ns.colorForProvider = function (provider, type) {
-        type = type || 'name';
-        if (_.has(KR.Config.providerColors, provider)) {
-            return KR.Config.providerColors[provider][type];
+        var hex = true;
+        if (type !== 'hex') {
+            hex = false;
         }
-        return KR.Config.providerColors['default'][type];
-    };
-
-
-    ns.colorForFeature = function (feature, type) {
-        return ns.colorForProvider(feature.properties.provider, type);
-    };
-
-
-    ns.markerForFeature = function (feature, selected) {
-        //var faIcon = ns.iconForFeature(feature);
-        var color = selected
-                    ? 'blue'
-                    : ns.colorForFeature(feature);
-
-        return L.Knreise.icon({
-            markerColor: color,
-            prefix: 'fa'
-        });
-    };
-
-    var verneomrTypes = {
-        landskapsvern: {
-            ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV'],
-            style: {
-                fillColor: '#d8cb7a',
-                color: '#9c8f1b'
-            },
-        },
-        nasjonalpark: {
-            ids: ['NP', 'NPS'],
-            style: {
-                fillColor: '#7f9aac',
-                color: '#b3a721'
-            },
-        },
-        naturreservat: {
-            ids: ['NR', 'NRS'],
-            style: {
-                fillColor: '#ef9874',
-                color: '#ef9873'
-            }
-        }
-    };
-
-    function getVerneOmrcolors(feature) {
-        var id = feature.properties.vernef_id;
-        return _.find(verneomrTypes, function (type) {
-            return (type.ids.indexOf(id) !== -1);
-        });
-    }
-
-    ns.getVerneomrStyle = function (opacity) {
-
-        var defaultStyle = {
-            fillOpacity: opacity,
-            opacity: 0.8,
-            weight: 1,
-            clickable: false
-        };
-
-        return function find(feature) {
-            if (!feature) {
-                return;
-            }
-            var res = getVerneOmrcolors(feature);
-            if (res) {
-                return _.extend({}, defaultStyle, res.style);
-            }
-            return {stroke: false, fill: false};
-        };
-    };
-
-    ns.getVerneomrCircleStyle = function (color) {
-        var defaultStyle = {
-            fillOpacity: 1,
-            opacity: 0.8,
-            weight: 1,
-            radius: 10
-        };
-
-        return function find(feature) {
-            if (!feature) {
-                return;
-            }
-            var res = getVerneOmrcolors(feature);
-            var extra = {};
-            if (color) {
-                extra.color = color;
-            }
-            if (res) {
-                return _.extend({}, defaultStyle, res.style, extra);
-            }
-            return {stroke: false, fill: false};
-        };
+        var feature = {properties: {datasetId: provider}};
+        return KR.Style.colorForFeature(feature, hex, true);
     };
 
 

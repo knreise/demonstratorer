@@ -1,6 +1,6 @@
 //template used for sidebar
 
-var popupTemplate = _.template($('#popup_template').html());
+var popupTemplate = KR.Util.getDatasetTemplate('popup');
 var listElementTemplate = _.template($('#list_item_template').html());
 
 //create the map
@@ -30,7 +30,7 @@ var datasets = [
             layer: 0,
             api: 'kulturminnedata'
         },
-        template: _.template($('#fangstgrop_template').html()),
+        template: KR.Util.getDatasetTemplate('fangstgrop'),
         smallMarker: true,
         cluster: false,
         style: {radius: 1.5, opacity: 1, fillcolor: '#000', fillOpacity: 1, circle: true}

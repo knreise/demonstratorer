@@ -27,7 +27,6 @@ hjelpefunksjoner. Disse hjelpefunksjonene befinner seg i ``/common/js``, og inkl
 
 - AlongLine.js: Funksjonalitet for å vise data langs en linje
 - DatasetLoader.js: Se api_doc.md, under oversikriften "Leaflet Layer Integration"
-- L.Control.DatasetChooser.js: 
 - L.Knreise.Control.Datasets.js: Bygger på L.Control.Layers.js og viser datasett
 - L.Knreise.Control.Sidebar.js: Bygger på L.Sidebar og viser informasjon i sidebar
 - L.Knreise.GeoJSON og L.Knreise.MarkerClusterGroup: brukes av DatasetLoader.js
