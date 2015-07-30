@@ -2,6 +2,11 @@
 
 var KR = this.KR || {};
 
+/*
+    Utility for setting up a Cesium map based on config
+*/
+
+
 (function (ns) {
     'use strict';
 

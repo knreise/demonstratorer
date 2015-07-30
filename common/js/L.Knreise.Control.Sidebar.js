@@ -4,6 +4,9 @@
 L.Knreise = L.Knreise || {};
 L.Knreise.Control = L.Knreise.Control || {};
 
+/*
+    A Leaflet wrapper for displaying sidebar data.
+*/
 
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 

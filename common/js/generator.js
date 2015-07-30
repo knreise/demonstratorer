@@ -2,6 +2,10 @@
 
 var KR = this.KR || {};
 
+/*
+    (messy?) Code for setting up the generator
+*/
+
 (function () {
     'use strict';
 

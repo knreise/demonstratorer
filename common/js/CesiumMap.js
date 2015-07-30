@@ -1,6 +1,10 @@
 /*global Cesium:false, turf:false */
 var KR = this.KR || {};
 
+/*
+    Simple configuration for a Cesium map
+*/
+
 KR.CesiumMap = function (div, cesiumOptions, bounds) {
     'use strict';
 

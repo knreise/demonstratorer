@@ -1,6 +1,10 @@
 /*global Cesium:false */
 var KR = this.KR || {};
 
+/*
+    A sidebar for Cesium, similar to L.Knreise.Control.Sidebar for Leaflet
+*/
+
 KR.CesiumSidebar = function (element, err, closeCallback, options) {
     'use strict';
 

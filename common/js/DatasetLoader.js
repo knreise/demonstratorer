@@ -1,6 +1,12 @@
 /*global L:false, turf:false */
 var KR = this.KR || {};
 
+/*
+    Handles loading of datasets
+
+    Init it with a KnreiseAPI, a Leaflet map, something that behaves as 
+    L.Knreise.Control.Sidebar and an optional callback for errors.
+*/
 KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     'use strict';
 
@@ -355,6 +361,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         }
     }
 
+    /*
+        Force a reload of all datasets, optionally set them visible after load
+        calls callback when fihished
+    */
     function reload(setVisible, callback) {
         var finished = _.after(reloads.length, function () {
             if (callback) {
@@ -366,6 +376,13 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
+    /*
+        Loads a list of datasets, creates Leaflet layers of either 
+        L.Knreise.GeoJSON or L.Knreise.MarkerClusterGroup according to
+        config. 
+
+        Can be supplied an initial bbox for filtering and a filter function
+    */
     function loadDatasets(datasets, bounds, filter) {
 
         datasets = _.filter(datasets, function (dataset) {

@@ -18,6 +18,11 @@ KR.Util = KR.Util || {};
 (function (ns) {
     'use strict';
 
+
+    /*
+        Returns the name of a font-awesome icon for a 
+        Norvegiana content type, or a default one
+    */
     ns.iconForContentType = function (feature) {
         var contentType = feature.properties.contentType;
         if (_.has(KR.Config.contentIcons, contentType)) {
@@ -26,6 +31,10 @@ KR.Util = KR.Util || {};
         return KR.Config.contentIcons['default'];
     };
 
+
+    /*
+        Loads a template from /templates/datasets
+    */
     ns.getDatasetTemplate = function (name) {
         var content = $('#' + name + '_template').html();
         if (content) {
@@ -33,21 +42,20 @@ KR.Util = KR.Util || {};
         }
     };
 
+
+    /*
+        Gets a template from KR.Config.templates
+    */
     ns.templateForDataset = function (dataset) {
         if (_.has(KR.Config.templates, dataset)) {
             return KR.Config.templates[dataset];
         }
     };
 
-    ns.iconForDataset = function (dataset) {
-        if (_.isArray(dataset)) {
-            dataset = dataset.join('_');
-        }
-        if (_.has(KR.Config.datasetIcons, dataset)) {
-            return KR.Config.datasetIcons[dataset];
-        }
-    };
 
+    /*
+        Creates a html style siring (to put in style=""), given a dictionary
+    */
     ns.createStyleString = function (styleDict) {
         return _.map(styleDict, function (value, key) {
             return key + ': ' + value;
@@ -55,6 +63,10 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Gets a color for a given dataset provider id, see 
+        KR.Style.datasets
+    */
     ns.colorForProvider = function (provider, type) {
         var hex = true;
         if (type !== 'hex') {
@@ -65,6 +77,9 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Utility function to register clicks om a feature
+    */
     ns.featureClick = function (sidebar) {
         return function _addFeatureClick(feature, layer, dataset) {
             layer.on('click', function (e) {
@@ -98,6 +113,10 @@ KR.Util = KR.Util || {};
         return dataset.template;
     }
 
+
+    /*
+        Utility function to handle clicks on a feature cluster
+    */
     ns.clusterClick = function (sidebar) {
         return function _addClusterClick(clusterLayer, dataset) {
             clusterLayer.on('clusterclick', function (e) {
@@ -116,6 +135,10 @@ KR.Util = KR.Util || {};
         };
     };
 
+
+    /*
+        Converts a hex color to rgba with optional transparency
+    */
     ns.hexToRgba = function (hex, transparency) {
         transparency = transparency || 1;
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -131,11 +154,19 @@ KR.Util = KR.Util || {};
         return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
     };
 
+
+    /*
+        Filter a GeoJSON featurecollection with a bbox-string
+    */
     ns.filterByBbox = function (features, bbox) {
         var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
         return turf.within(features, boundPoly);
     };
 
+
+    /*
+        Get id for a dataset
+    */
     ns.getDatasetId = function (dataset) {
         if (dataset.dataset.api === 'norvegiana') {
             if (!dataset.dataset.query) {
@@ -151,6 +182,7 @@ KR.Util = KR.Util || {};
         return KR.Util.stamp(dataset);
     };
 
+    //utility for Leaflet if defined
     if (typeof L !== 'undefined') {
         L.latLngBounds.fromBBoxString = function (bbox) {
             bbox = KR.Util.splitBbox(bbox);
@@ -161,6 +193,9 @@ KR.Util = KR.Util || {};
         };
     }
 
+    /*
+        Parse a url query string to a dict, handles true/falsa as strings
+    */
     ns.parseQueryString = function (qs) {
         var queryString = decodeURIComponent(qs);
         if (queryString === '') {
@@ -179,8 +214,11 @@ KR.Util = KR.Util || {};
         }, {});
     };
 
-    var personsTemplate = _.template('<%= totalt %> (<%= menn %> menn, <%= kvinner %> kvinner)');
 
+    /*
+        Handle the persons notation from folketelling api
+    */
+    var personsTemplate = _.template('<%= totalt %> (<%= menn %> menn, <%= kvinner %> kvinner)');
     ns.formatPersons = function (persons) {
         var split = persons.split('-');
         if (split.length < 2) {
@@ -193,6 +231,10 @@ KR.Util = KR.Util || {};
         });
     };
 
+
+    /*
+        Returns a Leaflet layer based on layer name string
+    */
     ns.getBaseLayer = function (layerName, callback) {
         var layers = {
             'nib': KR.getNibLayer,
@@ -216,6 +258,9 @@ KR.Util = KR.Util || {};
         return (lastIndex !== -1) && (lastIndex + str.length === a.length);
     }
 
+    /*
+        Loads a line geometry according to the setup in the generator
+    */
     ns.getLine = function (api, line, callback) {
         if (_.isFunction(line)) {
             line(function (res) {

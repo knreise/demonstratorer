@@ -38,24 +38,28 @@ The DatasetWrapper passed to the DatasetLoader is a wrapper around the Dataset o
 
 ##### Options
 
-| Option         | Type           | Default value | Required? | Description                                                                                                                               |
-|----------------|----------------|---------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| dataset        | Dataset        | null          | no        | The dataset definition (see above)                                                                                                        |
-| datasets       | Dataset[]      | null          | no        | A list of dataset definitions (see above) NB: Either this or dataset must be set!                                                         |
-| grouped        | bool           | false         | no        | If datsests is a list, they will be treated as one entry in the layer switcher                                                            |
-| name           | string         | null          | no        | Name of the dataset (used for display purposes), overrides feature data                                                                   |
-| provider       | string         | null          | no        | Name of the dataset provider (used for display purposes), overrides feature data                                                          |
-| cluster        | bool           | true          | no        | Use clustering on layer                                                                                                                   |
-| isStatic       | bool           | true          | no        | if false, reload on zoom/pan                                                                                                              |
-| bbox           | bool           | true          | no        | If true, use getBbox, else use getData                                                                                                    |
-| minZoom        | Number         | null          | no        | If set, does not show or load data above this zoom level                                                                                  |
-| minFeatures    | Number         | null          | no        | If set, do not show data if more than this number of features returned                                                                    |
-| getFeatureData | function       | null          | no        | If provided, called with a feature and a calback to display info in sidebar                                                               |
-| template       | function       | null          | no        | A function that can be called like underscore.js template() and return html, describing the feature. Called with the features properties. |
-| toPoint        | toPointOptions | null          | no        | If provided, enables "deflation" of polygons (similar to [Leaflet.Deflate][deflate])                                                      |
-| extras         | dictionary     | null          | no        | If provided, the properties of this dict will be added to the feature properties                                                          |
-| style          | KNreiseStyle   | depends       | no        | The style to apply. Extends the default (for the dataset)                                                                                 |
-| noListThreshold| int            | 10            | no        | Decides if the sidebar shuld display a list. Set to 0 for always list, Infinity for never list                                            |
+| Option            | Type           | Default value | Required? | Description                                                                                                                               |
+|-------------------|----------------|---------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| dataset           | Dataset        | null          | no        | The dataset definition (see above)                                                                                                        |
+| datasets          | Dataset[]      | null          | no        | A list of dataset definitions (see above) NB: Either this or dataset must be set!                                                         |
+| grouped           | bool           | false         | no        | If datsests is a list, they will be treated as one entry in the layer switcher                                                            |
+| name              | string         | null          | no        | Name of the dataset (used for display purposes), overrides feature data                                                                   |
+| provider          | string         | null          | no        | Name of the dataset provider (used for display purposes), overrides feature data                                                          |
+| cluster           | bool           | true          | no        | Use clustering on layer                                                                                                                   |
+| isStatic          | bool           | true          | no        | if false, reload on zoom/pan                                                                                                              |
+| bbox              | bool           | true          | no        | If true, use getBbox, else use getData                                                                                                    |
+| minZoom           | Number         | null          | no        | If set, does not show or load data above this zoom level                                                                                  |
+| minFeatures       | Number         | null          | no        | If set, do not show data if more than this number of features returned                                                                    |
+| getFeatureData    | function       | null          | no        | If provided, called with a feature and a calback to display info in sidebar                                                               |
+| template          | function       | null          | no        | A function that can be called like underscore.js template() and return html, describing the feature. Called with the features properties. |
+| toPoint           | toPointOptions | null          | no        | If provided, enables "deflation" of polygons (similar to [Leaflet.Deflate][deflate])                                                      |
+| extras            | dictionary     | null          | no        | If provided, the properties of this dict will be added to the feature properties                                                          |
+| style             | KNreiseStyle   | depends       | no        | The style to apply. Extends the default (for the dataset)                                                                                 |
+| noListThreshold   | int            | 10            | no        | Decides if the sidebar shuld display a list. Set to 0 for always list, Infinity for never list                                            |
+| hideFromGenerator | bool           | false         | no        | If true, the dataset will not be listed on generator page (but is available to set in config url)                                         |
+| description       | string         | null          | no        | Will show up as a descriptioon on the generator page                                                                                      |
+| init              | function       | null          | no        | If set, will be called on dataset initialization, with params ``map`` and ``dataset``                                                     |
+| loadWhenLessThan  | dict           | null          | no        | If set, with params ``count`` (int) and ``callback`` (function) will call callback when there are less than count features on the map, callback is called with ``map``, ``dataset`` and ``features`` |
 
 
 ***toPointOptions***

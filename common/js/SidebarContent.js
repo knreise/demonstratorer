@@ -2,6 +2,10 @@
 
 var KR = this.KR || {};
 
+/*
+    Handles display of content in a sidebar
+*/
+
 KR.SidebarContent = function (wrapper, element, top, options) {
     'use strict';
 

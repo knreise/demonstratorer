@@ -2,6 +2,10 @@
 
 'use strict';
 
+/*
+    Wrapper over L.GeoJSON to handle clustered KNreise datasets
+*/
+
 L.Knreise = L.Knreise || {};
 L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 

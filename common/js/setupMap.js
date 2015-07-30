@@ -1,5 +1,9 @@
 /*global L:false, alert:false, KR:false, turf:false */
 
+/*
+    Utility for setting up a Leaflet map based on config
+*/
+
 var KR = this.KR || {};
 (function (ns) {
     'use strict';

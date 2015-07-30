@@ -4,6 +4,9 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
+    /*
+        Setup for a "follow line map demonstrator"
+    */
     ns.FollowLineMap = function (map, api, sidebar, datasets, options) {
 
         options = _.extend({

@@ -2,6 +2,10 @@
 var KR = this.KR || {};
 KR.Config = KR.Config || {};
 
+/*
+    List of predefined datasets
+*/
+
 (function (ns) {
     'use strict';
 

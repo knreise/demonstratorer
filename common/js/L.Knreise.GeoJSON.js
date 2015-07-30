@@ -1,6 +1,10 @@
 /*global L: false, KR: false, turf: false */
 'use strict';
 
+/*
+    Wrapper over L.GeoJSON to handle unclustered KNreise datasets
+*/
+
 L.Knreise = L.Knreise || {};
 L.Knreise.GeoJSON = L.GeoJSON.extend({
 

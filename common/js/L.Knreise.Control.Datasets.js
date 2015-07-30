@@ -1,5 +1,12 @@
 /*global L:false, KR: false */
 
+/*
+    A Leaflet control that behaves in much the same way as L.Control.Layer, 
+    but works with KNreise datasets. 
+
+    Handles loading, toggleling and error feedback.
+*/
+
 
 (function () {
     'use strict';

@@ -2,6 +2,10 @@
 
 var KR = this.KR || {};
 
+/*
+    Simple splash screen for a leaflet map
+*/
+
 KR.SplashScreen = function (map, title, description, image) {
     'use strict';
 
