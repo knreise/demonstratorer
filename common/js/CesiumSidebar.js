@@ -1,16 +1,51 @@
 /*global Cesium:false */
 var KR = this.KR || {};
 
-KR.CesiumSidebar = function (element, templates, closeCallback) {
+KR.CesiumSidebar = function (element, err, closeCallback, options) {
     'use strict';
+
+    options = options || {
+        footerTemplate: _.template($('#footer_template').html()),
+        listElementTemplate: _.template($('#list_item_template').html()),
+        markerTemplate: _.template($('#marker_template').html()),
+        thumbnailTemplate: _.template($('#thumbnail_template').html())
+    };
+
+    var _parentContainer = $('<div id="sidebar"></div>');
+    element.append(_parentContainer);
+
+
+    var _top = $('<div class="top-menu"></div>');
+    _parentContainer.append(_top);
+
+    var _close = $('<a class="close pull-right">×</a>');
+    _top.append(_close);
+
+    var _topContainer = $('<span></span>');
+    _top.append(_topContainer);
+
+    var _contentContainer = $('<div class="sidebar-content"></div>');
+    _parentContainer.append(_contentContainer);
+
+    var sidebarContent = new KR.SidebarContent(_parentContainer, _contentContainer, _topContainer, options);
+
     var closeCb = closeCallback;
 
+    element.addClass('knreise-sidebar');
+
     function _setContent(content) {
-        element.find('.cesium-sidebar-body').html(content);
+        _contentContainer.html('');
     }
 
-    function showFeature(feature) {
-        _setContent(feature.template(feature));
+    function mapProperties(properties) {
+        return {
+            properties: properties,
+            template: properties.template
+        };
+    }
+
+    function showFeature(properties) {
+        sidebarContent.showFeature(mapProperties(properties));
     }
 
     function _createListElement(feature) {
@@ -23,11 +58,9 @@ KR.CesiumSidebar = function (element, templates, closeCallback) {
         return li;
     }
 
-    function showList(features) {
-        var list = $('<div class="list-group"></ul>');
-        var elements = _.map(_.compact(features), _createListElement);
-        list.append(elements);
-        _setContent(list);
+    function showList(propertiesArray) {
+        var features = _.map(propertiesArray, mapProperties);
+        sidebarContent.showFeatures(features);
     }
 
     function show(properties) {
@@ -40,7 +73,7 @@ KR.CesiumSidebar = function (element, templates, closeCallback) {
         }
     }
 
-    function _close() {
+    function _closeFunc() {
         element.hide('slide', {direction: 'left'}, 100);
         _setContent('');
         if (closeCb) {
@@ -48,9 +81,7 @@ KR.CesiumSidebar = function (element, templates, closeCallback) {
         }
     }
 
-    element.find('.close-sidebar').on('click', function () {
-        _close();
-    });
+    _close.click(_closeFunc);
 
     return {
         show: show,

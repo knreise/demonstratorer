@@ -1126,11 +1126,9 @@ L.Knreise.geoJson = function (geojson, options) {
 L.Knreise = L.Knreise || {};
 L.Knreise.Control = L.Knreise.Control || {};
 
-L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
-    options: {
-        noListThreshold: 10
-    },
+
+L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
         options = options || {};
@@ -1146,6 +1144,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         });
         // Remove the content container from its original parent
         content.parentNode.removeChild(content);
+
 
         var top = L.DomUtil.create('div', 'top-menu', content);
         this._contentContainer = L.DomUtil.create('div', 'sidebar-content', content);
@@ -1174,13 +1173,50 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             }
 
         }, this);
+
+        this.sidebar = new KR.SidebarContent(this._container, this._contentContainer, this._top, this.options);
     },
 
-    _setupSwipe: function (callbacks) {
+    showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
+        this.show();
+        this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
+    },
+
+    showFeatures: function (features, template, getData, noListThreshold, forceList) {
+        this.show();
+        this.sidebar.showFeatures(features, template, getData, noListThreshold, forceList);
+    }, 
+
+    _removeContent: function () {
+        $(this.getContainer()).html('');
+    }
+
+});
+
+L.Knreise.Control.sidebar = function (placeholder, options) {
+    return new L.Knreise.Control.Sidebar(placeholder, options);
+};
+
+/*global audiojs:false*/
+
+var KR = this.KR || {};
+
+KR.SidebarContent = function (wrapper, element, top, options) {
+    'use strict';
+
+    element = $(element);
+    wrapper = $(wrapper);
+    top = $(top);
+
+    function _setContent(content) {
+        element.html(content);
+    }
+
+    function _setupSwipe(callbacks) {
         if (!callbacks) {
             return;
         }
-        $(this.getContainer())
+        element
             .swipe({
                 swipe: function () {},
                 allowPageScroll: 'vertical'
@@ -1197,20 +1233,85 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                     callbacks.prev();
                 }
             });
-    },
+    }
 
-    showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
+    function _createListCallbacks(feature, index, template, getData, features, close) {
+        var prev;
+        if (index > 0) {
+            prev = function (e) {
+                if (e) {
+                    e.preventDefault();
+                }
+                index = index - 1;
+                feature = features[index];
+                var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
+                showFeature(feature, template, getData, callbacks, index, features.length);
+            };
+        }
+        var next;
+        if (index < features.length - 1) {
+            next = function (e) {
+                if (e) {
+                    e.preventDefault();
+                }
+                index = index + 1;
+                feature = features[index];
+                var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
+                showFeature(feature, template, getData, callbacks, index, features.length);
+            };
+        }
+
+        if (!close) {
+            close = function () {
+                showFeatures(features, template, getData, options.noListThreshold, true);
+            };
+        }
+
+        return {
+            prev: prev,
+            close: close,
+            next: next
+        };
+    }
+
+    function _createListElement(feature, index, template, getData, features) {
+        var marker;
+        if (feature.properties.thumbnail) {
+            marker = options.thumbnailTemplate({
+                thumbnail: feature.properties.thumbnail,
+                color: KR.Style.colorForFeature(feature, true)
+            });
+        } else {
+            marker = options.markerTemplate({
+                icon: '',
+                color: KR.Style.colorForFeature(feature)
+            });
+        }
+
+        var li = $(options.listElementTemplate({
+            title: feature.properties.title,
+            marker: marker
+        }));
+
+        li.on('click', function (e) {
+            e.preventDefault();
+            var callbacks = _createListCallbacks(feature, index, template, getData, features);
+            showFeature(feature, template, getData, callbacks, index, features.length);
+            return false;
+        });
+        return li;
+    }
+
+    function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            this.setContent('');
-            var self = this;
+            _setContent('');
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                self.showFeature(newFeature, template, null, callbacks, index, numFeatures);
+                showFeature(newFeature, template, null, callbacks, index, numFeatures);
             });
             return;
         }
-
-        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || this._template;
+        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset);
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
@@ -1227,163 +1328,88 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
 
-        if (this.options.footerTemplate && feature.properties.link) {
-            content += this.options.footerTemplate(feature.properties);
+
+        if (options.footerTemplate && feature.properties.link) {
+            content += options.footerTemplate(feature.properties);
         }
 
-        this.setContent(content);
-        this._setupSwipe(callbacks);
+        _setContent(content);
+        _setupSwipe(callbacks);
 
-        $(this._container).find('.prev-next-arrows').remove();
+        wrapper.find('.prev-next-arrows').remove();
 
-        this._top.innerHTML = '';
+        top.html('');
         if (callbacks) {
-            var list = L.DomUtil.create('a', 'pull-left list-btn', this._top);
-            list.innerHTML = '<i class="fa fa-bars"></i>';
+            var list = $('<a class="pull-left list-btn"><i class="fa fa-bars"></i></a>');
+            top.append(list);
+            list.click(callbacks.close);
+            var idx = index + 1;
+            top.append($('<div class="top-text pull-left">' + idx + ' av ' + numFeatures + '</div>'));
 
-            var text = L.DomUtil.create('div', 'top-text pull-left', this._top);
-            text.innerHTML = index + 1 + ' av ' + numFeatures;
-
-            L.DomEvent.on(list, 'click', function () {
-                callbacks.close();
-            });
-
-            var prev = L.DomUtil.create('a', 'prev-next-arrows prev circle', this._container);
-            prev.innerHTML = '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
+            var prev = $('<a class="prev-next-arrows prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>');
+            wrapper.append(prev);
             if (callbacks.prev) {
-                L.DomEvent.on(prev, 'click', callbacks.prev);
-                L.DomUtil.addClass(prev, 'active');
+                prev.click(callbacks.prev).addClass('active');
             }
 
-            var next = L.DomUtil.create('a', 'prev-next-arrows next circle', this._container);
-            next.innerHTML = '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
+
+            var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
+            wrapper.append(next);
             if (callbacks.next) {
-                L.DomEvent.on(next, 'click', callbacks.next);
-                L.DomUtil.addClass(next, 'active');
+                next.click(callbacks.next).addClass('active');
             }
         }
 
         if (typeof audiojs !== 'undefined') {
             audiojs.createAll();
         }
-        this.show();
-        $(this.getContainer()).scrollTop(0);
-    },
+        element.scrollTop(0);
+    }
 
-    _createListCallbacks: function (feature, index, template, getData, features, close) {
-        var prev;
-        if (index > 0) {
-            prev = _.bind(function (e) {
-                if (e) {
-                    e.preventDefault();
-                }
-                index = index - 1;
-                feature = features[index];
-                var callbacks = this._createListCallbacks(feature, index, template, getData, features, close);
-                this.showFeature(feature, template, getData, callbacks, index, features.length);
-            }, this);
-        }
-        var next;
-        if (index < features.length - 1) {
-            next = _.bind(function (e) {
-                if (e) {
-                    e.preventDefault();
-                }
-                index = index + 1;
-                feature = features[index];
-                var callbacks = this._createListCallbacks(feature, index, template, getData, features, close);
-                this.showFeature(feature, template, getData, callbacks, index, features.length);
-            }, this);
-        }
-
-        if (!close) {
-            close = _.bind(function () {
-                this.showFeatures(features, template, getData, this.options.noListThreshold, true);
-            }, this);
-        }
-
-        return {
-            prev: prev,
-            close: close,
-            next: next
-        };
-    },
-
-    _createListElement: function (feature, index, template, getData, features) {
-        var marker;
-        if (feature.properties.thumbnail) {
-            marker = this.options.thumbnailTemplate({
-                thumbnail: feature.properties.thumbnail,
-                color: KR.Style.colorForFeature(feature, true)
-            });
-        } else {
-            marker = this.options.markerTemplate({
-                icon: '',
-                color: KR.Style.colorForFeature(feature)
-            });
-        }
-
-        var li = $(this.options.listElementTemplate({
-            title: feature.properties.title,
-            marker: marker
-        }));
-
-        li.on('click', _.bind(function (e) {
-            e.preventDefault();
-            var callbacks = this._createListCallbacks(feature, index, template, getData, features);
-
-            this.showFeature(feature, template, getData, callbacks, index, features.length);
-            return false;
-        }, this));
-        return li;
-    },
-
-    showFeatures: function (features, template, getData, noListThreshold, forceList) {
-        noListThreshold = (noListThreshold === undefined) ? this.options.noListThreshold : noListThreshold;
+    function showFeatures(features, template, getData, noListThreshold, forceList) {
+        noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
         var shouldSkipList = (features.length <= noListThreshold);
         if (shouldSkipList && forceList !== true) {
             var feature = features[0];
-            $(this.getContainer()).html('');
-            var callbacks = this._createListCallbacks(feature, 0, template, getData, features);
+            element.html('');
+            var callbacks = _createListCallbacks(feature, 0, template, getData, features);
             this.showFeature(feature, template, getData, callbacks, 0, features.length);
             return;
         }
 
         var count = $('<span class="circle">' + features.length + '</span>');
-        $(this._top).html(count);
+        top.html(count);
 
         var grouped = _.chain(features)
             .groupBy(function (feature) {
                 return feature.properties.provider;
             })
             .map(function (featuresInGroup, key) {
-                var wrapper = $('<div></div>');
+                var wrap = $('<div></div>');
                 var list = $('<div class="list-group"></ul>');
                 var elements = _.map(featuresInGroup, function (feature) {
                     var index = _.findIndex(features, function (a) {
                         return a === feature;
                     });
-                    return this._createListElement(feature, index, template, getData, features);
+                    return _createListElement(feature, index, template, getData, features);
                 }, this);
 
                 list.append(elements);
-                wrapper.append('<h5 class="providertext">' + key + '</h5>');
-                wrapper.append(list);
-                return wrapper;
-            }, this).value();
-        $(this.getContainer()).html(grouped);
-        this.show();
-        $(this.getContainer()).scrollTop(0);
-    },
+                wrap.append('<h5 class="providertext">' + key + '</h5>');
+                wrap.append(list);
+                return wrap;
+            }).value();
 
-    _removeContent: function () {
-        $(this.getContainer()).html('');
+        element.html(grouped);
+        element.scrollTop(0);
     }
-});
 
-L.Knreise.Control.sidebar = function (placeholder, options) {
-    return new L.Knreise.Control.Sidebar(placeholder, options);
+    return {
+        showFeature: showFeature,
+        showFeatures: showFeatures
+    };
 };
+
 /*global L:false, KR: false */
 
 
