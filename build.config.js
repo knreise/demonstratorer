@@ -114,10 +114,16 @@ module.exports = {
       description: 'Løsning som fokuserer på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold - spesielt fra samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.'
     },
     {
-      id: 'keiserstien ',
-      name: 'Keiserstien ',
+      id: 'keiserstien',
+      name: 'Keiserstien',
       description: 'Samarbeid med DNT og Riksantikvaren om å velge ut en av de rutene de arbeider med. Visning av data for en utvalgt historisk vandrerute og utvalgte data fra aktuelle kilder i nærheten av denne.',
       url: 'demonstratorer/config.html?datasets=difo%2Cark_hist%2Cwikipedia&allstatic=true&line=utno%2F2.8158&buffer=2&linecolor=%230033ff&layer=norges_grunnkart_graatone'
+    },
+    {
+      id: 'keiserstien3d',
+      name: 'Keiserstien 3D',
+      description: 'Samarbeid med DNT og Riksantikvaren om å velge ut en av de rutene de arbeider med. Visning av data for en utvalgt historisk vandrerute og utvalgte data fra aktuelle kilder i nærheten av denne.',
+      url: 'demonstratorer/config_3d.html?datasets=difo%2Cark_hist%2Cwikipedia&line=utno%2F2.8158&layer=nib'
     },
     {
       id: 'kjaerlighetsstien',
@@ -371,45 +377,6 @@ module.exports = {
           'cesium_sparql_kulturminne',
           'cesium_wikipedia',
           'cesium_arc_kulturminne',
-          'list_item',
-          'marker',
-          'thumbnail',
-          'footer',
-          'error'
-        ]
-    },
-    {
-        key: 'gen_3d',
-        name: 'generator_3d',
-        scripts: [
-          'bower_components/Cesium-1.11/Build/Cesium/Cesium.js',
-          'bower_components/togeojson/togeojson.js',
-          'bower_components/wellknown/wellknown.js',
-          'bower_components/proj4/dist/proj4.js',
-          'bower_components/CryptoJS/build/components/core.js',
-          'bower_components/CryptoJS/build/components/md5.js',
-          'bower_components/jquery-ui/jquery-ui.min.js',
-          'bower_components/turf/turf.min.js',
-          'bower_components/cesium-minimap/cesium-minimap.min.js',
-          'bower_components/audiojs/audiojs/audio.min.js',
-          'bower_components/video.js/dist/video-js/video.js',
-          'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
-          'common/js/PathTracer.js',
-          'common/js/CesiumMap.js',
-          'common/js/CesiumSidebar.js',
-          'common/js/SidebarContent.js',
-          'common/js/DatasetLoader.js',
-          'common/js/datasets.js',
-          'common/js/setup3dMap.js',
-        ],
-        css: [
-            'bower_components/cesium-minimap/cesium-minimap.css',
-            'bower_components/video.js/dist/video-js/video-js.css',
-            'common/css/L.Knreise.Control.Sidebar.css',
-            'common/css/cesium_base.css',
-            'common/css/cesium_sidebar.css'
-        ],
-        templates: [
           'list_item',
           'marker',
           'thumbnail',
