@@ -191,9 +191,10 @@ KR.Style = {};
         return config;
     }
 
-    function getCircleOptions(bordercolor, fillcolor) {
+    function getCircleOptions(bordercolor, fillcolor, radius) {
+        radius = radius || 9;
         return {
-            radius: 9,
+            radius: radius,
             weight: 1,
             opacity: 1,
             color: bordercolor,
@@ -320,7 +321,7 @@ KR.Style = {};
             }
         }
         if (config.circle) {
-            return getCircleOptions(bordercolor, fillcolor);
+            return getCircleOptions(bordercolor, fillcolor, config.radius);
         }
         return createAwesomeMarker(fillcolor);
     };

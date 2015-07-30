@@ -492,9 +492,10 @@ KR.Style = {};
         return config;
     }
 
-    function getCircleOptions(bordercolor, fillcolor) {
+    function getCircleOptions(bordercolor, fillcolor, radius) {
+        radius = radius || 9;
         return {
-            radius: 9,
+            radius: radius,
             weight: 1,
             opacity: 1,
             color: bordercolor,
@@ -621,7 +622,7 @@ KR.Style = {};
             }
         }
         if (config.circle) {
-            return getCircleOptions(bordercolor, fillcolor);
+            return getCircleOptions(bordercolor, fillcolor, config.radius);
         }
         return createAwesomeMarker(fillcolor);
     };
@@ -798,7 +799,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                     var parent = this.getParentLayer(layer._leaflet_id);
                     feature = parent.feature;
                 }
+
                 layer.setStyle(this._createFeatureIcon(feature, false));
+
                 if (layer.getParent) {
                     var p = layer.getParent();
                     p.setStyle(this._createFeatureIcon(feature, false));

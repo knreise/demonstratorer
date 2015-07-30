@@ -461,7 +461,11 @@ var datasets = [
         template: KR.Util.getDatasetTemplate('fangstgrop'),
         smallMarker: true,
         cluster: false,
-        style: {radius: 1.5, opacity: 1, fillcolor: '#000', fillOpacity: 1, circle: true}
+        style: {
+            fillcolor: '#000',
+            circle: true,
+            radius: 1.5
+        }
     }
 ];
 var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
