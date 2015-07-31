@@ -53,6 +53,37 @@ module.exports = {
     'common/js/SplashScreen.js',
     'common/js/setupMap.js'
   ],
+  demoScriptsExternal3d: [
+        'bower_components/jquery/dist/jquery.min.js',
+        'bower_components/underscore/underscore-min.js',
+        'bower_components/leaflet/dist/leaflet.js',
+        'bower_components/esri2geo/esri2geo.js',
+        'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
+        'bower_components/Cesium-1.11/Build/Cesium/Cesium.js',
+        'bower_components/togeojson/togeojson.js',
+        'bower_components/wellknown/wellknown.js',
+        'bower_components/proj4/dist/proj4.js',
+        'bower_components/CryptoJS/build/components/core.js',
+        'bower_components/CryptoJS/build/components/md5.js',
+        'bower_components/jquery-ui/jquery-ui.min.js',
+        'bower_components/turf/turf.min.js',
+        'bower_components/cesium-minimap/cesium-minimap.min.js',
+        'bower_components/audiojs/audiojs/audio.min.js',
+        'bower_components/video.js/dist/video-js/video.js',
+        'bower_components/jquery-touchswipe/jquery.touchSwipe.js'
+  ],
+  demoScripts3d: [
+        'common/js/ErrorHandler.js',
+        'common/js/util.js',
+        'common/js/style.js',
+        'common/js/PathTracer.js',
+        'common/js/CesiumMap.js',
+        'common/js/CesiumSidebar.js',
+        'common/js/SidebarContent.js',
+        'common/js/DatasetLoader.js',
+        'common/js/datasets.js',
+        'common/js/setup3dMap.js'
+  ],
   demoCssExternal: [
     'bower_components/components-font-awesome/css/font-awesome.min.css',
     'bower_components/leaflet/dist/leaflet.css',
@@ -71,6 +102,19 @@ module.exports = {
     'common/css/L.Knreise.Control.Sidebar.css',
     'common/css/L.Knreise.Control.Datasets.css',
     'common/css/audiojs.css'
+  ],
+  demoCssExternal3d: [
+        'bower_components/Cesium-1.11/Build/Cesium/Widgets/widgets.css',
+        'bower_components/components-font-awesome/css/font-awesome.min.css',
+        'bower_components/leaflet/dist/leaflet.css',
+        'bower_components/bootstrap/dist/css/bootstrap.min.css',
+        'bower_components/cesium-minimap/cesium-minimap.css',
+        'bower_components/video.js/dist/video-js/video-js.css'
+  ],
+  demoCss3d: [
+        'common/css/L.Knreise.Control.Sidebar.css',
+        'common/css/cesium_base.css',
+        'common/css/cesium_sidebar.css'
   ],
 
   demoDatasetTemplates: [
@@ -339,6 +383,7 @@ module.exports = {
           'common/js/CesiumMap.js'
         ],
         css: [
+            'bower_components/Cesium-1.11/Build/Cesium/Widgets/widgets.css',
             'bower_components/cesium-minimap/cesium-minimap.css',
             'common/css/cesium_base.css'
         ],
@@ -370,6 +415,7 @@ module.exports = {
           'common/js/setup3dMap.js'
         ],
         css: [
+            'bower_components/Cesium-1.11/Build/Cesium/Widgets/widgets.css',
             'bower_components/cesium-minimap/cesium-minimap.css',
             'bower_components/video.js/dist/video-js/video-js.css',
             'common/css/L.Knreise.Control.Sidebar.css',
@@ -401,6 +447,7 @@ module.exports = {
           'common/js/DatasetLoader.js'
         ],
         css: [
+            'bower_components/Cesium-1.11/Build/Cesium/Widgets/widgets.css',
             'common/css/cesium_base.css',
             'bower_components/bootstrap/dist/css/bootstrap.css',
             'common/css/cesium_sidebar.css'

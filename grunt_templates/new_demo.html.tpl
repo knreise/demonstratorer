@@ -13,9 +13,12 @@
 <div id="sidebar"></div>
 <div id="map"></div>
 
+
+
 <script type="text/template" id="description_template">
 {{= desc }}
 </script>
+
 
 
 {{= template_markup }}
