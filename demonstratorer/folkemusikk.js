@@ -11,7 +11,7 @@
                 query: 'dc_subject_facet:Musikk(6)'
             },
             cluster: true,
-            template: _.template($('#digitalt_fortalt_template').html()),
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
         }
     ];

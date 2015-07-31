@@ -16,21 +16,16 @@ For live demo, se http://development.atlefren-kulturraadet.divshot.io/
 
 Lisens
 ------
-Apache Software License, Version 1.1, se LICENSE.md
+Apache Software License, Version 1.1, se [LICENSE][LICENSE.md]
 
+[LICENSE]: https://github.com/knreise/demonstratorer/blob/master/LICENSE.md
 
 Kodestruktur
 ------------
 
 Dette repositoriet inneholder en rekke demoer, samt en del Leaflet-plugins og 
-hjelpefunksjoner. Disse hjelpefunksjonene befinner seg i ``/common/js``, og inkluderer:
-
-- AlongLine.js: Funksjonalitet for å vise data langs en linje
-- DatasetLoader.js: Se api_doc.md, under oversikriften "Leaflet Layer Integration"
-- L.Control.DatasetChooser.js: 
-- L.Knreise.Control.Datasets.js: Bygger på L.Control.Layers.js og viser datasett
-- L.Knreise.Control.Sidebar.js: Bygger på L.Sidebar og viser informasjon i sidebar
-- L.Knreise.GeoJSON og L.Knreise.MarkerClusterGroup: brukes av DatasetLoader.js
+hjelpefunksjoner. Disse hjelpefunksjonene befinner seg i ``/common/js``. 
+Se hver fil for en beskrivelse
 
 I tillegg ligger kode for å snakke med diverse APIer i et eget repository: [KNreiseAPI][KNreiseAPI]
 
@@ -38,6 +33,15 @@ I tillegg ligger kode for å snakke med diverse APIer i et eget repository: [KNr
 [KNreiseAPI]: https://github.com/knreise/KNReiseAPI
 
 
+Dokumentasjon
+-------------
+Mye av dokumentasjonen er inline-kode-kommentarer.
+
+- [howto.md][howto] for noen beskrivelser av oppsett
+- [api_doc.md][api_doc] for beskrivelse av datasett-konseptet
+
+[howto]: https://github.com/knreise/demonstratorer/blob/master/howto.md
+[api_doc]: https://github.com/knreise/demonstratorer/blob/master/api_doc.md
 
 Bygging
 -------

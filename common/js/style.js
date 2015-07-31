@@ -4,6 +4,10 @@ var KR = this.KR || {};
 
 KR.Style = {};
 
+/*
+    Leaflet-Style-related functions
+*/
+
 (function (ns) {
     'use strict';
 
@@ -60,6 +64,9 @@ KR.Style = {};
         'riksantikvaren': 'riksantikvaren'
     };
 
+    /*
+        Pre-defined datasets and their styling
+    */
     ns.datasets = {
         'Digitalt fortalt': {
             fillcolor: '#F69730',
@@ -119,6 +126,10 @@ KR.Style = {};
         }
     };
 
+
+    /*
+        Gets the style config for a dataset in KR.Style.datasets
+    */
     ns.getDatasetStyle = function (name) {
         var config = ns.datasets[mappings[name]];
         if (!config) {
@@ -127,6 +138,9 @@ KR.Style = {};
         return config;
     };
 
+    /*
+        Sets or updates the style for a dataset in KR.Style.datasets
+    */
     ns.setDatasetStyle = function (name, style) {
         if (!_.has(mappings, name)) {
             mappings[name] = name;
@@ -191,9 +205,10 @@ KR.Style = {};
         return config;
     }
 
-    function getCircleOptions(bordercolor, fillcolor) {
+    function getCircleOptions(bordercolor, fillcolor, radius) {
+        radius = radius || 9;
         return {
-            radius: 9,
+            radius: radius,
             weight: 1,
             opacity: 1,
             color: bordercolor,
@@ -292,6 +307,9 @@ KR.Style = {};
     }
 
 
+    /*
+        Get Leaflet icon for a cluster, optionally selected
+    */
     ns.getClusterIcon = function (cluster, selected) {
 
         var features = cluster.getAllChildMarkers();
@@ -309,6 +327,10 @@ KR.Style = {};
         return getClusterIcon(features, color);
     };
 
+
+    /*
+        Get a leaflet Icon for a feature, optionally selected
+    */
     ns.getIcon = function (feature, selected) {
         var config = getConfig(feature);
         var fillcolor = selected ? SELECTED_COLOR : getFillColor(config, feature);
@@ -320,11 +342,15 @@ KR.Style = {};
             }
         }
         if (config.circle) {
-            return getCircleOptions(bordercolor, fillcolor);
+            return getCircleOptions(bordercolor, fillcolor, config.radius);
         }
         return createAwesomeMarker(fillcolor);
     };
 
+
+    /*
+        Get a leaflet marker for a feature, optionally selected
+    */
     ns.getMarker = function (feature, latlng) {
         var config = getConfig(feature);
         if (config.thumbnail) {
@@ -339,6 +365,10 @@ KR.Style = {};
         return createMarker(feature, latlng, ns.getIcon(feature, false));
     };
 
+
+    /*
+        Gets the color for a feature
+    */
     ns.colorForFeature = function (feature, hex, useBaseColor) {
         var config = getConfig(feature);
         if (config) {
@@ -349,6 +379,10 @@ KR.Style = {};
         }
     };
 
+
+    /*
+        Gets Leaflet style for a path feature
+    */
     ns.getPathStyle = function (feature, clickable) {
         clickable = clickable || false;
         var config = getConfig(feature);

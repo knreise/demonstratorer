@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.4.13",
+  "version": "1.4.14",
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
@@ -26,14 +26,14 @@
     "proj4": "~2.3.6"
   },
   "homepage": "https://github.com/knreise/KNReiseAPI",
-  "_release": "1.4.13",
+  "_release": "1.4.14",
   "_resolution": {
     "type": "version",
-    "tag": "1.4.13",
-    "commit": "619af1115f31a24d5d6461b6d449921ec84046a8"
+    "tag": "1.4.14",
+    "commit": "ab42bc0cca3db53e756ffac112c5edc01421500a"
   },
   "_source": "git://github.com/knreise/KNReiseAPI.git",
-  "_target": "1.4.13",
+  "_target": "1.4.14",
   "_originalSource": "KNreiseAPI",
   "_direct": true
 }

@@ -28,10 +28,9 @@ var datasets = [
 ];
 
 
-
 KR.Config.templates = {
-    'Digitalt fortalt': _.template($('#digitalt_fortalt_template').html()),
-    'Musit': _.template($('#musit_template').html())
+    'Digitalt fortalt': KR.Util.getDatasetTemplate('digitalt_fortalt'),
+    'Musit': KR.Util.getDatasetTemplate('musit')
 };
 
 var footerTemplate = _.template($('#footer_template').html());

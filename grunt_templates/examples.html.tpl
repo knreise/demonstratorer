@@ -8,7 +8,6 @@
         <h1>KNREISE - eksperimenter</h1>
         <ul>{{ _.each(demonstrators, function (demonstrator) { }}
             <li><a href="{{= demonstrator.key }}.html">{{= demonstrator.name }}</a></li>{{ }) }}
-            <li><a href="style_old.html">Stiler (gammel)</a></li>
         </ul>
     </body>
 </html>

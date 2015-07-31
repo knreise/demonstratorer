@@ -12,499 +12,109 @@
     </head>
     <body>
 
-<h1>Demonstratorgenerator</h1>
-<form autocomplete="off">
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <h3>Link</h3>
-            <div class="map-link"></div>
+        <h1>Demonstratorgenerator</h1>
+        <form autocomplete="off">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Link</h3>
+                    <div class="map-link"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Tittel</h3>
+                    <input id="title" type="text" class="form-control" placeholder="Navn på demonstrator">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                  <div id="municipality_container"></div>
+                  <div id="county_container"></div>
+                  <div>
+                    <ul class="list-unstyled">
+                      <li>
+                        <input id="geomFilter_cb" type="checkbox" name="geomFilter" checked/> Begrens utvalg til kommune/fylke
+                      </li>
+                      <li>
+                        <input id="showGeom_cb" type="checkbox" name="showGeom" checked/> Vis kommune/fylke</li>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-2" id="line_container">
+                </div>
+                <div class="col-md-2" id="bbox_container">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Datasett</h3>
+                    <ul id="datasets" class="list-group"></ul>
+                </div>
+                <div class="col-md-2">
+                    <h3>Bakgrunnskart</h3>
+                    <select id="layers" class="form-control"></select>
+                    <div class="map" id="layers_map"></div>
+                    <h3>3d</h3>
+                    <input id="3d" type="checkbox" name="3d"/> Bruk 3d-kart?
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Link</h3>
+                    <div class="map-link"></div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Tittel</h3>
-            <input id="title" type="text" class="form-control" placeholder="Navn på demonstrator">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-2">
-          <div id="municipality_container"></div>
-          <div id="county_container"></div>
-          <div>
-            <ul class="list-unstyled">
-              <li>
-                <input id="geomFilter_cb" type="checkbox" name="geomFilter" checked/> Begrens utvalg til kommune/fylke
-              </li>
-              <li>
-                <input id="showGeom_cb" type="checkbox" name="showGeom" checked/> Vis kommune/fylke</li>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md-2" id="line_container">
-        </div>
-        <div class="col-md-2" id="bbox_container">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <h3>Datasett</h3>
-            <ul id="datasets" class="list-group"></ul>
-        </div>
-        <div class="col-md-2">
-            <h3>Bakgrunnskart</h3>
-            <select id="layers" class="form-control"></select>
-            <div class="map" id="layers_map"></div>
-            <h3>3d</h3>
-            <input id="3d" type="checkbox" name="3d"/> Bruk 3d-kart?
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h3>Link</h3>
-            <div class="map-link"></div>
-        </div>
-    </div>
-</div>
-</form>
-
-<script type="text/template" id="dataset_template">
-    <li class="list-group-item">
-        <h4 class="list-group-item-heading">
-            <input type="checkbox" value="<%= key %>" name="datasetsCheckbox" />
-            <%= name %>
-        </h4>
-        <p class="list-group-item-text">
-            <%= description %>
-        </p>
-    </li>
-</script>
-
-<script type="text/template" id="municipality_template">
-    <h3><input type="radio" name="inputType" /> Kommune</h3>
-    <select id="komm" class="form-control" multiple>
-    <% _.each(municipalities, function (municipality) { %>
-        <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
-    <% }) %>
-    </select>
-</script>
-
-<script type="text/template" id="county_template">
-    <h3><input type="radio" name="inputType" /> Fylke</h3>
-    <select id="fylke" class="form-control" multiple>
-    <% _.each(counties, function (county) { %>
-        <option value="<%= county.fylkesnr %>"><%= county.navn %></option>
-    <% }) %>
-    </select>
-</script>
-
-
-<script type="text/template" id="line_template">
-    <h3><input type="radio" name="inputType" /> Linje</h3>
-    <input id="line" type="text" class="form-control" placeholder="Linje">
-    <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
-    <h5>Buffer (km)</h5>
-    <input id="buffer" type="number" class="form-control" value="2">
-    <h5>Linjefarge (hex)</h5>
-    <input id="linecolor" type="text" class="form-control" value="#0033ff">
-</script>
-
-<script type="text/template" id="bbox_template">
-    <h3><input type="radio" name="inputType" /> BBox</h3>
-    <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
-    <div class="map" id="bbox_map"></div>
-</script>
-
-<script type="text/template" id="popup_template">
-<h3><%= title %></h3>
-<p><%= dataset %></p>
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-<p><%= content %></p>
-<a href="<%= link %>">Mer info</a>
-</script>
-
-
-<script type="text/template" id="verneomraader_template">
-<h3><%= title %></h3>
-
-<p><%= content %></p>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Verneform</td>
-      <td><%= verneform %></td>
-    </tr>
-</table>
-
-</script>
-
-
-<script type="text/template" id="kulturminne_template">
-<h3><%= title %></h3>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Type kulturminne</td>
-      <td>??</td>
-    </tr>
-    <tr>
-      <td>Kategori</td>
-      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Art</td>
-      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Vernestetus</td>
-      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Datering</td>
-      <td><%= allProps.dc_date[0] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Registrerte funn</td>
-      <td>??</td>
-    </tr>
-    <tr>
-      <td>Synlig</td>
-      <td>??</td>
-    </tr>
-</table>
-</script>
-
-
-<script type="text/template" id="musit_template">
-<h3><%= allProps.dc_title %></h3>
-
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-
-<p><%= allProps.dc_description %></p>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Samling</td>
-      <td><%= allProps.europeana_dataProvider[0] %></td>
-    </tr>
-
-    <% if (allProps.dc_date) { %>
-    <tr>
-      <td>Datering</td>
-      <td><%= allProps.dc_date[0] %></td>
-    </tr>
-    <% } %>
-
-    <% if (allProps.dc_creator) { %>
-    <tr>
-      <td>Opphavsperson</td>
-      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
-    </tr>
-    <% } %>
-</table>
-
-</script>
-
-
-<script type="text/template" id="digitalt_museum_template">
-<h3><%= title %></h3>
-
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-
-<p><%= allProps.dc_description %></p>
-
-<table class="sidebar-table">
-
-    <tr>
-      <td>Samling</td>
-      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
-    </tr>
-
-    <% if (allProps.abm_address) { %>
-    <tr>
-      <td>Adresse</td>
-      <td><%= allProps.abm_address[0] %></td>
-    </tr>
-    <% } %>
-
-    <% if (allProps.dc_creator){ %>
-    <tr>
-      <td>Opphavsperson</td>
-      <td><%= allProps.dc_creator[0] %></td>
-    </tr>
-    <% } %>
-
-    <% if (allProps.dc_subject) { %>
-    <tr>
-      <td>Emneord</td>
-      <td><%= allProps.dc_subject.join(', ')%></td>
-    </tr>
-    <% } %>
-
-</table>
-
-</script>
-
-
-<script type="text/template" id="digitalt_fortalt_template">
-<h3><%= title %></h3>
-<% if(contentType === 'VIDEO' && video) { %>
-    <% if (video.indexOf('mp4') !== -1) { %>
-        <video class="video-js vjs-default-skin fullwidth" controls
-         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
-         data-setup='{}'>
-          <source src="<%= videoEmbed %>" type='video/mp4'>
-        </video>
-    <% } else { %>
-        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
-    <% } %>
-    
-<% } else if(contentType === 'SOUND' && sound) { %>
-    <audio src="<%= sound %>" preload="auto"></audio>
-<% } else if(contentType === 'IMAGE' && images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-
-<p><%= allProps.abm_introduction %></p>
-
-<p><%= allProps.dc_description %></p>
-
-<table class="sidebar-table">
-
-    <tr>
-      <td>Samling</td>
-      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
-    </tr>
-    <tr>
-      <td>Opphavsperson</td>
-      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
-    </tr>
-</table>
-
-
-</script>
-
-
-<script type="text/template" id="list_item_template">
-<a href="#" class="list-group-item">
-    <div class="media">
-        <div class="media-left media-middle">
-            <%= marker %>
-        </div>
-        <div class="media-body">
-            <%= title %>
-        </div>
-    </div>
-</a>
-</script>
-
-
-<script type="text/template" id="fangstgrop_template">
-<h3>Fangstgrop</h3>
-
-</script>
-
-
-<script type="text/template" id="marker_template">
-<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
-    <i class="fa fa-<%= icon %> icon-white"></i>
-</div>
-</script>
-
-
-<script type="text/template" id="thumbnail_template">
-<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
-</script>
-
-
-<script type="text/template" id="footer_template">
-<ul class="list-unstyled">
-<% if (license) { %>
-    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
-<% } %>
-    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
-</ul>
-</script>
-
-
-<script type="text/template" id="error_template">
-<div class="alert alert-danger alert-dismissible" role="alert">
-  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  <strong>Feil!</strong> <span class="content"></span>
-</div>
-</script>
-
-
-<script type="text/template" id="ra_sparql_template">
-<h3><%= name %></h3>
-<% if (img) { %>
-<img class="fullwidth" src="<%= img %>" />
-<% } %>
-
-<p><%= description %></p>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Type</td>
-      <td><%= loccatlabel %></td>
-    </tr>
-</table>
-
-</script>
-
-
-<script type="text/template" id="flickr_template">
-<h3><%= title %></h3>
-<img class="fullwidth" src="<%= image %>" />
-
-</script>
-
-
-<script type="text/template" id="husmann_template">
-<h3>Kulturminne</h3>
-<dl>
-    <dt>Navn</dt>
-    <dd><%= Navn %></dd>
-</dl>
-</script>
-
-
-<script type="text/template" id="folketelling_template">
-<% if (property.id.indexOf('g') === 0) { %> 
-    <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
-
-    <p><%= property.bildelenke %></p>
-
-    <table class="sidebar-table">
-        <tr>
-          <td>Hjemmehørende</td>
-          <td><%= property.antall_hjemmehorende_personer || 0 %> personer</td>
-        </tr>
-        <tr>
-          <td>Etasjer</td>
-          <td><%= property.antall_etasjer %></td>
-        </tr>
-    </table>
-
-    <% if(apartments) { %> 
-        <% _.each(apartments.sort(function (a) {return parseInt(a.leilighetsnummer, 10)}), function (apartment) { %>
-            <table class="sidebar-table">
-                <tr colspan="2">
-                  <td><h4>Leilighet <%= apartment.leilighetsnummer %></h4></td>
-                </tr>
-                <tr>
-                  <td>Plassering</td>
-                  <td><%= apartment.bekvemmelighetens_beliggenhet %></td>
-                </tr>
-                <tr>
-                  <td>Etasje</td>
-                  <td><%= apartment.etasje %></td>
-                </tr>
-                <tr>
-                  <td>Husleie</td>
-                  <td><%= apartment.husleie %></td>
-                </tr>
-                <tr>
-                  <td>Beboere</td>
-                  <td><%= KR.Util.formatPersons(apartment.antall_hjemmehorende_personer) %></td>
-                </tr>
-                <tr colspan="2">
-                  <td>
-                    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/leilighet/<%= apartment.id %>" target="_blank">
-                      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
-                    </a>
-                  </td>
-                </tr>
-            </table>
-        <% }) %>
-    </ul>
-
-<% } %>
-
-<% } else { %> 
-
-    <h3><%= property.bostedets_navn %></h3>
-
-    <% _.each(residents, function (resident) { %>
-      <table class="sidebar-table">
-          <tr colspan="2">
-            <td><h4><%= resident.fornavn %> <%= resident.patronymikon %> <%= resident.slektsnavn %></h4></td>
-          </tr>
-          <tr>
-            <td>Født</td>
-            <td><%= resident.fodselsaar %></td>
-          </tr>
-          <tr>
-            <td>Fødested</td>
-            <td><%= resident.fodested %></td>
-          </tr>
-          <tr>
-            <td>Yrke</td>
-            <td><%= resident.yrke %></td>
-          </tr>
-      </table>
-    <% }) %>
-    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/bosted_land/<%= property.id %>" target="_blank">
-      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
-    </a>
-    
-
-<% } %>
-
-</script>
-
-
-<script type="text/template" id="brukerminne_template">
-<h3><%= title %></h3>
-
-<% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
-<p><%= KortBeskrivelse %></p>
-<% } %>
-
-<p><%= Beskrivelse %></p>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Datering</td>
-      <td><%= Datering %></td>
-    </tr>
-    <tr>
-      <td>Opprinnelig funksjon</td>
-      <td><%= OpprinneligFunksjon %></td>
-    </tr>
-    <% if(!_.isUndefined(arguments[0].NåværendeFunksjon)) { %>
-    <tr>
-      <td>Nåværende funksjon</td>
-      <td><%= NåværendeFunksjon %></td>
-    </tr>
-    <% } %>
-    <% if(!_.isUndefined(arguments[0].Kilder)) { %>
-    <tr>
-      <td>Kilder</td>
-      <td><%= Kilder %></td>
-    </tr>
-    <% } %>
-</table>
-</script>
-
-
-<script type="text/template" id="wikipedia_template">
-<h3><%= title %></h3>
-<% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
-<% } %>
-
-<p><%= content %></p>
-
-</script>
-
+        </form>
+
+        <script type="text/template" id="dataset_template">
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <input type="checkbox" value="<%= key %>" name="datasetsCheckbox" />
+                    <%= name %>
+                </h4>
+                <p class="list-group-item-text">
+                    <%= description %>
+                </p>
+            </li>
+        </script>
+
+        <script type="text/template" id="municipality_template">
+            <h3><input type="radio" name="inputType" /> Kommune</h3>
+            <select id="komm" class="form-control" multiple>
+            <% _.each(municipalities, function (municipality) { %>
+                <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
+            <% }) %>
+            </select>
+        </script>
+
+        <script type="text/template" id="county_template">
+            <h3><input type="radio" name="inputType" /> Fylke</h3>
+            <select id="fylke" class="form-control" multiple>
+            <% _.each(counties, function (county) { %>
+                <option value="<%= county.fylkesnr %>"><%= county.navn %></option>
+            <% }) %>
+            </select>
+        </script>
+
+
+        <script type="text/template" id="line_template">
+            <h3><input type="radio" name="inputType" /> Linje</h3>
+            <input id="line" type="text" class="form-control" placeholder="Linje">
+            <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
+            <h5>Buffer (km)</h5>
+            <input id="buffer" type="number" class="form-control" value="2">
+            <h5>Linjefarge (hex)</h5>
+            <input id="linecolor" type="text" class="form-control" value="#0033ff">
+        </script>
+
+        <script type="text/template" id="bbox_template">
+            <h3><input type="radio" name="inputType" /> BBox</h3>
+            <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
+            <div class="map" id="bbox_map"></div>
+        </script>
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
@@ -527,352 +137,12 @@
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
         <script src="../bower_components/html.sortable/dist/html.sortable.min.js" type="text/javascript"></script>
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
+        <script src="../common/js/generator.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function () {
                 'use strict';
-
-                var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
-var datasetTemplate = _.template($('#dataset_template').html());
-
-var api = new KR.API();
-
-function toggleInputs(element, disabled) {
-    var inputs = element.find('select, input:not([type="radio"])');
-    if (disabled) {
-        inputs.attr('disabled', 'disabled');
-    } else {
-        inputs.removeAttr('disabled');
-        element.find('input[type="radio"]').prop('checked', true);
-    }
-}
-
-
-function buildLimitSelections(ids, municipalities, counties) {
-    var callback;
-    var selected = 0;
-
-    var extras = {
-        'line': {
-            allstatic: true
-        }
-    };
-
-    var elements = _.map(ids, function (id, idx) {
-        var template = _.template($('#' + id + '_template').html());
-        var element = $('#' + id + '_container').html(template({
-            municipalities: municipalities,
-            counties: counties
-        }));
-        if (idx !== selected) {
-            toggleInputs(element, true);
-        } else {
-            toggleInputs(element, false);
-        }
-        return element;
-    });
-
-    _.each(elements, function (element, index) {
-        element.on('click', function () {
-            _.each(elements, function (e, idx) {
-                if (idx === index) {
-                    toggleInputs(elements[idx], false);
-                    selected = index;
-                } else {
-                    toggleInputs(elements[idx], true);
-                }
-                if (callback) {
-                    callback();
-                }
-            });
-        });
-    });
-
-    _.each(elements, function (element) {
-        element.find('select, input').on('change', function () {
-            if (callback) {
-                callback();
-            }
-        });
-    });
-
-    var map = L.map('bbox_map').fitBounds(L.latLngBounds.fromBBoxString('3.779297,57.751076,31.464844,71.357067'));
-    var layer = L.tileLayer.kartverket('norges_grunnkart').addTo(map);
-    map.on('moveend', function () {
-        $('#bbox').val(map.getBounds().toBBoxString());
-        callback();
-    });
-
-    return {
-        getValues: function () {
-            var values = {};
-            if (_.has(extras, ids[selected])) {
-                values = extras[ids[selected]];
-            }
-            return _.reduce(elements[selected].find('select, input'), function (acc, el) {
-                if (el.id && $(el).val()) {
-                  acc[el.id] = $(el).val();
-                }
-                return acc;
-            }, values);
-        },
-        callback: function (cb) {
-            callback = cb;
-            cb();
-        }
-    };
-
-}
-
-function getCountyList(callback) {
-    var dataset = {
-        api: 'cartodb',
-        query: 'SELECT fylkesnr, navn FROM fylker ORDER BY navn',
-        mapper: function (data) {
-            return data.rows;
-        }
-    };
-
-    api.getData(dataset, callback);
-}
-
-function getMunicipalityList(callback) {
-    var dataset = {
-        api: 'cartodb',
-        query: 'SELECT komm, navn FROM kommuner ORDER BY navn',
-        mapper: function (data) {
-            return data.rows;
-        }
-    };
-
-    api.getData(dataset, callback);
-}
-
-
-function buildLayerList(element) {
-    var callback;
-    var selected = 'norges_grunnkart_graatone';
-
-    var layers = L.tileLayer.kartverket.getLayers();
-    layers = layers.concat(['nib', 'hist']);
-
-    var options = _.chain(layers)
-        .map(function (layer) {
-            return {id: layer, selected: layer === selected};
-        })
-        .map(layerTemplate)
-        .value();
-
-    var map = L.map('layers_map').setView([65.5, 17.0], 4);
-    var layer = L.tileLayer.kartverket(selected).addTo(map);
-
-    element.html(options);
-
-    element.on('change', function (e) {
-        if (layer) {
-          map.removeLayer(layer);
-        }
-        var layerName = element.val();
-
-        KR.Util.getBaseLayer(layerName, function (l) {
-            if (l)  {
-              layer = l;
-              layer.addTo(map);
-            } else {
-              layer = null;
-            }
-            
-        });
-
-        callback();
-    });
-
-    return {
-        getValues: function () {
-            return {layer: element.val()};
-        },
-        callback: function (cb) {
-            callback = cb;
-            cb();
-        }
-    };
-}
-
-function getTitle(element) {
-    var callback;
-
-    element.on('change', function (e) {
-        callback();
-    });
-
-    return {
-        getValues: function () {
-            var title = element.val();
-            if (title !== '') {
-                return {title: title};
-            }
-            return {};
-        },
-        callback: function (cb) {
-            callback = cb;
-            cb();
-        }
-    };
-}
-
-
-function buildDatasetList(element) {
-    var callback;
-    var datasetConfig = KR.Config.getDatasetList(api, null);
-
-    var datasets = _.chain(datasetConfig)
-      .map(function (value, key) {
-          if (value.hideFromGenerator) {
-            return;
-          }
-          var name = value.name || key;
-          var description = value.description || 'Ingen beskrivelse';
-          return datasetTemplate({
-              name: name,
-              key: key,
-              description: description
-          });
-      })
-      .compact()
-      .value();
-
-    $('#datasets')
-        .html(datasets)
-        .sortable().bind('sortupdate', function () {
-            callback();
-        })
-        .find('input[name="datasetsCheckbox"]')
-        .change(function (a) {
-            callback();
-        });
-
-    return {
-        getValues: function () {
-            var checkboxes = $('#datasets').find('input[name="datasetsCheckbox"]');
-            var checked = _.chain(checkboxes)
-                .filter(function (checkbox) {
-                    return checkbox.checked;
-                })
-                .map(function (checkbox) {
-                    return $(checkbox).val();
-                })
-                .value();
-
-            return {
-                datasets: checked.join(',')
-            };
-        },
-        callback: function (cb) {
-            callback = cb;
-            cb();
-        }
-    };
-}
-
-function buildFilter() {
-    var callback;
-
-    var geomFilter = $('#geomFilter_cb');
-    var showGeom = $('#showGeom_cb');
-    geomFilter.click(function () {
-        if (showGeom.is(':checked')) {
-            showGeom.prop('checked', false);
-        }
-        callback();
-    });
-
-    showGeom.click(function () {
-        if (!geomFilter.is(':checked')) {
-            geomFilter.prop('checked', true);
-        }
-        callback();
-    });
-
-    return {
-        getValues: function () {
-            return {
-                geomFilter: geomFilter.is(':checked'),
-                showGeom: showGeom.is(':checked')
-            };
-        },
-        callback: function (cb) {
-            callback = cb;
-            cb();
-        }
-    }
-}
-
-function setupClick(element, limits, layer, datasets, title, filters) {
-    var use3d = false;
-    var generateUrl = function () {
-        var params = _.extend(
-            {},
-            datasets.getValues(),
-            limits.getValues(),
-            layer.getValues(),
-            title.getValues()
-        );
-
-        if (_.has(params, 'komm') || _.has(params, 'fylke')) {
-            params = _.extend(params, filters.getValues());
-        }
-
-        var path = window.location.pathname;
-
-        var page = '/config.html';
-        if (use3d) {
-            page = '/../experiments/gen_3d.html';
-        }
-
-
-        var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') + page + '?' + KR.Util.createQueryParameterString(params);
-        $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
-    };
-
-
-    limits.callback(generateUrl);
-    layer.callback(generateUrl);
-    datasets.callback(generateUrl);
-    title.callback(generateUrl);
-    filters.callback(generateUrl);
-
-    element.on('click', generateUrl);
-
-    $('#3d').on('change', function () {
-        use3d = this.checked;
-        generateUrl();
-    });
-}
-
-
-var counties, municipalities;
-
-var fetched = _.after(2, function () {
-    var limits = buildLimitSelections(['municipality', 'county', 'line', 'bbox'], municipalities, counties);
-    var title = getTitle($('#title'));
-    var datasets = buildDatasetList($('#datasets'));
-    var layer = buildLayerList($('#layers'));
-    var filters = buildFilter();
-    setupClick($('#generate'), limits, layer, datasets, title, filters);
-});
-
-
-getCountyList(function (res) {
-    counties = res;
-    fetched();
-});
-
-
-getMunicipalityList(function (res) {
-    municipalities = res;
-    fetched();
-});
-
+                KR.initGenerator();
             }());
         </script>
     </body>

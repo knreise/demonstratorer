@@ -37,7 +37,8 @@
                 api: 'norvegiana',
                 dataset: 'Artsdatabanken'
             },
-            cluster: false
+            cluster: false,
+            template: KR.Util.getDatasetTemplate('popup')
         },
         {
             name: 'Wikipedia',
@@ -47,7 +48,7 @@
             },
             style: {thumbnail: true},
             minZoom: 13,
-            template: _.template($('#wikipedia_template').html())
+            template: KR.Util.getDatasetTemplate('wikipedia')
         },
         {
             id: 'riksantikvaren',
@@ -57,7 +58,7 @@
                 api: 'kulturminnedataSparql',
                 kommune: '0511'
             },
-            template: _.template($('#ra_sparql_template').html()),
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
             bbox: false,
             isStatic: true,
             init: kulturminneFunctions.initKulturminnePoly,
@@ -74,7 +75,7 @@
                 api: 'flickr',
                 user_id: 'trondheim_byarkiv'
             },
-            template: _.template($('#flickr_template').html()),
+            template: KR.Util.getDatasetTemplate('flickr'),
             style: {fillcolor: '#D252B9'}
         }
     ];

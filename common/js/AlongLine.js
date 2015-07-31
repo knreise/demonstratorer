@@ -1,4 +1,12 @@
 /*global turf:false, L:false */
+
+/*
+    Utility function for setting up an "along line" demonstrator.
+
+    See LineMap.js
+*/
+
+
 var KR = this.KR || {};
 KR.AlongLine = function (api) {
     'use strict';

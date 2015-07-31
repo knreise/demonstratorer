@@ -61,31 +61,6 @@ KR.Config = {
         'TEXT': 'file-text',
         'default': 'file-o'
     },
-
-    datasetIcons: {
-        'Artsdatabanken': 'paw',
-        'Kulturminnesok': 'archive',
-        'Naturbase': 'tree',
-        'MUSIT_DiMu': 'flag',
-        'Musit': 'flag',
-        'DigitaltMuseum': 'flag',
-        'fangstlokaliteter': 'circle'
-    },
-
-    providerColors: {
-        'Artsdatabanken': {name: 'darkpurple', hex: '#5B396B'},
-        'Digitalt fortalt': {name: 'orange', hex: '#F69730'},
-        'DigitaltMuseum': {name: 'cadetblue', hex: '#436978'},
-        'Industrimuseum': {name: 'darkred', hex: '#A23336'},
-        'MUSIT': {name: 'cadetblue', hex: '#436978'},
-        'Kulturminnesøk': {name: 'green', hex: '#72B026'},
-        'Naturbase': {name: 'purple', hex: '#D252B9'},
-        'Sentralt stedsnavnregister': {name: 'darkgreen', hex: '#728224'},
-        'default': {name: 'blue', hex: '#38A9DC'},
-        'fangstlokaliteter': {name: 'cadetblue', hex: '#436978'},
-        'Trondheim byarkiv': {name: 'darkred', hex: '#A23336'}
-    },
-
     templates: {}
 };
 
@@ -94,28 +69,11 @@ KR.Util = KR.Util || {};
 (function (ns) {
     'use strict';
 
-    ns.templateForDataset = function (dataset) {
-        if (_.has(KR.Config.templates, dataset)) {
-            return KR.Config.templates[dataset];
-        }
-    };
 
-    ns.iconForDataset = function (dataset) {
-        if (_.isArray(dataset)) {
-            dataset = dataset.join('_');
-        }
-        if (_.has(KR.Config.datasetIcons, dataset)) {
-            return KR.Config.datasetIcons[dataset];
-        }
-    };
-
-    ns.createStyleString = function (styleDict) {
-        return _.map(styleDict, function (value, key) {
-            return key + ': ' + value;
-        }).join(';');
-    };
-
-
+    /*
+        Returns the name of a font-awesome icon for a 
+        Norvegiana content type, or a default one
+    */
     ns.iconForContentType = function (feature) {
         var contentType = feature.properties.contentType;
         if (_.has(KR.Config.contentIcons, contentType)) {
@@ -124,118 +82,55 @@ KR.Util = KR.Util || {};
         return KR.Config.contentIcons['default'];
     };
 
-    ns.iconForFeature = function (feature) {
-        var datasetIcon = ns.iconForDataset(feature.properties.dataset);
-        if (datasetIcon) {
-            return datasetIcon;
+
+    /*
+        Loads a template from /templates/datasets
+    */
+    ns.getDatasetTemplate = function (name) {
+        var content = $('#' + name + '_template').html();
+        if (content) {
+            return _.template(content);
         }
-        return ns.iconForContentType(feature);
     };
 
 
+    /*
+        Gets a template from KR.Config.templates
+    */
+    ns.templateForDataset = function (dataset) {
+        if (_.has(KR.Config.templates, dataset)) {
+            return KR.Config.templates[dataset];
+        }
+    };
+
+
+    /*
+        Creates a html style siring (to put in style=""), given a dictionary
+    */
+    ns.createStyleString = function (styleDict) {
+        return _.map(styleDict, function (value, key) {
+            return key + ': ' + value;
+        }).join(';');
+    };
+
+
+    /*
+        Gets a color for a given dataset provider id, see 
+        KR.Style.datasets
+    */
     ns.colorForProvider = function (provider, type) {
-        type = type || 'name';
-        if (_.has(KR.Config.providerColors, provider)) {
-            return KR.Config.providerColors[provider][type];
+        var hex = true;
+        if (type !== 'hex') {
+            hex = false;
         }
-        return KR.Config.providerColors['default'][type];
+        var feature = {properties: {datasetId: provider}};
+        return KR.Style.colorForFeature(feature, hex, true);
     };
 
 
-    ns.colorForFeature = function (feature, type) {
-        return ns.colorForProvider(feature.properties.provider, type);
-    };
-
-
-    ns.markerForFeature = function (feature, selected) {
-        //var faIcon = ns.iconForFeature(feature);
-        var color = selected
-                    ? 'blue'
-                    : ns.colorForFeature(feature);
-
-        return L.Knreise.icon({
-            markerColor: color,
-            prefix: 'fa'
-        });
-    };
-
-    var verneomrTypes = {
-        landskapsvern: {
-            ids: ['LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV'],
-            style: {
-                fillColor: '#d8cb7a',
-                color: '#9c8f1b'
-            },
-        },
-        nasjonalpark: {
-            ids: ['NP', 'NPS'],
-            style: {
-                fillColor: '#7f9aac',
-                color: '#b3a721'
-            },
-        },
-        naturreservat: {
-            ids: ['NR', 'NRS'],
-            style: {
-                fillColor: '#ef9874',
-                color: '#ef9873'
-            }
-        }
-    };
-
-    function getVerneOmrcolors(feature) {
-        var id = feature.properties.vernef_id;
-        return _.find(verneomrTypes, function (type) {
-            return (type.ids.indexOf(id) !== -1);
-        });
-    }
-
-    ns.getVerneomrStyle = function (opacity) {
-
-        var defaultStyle = {
-            fillOpacity: opacity,
-            opacity: 0.8,
-            weight: 1,
-            clickable: false
-        };
-
-        return function find(feature) {
-            if (!feature) {
-                return;
-            }
-            var res = getVerneOmrcolors(feature);
-            if (res) {
-                return _.extend({}, defaultStyle, res.style);
-            }
-            return {stroke: false, fill: false};
-        };
-    };
-
-    ns.getVerneomrCircleStyle = function (color) {
-        var defaultStyle = {
-            fillOpacity: 1,
-            opacity: 0.8,
-            weight: 1,
-            radius: 10
-        };
-
-        return function find(feature) {
-            if (!feature) {
-                return;
-            }
-            var res = getVerneOmrcolors(feature);
-            var extra = {};
-            if (color) {
-                extra.color = color;
-            }
-            if (res) {
-                return _.extend({}, defaultStyle, res.style, extra);
-            }
-            return {stroke: false, fill: false};
-        };
-    };
-
-
+    /*
+        Utility function to register clicks om a feature
+    */
     ns.featureClick = function (sidebar) {
         return function _addFeatureClick(feature, layer, dataset) {
             layer.on('click', function (e) {
@@ -269,6 +164,10 @@ KR.Util = KR.Util || {};
         return dataset.template;
     }
 
+
+    /*
+        Utility function to handle clicks on a feature cluster
+    */
     ns.clusterClick = function (sidebar) {
         return function _addClusterClick(clusterLayer, dataset) {
             clusterLayer.on('clusterclick', function (e) {
@@ -287,6 +186,10 @@ KR.Util = KR.Util || {};
         };
     };
 
+
+    /*
+        Converts a hex color to rgba with optional transparency
+    */
     ns.hexToRgba = function (hex, transparency) {
         transparency = transparency || 1;
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -302,11 +205,19 @@ KR.Util = KR.Util || {};
         return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
     };
 
+
+    /*
+        Filter a GeoJSON featurecollection with a bbox-string
+    */
     ns.filterByBbox = function (features, bbox) {
         var boundPoly = turf.featurecollection([turf.bboxPolygon(KR.Util.splitBbox(bbox))]);
         return turf.within(features, boundPoly);
     };
 
+
+    /*
+        Get id for a dataset
+    */
     ns.getDatasetId = function (dataset) {
         if (dataset.dataset.api === 'norvegiana') {
             if (!dataset.dataset.query) {
@@ -322,6 +233,7 @@ KR.Util = KR.Util || {};
         return KR.Util.stamp(dataset);
     };
 
+    //utility for Leaflet if defined
     if (typeof L !== 'undefined') {
         L.latLngBounds.fromBBoxString = function (bbox) {
             bbox = KR.Util.splitBbox(bbox);
@@ -332,6 +244,9 @@ KR.Util = KR.Util || {};
         };
     }
 
+    /*
+        Parse a url query string to a dict, handles true/falsa as strings
+    */
     ns.parseQueryString = function (qs) {
         var queryString = decodeURIComponent(qs);
         if (queryString === '') {
@@ -350,8 +265,11 @@ KR.Util = KR.Util || {};
         }, {});
     };
 
-    var personsTemplate = _.template('<%= totalt %> (<%= menn %> menn, <%= kvinner %> kvinner)');
 
+    /*
+        Handle the persons notation from folketelling api
+    */
+    var personsTemplate = _.template('<%= totalt %> (<%= menn %> menn, <%= kvinner %> kvinner)');
     ns.formatPersons = function (persons) {
         var split = persons.split('-');
         if (split.length < 2) {
@@ -364,6 +282,10 @@ KR.Util = KR.Util || {};
         });
     };
 
+
+    /*
+        Returns a Leaflet layer based on layer name string
+    */
     ns.getBaseLayer = function (layerName, callback) {
         var layers = {
             'nib': KR.getNibLayer,
@@ -387,6 +309,9 @@ KR.Util = KR.Util || {};
         return (lastIndex !== -1) && (lastIndex + str.length === a.length);
     }
 
+    /*
+        Loads a line geometry according to the setup in the generator
+    */
     ns.getLine = function (api, line, callback) {
         if (_.isFunction(line)) {
             line(function (res) {
@@ -424,6 +349,10 @@ KR.Util = KR.Util || {};
 var KR = this.KR || {};
 
 KR.Style = {};
+
+/*
+    Leaflet-Style-related functions
+*/
 
 (function (ns) {
     'use strict';
@@ -481,6 +410,9 @@ KR.Style = {};
         'riksantikvaren': 'riksantikvaren'
     };
 
+    /*
+        Pre-defined datasets and their styling
+    */
     ns.datasets = {
         'Digitalt fortalt': {
             fillcolor: '#F69730',
@@ -540,6 +472,10 @@ KR.Style = {};
         }
     };
 
+
+    /*
+        Gets the style config for a dataset in KR.Style.datasets
+    */
     ns.getDatasetStyle = function (name) {
         var config = ns.datasets[mappings[name]];
         if (!config) {
@@ -548,6 +484,9 @@ KR.Style = {};
         return config;
     };
 
+    /*
+        Sets or updates the style for a dataset in KR.Style.datasets
+    */
     ns.setDatasetStyle = function (name, style) {
         if (!_.has(mappings, name)) {
             mappings[name] = name;
@@ -612,9 +551,10 @@ KR.Style = {};
         return config;
     }
 
-    function getCircleOptions(bordercolor, fillcolor) {
+    function getCircleOptions(bordercolor, fillcolor, radius) {
+        radius = radius || 9;
         return {
-            radius: 9,
+            radius: radius,
             weight: 1,
             opacity: 1,
             color: bordercolor,
@@ -713,6 +653,9 @@ KR.Style = {};
     }
 
 
+    /*
+        Get Leaflet icon for a cluster, optionally selected
+    */
     ns.getClusterIcon = function (cluster, selected) {
 
         var features = cluster.getAllChildMarkers();
@@ -730,6 +673,10 @@ KR.Style = {};
         return getClusterIcon(features, color);
     };
 
+
+    /*
+        Get a leaflet Icon for a feature, optionally selected
+    */
     ns.getIcon = function (feature, selected) {
         var config = getConfig(feature);
         var fillcolor = selected ? SELECTED_COLOR : getFillColor(config, feature);
@@ -741,11 +688,15 @@ KR.Style = {};
             }
         }
         if (config.circle) {
-            return getCircleOptions(bordercolor, fillcolor);
+            return getCircleOptions(bordercolor, fillcolor, config.radius);
         }
         return createAwesomeMarker(fillcolor);
     };
 
+
+    /*
+        Get a leaflet marker for a feature, optionally selected
+    */
     ns.getMarker = function (feature, latlng) {
         var config = getConfig(feature);
         if (config.thumbnail) {
@@ -760,6 +711,10 @@ KR.Style = {};
         return createMarker(feature, latlng, ns.getIcon(feature, false));
     };
 
+
+    /*
+        Gets the color for a feature
+    */
     ns.colorForFeature = function (feature, hex, useBaseColor) {
         var config = getConfig(feature);
         if (config) {
@@ -770,6 +725,10 @@ KR.Style = {};
         }
     };
 
+
+    /*
+        Gets Leaflet style for a path feature
+    */
     ns.getPathStyle = function (feature, clickable) {
         clickable = clickable || false;
         var config = getConfig(feature);
@@ -790,6 +749,10 @@ KR.Style = {};
 /*global L:false, KR:false*/
 
 'use strict';
+
+/*
+    Wrapper over L.GeoJSON to handle clustered KNreise datasets
+*/
 
 L.Knreise = L.Knreise || {};
 L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
@@ -875,6 +838,10 @@ L.Knreise.markerClusterGroup = function (options) {
 /*global L: false, KR: false, turf: false */
 'use strict';
 
+/*
+    Wrapper over L.GeoJSON to handle unclustered KNreise datasets
+*/
+
 L.Knreise = L.Knreise || {};
 L.Knreise.GeoJSON = L.GeoJSON.extend({
 
@@ -918,7 +885,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                     var parent = this.getParentLayer(layer._leaflet_id);
                     feature = parent.feature;
                 }
+
                 layer.setStyle(this._createFeatureIcon(feature, false));
+
                 if (layer.getParent) {
                     var p = layer.getParent();
                     p.setStyle(this._createFeatureIcon(feature, false));
@@ -1126,7 +1095,9 @@ L.Knreise.geoJson = function (geojson, options) {
 L.Knreise = L.Knreise || {};
 L.Knreise.Control = L.Knreise.Control || {};
 
-
+/*
+    A Leaflet wrapper for displaying sidebar data.
+*/
 
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
@@ -1134,8 +1105,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         options = options || {};
         options.autoPan = false;
         L.setOptions(this, options);
-
-        this._template = options.template;
 
         // Find content container
         var content =  L.DomUtil.get(placeholder);
@@ -1201,8 +1170,14 @@ L.Knreise.Control.sidebar = function (placeholder, options) {
 
 var KR = this.KR || {};
 
+/*
+    Handles display of content in a sidebar
+*/
+
 KR.SidebarContent = function (wrapper, element, top, options) {
     'use strict';
+
+    var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
     element = $(element);
     wrapper = $(wrapper);
@@ -1311,7 +1286,8 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             });
             return;
         }
-        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset);
+        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
+
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
@@ -1411,6 +1387,13 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 };
 
 /*global L:false, KR: false */
+
+/*
+    A Leaflet control that behaves in much the same way as L.Control.Layer, 
+    but works with KNreise datasets. 
+
+    Handles loading, toggleling and error feedback.
+*/
 
 
 (function () {
@@ -1771,6 +1754,12 @@ L.Knreise.icon = function (options) {
 /*global L:false, turf:false */
 var KR = this.KR || {};
 
+/*
+    Handles loading of datasets
+
+    Init it with a KnreiseAPI, a Leaflet map, something that behaves as 
+    L.Knreise.Control.Sidebar and an optional callback for errors.
+*/
 KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     'use strict';
 
@@ -2125,6 +2114,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         }
     }
 
+    /*
+        Force a reload of all datasets, optionally set them visible after load
+        calls callback when fihished
+    */
     function reload(setVisible, callback) {
         var finished = _.after(reloads.length, function () {
             if (callback) {
@@ -2136,6 +2129,13 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
+    /*
+        Loads a list of datasets, creates Leaflet layers of either 
+        L.Knreise.GeoJSON or L.Knreise.MarkerClusterGroup according to
+        config. 
+
+        Can be supplied an initial bbox for filtering and a filter function
+    */
     function loadDatasets(datasets, bounds, filter) {
 
         datasets = _.filter(datasets, function (dataset) {
@@ -2277,6 +2277,10 @@ L.TileLayer.WMTS=L.TileLayer.extend({defaultWmtsParams:{service:"WMTS",request:"
 var KR = this.KR || {};
 KR.Config = KR.Config || {};
 
+/*
+    List of predefined datasets
+*/
+
 (function (ns) {
     'use strict';
 
@@ -2338,7 +2342,7 @@ KR.Config = KR.Config || {};
                 name: 'Digitalt fortalt',
                 dataset: {dataset: 'difo', api: 'norvegiana'},
                 cluster: true,
-                template: _.template($('#digitalt_fortalt_template').html()),
+                template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt'
             },
@@ -2351,7 +2355,7 @@ KR.Config = KR.Config || {};
                 },
                 provider: 'Naturbase',
                 name: 'Verneområder',
-                template: _.template($('#verneomraader_template').html()),
+                template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
                     api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
                 },
@@ -2371,7 +2375,8 @@ KR.Config = KR.Config || {};
                     dataset: 'Artsdatabanken'
                 },
                 cluster: false,
-                description: 'Artsobservasjoner fra Artsdatabanken'
+                description: 'Artsobservasjoner fra Artsdatabanken',
+                template: KR.Util.getDatasetTemplate('popup')
             },
             'folketelling': {
                 name: 'Folketelling 1910',
@@ -2382,7 +2387,7 @@ KR.Config = KR.Config || {};
                 },
                 isStatic: false,
                 minZoom: 14,
-                template: _.template($('#folketelling_template').html()),
+                template: KR.Util.getDatasetTemplate('folketelling'),
                 getFeatureData: function (feature, callback) {
                     api.getData({
                         api: 'folketelling',
@@ -2407,7 +2412,7 @@ KR.Config = KR.Config || {};
                 },
                 style: {thumbnail: true},
                 minZoom: 13,
-                template: _.template($('#wikipedia_template').html()),
+                template: KR.Util.getDatasetTemplate('wikipedia'),
                 description: 'Geotaggede artikler fra bokmålswikipedia'
             },
             'ark_hist': {
@@ -2421,7 +2426,7 @@ KR.Config = KR.Config || {};
                             api: 'norvegiana',
                             dataset: 'MUSIT'
                         },
-                        template: _.template($('#musit_template').html())
+                        template: KR.Util.getDatasetTemplate('musit')
                     },
                     {
                         name: 'DiMu',
@@ -2429,7 +2434,7 @@ KR.Config = KR.Config || {};
                             api: 'norvegiana',
                             dataset: 'DiMu'
                         },
-                        template: _.template($('#digitalt_museum_template').html()),
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
                         isStatic: false
                     },
                     {
@@ -2440,7 +2445,7 @@ KR.Config = KR.Config || {};
                             api: 'kulturminnedataSparql',
                             kommune: komm
                         },
-                        template: _.template($('#ra_sparql_template').html()),
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
                         init: kulturminneFunctions.initKulturminnePoly,
@@ -2461,7 +2466,7 @@ KR.Config = KR.Config || {};
                     api: 'kulturminnedataSparql',
                     kommune: komm
                 },
-                template: _.template($('#ra_sparql_template').html()),
+                template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
                 init: kulturminneFunctions.initKulturminnePoly,
@@ -2496,6 +2501,10 @@ KR.Config = KR.Config || {};
 /*global window:false, L:false*/
 
 var KR = this.KR || {};
+
+/*
+    Simple splash screen for a leaflet map
+*/
 
 KR.SplashScreen = function (map, title, description, image) {
     'use strict';
@@ -2604,6 +2613,10 @@ KR.SplashScreen = function (map, title, description, image) {
 
 /*global L:false, alert:false, KR:false, turf:false */
 
+/*
+    Utility for setting up a Leaflet map based on config
+*/
+
 var KR = this.KR || {};
 (function (ns) {
     'use strict';
@@ -2642,7 +2655,7 @@ var KR = this.KR || {};
 
 
     function _setupSidebar(map) {
-        var popupTemplate = _.template($('#popup_template').html());
+        var popupTemplate = KR.Util.getDatasetTemplate('popup');
         var listElementTemplate = _.template($('#list_item_template').html());
         var markerTemplate = _.template($('#marker_template').html());
         var thumbnailTemplate = _.template($('#thumbnail_template').html());

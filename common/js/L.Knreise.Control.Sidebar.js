@@ -4,7 +4,9 @@
 L.Knreise = L.Knreise || {};
 L.Knreise.Control = L.Knreise.Control || {};
 
-
+/*
+    A Leaflet wrapper for displaying sidebar data.
+*/
 
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
@@ -12,8 +14,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         options = options || {};
         options.autoPan = false;
         L.setOptions(this, options);
-
-        this._template = options.template;
 
         // Find content container
         var content =  L.DomUtil.get(placeholder);

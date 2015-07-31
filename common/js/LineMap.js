@@ -1,5 +1,9 @@
 /*global turf:false, L:false, window:false */
 
+/*
+    Utility function for setting up an "along line" demonstrator.
+*/
+
 var KR = this.KR || {};
 KR.LineMap = function (api, map, dataset, options) {
     'use strict';

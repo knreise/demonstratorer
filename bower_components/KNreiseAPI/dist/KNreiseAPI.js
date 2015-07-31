@@ -1202,7 +1202,7 @@ KR.API = function (options) {
     var kulturminnedataAPI;
     if (KR.ArcgisAPI) {
         kulturminnedataAPI = new KR.ArcgisAPI(
-            'http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'
+            'http://crossorigin.me/http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'
         );
     }
 

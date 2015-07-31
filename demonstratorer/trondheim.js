@@ -7,7 +7,7 @@
             thumbnails: true,
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
-            template: _.template($('#digitalt_fortalt_template').html())
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt')
         },
         {
             name: 'Kulturminner',
@@ -17,7 +17,7 @@
                 dataset: 'Kulturminnesok',
                 query: '-delving_title:Fangstlokalitet'
             },
-            template: _.template($('#kulturminne_template').html()),
+            template: KR.Util.getDatasetTemplate('kulturminne'),
             smallMarker: true
         },
         {
@@ -26,7 +26,7 @@
             dataset: {
                 api: 'wikipedia'
             },
-            template: _.template($('#wikipedia_template').html()),
+            template: KR.Util.getDatasetTemplate('wikipedia'),
             style: {template: true},
             minZoom: 13
         },
@@ -38,7 +38,7 @@
                 api: 'flickr',
                 user_id: 'trondheim_byarkiv'
             },
-            template: _.template($('#flickr_template').html()),
+            template: KR.Util.getDatasetTemplate('flickr'),
             style: {fillcolor: '#D252B9'}
         },
         {
@@ -48,7 +48,7 @@
                 api: 'kulturminnedataSparql',
                 kommune: '1601'
             },
-            template: _.template($('#ra_sparql_template').html()),
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
             bbox: false,
             style: {fillcolor: '#728224'}
         },
@@ -58,7 +58,7 @@
                 api: 'norvegiana',
                 dataset: 'MUSIT'
             },
-            template: _.template($('#musit_template').html()),
+            template: KR.Util.getDatasetTemplate('musit'),
             minZoom: 12,
             style: {thumbnail: true}
         },
@@ -68,7 +68,7 @@
                 api: 'norvegiana',
                 dataset: 'DiMu'
             },
-            template: _.template($('#digitalt_museum_template').html()),
+            template: KR.Util.getDatasetTemplate('digitalt_museum'),
             minZoom: 12,
             style: {thumbnail: true}
         }

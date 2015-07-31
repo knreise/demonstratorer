@@ -1,6 +1,10 @@
 /*global Cesium:false, turf:false */
 var KR = this.KR || {};
 
+/*
+    Utility for setting up a Cesiumjs map to fly along a line
+*/
+
 KR.PathTracer = function (viewer, line, geojson) {
     'use strict';
 

@@ -9,7 +9,7 @@
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
             cluster: true,
-            template: _.template($('#digitalt_fortalt_template').html()),
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
         },
         {
@@ -19,7 +19,7 @@
                 api: 'kulturminnedataSparql',
                 kommune: '0822'
             },
-            template: _.template($('#ra_sparql_template').html()),
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
             bbox: false,
             isStatic: true,
             init: kulturminneFunctions.initKulturminnePoly,

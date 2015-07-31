@@ -2,6 +2,10 @@
 var KR = this.KR || {};
 KR.Config = KR.Config || {};
 
+/*
+    List of predefined datasets
+*/
+
 (function (ns) {
     'use strict';
 
@@ -63,7 +67,7 @@ KR.Config = KR.Config || {};
                 name: 'Digitalt fortalt',
                 dataset: {dataset: 'difo', api: 'norvegiana'},
                 cluster: true,
-                template: _.template($('#digitalt_fortalt_template').html()),
+                template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt'
             },
@@ -76,7 +80,7 @@ KR.Config = KR.Config || {};
                 },
                 provider: 'Naturbase',
                 name: 'Verneområder',
-                template: _.template($('#verneomraader_template').html()),
+                template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
                     api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
                 },
@@ -96,7 +100,8 @@ KR.Config = KR.Config || {};
                     dataset: 'Artsdatabanken'
                 },
                 cluster: false,
-                description: 'Artsobservasjoner fra Artsdatabanken'
+                description: 'Artsobservasjoner fra Artsdatabanken',
+                template: KR.Util.getDatasetTemplate('popup')
             },
             'folketelling': {
                 name: 'Folketelling 1910',
@@ -107,7 +112,7 @@ KR.Config = KR.Config || {};
                 },
                 isStatic: false,
                 minZoom: 14,
-                template: _.template($('#folketelling_template').html()),
+                template: KR.Util.getDatasetTemplate('folketelling'),
                 getFeatureData: function (feature, callback) {
                     api.getData({
                         api: 'folketelling',
@@ -132,7 +137,7 @@ KR.Config = KR.Config || {};
                 },
                 style: {thumbnail: true},
                 minZoom: 13,
-                template: _.template($('#wikipedia_template').html()),
+                template: KR.Util.getDatasetTemplate('wikipedia'),
                 description: 'Geotaggede artikler fra bokmålswikipedia'
             },
             'ark_hist': {
@@ -146,7 +151,7 @@ KR.Config = KR.Config || {};
                             api: 'norvegiana',
                             dataset: 'MUSIT'
                         },
-                        template: _.template($('#musit_template').html())
+                        template: KR.Util.getDatasetTemplate('musit')
                     },
                     {
                         name: 'DiMu',
@@ -154,7 +159,7 @@ KR.Config = KR.Config || {};
                             api: 'norvegiana',
                             dataset: 'DiMu'
                         },
-                        template: _.template($('#digitalt_museum_template').html()),
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
                         isStatic: false
                     },
                     {
@@ -165,7 +170,7 @@ KR.Config = KR.Config || {};
                             api: 'kulturminnedataSparql',
                             kommune: komm
                         },
-                        template: _.template($('#ra_sparql_template').html()),
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
                         init: kulturminneFunctions.initKulturminnePoly,
@@ -186,7 +191,7 @@ KR.Config = KR.Config || {};
                     api: 'kulturminnedataSparql',
                     kommune: komm
                 },
-                template: _.template($('#ra_sparql_template').html()),
+                template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
                 init: kulturminneFunctions.initKulturminnePoly,

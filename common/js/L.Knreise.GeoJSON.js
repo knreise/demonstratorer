@@ -1,6 +1,10 @@
 /*global L: false, KR: false, turf: false */
 'use strict';
 
+/*
+    Wrapper over L.GeoJSON to handle unclustered KNreise datasets
+*/
+
 L.Knreise = L.Knreise || {};
 L.Knreise.GeoJSON = L.GeoJSON.extend({
 
@@ -44,7 +48,9 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
                     var parent = this.getParentLayer(layer._leaflet_id);
                     feature = parent.feature;
                 }
+
                 layer.setStyle(this._createFeatureIcon(feature, false));
+
                 if (layer.getParent) {
                     var p = layer.getParent();
                     p.setStyle(this._createFeatureIcon(feature, false));

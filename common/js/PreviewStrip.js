@@ -3,6 +3,10 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
+    /*
+        A dataset preview strip as shown in the along line map
+    */
+
     var Panel = function (strip, toggleCallback) {
         var leftBtn = strip.find('.js-left');
         var rightBtn = strip.find('.js-right');
