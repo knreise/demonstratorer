@@ -34,6 +34,7 @@ module.exports = {
     'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
     'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
     'bower_components/L.EasyButton/easy-button.js',
+    'bower_components/cilogi-marker/dist/cilogi-marker.min.js'
   ],
   demoScripts: [
     'common/js/ErrorHandler.js',
@@ -62,6 +63,7 @@ module.exports = {
     'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
     'bower_components/Leaflet.Photo/Leaflet.Photo.css',
     'bower_components/video.js/dist/video-js/video-js.css',
+    'bower_components/cilogi-marker/dist/cilogi-marker.css'
   ],
   demoCss: [
     'common/css/fullscreenmap.css',

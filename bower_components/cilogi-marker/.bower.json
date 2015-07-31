@@ -1,0 +1,14 @@
+{
+  "name": "cilogi-marker",
+  "homepage": "https://github.com/cilogi/cilogi-marker",
+  "_release": "d33d9ed14a",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "d33d9ed14aecab7a4741054c6535a1a1fb88519c"
+  },
+  "_source": "https://github.com/cilogi/cilogi-marker.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/cilogi/cilogi-marker.git",
+  "_direct": true
+}

@@ -1,24 +1,63 @@
-/*global L:false, navigator:false*/
+/*global L:false, navigator:false, cilogi: false*/
 L.Knreise = L.Knreise || {};
 (function (ns) {
     'use strict';
+
+    L.Control.EasyButtons2 = L.Control.EasyButtons.extend({
+        _addImage: function () {
+            var extraClasses = this.options.icon.lastIndexOf('fa', 0) === 0 ? ' fa fa-lg' : ' glyphicon';
+
+            this._icon = L.DomUtil.create('i', this.options.icon + extraClasses, this.link);
+            if (this.options.id) {
+                this._icon.id = this.options.id;
+            }
+        },
+
+        changeIcon: function (icon) {
+            var extraClasses = this.options.icon.lastIndexOf('fa', 0) === 0 ? ' fa fa-lg' : ' glyphicon';
+            this._icon.className = icon + extraClasses;
+        }
+    });
+
     ns.LocateButton = function (callback, error, options) {
         options = options || {};
         options.zoom = options.zoom || 10;
+        var marker;
         var _map;
+        var _btn;
+        var defaultIcon = options.icon || 'fa-user';
 
-        function showPosition(pos) {
+        function _createMarker(pos) {
+            return new cilogi.L.Marker(pos, {
+                fontIconSize: 3,
+                fontIconName: "\uf05b",
+                altIconName: "\uf05b",
+                fontIconColor: "#FF0000",
+                fontIconFont: 'awesome',
+                opacity: 1
+            });
+        }
+
+        function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            _btn.changeIcon(defaultIcon);
             if (callback) {
                 callback(p);
             } else {
                 _map.setView(p, 16);
+                if (!marker) {
+                    marker = _createMarker(p);
+                    _map.addLayer(marker);
+                } else {
+                    marker.setLatLng(p);
+                }
             }
         }
 
-        function getLocation() {
+        function _getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
+                _btn.changeIcon('fa-spinner fa-pulse');
+                navigator.geolocation.getCurrentPosition(_showPosition);
             } else {
                 if (error) {
                     error();
@@ -28,9 +67,11 @@ L.Knreise = L.Knreise || {};
 
         function addTo(map) {
             var title = options.title || 'Finn meg';
-            var icon = options.icon || 'fa-user';
+
             _map = map;
-            return L.easyButton(map, getLocation, {icon: icon, title: title});
+            _btn = new L.Control.EasyButtons2(_getLocation, {icon: defaultIcon, title: title});
+            _map.addControl(_btn);
+            return _btn;
         }
 
         return {
