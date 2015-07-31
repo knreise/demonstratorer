@@ -291,4 +291,22 @@ KR.Util = KR.Util || {};
         }
     };
 
+    ns.messageDisplayer = function (template) {
+        var lastClass;
+        var container = $(template);
+        container.find('.close').on('click', function () {
+            container.find('.content').html('');
+            container.remove();
+        });
+        return function (type, message) {
+            if (lastClass) {
+                container.removeClass(lastClass);
+            }
+            lastClass = 'alert-' + type;
+            container.addClass(lastClass);
+            container.find('.content').html(message);
+            $('body').append(container);
+        };
+    };
+
 }(KR.Util));

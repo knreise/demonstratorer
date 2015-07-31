@@ -342,6 +342,24 @@ KR.Util = KR.Util || {};
         }
     };
 
+    ns.messageDisplayer = function (template) {
+        var lastClass;
+        var container = $(template);
+        container.find('.close').on('click', function () {
+            container.find('.content').html('');
+            container.remove();
+        });
+        return function (type, message) {
+            if (lastClass) {
+                container.removeClass(lastClass);
+            }
+            lastClass = 'alert-' + type;
+            container.addClass(lastClass);
+            container.find('.content').html(message);
+            $('body').append(container);
+        };
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -2179,7 +2197,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     };
 };
 
-/*global L:false, navigator:false, cilogi: false*/
+/*global L:false, navigator:false, cilogi: false, KR:false*/
 L.Knreise = L.Knreise || {};
 (function (ns) {
     'use strict';
@@ -2207,6 +2225,7 @@ L.Knreise = L.Knreise || {};
         var _map;
         var _btn;
         var defaultIcon = options.icon || 'fa-user';
+        var messageDisplayer = KR.Util.messageDisplayer($('#message_template').html());
 
         function _createMarker(pos) {
             return new cilogi.L.Marker(pos, {
@@ -2222,6 +2241,13 @@ L.Knreise = L.Knreise || {};
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
             _btn.changeIcon(defaultIcon);
+            if (options.bounds && !options.bounds.contains(p)) {
+                messageDisplayer(
+                    'warning',
+                    'Du befinner deg utenfor området til denne demonstratoren. Viser ikke din posisjon'
+                );
+                return;
+            }
             if (callback) {
                 callback(p);
             } else {
@@ -2729,8 +2755,6 @@ var KR = this.KR || {};
         KR.Util.getBaseLayer(baseLayer, function (layer) {
             layer.addTo(map);
         });
-
-        L.Knreise.LocateButton().addTo(map);
         return map;
     }
 
@@ -2889,6 +2913,8 @@ var KR = this.KR || {};
                     return dataset;
                 });
             }
+
+            L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
 
             map.fitBounds(bounds);
             var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter);

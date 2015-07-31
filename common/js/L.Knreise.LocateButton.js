@@ -1,4 +1,4 @@
-/*global L:false, navigator:false, cilogi: false*/
+/*global L:false, navigator:false, cilogi: false, KR:false*/
 L.Knreise = L.Knreise || {};
 (function (ns) {
     'use strict';
@@ -26,6 +26,7 @@ L.Knreise = L.Knreise || {};
         var _map;
         var _btn;
         var defaultIcon = options.icon || 'fa-user';
+        var messageDisplayer = KR.Util.messageDisplayer($('#message_template').html());
 
         function _createMarker(pos) {
             return new cilogi.L.Marker(pos, {
@@ -41,6 +42,13 @@ L.Knreise = L.Knreise || {};
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
             _btn.changeIcon(defaultIcon);
+            if (options.bounds && !options.bounds.contains(p)) {
+                messageDisplayer(
+                    'warning',
+                    'Du befinner deg utenfor området til denne demonstratoren. Viser ikke din posisjon'
+                );
+                return;
+            }
             if (callback) {
                 callback(p);
             } else {

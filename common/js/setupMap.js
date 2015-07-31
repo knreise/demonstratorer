@@ -75,8 +75,6 @@ var KR = this.KR || {};
         KR.Util.getBaseLayer(baseLayer, function (layer) {
             layer.addTo(map);
         });
-
-        L.Knreise.LocateButton().addTo(map);
         return map;
     }
 
@@ -235,6 +233,8 @@ var KR = this.KR || {};
                     return dataset;
                 });
             }
+
+            L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
 
             map.fitBounds(bounds);
             var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter);

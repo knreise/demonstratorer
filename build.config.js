@@ -94,7 +94,8 @@ module.exports = {
     'marker',
     'thumbnail',
     'footer',
-    'error'
+    'error',
+    'message'
   ],
 
   demonstrators: [
