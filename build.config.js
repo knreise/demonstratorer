@@ -158,7 +158,8 @@ module.exports = {
     {
       id: 'dovre',
       name: 'Dovre',
-      description: 'Løsning som fokuserer på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold - spesielt fra samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.'
+      description: 'Løsning som fokuserer på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold - spesielt fra samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
+      image: 'http://placekitten.com/g/816/612/'
     },
     {
       id: 'keiserstien',

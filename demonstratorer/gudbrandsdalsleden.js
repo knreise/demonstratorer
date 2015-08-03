@@ -83,6 +83,7 @@
     var options = {
         line: 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_r.kml',
         title: title,
+        image: image,
         description: $('#description_template').html(),
         buffer: 2,
         linecolor: '#000000'

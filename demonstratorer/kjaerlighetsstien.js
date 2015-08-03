@@ -45,6 +45,7 @@
     var options = {
         line: getLine,
         title: title,
+        image: image,
         description: $('#description_template').html()
     };
 

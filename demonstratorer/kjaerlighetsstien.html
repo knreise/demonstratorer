@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <title>KNReise - Kjærlighetsstien med Gamlegata</title>
+
 
         <link href='../bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
@@ -470,7 +472,10 @@
         <script src="../bower_components/cilogi-marker/dist/cilogi-marker.min.js" type="text/javascript"></script>
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
+
             var title = 'Kjærlighetsstien med Gamlegata';
+            var image = '';
+
             (function () {
     'use strict';
 
@@ -518,6 +523,7 @@
     var options = {
         line: getLine,
         title: title,
+        image: image,
         description: $('#description_template').html()
     };
 

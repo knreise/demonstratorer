@@ -48,6 +48,10 @@ module.exports = function(grunt) {
 
                   demonstrator.template_markup = template_markup.concat(demo_template_markup);
 
+                  if (!demonstrator.image) {
+                    demonstrator.image = null;
+                  }
+
                   demonstrator.desc = fs.readFileSync('demonstratorer/desc_' + demonstrator.id + '.txt', 'utf8');
                   demonstrator.inline_js = fs.readFileSync('demonstratorer/' + demonstrator.id + '.js', 'utf8');
                   demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
@@ -85,6 +89,7 @@ module.exports = function(grunt) {
 
             demonstrator.template_markup = template_markup.concat(demo_template_markup);
 
+            demonstrator.image = null;
             demonstrator.desc = null;
             demonstrator.name = null;
 
@@ -118,6 +123,7 @@ module.exports = function(grunt) {
             }).join('\n');
 
             demonstrator.template_markup = template_markup.concat(demo_template_markup);
+            demonstrator.name = null;
 
             demonstrator.inline_js = fs.readFileSync('demonstratorer/config3d.js', 'utf8');
             demonstrator.scriptLinks = userConfig.demoScriptsExternal3d.concat(['dist/scripts3d.min.js']);

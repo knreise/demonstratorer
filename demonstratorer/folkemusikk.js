@@ -21,8 +21,8 @@
     KR.setupMap(api, datasets, {
         komm: '822,821',
         title: title,
+        image: image,
         description: $('#description_template').html(),
-        image: 'http://lorempixel.com/816/612/',
         geomFilter: true,
         showGeom: true
     });

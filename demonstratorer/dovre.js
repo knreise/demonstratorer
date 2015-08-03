@@ -115,8 +115,8 @@
 
     KR.setupMap(api, datasets, {
         komm: 511,
-        title: 'Dovre',
-        description: $('#description_template').html(),
-        image: 'http://lorempixel.com/816/612/'
+        title: title,
+        image: image,
+        description: $('#description_template').html()
     });
 }());

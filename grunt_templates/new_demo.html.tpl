@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <title>KNReise - {{= name }}</title>
+
 {{ _.each(cssLinks, function (style) { }}
         <link href='../{{= style }}' rel='stylesheet' />{{ } ) }}
 
@@ -26,7 +28,10 @@
 {{ _.each(scriptLinks, function (script) { }}
         <script src="../{{= script }}" type="text/javascript"></script>{{ }) }}
         <script type="text/javascript">
+
             var title = '{{= name }}';
+            var image = '{{= image }}';
+
             {{= inline_js }}
         </script>
     </body>
