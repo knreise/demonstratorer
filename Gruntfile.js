@@ -65,7 +65,12 @@ module.exports = function (grunt) {
                                 demonstrator.image = null;
                             }
 
-                            demonstrator.desc = fs.readFileSync('demonstratorer/desc_' + demonstrator.id + '.txt', 'utf8');
+                            try {
+                                demonstrator.desc = fs.readFileSync('demonstratorer/desc2_' + demonstrator.id + '.txt', 'utf8');
+                            } catch (e) {
+                                demonstrator.desc = '';
+                            }
+
                             demonstrator.inline_js = fs.readFileSync('demonstratorer/' + demonstrator.id + '.js', 'utf8');
                             demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
                             demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
