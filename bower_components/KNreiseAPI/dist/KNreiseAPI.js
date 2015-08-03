@@ -6,6 +6,10 @@ KR.Util = {};
 (function (ns) {
     'use strict';
 
+
+    /*
+        Takes a dictionary and a keys, returns a dict without the keys
+    */
     ns.dictWithout = function (dict) {
         var keys = _.without(_.keys(dict), Array.prototype.slice.call(arguments, 1));
         return _.reduce(keys, function (acc, key) {
@@ -14,12 +18,20 @@ KR.Util = {};
         }, {});
     };
 
+
+    /*
+        Creates a urlescaped query parameter string based on a dict
+    */
     ns.createQueryParameterString = function (params) {
         return _.map(params, function (value, key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(value);
         }).join('&');
     };
 
+
+    /*
+        Handles an error, either by calling a callback or throwing an Error
+    */
     ns.handleError = function (errorCallback, error, data) {
         if (errorCallback) {
             errorCallback({'error': error, 'data': data});
@@ -28,6 +40,11 @@ KR.Util = {};
         throw new Error(error);
     };
 
+
+    /*
+        Sends a GET-request, optionally runs the result through a parser and 
+        calls a callback
+    */
     ns.sendRequest = function (url, parser, callback, errorCallback) {
         return $.ajax({
             type: 'get',
@@ -52,7 +69,12 @@ KR.Util = {};
         });
     };
 
+
+    /*
+        Creates a GeoJSON feature from a L.LatLng and optionally a properties dict
+    */
     ns.createGeoJSONFeature = function (latLng, properties) {
+        properties = properties || {};
         return {
             'type': 'Feature',
             'geometry': {
@@ -63,7 +85,11 @@ KR.Util = {};
         };
     };
 
+    /*
+        Creates a GeoJSON feature from a GeoJSON Geometry and optionally a properties dict
+    */
     ns.createGeoJSONFeatureFromGeom = function (geom, properties) {
+        properties = properties || {};
         return {
             'type': 'Feature',
             'geometry': geom,
@@ -71,6 +97,10 @@ KR.Util = {};
         };
     };
 
+
+    /*
+        GeoJSON FeatureCollection from an array of GeoJSON features
+    */
     ns.createFeatureCollection = function (features) {
         return {
             'type': 'FeatureCollection',
@@ -91,6 +121,10 @@ KR.Util = {};
         return value * Math.PI / 180;
     }
 
+
+    /*
+        Calculates the Haversine distance between two points
+    */
     ns.haversine = function (lat1, lon1, lat2, lon2) {
         var R = 6371000; // metres
         var phi1 = _toRad(lat1);
@@ -105,6 +139,10 @@ KR.Util = {};
         return R * c;
     };
 
+
+    /*
+        Split a bbox-string to an array
+    */
     ns.splitBbox = function (bbox) {
         return bbox.split(',').map(parseFloat);
     };
@@ -631,7 +669,9 @@ KR.WikipediaAPI = function () {
     function _wikiquery(params, callback) {
         var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
-            response = JSON.parse(response);
+            try {
+                response = JSON.parse(response);
+            } catch (ignore) {}
             callback(response);
         });
     }
@@ -708,7 +748,7 @@ KR.WikipediaAPI = function () {
 
         var images = null;
         if (extraData.pageimage) {
-            images = [_getWikimediaImageUrl(extraData.pageimage)]
+            images = [_getWikimediaImageUrl(extraData.pageimage)];
         }
 
         var params = {
@@ -725,7 +765,10 @@ KR.WikipediaAPI = function () {
     }
 
     function _parseWikimediaItems(response, callback, errorCallback) {
-        response = JSON.parse(response);
+        try {
+            response = JSON.parse(response);
+        } catch (ignore) {}
+
 
         try {
             //since the wikipedia API does not include details, we have to ask for 
@@ -1296,12 +1339,19 @@ KR.API = function (options) {
         throw new Error('Unknown API');
     }
 
+    /*
+        Get all features from a dataset
+    */
     function getData(dataset, callback, errorCallback, options) {
         options = options || {};
         var api = _getAPI(dataset.api);
         api.getData(dataset, callback, errorCallback, options);
     }
 
+
+    /*
+        Get features from a dataset within a bbox
+    */
     function getBbox(dataset, bbox, callback, errorCallback, options) {
         options = options || {};
         var api = _getAPI(dataset.api);
@@ -1319,6 +1369,9 @@ KR.API = function (options) {
         }
     }
 
+    /*
+        Get features from a dataset within a radius of a given point
+    */
     function getWithin(dataset, latLng, distance, callback, errorCallback, options) {
         options = options || {};
         distance = distance || 5000;
@@ -1333,6 +1386,9 @@ KR.API = function (options) {
         );
     }
 
+    /*
+        Get bbox-string for one or more norwegian municipalies
+    */
     function getMunicipalityBounds(municipalities, callback, errorCallback) {
         if (!cartodbAPI) {
             throw new Error('CartoDB api not configured!');
@@ -1344,6 +1400,9 @@ KR.API = function (options) {
         );
     }
 
+    /*
+        Get bbox-string for one or more norwegian counties
+    */
     function getCountyBounds(counties, callback, errorCallback) {
         if (!cartodbAPI) {
             throw new Error('CartoDB api not configured!');
@@ -1372,15 +1431,3 @@ KR.API = function (options) {
 };
 
 KR.API.mappers = {};
-
-/*
-    properties:
-        thumbnail: string (full link to thumbnail-image),
-        images: string[] (full link to fullsize image),
-        title: string (title)
-        content: string (possibly HTML formatted content)
-        link: string (url to origin)
-        dataset: string (name of the dataset)
-        provider: string (name of dataset provider)
-        contentType: string (type of content)
-*/
