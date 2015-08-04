@@ -31,7 +31,7 @@ var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
     requestVertexNormals : true
 });
 viewer.terrainProvider = cesiumTerrainProvider;
-
+//viewer.scene.imageryLayers.removeAll();
 
 function stopLoading() {    
     $loader.delay(2000).fadeOut({duration: 200});    
@@ -42,7 +42,9 @@ $loadTerrain.on('click', function(event) {
 
     // Add the terrain provider (AGI)
     var cesiumTerrainProvider = new Cesium.CesiumTerrainProvider({
-    url : 'http://localhost:8006/terrtiles'
+        //url : 'http://localhost:8006/terrtiles'
+        url:'http://localhost:8001/html/baat/terrain.php?tile='
+        //url: 'http://knreise.no/terrain/terrain.php?tile='
     });
     viewer.terrainProvider = cesiumTerrainProvider;
 });
