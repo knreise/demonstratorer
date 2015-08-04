@@ -57,5 +57,9 @@ var circleStyle = {
 
 var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
 
-var linemap = new KR.LineMap(api, map, pilegrimsledenDovre);
+var getLineFunc = function (callback) {
+    api.getData(pilegrimsledenDovre, callback);
+};
+
+var linemap = new KR.LineMap(api, map, getLineFunc);
 linemap.init(followMap.positionChanged);

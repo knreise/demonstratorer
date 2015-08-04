@@ -8,7 +8,7 @@
 
 
 var KR = this.KR || {};
-KR.AlongLine = function (api) {
+KR.AlongLine = function (api, getLineFunc) {
     'use strict';
 
     var line, bounds, buffer;
@@ -40,10 +40,9 @@ KR.AlongLine = function (api) {
         });
     }
 
-    function getLine(dataset, callback) {
+    function getLine(callback) {
 
-
-        api.getData(dataset, function (geoJson) {
+        getLineFunc(function (geoJson) {
 
             var coordinates = _.map(geoJson.features, function (feature) {
                 return feature.geometry.coordinates;

@@ -5,7 +5,7 @@
 */
 
 var KR = this.KR || {};
-KR.LineMap = function (api, map, dataset, options) {
+KR.LineMap = function (api, map, getLineFunc, options) {
     'use strict';
 
     options = _.extend({
@@ -126,12 +126,15 @@ KR.LineMap = function (api, map, dataset, options) {
 
 
     function init(callback) {
-        var alongLine = new KR.AlongLine(api);
-        alongLine.getLine(dataset, function (res) {
+        var alongLine = new KR.AlongLine(api, getLineFunc);
+
+        alongLine.getLine(function (res) {
             var geoJson = res.line.toGeoJSON();
             L.geoJson(geoJson).addTo(map);
             _initScroll(map, geoJson.features[0], callback);
         });
+
+
     }
 
     return {
