@@ -69,7 +69,8 @@ KR.Config = KR.Config || {};
                 cluster: true,
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
-                description: 'Digitalt fortalt'
+                description: 'Digitalt fortalt',
+                allowTopic: true
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -221,7 +222,7 @@ KR.Config = KR.Config || {};
                 if (_.has(datasetList, dataset)) {
                     var datasetConfig = datasetList[dataset];
                     if (query && datasetConfig.dataset.api === 'norvegiana') {
-                        datasetConfig.dataset.query = query;
+                        datasetConfig.dataset.query = 'dc_subject_text:' + query;
                     }
                     return datasetConfig;
                 }

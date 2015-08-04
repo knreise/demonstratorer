@@ -207,10 +207,12 @@ var KR = this.KR || {};
                 }
                 var name = value.name || key;
                 var description = value.description || 'Ingen beskrivelse';
+                var allowTopic = !!(value.allowTopic && value.dataset && value.dataset.api === 'norvegiana');
                 return datasetTemplate({
                     name: name,
                     key: key,
-                    description: description
+                    description: description,
+                    allowTopic: allowTopic
                 });
             })
             .compact()
@@ -222,9 +224,23 @@ var KR = this.KR || {};
                 callback();
             })
             .find('input[name="datasetsCheckbox"]')
-            .change(function () {
+            .change(function (e) {
+                var id = $(e.target).val();
+                var topic = $('#' + id + '-topic');
+                if (topic) {
+                    if (e.target.checked) {
+                        topic.removeAttr('disabled');
+                    } else {
+                        topic.attr('disabled', 'disabled');
+                    }
+                }
                 callback();
             });
+
+
+        $('#datasets').find(':text').on('keyup', function () {
+            callback();
+        });
 
         return {
             getValues: function () {
@@ -234,7 +250,13 @@ var KR = this.KR || {};
                         return checkbox.checked;
                     })
                     .map(function (checkbox) {
-                        return $(checkbox).val();
+                        var value = $(checkbox).val();
+                        var input = $(checkbox).parent().parent().find(':text')
+                        if (input && input.val() !== '') {
+                            value += ':' + input.val();
+                        }
+                        
+                        return value;
                     })
                     .value();
 
