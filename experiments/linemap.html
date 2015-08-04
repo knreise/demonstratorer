@@ -77,6 +77,85 @@
 </script>
 
 
+<script type="text/template" id="spinner_template">
+<div class="spinner">
+    <i class="fa fa-cog fa-spin fa-<%= size %>"></i>
+</div>
+
+</script>
+
+
+<script type="text/template" id="panel_template">
+<div class="panel panel-default panel-horizontal" style="border: 2px solid <%= color %>">
+    <div class="panel-heading">
+        <span class="header-text" title="<%= title %>"><%= title %></span>
+        <span class="header-box">
+            <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
+            <% if (distance) { %><div><%=distance %> km</div><% } %>
+        </span>
+    </div>
+    <% if (!minimal) { %>
+    <div class="panel-body">
+    <% if (thumbnail) { %>
+        <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
+    <%} else if (contentType === 'TEXT') { %>
+        <div class="text-box">
+            <p><% print(content ? content : 'Ingen tekst') %></p>
+            <p class="text-fade"></p>
+        </div>
+    <%} else { %>
+        n/a
+    <% } %>
+  </div>
+  <% } %>
+</div>
+
+</script>
+
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
+</a>
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
 <script type="text/template" id="message_template">
 <div class="alert alert-dismissible" role="alert">
   <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>

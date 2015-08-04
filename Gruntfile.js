@@ -139,7 +139,14 @@ module.exports = function (grunt) {
                         method: function (fs, fd, done) {
                             setTemplateSettings();
 
-                            demonstrator.template_markup = getTemplates(fs);
+                            var templates = getTemplateMarkup(
+                                demonstrator.templates,
+                                function (template) {return 'templates/' + template + '.tmpl'; },
+                                fs
+                            );
+
+                            demonstrator.template_markup = templates.concat(getTemplates(fs));
+
                             demonstrator.html = fs.readFileSync('./experiments_content/' + demonstrator.key + '/html.html', 'utf8');
                             demonstrator.inline_js = fs.readFileSync('./experiments_content/' + demonstrator.key + '/inline.js', 'utf8');
                             demonstrator.scriptLinks = userConfig.commonScripts.concat(demonstrator.scripts);

@@ -58,6 +58,41 @@
 <div id="cesium-viewer"></div>
 
 
+<script type="text/template" id="cesium_sparql_kulturminne_template">
+<h3><%= label %></h3>
+
+<div class="cesium-sidebar-body">
+    <p><%= loklab%></p>
+    <p><%= beskrivelse%></p>
+    <img class="fullwidth" src="<%= lokimg %>" />
+</div>
+</script>
+
+
+<script type="text/template" id="cesium_wikipedia_template">
+
+<h3><%= title %></h3>
+
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
+
+
+<a href=\"<%= link %>\"></a>
+</script>
+
+
+<script type="text/template" id="cesium_arc_kulturminne_template">
+
+<h3><%= Navn %></h3>
+
+
+</script>
+
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
     <div class="media">

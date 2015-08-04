@@ -33,6 +33,7 @@
     "KNreiseAPI": "1.4.15",
     "html.sortable": "~0.2.9",
     "cesium-minimap": "0.0.2",
-    "cilogi-marker": "https://github.com/cilogi/cilogi-marker.git"
+    "cilogi-marker": "https://github.com/cilogi/cilogi-marker.git",
+    "Leaflet-MiniMap": "https://github.com/Norkart/Leaflet-MiniMap.git#~2.2.0"
   }
 }
