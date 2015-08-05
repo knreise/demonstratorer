@@ -84,3 +84,5 @@ var getLineFunc = function (callback) {
 
 var linemap = new KR.LineMap(api, map, getLineFunc);
 linemap.init(followMap.positionChanged);
+
+KR.SplashScreen(map, 'Gudbrandsdalsleden - guidet tur', $('#description_template').html());

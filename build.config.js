@@ -321,6 +321,8 @@ module.exports = {
           'bower_components/Leaflet-MiniMap/dist/Control.MiniMap.min.js',
           'bower_components/CryptoJS/build/components/core.js',
           'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/L.EasyButton/easy-button.js',
+          'common/js/SplashScreen.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/SidebarContent.js',
           'common/js/L.Knreise.GeoJSON.js',
