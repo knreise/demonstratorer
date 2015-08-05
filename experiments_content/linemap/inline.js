@@ -10,6 +10,7 @@ var map = L.map('map', {
 
 L.tileLayer.kartverket('topo2graatone').addTo(map);
 
+
 var api = new KR.API();
 
 var datasets = [
@@ -66,3 +67,4 @@ var getLineFunc = function (callback) {
 
 var linemap = new KR.LineMap(api, map, getLineFunc);
 linemap.init(followMap.positionChanged);
+

@@ -4,6 +4,13 @@
     Utility function for setting up an "along line" demonstrator.
 */
 
+L.Control.MiniMap.prototype._onMiniMapMoved =  function () {
+    'use strict';
+    if (this.options.moveCallback) {
+        this.options.moveCallback(this._miniMap.getCenter());
+    }
+};
+
 var KR = this.KR || {};
 KR.LineMap = function (api, map, getLineFunc, options) {
     'use strict';
@@ -12,6 +19,7 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         scrollLength: 0.6 //km
     }, options || {});
 
+    var isStarting = true;
 
     function _length(lines) {
         return _.reduce(lines, function (length, line) {
@@ -113,7 +121,42 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         _initHandlers(move);
     }
 
-    function _initScroll(map, geoJson, positionCallback) {
+    function _getMiniMap(geoJson, moveCallback) {
+
+        var layer = new L.TileLayer.Kartverket('topo2graatone');
+        var line = L.geoJson(geoJson);
+
+        return new L.Control.MiniMap(L.layerGroup([layer, line]), {
+            position: 'topright',
+            zoomLevelFixed: 8,
+            zoomLevelOffset: -6,
+            moveCallback: moveCallback
+        }).addTo(map);
+    }
+
+
+    function _initMiniMap(position, geoJson, lines, callback) {
+        map.setZoom(15);
+        map.panTo(position);
+        _getMiniMap(geoJson, function (miniMapPos) {
+            var p = turf.point([miniMapPos.lng, miniMapPos.lat]);
+            var closest = _.chain(lines)
+                .map(function (line) {
+                    return turf.pointOnLine(line, p);
+                })
+                .min(function (point) {
+                    return point.properties.dist;
+                })
+                .value();
+            var closestLatLng = L.latLng(
+                closest.geometry.coordinates[1],
+                closest.geometry.coordinates[0]
+            );
+            callback(closestLatLng);
+        });
+    }
+
+    function _initScroll(geoJson, positionCallback) {
         var lines;
         if (geoJson.geometry.type === 'MultiLineString') {
             lines = _multiToSimple(geoJson);
@@ -121,9 +164,16 @@ KR.LineMap = function (api, map, getLineFunc, options) {
             lines = [geoJson];
         }
         var steps = _getSteps(lines, options.scrollLength);
-        _setupMove(steps, positionCallback);
+        _setupMove(steps, function (pos) {
+            if (isStarting) {
+                _initMiniMap(pos, geoJson, lines, function (closest) {
+                    positionCallback(closest);
+                });
+                isStarting = false;
+            }
+            positionCallback(pos);
+        });
     }
-
 
     function init(callback) {
         var alongLine = new KR.AlongLine(api, getLineFunc);
@@ -131,7 +181,7 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         alongLine.getLine(function (res) {
             var geoJson = res.line.toGeoJSON();
             L.geoJson(geoJson).addTo(map);
-            _initScroll(map, geoJson.features[0], callback);
+            _initScroll(geoJson.features[0], callback);
         });
     }
 
