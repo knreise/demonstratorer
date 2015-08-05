@@ -98,7 +98,6 @@ var KR = this.KR || {};
 
         function positionChanged(position) {
             previewStrip.moveStart();
-            markerLayer.clearLayers();
             map.setZoom(options.zoom);
             map.panTo(position);
             _updateMarker(position);
