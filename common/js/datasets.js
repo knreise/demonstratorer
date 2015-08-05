@@ -203,7 +203,22 @@ KR.Config = KR.Config || {};
             }
         };
         if (!komm) {
-            list.ark_hist.datasets[2].noLoad = true;
+            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+                KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    dataset.kommune = kommune;
+                    api.getData(dataset, dataLoaded, loadError);
+                });
+            };
+            var raParams = {
+                bbox: true,
+                minZoom: 12,
+                isStatic: false,
+                bboxFunc: sparqlBoox
+            };
+
+            _.extend(list.riksantikvaren, raParams);
+            _.extend(list.ark_hist.datasets[2], raParams);
+
         }
 
         return list;

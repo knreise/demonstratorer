@@ -353,6 +353,22 @@ KR.Util = KR.Util || {};
         };
     };
 
+    ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
+        var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
+        var query = 'SELECT komm FROM kommuner WHERE ' +
+        'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
+        'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
+
+        var dataset = {
+            'api': 'cartodb',
+            'query': query,
+            'mapper': function (res) {
+                return res.rows[0].komm;
+            }
+        };
+        api.getData(dataset, callback);
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -1878,12 +1894,23 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
                 //load according to strategy
                 if (dataset.bbox) {
-                    api.getBbox(
-                        dataset.dataset,
-                        newBounds,
-                        dataLoaded,
-                        loadError
-                    );
+                    //hack for riksantikvaren
+                    if (dataset.bboxFunc) {
+                        dataset.bboxFunc(
+                            api,
+                            dataset.dataset,
+                            newBounds,
+                            dataLoaded,
+                            loadError
+                        );
+                    } else {
+                        api.getBbox(
+                            dataset.dataset,
+                            newBounds,
+                            dataLoaded,
+                            loadError
+                        );
+                    }
                 } else {
                     api.getData(
                         dataset.dataset,
@@ -2187,7 +2214,22 @@ KR.Config = KR.Config || {};
             }
         };
         if (!komm) {
-            list.ark_hist.datasets[2].noLoad = true;
+            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+                KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    dataset.kommune = kommune;
+                    api.getData(dataset, dataLoaded, loadError);
+                });
+            };
+            var raParams = {
+                bbox: true,
+                minZoom: 12,
+                isStatic: false,
+                bboxFunc: sparqlBoox
+            };
+
+            _.extend(list.riksantikvaren, raParams);
+            _.extend(list.ark_hist.datasets[2], raParams);
+
         }
 
         return list;
