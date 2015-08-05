@@ -67,14 +67,19 @@ var pilegrimsledenDovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var circleStyle = {
-    stroke: false,
-    fillColor: '#f00',
-    radius: 10,
-    fillOpacity: 0.8
-};
 
-var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
+var markerFunction = function (position) {
+    return new cilogi.L.Marker(position, {
+        fontIconSize: 2,
+        fontIconName: "\uf05b",
+        altIconName: "\uf05b",
+        fontIconColor: "#FF0000",
+        fontIconFont: 'awesome',
+        opacity: 1
+    });
+}
+
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {markerFunction: markerFunction});
 
 var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_r.kml';
 
@@ -84,3 +89,5 @@ var getLineFunc = function (callback) {
 
 var linemap = new KR.LineMap(api, map, getLineFunc);
 linemap.init(followMap.positionChanged);
+
+KR.SplashScreen(map, 'Gudbrandsdalsleden - guidet tur', $('#description_template').html());

@@ -3,23 +3,80 @@
 /*
     Utility function for setting up an "along line" demonstrator.
 */
-
-L.Control.MiniMap.prototype._onMiniMapMoved =  function () {
-    'use strict';
-    if (!this._mainMapMoving) {
-        this._miniMapMoving = true;
-        this._shadowRect.setStyle({opacity: 0, fillOpacity: 0});
-        if (this.options.moveCallback) {
-            this.options.moveCallback(this._miniMap.getCenter());
-        }
-    } else {
-        this._mainMapMoving = false;
-    }
-};
-
 var KR = this.KR || {};
 KR.LineMap = function (api, map, getLineFunc, options) {
     'use strict';
+
+    var MiniMap = L.Control.MiniMap.extend({
+
+        onAdd: function (map) {
+
+            this._mainMap = map;
+
+            //Creating the container and stopping events from spilling through to the main map.
+            this._container = L.DomUtil.create('div', 'leaflet-control-minimap');
+            this._container.style.width = this.options.width + 'px';
+            this._container.style.height = this.options.height + 'px';
+            L.DomEvent.disableClickPropagation(this._container);
+            L.DomEvent.on(this._container, 'mousewheel', L.DomEvent.stopPropagation);
+
+            this._miniMap = new L.Map(this._container, {
+                attributionControl: false,
+                keyboard: false,
+                zoomControl: false,
+                zoomAnimation: this.options.zoomAnimation,
+                autoToggleDisplay: this.options.autoToggleDisplay,
+                touchZoom: !this.options.zoomLevelFixed,
+                scrollWheelZoom: !this.options.zoomLevelFixed,
+                doubleClickZoom: !this.options.zoomLevelFixed,
+                boxZoom: !this.options.zoomLevelFixed,
+                crs: map.options.crs
+            });
+
+            this._miniMap.addLayer(this._layer);
+
+            //These bools are used to prevent infinite loops of the two maps notifying each other that they've moved.
+            this._mainMapMoving = false;
+            this._miniMapMoving = false;
+
+            //Keep a record of this to prevent auto toggling when the user explicitly doesn't want it.
+            this._userToggledDisplay = false;
+            this._minimized = false;
+
+            if (this.options.toggleDisplay) {
+                this._addToggleButton();
+            }
+
+            this._miniMap.whenReady(L.Util.bind(function () {
+                this._aimingRect = L.rectangle(this._mainMap.getBounds(), this.options.aimingRectOptions).addTo(this._miniMap);
+                this._shadowRect = L.rectangle(this._mainMap.getBounds(), this.options.shadowRectOptions).addTo(this._miniMap);
+                this._mainMap.on('moveend', this._onMainMapMoved, this);
+                this._mainMap.on('move', this._onMainMapMoving, this);
+                this._miniMap.on('movestart', this._onMiniMapMoveStarted, this);
+                this._miniMap.on('move', this._onMiniMapMoving, this);
+                this._miniMap.on('moveend', this._onMiniMapMoved, this);
+            }, this));
+
+            this._miniMap.on('mouseup', function () {
+                if (this.options.moveCallback) {
+                    this.options.moveCallback(this._miniMap.getCenter());
+                }
+            }, this);
+
+            return this._container;
+        },
+
+        _onMiniMapMoved: function () {
+
+            if (!this._mainMapMoving) {
+                this._miniMapMoving = true;
+                this._shadowRect.setStyle({opacity: 0, fillOpacity: 0});
+            } else {
+                this._mainMapMoving = false;
+            }
+        }
+    });
+
 
     options = _.extend({
         scrollLength: 0.6 //km
@@ -111,7 +168,7 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         var layer = new L.TileLayer.Kartverket('topo2graatone');
         var line = L.geoJson(geoJson);
 
-        return new L.Control.MiniMap(L.layerGroup([layer, line]), {
+        return new MiniMap(L.layerGroup([layer, line]), {
             position: 'topright',
             zoomLevelFixed: 8,
             zoomLevelOffset: -6,
