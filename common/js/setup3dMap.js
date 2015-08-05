@@ -157,11 +157,9 @@ var KR = this.KR || {};
                 var props = {
                     template: dataset.template,
                     datasetId: datasetId,
-                    'marker-color': KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true)
+                    'marker-color': KR.Style.colorForFeature({properties: {datasetId: datasetId}}, false)
                 };
-                map.loadDataset2(dataset.dataset, bbox, api, props, function (res) {
-                    map.viewer.dataSources.add(res);
-                });
+                map.loadDataset2(dataset.dataset, bbox, api, props);
             });
 
             map.addClickhandler(function (properties) {
