@@ -11,21 +11,37 @@ var map = L.map('map', {
 L.tileLayer.kartverket('topo2graatone').addTo(map);
 
 
-var api = new KR.API();
+var api = new KR.API({
+    flickr: {
+        apikey: 'ab1f664476dabf83a289735f97a6d56c'
+    }
+});
 
 var datasets = [
-    {
+    /*{
         dataset: {
             api: 'norvegiana',
             dataset: 'difo'
         }
-    }/*,
+    },
     {
-        dataset:{
+        dataset: {
             api: 'norvegiana',
-            dataset: 'MUSIT'
+            dataset: 'Artsdatabanken'
         }
-    }*/
+    },
+    {
+        dataset: {
+            api: 'wikipedia'
+        },
+    },
+    {
+        dataset:  {
+            api: 'flickr',
+            user_id: 'trondheim_byarkiv'
+        }
+    }
+    */
 ];
 
 

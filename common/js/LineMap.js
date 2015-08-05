@@ -6,8 +6,14 @@
 
 L.Control.MiniMap.prototype._onMiniMapMoved =  function () {
     'use strict';
-    if (this.options.moveCallback) {
-        this.options.moveCallback(this._miniMap.getCenter());
+    if (!this._mainMapMoving) {
+        this._miniMapMoving = true;
+        this._shadowRect.setStyle({opacity: 0, fillOpacity: 0});
+        if (this.options.moveCallback) {
+            this.options.moveCallback(this._miniMap.getCenter());
+        }
+    } else {
+        this._mainMapMoving = false;
     }
 };
 
@@ -18,8 +24,6 @@ KR.LineMap = function (api, map, getLineFunc, options) {
     options = _.extend({
         scrollLength: 0.6 //km
     }, options || {});
-
-    var isStarting = true;
 
     function _length(lines) {
         return _.reduce(lines, function (length, line) {
@@ -100,10 +104,50 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         });
     }
 
-    function _setupMove(steps, positionCallback) {
+    function _initMiniMap(position, geoJson, callback) {
+        map.setZoom(15);
+        map.panTo(position);
+
+        var layer = new L.TileLayer.Kartverket('topo2graatone');
+        var line = L.geoJson(geoJson);
+
+        return new L.Control.MiniMap(L.layerGroup([layer, line]), {
+            position: 'topright',
+            zoomLevelFixed: 8,
+            zoomLevelOffset: -6,
+            moveCallback: function (miniMapPos) {
+                callback(turf.point([miniMapPos.lng, miniMapPos.lat]));
+            }
+        }).addTo(map);
+    }
+
+    function _setupMove(steps, positionCallback, geoJson) {
         var index = 0;
+
         var zoomToIndex = _getZoomToIndex(steps, positionCallback);
-        zoomToIndex(index);
+
+        var initPos = L.geoJson(steps[index]).getLayers()[0].getLatLng();
+        positionCallback(initPos);
+
+        function miniMapMoved(miniMapCenter) {
+
+            var distance = Infinity;
+            var closestIndex = -1;
+            _.each(steps, function (step, index) {
+                var dist = turf.distance(miniMapCenter, step);
+                if (dist < distance) {
+                    distance = dist;
+                    closestIndex = index;
+                }
+            });
+
+            if (closestIndex !== index) {
+                index = closestIndex;
+                zoomToIndex(index);
+            }
+        }
+        _initMiniMap(initPos, geoJson, miniMapMoved);
+
 
         function move(delta) {
             if (delta === 1) {
@@ -121,41 +165,6 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         _initHandlers(move);
     }
 
-    function _getMiniMap(geoJson, moveCallback) {
-
-        var layer = new L.TileLayer.Kartverket('topo2graatone');
-        var line = L.geoJson(geoJson);
-
-        return new L.Control.MiniMap(L.layerGroup([layer, line]), {
-            position: 'topright',
-            zoomLevelFixed: 8,
-            zoomLevelOffset: -6,
-            moveCallback: moveCallback
-        }).addTo(map);
-    }
-
-
-    function _initMiniMap(position, geoJson, lines, callback) {
-        map.setZoom(15);
-        map.panTo(position);
-        _getMiniMap(geoJson, function (miniMapPos) {
-            var p = turf.point([miniMapPos.lng, miniMapPos.lat]);
-            var closest = _.chain(lines)
-                .map(function (line) {
-                    return turf.pointOnLine(line, p);
-                })
-                .min(function (point) {
-                    return point.properties.dist;
-                })
-                .value();
-            var closestLatLng = L.latLng(
-                closest.geometry.coordinates[1],
-                closest.geometry.coordinates[0]
-            );
-            callback(closestLatLng);
-        });
-    }
-
     function _initScroll(geoJson, positionCallback) {
         var lines;
         if (geoJson.geometry.type === 'MultiLineString') {
@@ -164,15 +173,7 @@ KR.LineMap = function (api, map, getLineFunc, options) {
             lines = [geoJson];
         }
         var steps = _getSteps(lines, options.scrollLength);
-        _setupMove(steps, function (pos) {
-            if (isStarting) {
-                _initMiniMap(pos, geoJson, lines, function (closest) {
-                    positionCallback(closest);
-                });
-                isStarting = false;
-            }
-            positionCallback(pos);
-        });
+        _setupMove(steps, positionCallback, geoJson);
     }
 
     function init(callback) {

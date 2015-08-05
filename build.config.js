@@ -319,6 +319,8 @@ module.exports = {
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
           'bower_components/Leaflet-MiniMap/dist/Control.MiniMap.min.js',
+          'bower_components/CryptoJS/build/components/core.js',
+          'bower_components/CryptoJS/build/components/md5.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/SidebarContent.js',
           'common/js/L.Knreise.GeoJSON.js',
