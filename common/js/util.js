@@ -169,9 +169,7 @@ KR.Util = KR.Util || {};
     */
     ns.getDatasetId = function (dataset) {
         if (dataset.dataset.api === 'norvegiana') {
-            if (!dataset.dataset.query) {
-                return dataset.dataset.dataset;
-            }
+            return dataset.dataset.dataset;
         }
         if (dataset.dataset.api === 'wikipedia') {
             return 'wikipedia';

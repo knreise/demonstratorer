@@ -229,9 +229,9 @@ module.exports = function (grunt) {
         'file-creator:build-index'
     ]);
     grunt.registerTask('default', [
-        'file-creator:build-experiments',
-        'file-creator:build-experiments-index',
         'concat',
-        'uglify'
+        'uglify',
+        'file-creator:build-experiments',
+        'file-creator:build-experiments-index'
     ]);
 };

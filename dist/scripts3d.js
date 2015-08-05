@@ -220,9 +220,7 @@ KR.Util = KR.Util || {};
     */
     ns.getDatasetId = function (dataset) {
         if (dataset.dataset.api === 'norvegiana') {
-            if (!dataset.dataset.query) {
-                return dataset.dataset.dataset;
-            }
+            return dataset.dataset.dataset;
         }
         if (dataset.dataset.api === 'wikipedia') {
             return 'wikipedia';
@@ -2055,7 +2053,8 @@ KR.Config = KR.Config || {};
                 cluster: true,
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
-                description: 'Digitalt fortalt'
+                description: 'Digitalt fortalt',
+                allowTopic: true
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -2195,12 +2194,21 @@ KR.Config = KR.Config || {};
     };
 
     ns.getDatasets = function (ids, api, komm) {
-
-        var datasetConfig = ns.getDatasetList(api, komm);
+        var datasetList = ns.getDatasetList(api, komm);
         return _.chain(ids)
             .map(function (dataset) {
-                if (_.has(datasetConfig, dataset)) {
-                    return datasetConfig[dataset];
+                var query;
+                if (dataset.indexOf(':') > -1) {
+                    var parts = dataset.split(':');
+                    dataset = parts[0];
+                    query = parts[1];
+                }
+                if (_.has(datasetList, dataset)) {
+                    var datasetConfig = datasetList[dataset];
+                    if (query && datasetConfig.dataset.api === 'norvegiana') {
+                        datasetConfig.dataset.query = 'dc_subject_text:' + query;
+                    }
+                    return datasetConfig;
                 }
             })
             .compact()
