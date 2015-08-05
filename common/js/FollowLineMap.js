@@ -68,6 +68,13 @@ var KR = this.KR || {};
             function datasetLoaded(features) {
                 _.each(features.features, function (feature) {
                     feature.properties.datasetId = id;
+                    feature.template = dataset.template;
+                    if (!feature.properties.provider) {
+                        feature.properties.provider = dataset.provider;
+                    }
+                    if (!feature.properties.contentType) {
+                        feature.properties.contentType = dataset.contentType;
+                    }
                 });
 
                 loadedFunc(features);

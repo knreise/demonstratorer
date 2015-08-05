@@ -1459,6 +1459,10 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             img = img[0];
         }
 
+        if (!feature.properties.images) {
+            feature.properties.images = null;
+        }
+
         if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
             feature.properties.license = feature.properties.allProps.europeana_rights[0];
         } else {

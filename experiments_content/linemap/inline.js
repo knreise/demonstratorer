@@ -34,14 +34,16 @@ var datasets = [
         dataset: {
             api: 'wikipedia'
         },
-    },
+    },*/
     {
         dataset:  {
             api: 'flickr',
             user_id: 'trondheim_byarkiv'
-        }
+        },
+        provider: 'Trondheim byarkiv',
+        contentType: 'IMAGE',
+        template: KR.Util.getDatasetTemplate('flickr'),
     }
-    */
 ];
 
 
@@ -77,10 +79,8 @@ var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: 
 var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_r.kml';
 
 var getLineFunc = function (callback) {
-    //api.getData(pilegrimsledenDovre, callback);
     KR.Util.getLine(api, pilegrimsleden, callback);
 };
 
 var linemap = new KR.LineMap(api, map, getLineFunc);
 linemap.init(followMap.positionChanged);
-

@@ -157,7 +157,7 @@ var KR = this.KR || {};
                     icon: KR.Util.iconForContentType(feature.feature),
                     distance: _formatDistance(feature.feature.properties.distance) || null,
                     minimal: options.minimal,
-                    color: KR.Util.colorForProvider(feature.feature.properties.provider, 'hex')
+                    color: KR.Style.colorForFeature(feature.feature, true)
                 }
             );
 
