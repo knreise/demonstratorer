@@ -79,6 +79,9 @@
                 <p class="list-group-item-text">
                     <%= description %>
                 </p>
+                <% if (allowTopic) { %>
+                    <input id="<%= key %>-topic" class="form-control" type="text" placeholder="emneord" disabled="disabled">
+                <% } %>
             </li>
         </script>
 
