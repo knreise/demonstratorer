@@ -175,7 +175,7 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
     function addMarkers(markers) {
         return _.map(markers, function (marker) {
             var cmarker =  {
-                position: Cesium.Cartesian3.fromDegrees(marker.pos.lng, marker.pos.lat, 80),
+                position: Cesium.Cartesian3.fromDegrees(marker.pos.lng, marker.pos.lat, marker.pos.height || 80),
                 billboard: {
                     image: marker.icon,
                     show: true, // default
@@ -190,7 +190,8 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                     outlineWidth: 2,
                     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                     pixelOffset: new Cesium.Cartesian2(0, 32)
-                }
+                },
+                properties: marker.properties
             };
             viewer.entities.add(cmarker);
             return cmarker;
@@ -241,6 +242,7 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                 //Update the collection of picked entities.
                 pickedEntities.removeAll();
                 var objects = _.map(pickedObjects, function (pickedObj) {
+                    console.log(pickedObj);
                     var entity = pickedObj.id;
                     pickedEntities.add(entity);
                     return entity.properties;
@@ -267,8 +269,20 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                 feature.properties = _.extend(feature.properties, extraProps);
             });
             _getHeightsForGeoJsonPoints(res, function (data) {
-                var dataSource = Cesium.GeoJsonDataSource.load(data);
-                callback(dataSource);
+                var markers = _.map(data.features, function (feature) {
+                    var colorName = feature.properties['marker-color'] || 'blue';
+                    return {
+                        pos: {
+                            lat: feature.geometry.coordinates[1],
+                            lng: feature.geometry.coordinates[0],
+                            height: feature.geometry.coordinates[2]
+                        },
+                        icon: '../common/img/markers/' + colorName + '.png',
+                        properties: feature.properties
+                    };
+                });
+
+                addMarkers(markers);
             });
         });
     }
