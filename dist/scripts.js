@@ -2966,8 +2966,9 @@ var KR = this.KR || {};
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
-
-            L.control.datasets(layers).addTo(map);
+            if (datasets.length > 1) {
+                L.control.datasets(layers).addTo(map);
+            }
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }
