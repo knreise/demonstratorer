@@ -25,6 +25,7 @@ var KR = this.KR || {};
             }
         );
 
+
         var markerLayer = L.Knreise.geoJson().addTo(map);
 
         markerLayer.on('click', function (e) {
@@ -36,6 +37,7 @@ var KR = this.KR || {};
 
         function _gotFeatures(features) {
             markerLayer.clearLayers().addData(features);
+
             previewStrip.showFeatures(markerLayer.getLayers());
             if (!features.features.length) {
                 previewStrip.showMessage('<em>Ingen funnet!</em>');
@@ -45,15 +47,21 @@ var KR = this.KR || {};
         var marker;
         function _updateMarker(position) {
             if (!marker) {
-                if (options.circleStyle) {
+                if (options.markerFunction) {
+                    marker = options.markerFunction(position);
+                    marker.addTo(map);
+                    marker.setZIndexOffset(1000);
+                } else if (options.circleStyle) {
                     marker = L.circleMarker(
                         position,
                         options.circleStyle
                     ).addTo(map);
                 } else if (options.icon) {
-                    marker = L.marker(position, {icon: options.icon}).addTo(map);
+                    marker = L.marker(position, {icon: options.icon});
+                    marker.setZIndexOffset(1000);
                 } else {
-                    marker = L.marker(position).addTo(map);
+                    marker = L.marker(position).addTo(map)
+                    marker.setZIndexOffset(1000);
                 }
             } else {
                 marker.setLatLng(position);

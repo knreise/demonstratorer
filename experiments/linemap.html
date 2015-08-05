@@ -12,6 +12,7 @@
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
         <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
         <link href='../bower_components/Leaflet-MiniMap/dist/Control.MiniMap.min.css' rel='stylesheet' />
+        <link href='../bower_components/cilogi-marker/dist/cilogi-marker.css' rel='stylesheet' />
         <link href='../common/css/L.Knreise.Control.Sidebar.css' rel='stylesheet' />
         <link href='../common/css/L.Knreise.Control.Datasets.css' rel='stylesheet' />
         <link href='../common/css/fullscreenmap.css' rel='stylesheet' />
@@ -565,6 +566,7 @@
         <script src="../bower_components/CryptoJS/build/components/core.js" type="text/javascript"></script>
         <script src="../bower_components/CryptoJS/build/components/md5.js" type="text/javascript"></script>
         <script src="../bower_components/L.EasyButton/easy-button.js" type="text/javascript"></script>
+        <script src="../bower_components/cilogi-marker/dist/cilogi-marker.min.js" type="text/javascript"></script>
         <script src="../common/js/SplashScreen.js" type="text/javascript"></script>
         <script src="../common/js/L.Knreise.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../common/js/SidebarContent.js" type="text/javascript"></script>
@@ -648,14 +650,19 @@ var pilegrimsledenDovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var circleStyle = {
-    stroke: false,
-    fillColor: '#f00',
-    radius: 10,
-    fillOpacity: 0.8
-};
 
-var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
+var markerFunction = function (position) {
+    return new cilogi.L.Marker(position, {
+        fontIconSize: 2,
+        fontIconName: "\uf05b",
+        altIconName: "\uf05b",
+        fontIconColor: "#FF0000",
+        fontIconFont: 'awesome',
+        opacity: 1
+    });
+}
+
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {markerFunction: markerFunction});
 
 var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_r.kml';
 
