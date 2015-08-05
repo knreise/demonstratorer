@@ -18,7 +18,7 @@ var api = new KR.API({
 });
 
 var datasets = [
-    /*{
+    {
         dataset: {
             api: 'norvegiana',
             dataset: 'difo'
@@ -34,7 +34,7 @@ var datasets = [
         dataset: {
             api: 'wikipedia'
         },
-    },*/
+    },
     {
         dataset:  {
             api: 'flickr',
