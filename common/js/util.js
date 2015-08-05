@@ -302,4 +302,20 @@ KR.Util = KR.Util || {};
         };
     };
 
+    ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
+        var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
+        var query = 'SELECT komm FROM kommuner WHERE ' +
+        'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
+        'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
+
+        var dataset = {
+            'api': 'cartodb',
+            'query': query,
+            'mapper': function (res) {
+                return res.rows[0].komm;
+            }
+        };
+        api.getData(dataset, callback);
+    };
+
 }(KR.Util));
