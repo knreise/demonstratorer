@@ -72,7 +72,6 @@ var KR = this.KR || {};
 
                 loadedFunc(features);
             }
-
             api.getBbox(
                 dataset.dataset,
                 bbox,

@@ -40,13 +40,31 @@ KR.AlongLine = function (api, getLineFunc) {
         });
     }
 
+    function getCoordinates(feature) {
+        if (feature.geometry.type === 'MultiLineString') {
+            return feature.geometry.coordinates;
+        }
+        if (feature.geometry.type === 'LineString') {
+            return [feature.geometry.coordinates];
+        }
+    }
+
     function getLine(callback) {
 
         getLineFunc(function (geoJson) {
 
-            var coordinates = _.map(geoJson.features, function (feature) {
-                return feature.geometry.coordinates;
+            geoJson = _.map(geoJson.features, function (feature) {
+                if (feature.geometry.type === 'GeometryCollection') {
+                    return _.map(feature.geometry.geometries, function (geom) {
+                        return KR.Util.createGeoJSONFeatureFromGeom(geom);
+                    });
+                }
+                return feature;
             });
+            geoJson = KR.Util.createFeatureCollection(_.flatten(geoJson));
+
+            var coordinates = _.map(geoJson.features, getCoordinates);
+            coordinates = _.compact(coordinates);
 
             var feature = {
                 type: 'Feature',
@@ -55,7 +73,6 @@ KR.AlongLine = function (api, getLineFunc) {
                     coordinates: _.flatten(coordinates, true)
                 }
             };
-
             line = L.geoJson(feature);
 
             var s = _.min(line.getLayers(), function (layer) {
@@ -71,17 +88,32 @@ KR.AlongLine = function (api, getLineFunc) {
                 return latLng.lat;
             });
 
-            var bufferFeatures = _.map(geoJson.features, function (feature) {
+            function doBuffer(feature) {
                 feature = {
                     type: 'Feature',
                     geometry: {
                         type: 'LineString',
-                        coordinates: feature.geometry.coordinates[0]
+                        coordinates: feature.geometry.coordinates
                     }
                 };
                 return turf.buffer(turf.simplify(feature, 0.001, false), 1, 'kilometers').features[0];
-            });
+            }
 
+            var bufferFeatures = _.map(geoJson.features, function (feature) {
+                if (feature.geometry.type === 'LineString') {
+                    return doBuffer(feature);
+                }
+                return _.map(getCoordinates(feature), function (coords) {
+                    return doBuffer({
+                        type: 'Feature',
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: coords
+                        }
+                    });
+                });
+            });
+            bufferFeatures = _.flatten(bufferFeatures);
             buffer = turf.merge({
                 'type': 'FeatureCollection',
                 'features': bufferFeatures

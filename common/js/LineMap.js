@@ -133,8 +133,6 @@ KR.LineMap = function (api, map, getLineFunc, options) {
             L.geoJson(geoJson).addTo(map);
             _initScroll(map, geoJson.features[0], callback);
         });
-
-
     }
 
     return {

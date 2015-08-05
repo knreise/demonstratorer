@@ -312,6 +312,7 @@ module.exports = {
         scripts: [
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
+          'bower_components/togeojson/togeojson.js',
           'common/js/L.Knreise.GeoJSON.js',
           'common/js/PreviewStrip.js',
           'bower_components/turf/turf.min.js',

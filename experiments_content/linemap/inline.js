@@ -18,13 +18,13 @@ var datasets = [
             api: 'norvegiana',
             dataset: 'difo'
         }
-    },
+    }/*,
     {
         dataset:{
             api: 'norvegiana',
             dataset: 'MUSIT'
         }
-    }
+    }*/
 ];
 
 
@@ -57,8 +57,11 @@ var circleStyle = {
 
 var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
 
+var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_r.kml';
+
 var getLineFunc = function (callback) {
-    api.getData(pilegrimsledenDovre, callback);
+    //api.getData(pilegrimsledenDovre, callback);
+    KR.Util.getLine(api, pilegrimsleden, callback);
 };
 
 var linemap = new KR.LineMap(api, map, getLineFunc);
