@@ -473,9 +473,27 @@ KR.NorvegianaAPI = function () {
             .value();
     }
 
+    function _fixThumbnail(imageLink) {
+        var thumbSize = 75; //px
+
+        if (!imageLink) {
+            return imageLink;
+        }
+
+        if (imageLink.indexOf('width=') > -1 && imageLink.indexOf('height=') > -1) {
+            return imageLink
+                .replace(/(width=)(\d+)/g, '$1' + thumbSize)
+                .replace(/(height=)(\d+)/g, '$1' + thumbSize);
+        }
+        return imageLink;
+    }
+
     function _createProperties(allProperties) {
+
+        var thumbUrl = _firstOrNull(allProperties.delving_thumbnail);
+
         return {
-            thumbnail: _firstOrNull(allProperties.delving_thumbnail),
+            thumbnail: _fixThumbnail(thumbUrl),
             images: allProperties.delving_thumbnail,
             title: _firstOrNull(allProperties.dc_title),
             content: _firstOrNull(allProperties.dc_description),
@@ -1000,7 +1018,6 @@ KR.SparqlAPI = function (BASE_URL) {
             if (!attrs.img) {
                 attrs.img = false;
             }
-            attrs.thumbnail = attrs.img;
             attrs.title = attrs.name;
 
             if (_.has(item, 'point')) {
@@ -1050,7 +1067,7 @@ KR.SparqlAPI = function (BASE_URL) {
             return;
         }
 
-        var query = 'select distinct ?id ?name ?description ?loccatlabel ?img (SAMPLE(?point) as ?point)  {' +
+        var query = 'select distinct ?id ?name ?description ?loccatlabel ?img ?thumbnail (SAMPLE(?point) as ?point)  {' +
             ' ?id a ?type ;' +
             ' rdfs:label ?name ;' +
             ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
@@ -1063,8 +1080,44 @@ KR.SparqlAPI = function (BASE_URL) {
             '  ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
             '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
             '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
             ' }' +
             '}';
+        if (dataset.limit) {
+            query += 'LIMIT ' + dataset.limit;
+        }
+        return query;
+    }
+
+    function _createFylkeQuery(dataset) {
+
+        if (!dataset.fylke) {
+            return;
+        }
+
+        var fylke = parseInt(dataset.fylke, 10);
+        if (fylke < 10) {
+            fylke = '0' + fylke;
+        }
+
+        var query = 'select  ?id ?name ?description ?loklab as ?loccatlabel ?point ?img ?thumbnail {' +
+            ' ?id a ?type .' +
+            ' ?id rdfs:label ?name .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori .' +
+            ' ?lokalitetskategori rdfs:label ?loklab .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
+            ' optional {' +
+            '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+            '  ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
+            '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
+            ' }' +
+            ' FILTER regex(?kommune, "^.*' + fylke + '[1-9]{2}") .' +
+            '} order by ?img';
+
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
         }
@@ -1084,7 +1137,7 @@ KR.SparqlAPI = function (BASE_URL) {
         if (_.isArray(dataset.lokalitet)) {
             lokalitet = dataset.lokalitet;
         } else {
-            lokalitet.push(dataset.lokalitet)
+            lokalitet.push(dataset.lokalitet);
         }
 
 
@@ -1108,6 +1161,9 @@ KR.SparqlAPI = function (BASE_URL) {
         if (dataset.kommune) {
             var query = _createKommuneQuery(dataset, errorCallback);
             _sendQuery(query, _parseResponse, callback, errorCallback);
+        } else if (dataset.fylke) {
+            var query = _createFylkeQuery(dataset, errorCallback);
+            _sendQuery(query, _parseResponse, callback, errorCallback);
         } else if (dataset.lokalitet && dataset.type === 'lokalitetpoly') {
             _polyForLokalitet(dataset, callback, errorCallback);
         } else {
@@ -1119,6 +1175,7 @@ KR.SparqlAPI = function (BASE_URL) {
         getData: getData
     };
 };
+
 /*global */
 
 var KR = this.KR || {};
