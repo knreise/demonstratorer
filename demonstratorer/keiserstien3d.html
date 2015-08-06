@@ -23,7 +23,7 @@
             <a class="navbar-brand pull-left" rel="home" href="#" title="Folgefonna" style="padding-top: 0px;">
                 <img src="../common/img/Kulturradet_simple.png" class="navbar-logo"></img>
             </a>
-            <p class="navbar-text" id="page_title"></p>
+            <p class="navbar-text">Keiserstien 3D</p>
             <button id="playpause" type="button" class="btn btn-default navbar-btn hidden">
                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
             </button>
@@ -454,9 +454,6 @@
 
 </script>
 
-
-
-
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
@@ -477,19 +474,24 @@
         <script src="../dist/scripts3d.min.js" type="text/javascript"></script>
         <script type="text/javascript">
             (function () {
-    'use strict';
-    var qs = KR.Util.parseQueryString(window.location.search);
-    if (!qs) {
-        alert("Missing parameters!");
-        return;
-    }
+                'use strict';
 
-    if (qs.title) {
-        $('#page_title').text(qs.title);
-    }
-    var api = new KR.API();
-    KR.setupMap3d(api, qs.datasets.split(','), qs);
-}());
+                var config = {
+                    line: 'utno/2.8158',
+                    layer: 'nib',
+                    terrainUrl: 'http://knreise.no/terrain/terrain.php?tile=',
+                    enableLighting: false
+                };
+
+                var datasets = [
+                    'difo',
+                    'ark_hist',
+                    'wikipedia'
+                ];
+
+                var api = new KR.API();
+                KR.setupMap3d(api, datasets, config);
+            }());
 
         </script>
     </body>
