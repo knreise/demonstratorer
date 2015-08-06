@@ -2211,6 +2211,20 @@ KR.Config = KR.Config || {};
                     count: 5,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
+            },
+            'lokalwiki': {
+                id: 'lokalwiki',
+                name: 'Lokalhistoriewiki',
+                hideFromGenerator: true,
+                provider: 'Lokalhistoriewiki',
+                dataset: {
+                    api: 'lokalhistoriewiki'
+                },
+                style: {thumbnail: true},
+                minZoom: 13
+                //template: KR.Util.getDatasetTemplate('ra_sparql'),
+                //bbox: false,
+                //isStatic: true,
             }
         };
         if (!komm) {
