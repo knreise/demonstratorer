@@ -2417,7 +2417,7 @@ KR.Config = KR.Config || {};
         };
     };
 
-    ns.getDatasetList = function (api, komm) {
+    ns.getDatasetList = function (api, komm, fylke) {
 
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
         if (komm && komm.length === 3) {
@@ -2531,7 +2531,8 @@ KR.Config = KR.Config || {};
                         provider: 'Riksantikvaren',
                         dataset: {
                             api: 'kulturminnedataSparql',
-                            kommune: komm
+                            kommune: komm,
+                            fylke: fylke
                         },
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
@@ -2552,7 +2553,8 @@ KR.Config = KR.Config || {};
                 provider: 'Riksantikvaren',
                 dataset: {
                     api: 'kulturminnedataSparql',
-                    kommune: komm
+                    kommune: komm,
+                    fylke: fylke
                 },
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
@@ -2564,7 +2566,8 @@ KR.Config = KR.Config || {};
                 }
             }
         };
-        if (!komm) {
+
+        if (!komm && !fylke) {
             var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
                     dataset.kommune = kommune;
@@ -2586,8 +2589,8 @@ KR.Config = KR.Config || {};
         return list;
     };
 
-    ns.getDatasets = function (ids, api, komm) {
-        var datasetList = ns.getDatasetList(api, komm);
+    ns.getDatasets = function (ids, api, komm, fylke) {
+        var datasetList = ns.getDatasetList(api, komm, fylke);
         return _.chain(ids)
             .map(function (dataset) {
                 var query;
@@ -2803,9 +2806,9 @@ var KR = this.KR || {};
         return map;
     }
 
-    function _loadDatasets(api, datasets, fromUrl, komm) {
+    function _loadDatasets(api, datasets, fromUrl, komm, fylke) {
         if (fromUrl) {
-            datasets = KR.Config.getDatasets(datasets, api, komm);
+            datasets = KR.Config.getDatasets(datasets, api, komm, fylke);
         }
         return datasets;
     }
@@ -2868,7 +2871,7 @@ var KR = this.KR || {};
     }
 
     function _countyHandler(options, api, datasets, fromUrl, callback) {
-        datasets = _loadDatasets(api, datasets, fromUrl);
+        datasets = _loadDatasets(api, datasets, fromUrl, null, options.fylke);
         _getloader(
             options,
             api,

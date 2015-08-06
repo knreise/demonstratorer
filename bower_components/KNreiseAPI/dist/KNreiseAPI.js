@@ -1071,6 +1071,40 @@ KR.SparqlAPI = function (BASE_URL) {
         return query;
     }
 
+    function _createFylkeQuery(dataset) {
+
+        if (!dataset.fylke) {
+            return;
+        }
+
+        var fylke = parseInt(dataset.fylke, 10);
+        if (fylke < 10) {
+            fylke = '0' + fylke;
+        }
+
+        var query = 'select  ?id ?name ?description ?loklab as ?loccatlabel ?point ?img {' +
+            ' ?id a ?type .' +
+            ' ?id rdfs:label ?name .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori .' +
+            ' ?lokalitetskategori rdfs:label ?loklab .' +
+            ' ?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
+            ' optional {' +
+            ' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+            ' ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
+            ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+            ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+            ' }' +
+            ' FILTER regex(?kommune, "^.*' + fylke + '[1-9]{2}") .' +
+            '} order by ?img'
+
+        if (dataset.limit) {
+            query += 'LIMIT ' + dataset.limit;
+        }
+        return query;
+    }
+
     function _polyForLokalitetQuery(lokalitet) {
         return 'SELECT ?lok where ' +
             '{ ' +
@@ -1107,6 +1141,9 @@ KR.SparqlAPI = function (BASE_URL) {
         dataset = _.extend({}, {geomType: 'point'}, dataset);
         if (dataset.kommune) {
             var query = _createKommuneQuery(dataset, errorCallback);
+            _sendQuery(query, _parseResponse, callback, errorCallback);
+        }  else if (dataset.fylke) {
+            var query = _createFylkeQuery(dataset, errorCallback);
             _sendQuery(query, _parseResponse, callback, errorCallback);
         } else if (dataset.lokalitet && dataset.type === 'lokalitetpoly') {
             _polyForLokalitet(dataset, callback, errorCallback);
