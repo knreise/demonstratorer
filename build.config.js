@@ -171,7 +171,7 @@ module.exports = {
       id: 'keiserstien3d',
       name: 'Keiserstien 3D',
       description: 'Samarbeid med DNT og Riksantikvaren om å velge ut en av de rutene de arbeider med. Visning av data for en utvalgt historisk vandrerute og utvalgte data fra aktuelle kilder i nærheten av denne.',
-      url: 'demonstratorer/config_3d.html?datasets=difo%2Cark_hist%2Cwikipedia&line=utno%2F2.8158&layer=nib'
+      url: 'demonstratorer/keiserstien3d.html'
     },
     {
       id: 'kjaerlighetsstien',
