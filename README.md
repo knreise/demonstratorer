@@ -43,10 +43,21 @@ Mye av dokumentasjonen er inline-kode-kommentarer.
 [howto]: https://github.com/knreise/demonstratorer/blob/master/howto.md
 [api_doc]: https://github.com/knreise/demonstratorer/blob/master/api_doc.md
 
-Bygging
--------
-Koden under mappa ```demonstratorer``` er pre-generert med grunt. Installer 
-grunt (```npm install```) og kjør ```grunt``` for å bygge på nytt etter å ha 
-endret build.config.js eller filer i ```demonstrator_content/```
 
-For å kontinuerlig bygge på nytt når du endrer, kjør ```grunt watch```.
+Development - getting started
+-----------------------------
+1. Install nodejs with npm (refer to proper docs for your os, see)
+2. Install bower: ```npm install -g bower```
+3. Install grunt: ```npm install -g grunt-cli```
+4. Clone the project (```git clone https://github.com/knreise/demonstratorer.git```)
+5. Run ```npm install to set up stuff```
+6. All bower packages are pre-installed
+7. There are three grunt targets that can be run
+    - the default (```grunt```) builds all javascript and the example pages
+    - the demos target (```grunt demos```) builds all demonstrators, and index page
+    - the watch target (```grunt watch```) re-runs the default target when things change
+8. For some of the demonstrators to work, a locally running webserver is required, I've used python:
+    - (cd to root of project): ```python -m SimpleHTTPServer
+    - The project is now available at localhost:8000
+
+
