@@ -14,6 +14,7 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             timeline: false,
             baseLayerPicker: false,
             geocoder: false,
+            enableLighting: true,
             infoBox: false,
             animation: false,
             orderIndependentTranslucency: false
@@ -22,10 +23,11 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
 
     var viewer;
 
-    function _getTerrainProvider() {
+    function _getTerrainProvider(url) {
+        url = url || '//assets.agi.com/stk-terrain/world';
         return new Cesium.CesiumTerrainProvider({
-            url : '//assets.agi.com/stk-terrain/world',
-            requestVertexNormals : true,
+            url: url,
+            requestVertexNormals: true,
             requestWaterMask: false
         });
     }
@@ -65,14 +67,16 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
         scene.imageryLayers.removeAll();
         var globe = scene.globe;
 
-        // Will use local time to estimate actual daylight 
-        globe.enableLighting = true;
+        // Will use local time to estimate actual daylight
+        if (config.cesiumViewerOpts.enableLighting) {
+            globe.enableLighting = true;
+        }
 
         // Depth test: If this isn't on, objects will be visible through the terrain.
         globe.depthTestAgainstTerrain = true;
 
         // Add the terrain provider (AGI)
-        viewer.terrainProvider = _getTerrainProvider();
+        viewer.terrainProvider = _getTerrainProvider(config.cesiumViewerOpts.terrainUrl);
 
         var camera = scene.camera;
 

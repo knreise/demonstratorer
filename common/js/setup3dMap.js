@@ -149,7 +149,11 @@ var KR = this.KR || {};
         function _createMap(div, bbox) {
             return new KR.CesiumMap(
                 div,
-                _.extend(CESIUM_OPTS, {limitBounds: options.limitBounds}),
+                _.extend(CESIUM_OPTS, {
+                    limitBounds: options.limitBounds,
+                    terrainUrl: options.terrainUrl,
+                    enableLighting: options.enableLighting
+                }),
                 bbox
             );
         }
