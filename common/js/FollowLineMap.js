@@ -60,7 +60,7 @@ var KR = this.KR || {};
                     marker = L.marker(position, {icon: options.icon});
                     marker.setZIndexOffset(1000);
                 } else {
-                    marker = L.marker(position).addTo(map)
+                    marker = L.marker(position).addTo(map);
                     marker.setZIndexOffset(1000);
                 }
             } else {
@@ -87,13 +87,24 @@ var KR = this.KR || {};
 
                 loadedFunc(features);
             }
-            api.getBbox(
-                dataset.dataset,
-                bbox,
-                datasetLoaded,
-                errorCallback,
-                {allPages: true}
-            );
+
+            if (dataset.bboxFunc) {
+                dataset.bboxFunc(
+                    api,
+                    dataset.dataset,
+                    bbox,
+                    datasetLoaded,
+                    errorCallback
+                );
+            } else {
+                api.getBbox(
+                    dataset.dataset,
+                    bbox,
+                    datasetLoaded,
+                    errorCallback,
+                    {allPages: false}
+                );
+            }
         }
 
         function positionChanged(position) {

@@ -150,6 +150,16 @@ var KR = this.KR || {};
                 feature.feature.properties = feature.dataset.panelMap(feature.feature.properties);
             }
 
+
+            //hacks for riksantikvaren SPARQL
+            if (feature.feature.properties.img) {
+                feature.feature.properties.image = feature.feature.properties.img;
+                feature.feature.properties.contentType = 'IMAGE';
+            } else if (feature.feature.properties.description) {
+                feature.feature.properties.content = feature.feature.properties.description;
+                feature.feature.properties.contentType = 'TEXT';
+            }
+
             var data = _.extend(
                 {},
                 feature.feature.properties,
@@ -170,6 +180,7 @@ var KR = this.KR || {};
             } else if (!data.image) {
                 data.image = null;
             }
+
             var el = $(panelTemplate(data));
             el.on('click', function () {
                 feature.fire('click');

@@ -323,6 +323,8 @@ module.exports = {
           'bower_components/CryptoJS/build/components/md5.js',
           'bower_components/L.EasyButton/easy-button.js',
           'bower_components/cilogi-marker/dist/cilogi-marker.min.js',
+          'bower_components/wellknown/wellknown.js',
+          'bower_components/proj4/dist/proj4.js',
           'common/js/SplashScreen.js',
           'common/js/L.Knreise.Control.Sidebar.js',
           'common/js/SidebarContent.js',

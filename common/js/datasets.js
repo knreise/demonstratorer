@@ -216,7 +216,7 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: sparqlBoox
+                bboxFunc: KR.Util.sparqlBbox
             };
 
             _.extend(list.riksantikvaren, raParams);

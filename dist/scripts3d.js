@@ -369,6 +369,13 @@ KR.Util = KR.Util || {};
         api.getData(dataset, callback);
     };
 
+    ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
+        KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+            dataset.kommune = kommune;
+            api.getData(dataset, dataLoaded, loadError);
+        });
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -2231,7 +2238,7 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: sparqlBoox
+                bboxFunc: KR.Util.sparqlBbox
             };
 
             _.extend(list.riksantikvaren, raParams);
