@@ -152,8 +152,8 @@ module.exports = {
     {
       id: 'telemark',
       name: 'Telemark',
-      description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
-      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Cark_hist&fylke=8&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
+      description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.'//,
+      //url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Cark_hist&fylke=8&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
     },
     {
       id: 'dovre',
