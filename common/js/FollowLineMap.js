@@ -35,13 +35,22 @@ var KR = this.KR || {};
             }
         });
 
-        function _gotFeatures(features) {
+        function _gotFeatures(features, position) {
+
+            features = KR.Util.distanceAndSort(features, turf.point([position.lng, position.lat]));
+
+            if (features.features.length > 200) {
+                features = KR.Util.createFeatureCollection(_.first(features.features, 200));
+            }
+            console.log(features.features.length);
+
             markerLayer.clearLayers().addData(features);
 
             previewStrip.showFeatures(markerLayer.getLayers());
             if (!features.features.length) {
                 previewStrip.showMessage('<em>Ingen funnet!</em>');
             }
+
         }
 
         var marker;
@@ -117,7 +126,7 @@ var KR = this.KR || {};
 
             var found = [];
             var featuresLoaded = _.after(datasets.length, function () {
-                _gotFeatures(KR.Util.createFeatureCollection(found));
+                _gotFeatures(KR.Util.createFeatureCollection(found), position);
             });
 
             function errorCallback() {

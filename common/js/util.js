@@ -325,4 +325,22 @@ KR.Util = KR.Util || {};
         });
     };
 
+
+    ns.distanceAndSort = function (featurecollection, point) {
+
+        var measured = _.map(featurecollection.features, function (feature) {
+            feature.properties.distance = turf.distance(point, feature);
+            return feature;
+        });
+        return turf.featurecollection(measured.sort(function (a, b) {
+            if (a.properties.distance < b.properties.distance) {
+                return -1;
+            }
+            if (a.properties.distance > b.properties.distance) {
+                return 1;
+            }
+            return 0;
+        }));
+    }
+
 }(KR.Util));

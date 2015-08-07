@@ -19,6 +19,7 @@ var api = new KR.API({
 
 var datasets = [
     {
+        provider: 'Riksantikvaren',
         dataset: {
             api: 'kulturminnedataSparql'
         },
