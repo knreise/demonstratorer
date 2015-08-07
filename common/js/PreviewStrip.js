@@ -161,6 +161,15 @@ var KR = this.KR || {};
                 }
             );
 
+            if (data.images) {
+                if (_.isArray(data.images)) {
+                    data.image = data.images[0];
+                } else {
+                    data.image = data.images;
+                }
+            } else if (!data.image) {
+                data.image = null;
+            }
             var el = $(panelTemplate(data));
             el.on('click', function () {
                 feature.fire('click');
