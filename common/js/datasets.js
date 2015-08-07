@@ -55,7 +55,7 @@ KR.Config = KR.Config || {};
         };
     };
 
-    ns.getDatasetList = function (api, komm) {
+    ns.getDatasetList = function (api, komm, fylke) {
 
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
         if (komm && komm.length === 3) {
@@ -169,7 +169,8 @@ KR.Config = KR.Config || {};
                         provider: 'Riksantikvaren',
                         dataset: {
                             api: 'kulturminnedataSparql',
-                            kommune: komm
+                            kommune: komm,
+                            fylke: fylke
                         },
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
@@ -190,7 +191,8 @@ KR.Config = KR.Config || {};
                 provider: 'Riksantikvaren',
                 dataset: {
                     api: 'kulturminnedataSparql',
-                    kommune: komm
+                    kommune: komm,
+                    fylke: fylke
                 },
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
@@ -202,15 +204,31 @@ KR.Config = KR.Config || {};
                 }
             }
         };
-        if (!komm) {
-            list.ark_hist.datasets[2].noLoad = true;
+
+        if (!komm && !fylke) {
+            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+                KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    dataset.kommune = kommune;
+                    api.getData(dataset, dataLoaded, loadError);
+                });
+            };
+            var raParams = {
+                bbox: true,
+                minZoom: 12,
+                isStatic: false,
+                bboxFunc: sparqlBoox
+            };
+
+            _.extend(list.riksantikvaren, raParams);
+            _.extend(list.ark_hist.datasets[2], raParams);
+
         }
 
         return list;
     };
 
-    ns.getDatasets = function (ids, api, komm) {
-        var datasetList = ns.getDatasetList(api, komm);
+    ns.getDatasets = function (ids, api, komm, fylke) {
+        var datasetList = ns.getDatasetList(api, komm, fylke);
         return _.chain(ids)
             .map(function (dataset) {
                 var query;

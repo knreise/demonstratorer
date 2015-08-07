@@ -5,6 +5,10 @@
         alert("Missing parameters!");
         return;
     }
+
+    if (qs.title) {
+        $('#page_title').text(qs.title);
+    }
     var api = new KR.API();
     KR.setupMap3d(api, qs.datasets.split(','), qs);
 }());

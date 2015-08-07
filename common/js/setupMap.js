@@ -78,9 +78,9 @@ var KR = this.KR || {};
         return map;
     }
 
-    function _loadDatasets(api, datasets, fromUrl, komm) {
+    function _loadDatasets(api, datasets, fromUrl, komm, fylke) {
         if (fromUrl) {
-            datasets = KR.Config.getDatasets(datasets, api, komm);
+            datasets = KR.Config.getDatasets(datasets, api, komm, fylke);
         }
         return datasets;
     }
@@ -143,7 +143,7 @@ var KR = this.KR || {};
     }
 
     function _countyHandler(options, api, datasets, fromUrl, callback) {
-        datasets = _loadDatasets(api, datasets, fromUrl);
+        datasets = _loadDatasets(api, datasets, fromUrl, null, options.fylke);
         _getloader(
             options,
             api,
@@ -241,8 +241,9 @@ var KR = this.KR || {};
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
-
-            L.control.datasets(layers).addTo(map);
+            if (datasets.length > 1) {
+                L.control.datasets(layers).addTo(map);
+            }
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }

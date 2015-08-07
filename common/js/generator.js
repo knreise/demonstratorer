@@ -252,7 +252,7 @@ var KR = this.KR || {};
                     .map(function (checkbox) {
                         var value = $(checkbox).val();
                         var input = $(checkbox).parent().parent().find(':text')
-                        if (input && input.val() !== '') {
+                        if (input && input.val() && input.val() !== '') {
                             value += ':' + input.val();
                         }
                         

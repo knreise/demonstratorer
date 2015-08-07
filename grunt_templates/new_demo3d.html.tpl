@@ -17,7 +17,7 @@
             <a class="navbar-brand pull-left" rel="home" href="#" title="Folgefonna" style="padding-top: 0px;">
                 <img src="../common/img/Kulturradet_simple.png" class="navbar-logo"></img>
             </a>
-            <p class="navbar-text"></p>
+            <p class="navbar-text" id="page_title"></p>
             <button id="playpause" type="button" class="btn btn-default navbar-btn hidden">
                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
             </button>

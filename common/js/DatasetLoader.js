@@ -322,12 +322,23 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
                 //load according to strategy
                 if (dataset.bbox) {
-                    api.getBbox(
-                        dataset.dataset,
-                        newBounds,
-                        dataLoaded,
-                        loadError
-                    );
+                    //hack for riksantikvaren
+                    if (dataset.bboxFunc) {
+                        dataset.bboxFunc(
+                            api,
+                            dataset.dataset,
+                            newBounds,
+                            dataLoaded,
+                            loadError
+                        );
+                    } else {
+                        api.getBbox(
+                            dataset.dataset,
+                            newBounds,
+                            dataLoaded,
+                            loadError
+                        );
+                    }
                 } else {
                     api.getData(
                         dataset.dataset,
