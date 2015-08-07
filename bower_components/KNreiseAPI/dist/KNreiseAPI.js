@@ -473,9 +473,27 @@ KR.NorvegianaAPI = function () {
             .value();
     }
 
+    function _fixThumbnail(imageLink) {
+        var thumbSize = 75; //px
+
+        if (!imageLink) {
+            return imageLink;
+        }
+
+        if (imageLink.indexOf('width=') > -1 && imageLink.indexOf('height=') > -1) {
+            return imageLink
+                .replace(/(width=)(\d+)/g, '$1' + thumbSize)
+                .replace(/(height=)(\d+)/g, '$1' + thumbSize);
+        }
+        return imageLink;
+    }
+
     function _createProperties(allProperties) {
+
+        var thumbUrl = _firstOrNull(allProperties.delving_thumbnail);
+
         return {
-            thumbnail: _firstOrNull(allProperties.delving_thumbnail),
+            thumbnail: _fixThumbnail(thumbUrl),
             images: allProperties.delving_thumbnail,
             title: _firstOrNull(allProperties.dc_title),
             content: _firstOrNull(allProperties.dc_description),
@@ -659,12 +677,9 @@ KR.NorvegianaAPI = function () {
 
 var KR = this.KR || {};
 
-KR.WikipediaAPI = function () {
+KR.WikipediaAPI = function (BASE_URL, MAX_RADIUS, linkBase) {
     'use strict';
-
-    var BASE_URL = 'http://crossorigin.me/https://no.wikipedia.org/w/api.php';
-
-    var MAX_RADIUS = 10000;
+    MAX_RADIUS = MAX_RADIUS || 10000;
 
     function _wikiquery(params, callback) {
         var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
@@ -756,7 +771,7 @@ KR.WikipediaAPI = function () {
             images: images,
             title: item.title,
             content: extraData.extract,
-            link: 'http://no.wikipedia.org/?curid=' + item.pageid,
+            link: linkBase + item.pageid,
             dataset: 'Wikipedia',
             provider: 'Wikipedia',
             contentType: 'TEXT'
@@ -1000,7 +1015,6 @@ KR.SparqlAPI = function (BASE_URL) {
             if (!attrs.img) {
                 attrs.img = false;
             }
-            attrs.thumbnail = attrs.img;
             attrs.title = attrs.name;
 
             if (_.has(item, 'point')) {
@@ -1050,7 +1064,7 @@ KR.SparqlAPI = function (BASE_URL) {
             return;
         }
 
-        var query = 'select distinct ?id ?name ?description ?loccatlabel ?img (SAMPLE(?point) as ?point)  {' +
+        var query = 'select distinct ?id ?name ?description ?loccatlabel ?img ?thumbnail (SAMPLE(?point) as ?point)  {' +
             ' ?id a ?type ;' +
             ' rdfs:label ?name ;' +
             ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
@@ -1063,6 +1077,7 @@ KR.SparqlAPI = function (BASE_URL) {
             '  ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
             '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
             '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
             ' }' +
             '}';
         if (dataset.limit) {
@@ -1082,22 +1097,25 @@ KR.SparqlAPI = function (BASE_URL) {
             fylke = '0' + fylke;
         }
 
-        var query = 'select  ?id ?name ?description ?loklab as ?loccatlabel ?point ?img {' +
+
+
+        var query = 'select  ?id ?name ?description ?loccatlabel (SAMPLE(?point) as ?point) ?img ?thumbnail  {' +
             ' ?id a ?type .' +
             ' ?id rdfs:label ?name .' +
             ' ?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
             ' ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .' +
             ' ?id <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?lokalitetskategori .' +
-            ' ?lokalitetskategori rdfs:label ?loklab .' +
+            ' ?lokalitetskategori rdfs:label ?loccatlabel .' +
             ' ?id <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
             ' optional {' +
-            ' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
-            ' ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
-            ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
-            ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
-            ' }' +
+            '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+            '  ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
+            '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+            '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
+            '  }' +
             ' FILTER regex(?kommune, "^.*' + fylke + '[1-9]{2}") .' +
-            '} order by ?img'
+            ' } order by ?img';
 
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
@@ -1118,7 +1136,7 @@ KR.SparqlAPI = function (BASE_URL) {
         if (_.isArray(dataset.lokalitet)) {
             lokalitet = dataset.lokalitet;
         } else {
-            lokalitet.push(dataset.lokalitet)
+            lokalitet.push(dataset.lokalitet);
         }
 
 
@@ -1142,7 +1160,7 @@ KR.SparqlAPI = function (BASE_URL) {
         if (dataset.kommune) {
             var query = _createKommuneQuery(dataset, errorCallback);
             _sendQuery(query, _parseResponse, callback, errorCallback);
-        }  else if (dataset.fylke) {
+        } else if (dataset.fylke) {
             var query = _createFylkeQuery(dataset, errorCallback);
             _sendQuery(query, _parseResponse, callback, errorCallback);
         } else if (dataset.lokalitet && dataset.type === 'lokalitetpoly') {
@@ -1156,6 +1174,7 @@ KR.SparqlAPI = function (BASE_URL) {
         getData: getData
     };
 };
+
 /*global */
 
 var KR = this.KR || {};
@@ -1276,7 +1295,11 @@ KR.API = function (options) {
     var norvegianaAPI = new KR.NorvegianaAPI();
     var wikipediaAPI;
     if (KR.WikipediaAPI) {
-        wikipediaAPI = new KR.WikipediaAPI();
+        wikipediaAPI = new KR.WikipediaAPI(
+            'http://crossorigin.me/https://no.wikipedia.org/w/api.php',
+            null,
+            'http://no.wikipedia.org/?curid='
+        );
     }
 
     var kulturminnedataAPI;
@@ -1323,6 +1346,15 @@ KR.API = function (options) {
         kmlAPI = new KR.KmlAPI();
     }
 
+    var lokalwikiAPI;
+    if (KR.WikipediaAPI) {
+        lokalwikiAPI = new KR.WikipediaAPI(
+            'http://crossorigin.me/http://test.lokalhistoriewiki.no:8080/api.php',
+            null,
+            'http://lokalhistoriewiki.no/?curid='
+        );
+    }
+
     var apis = {
         norvegiana: norvegianaAPI,
         wikipedia: wikipediaAPI,
@@ -1333,6 +1365,7 @@ KR.API = function (options) {
         folketelling: folketellingAPI,
         flickr: flickrAPI,
         kml: kmlAPI,
+        lokalhistoriewiki: lokalwikiAPI
     };
 
     var datasets = {
