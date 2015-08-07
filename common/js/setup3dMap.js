@@ -36,10 +36,13 @@ var KR = this.KR || {};
         return {
             polyline: {
                 positions: heightCurve,
-                width: options.width || 10.0,
-                material: new Cesium.PolylineGlowMaterialProperty({
-                    color: options.color || Cesium.Color.BLUE,
-                    glowPower: options.glow || 0.1,
+                width: 5, //options.width || 10.0,
+                material: new Cesium.PolylineOutlineMaterialProperty({
+                    //color: options.color || Cesium.Color.BLUE//,
+                    //glowPower: options.glow || 0.1,
+                    color: Cesium.Color.ORANGE,
+                    outlineWidth: 2,
+                    outlineColor: Cesium.Color.BLACK
                 })
             }
         };
