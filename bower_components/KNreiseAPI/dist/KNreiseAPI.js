@@ -603,6 +603,7 @@ KR.NorvegianaAPI = function () {
             format: 'json',
             rows: 1000,
         }, params);
+        params.query += ' delving_hasGeoHash:true';
 
         var requestId = dataset;
         if (parameters.query) {
@@ -651,6 +652,39 @@ KR.NorvegianaAPI = function () {
         _get(params, parameters, callback, errorCallback, options);
     }
 
+
+    function _getOrQuery(parameters, callback, errorCallback, options) {
+        var queries = parameters.query;
+        var features = [];
+
+        var sum = _.after(queries.length, function () {
+            var unique = _.uniq(features, false, function (feature) {
+                return feature.properties.allProps.europeana_uri[0];
+            });
+            callback(KR.Util.createFeatureCollection(unique));
+        });
+
+        var finished = function (geoJson) {
+            features = features.concat(geoJson.features);
+            sum();
+        };
+
+        _.each(queries, function (query) {
+            parameters.query = query;
+            getData(parameters, finished, errorCallback, options);
+        });
+    }
+
+    function getData(parameters, callback, errorCallback, options) {
+        if (parameters.query && _.isArray(parameters.query)) {
+            _getOrQuery(parameters, callback, errorCallback, options);
+            return;
+        }
+
+        var params = {};
+        _get(params, parameters, callback, errorCallback, options);
+    }
+
     function getItem(id, callback) {
         var params = {
             id: id,
@@ -669,7 +703,8 @@ KR.NorvegianaAPI = function () {
     return {
         getWithin: getWithin,
         getItem: getItem,
-        getBbox: getBbox
+        getBbox: getBbox,
+        getData: getData
     };
 };
 
