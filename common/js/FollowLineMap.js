@@ -35,13 +35,22 @@ var KR = this.KR || {};
             }
         });
 
-        function _gotFeatures(features) {
+        function _gotFeatures(features, position) {
+
+            features = KR.Util.distanceAndSort(features, turf.point([position.lng, position.lat]));
+
+            if (features.features.length > 200) {
+                features = KR.Util.createFeatureCollection(_.first(features.features, 200));
+            }
+            console.log(features.features.length);
+
             markerLayer.clearLayers().addData(features);
 
             previewStrip.showFeatures(markerLayer.getLayers());
             if (!features.features.length) {
                 previewStrip.showMessage('<em>Ingen funnet!</em>');
             }
+
         }
 
         var marker;
@@ -60,7 +69,7 @@ var KR = this.KR || {};
                     marker = L.marker(position, {icon: options.icon});
                     marker.setZIndexOffset(1000);
                 } else {
-                    marker = L.marker(position).addTo(map)
+                    marker = L.marker(position).addTo(map);
                     marker.setZIndexOffset(1000);
                 }
             } else {
@@ -87,13 +96,24 @@ var KR = this.KR || {};
 
                 loadedFunc(features);
             }
-            api.getBbox(
-                dataset.dataset,
-                bbox,
-                datasetLoaded,
-                errorCallback,
-                {allPages: true}
-            );
+
+            if (dataset.bboxFunc) {
+                dataset.bboxFunc(
+                    api,
+                    dataset.dataset,
+                    bbox,
+                    datasetLoaded,
+                    errorCallback
+                );
+            } else {
+                api.getBbox(
+                    dataset.dataset,
+                    bbox,
+                    datasetLoaded,
+                    errorCallback,
+                    {allPages: false}
+                );
+            }
         }
 
         function positionChanged(position) {
@@ -106,7 +126,7 @@ var KR = this.KR || {};
 
             var found = [];
             var featuresLoaded = _.after(datasets.length, function () {
-                _gotFeatures(KR.Util.createFeatureCollection(found));
+                _gotFeatures(KR.Util.createFeatureCollection(found), position);
             });
 
             function errorCallback() {

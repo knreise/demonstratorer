@@ -369,6 +369,31 @@ KR.Util = KR.Util || {};
         api.getData(dataset, callback);
     };
 
+    ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
+        KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+            dataset.kommune = kommune;
+            api.getData(dataset, dataLoaded, loadError);
+        });
+    };
+
+
+    ns.distanceAndSort = function (featurecollection, point) {
+
+        var measured = _.map(featurecollection.features, function (feature) {
+            feature.properties.distance = turf.distance(point, feature);
+            return feature;
+        });
+        return turf.featurecollection(measured.sort(function (a, b) {
+            if (a.properties.distance < b.properties.distance) {
+                return -1;
+            }
+            if (a.properties.distance > b.properties.distance) {
+                return 1;
+            }
+            return 0;
+        }));
+    }
+
 }(KR.Util));
 
 /*global L:false */
@@ -2596,7 +2621,7 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: sparqlBoox
+                bboxFunc: KR.Util.sparqlBbox
             };
 
             _.extend(list.riksantikvaren, raParams);

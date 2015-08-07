@@ -144,7 +144,6 @@ KR.AlongLine = function (api, getLineFunc) {
     }
 
     function orderByDistance(featurecollections, point) {
-
         var measured = _.chain(featurecollections)
             .map(function (fc) {
                 return fc.features;

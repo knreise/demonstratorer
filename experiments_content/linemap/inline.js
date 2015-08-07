@@ -19,6 +19,14 @@ var api = new KR.API({
 
 var datasets = [
     {
+        provider: 'Riksantikvaren',
+        dataset: {
+            api: 'kulturminnedataSparql'
+        },
+        bboxFunc: KR.Util.sparqlBbox,
+        template: KR.Util.getDatasetTemplate('ra_sparql')
+    },
+    {
         dataset: {
             api: 'norvegiana',
             dataset: 'difo'
@@ -27,8 +35,15 @@ var datasets = [
     {
         dataset: {
             api: 'norvegiana',
-            dataset: 'Artsdatabanken'
+            dataset: 'MUSIT'
         }
+    },
+    {
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'DiMu'
+        },
+        template: KR.Util.getDatasetTemplate('digitalt_museum'),
     },
     {
         dataset: {
