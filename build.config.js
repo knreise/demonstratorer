@@ -193,6 +193,11 @@ module.exports = {
       id: 'trondheim',
       name: 'Trondheim',
       description: 'Demonstrator med fokus på Trondheim'
+    },
+    {
+      id: '2verdenskrig',
+      name: '2. verdenskrig',
+      description: '2. verdenskrig'
     }
   ],
   experiments: [

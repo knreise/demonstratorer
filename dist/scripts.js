@@ -2842,10 +2842,15 @@ var KR = this.KR || {};
             maxBounds: L.geoJson(WORLD).getBounds()
         });
 
+
         var baseLayer = options.layer || 'norges_grunnkart_graatone';
-        KR.Util.getBaseLayer(baseLayer, function (layer) {
-            layer.addTo(map);
-        });
+        if (_.isString(baseLayer)) {
+            KR.Util.getBaseLayer(baseLayer, function (layer) {
+                layer.addTo(map);
+            });
+        } else {
+            baseLayer.addTo(map);
+        }
         return map;
     }
 
