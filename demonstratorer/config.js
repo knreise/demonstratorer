@@ -12,5 +12,9 @@
         }
     });
 
+    if (qs.title) {
+        $('title').append(qs.title);
+    }
+
     KR.setupMapFromUrl(api, qs.datasets.split(','), qs);
 }());

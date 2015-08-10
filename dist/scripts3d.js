@@ -1038,12 +1038,9 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             camera.viewRectangle(extent, ellipsoid);
         }
 
-
         if (extent && config.cesiumViewerOpts.limitBounds) {
             _setupLimit(extent);
         }
-
-        CesiumMiniMap(viewer);
     }
 
 
@@ -2474,8 +2471,6 @@ var KR = this.KR || {};
             KR.Util.getLine(api, options.line, function (line) {
                 bbox = KR.CesiumUtils.getBounds(line);
                 map = _createMap('cesium-viewer', bbox);
-
-                map.viewer.scene.imageryLayers.removeAll();
 
                 getBaseLayer(options, map, map.addImageryProvider);
 
