@@ -131,7 +131,8 @@ module.exports = {
     'flickr',
     'husmann',
     'brukerminne',
-    'popup'
+    'popup',
+    'jernbanemuseet'
   ],
   demoTemplates: [
     'list_item',

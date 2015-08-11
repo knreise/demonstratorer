@@ -1313,7 +1313,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            _setContent('');
+            _setContent('<i class="fa-li fa fa-spinner fa-spin">');
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
                 showFeature(newFeature, template, null, callbacks, index, numFeatures);
@@ -1326,6 +1326,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         if (_.isArray(img)) {
             img = img[0];
         }
+        //console.log(feature.properties);
 
         if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
             feature.properties.license = feature.properties.allProps.europeana_rights[0];
@@ -2571,7 +2572,22 @@ KR.Config = KR.Config || {};
                     count: 5,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
-            }
+            },
+            'jernbane': {
+                id: 'jernbane',
+                dataset: {
+                    api: 'jernbanemuseet'
+                },
+                provider: 'Jernbanemuseet',
+                name: 'Jernbanemuseet',
+                template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+                getFeatureData: function (feature, callback) {
+                    api.getJernbaneItem(feature.properties.id, callback);
+                },
+                isStatic: true,
+                bbox: false,
+                description: 'Jernbanemuseet'
+            },
         };
 
         if (!komm && !fylke) {
