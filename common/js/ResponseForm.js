@@ -9,18 +9,25 @@ var ResponseForm = function (div, baseData) {
         provider: 'entry.2062104757'
     };
 
-    function _submitForm() {
+    function _submitForm(e) {
+        e.preventDefault();
         var data = _.extend({}, baseData, {
             email: div.find('#form_email').val(),
-            message: div.find('#form_message').text()
+            message: div.find('#form_message').val()
         });
         console.log(data);
+        return false;
     }
 
+
+
     var template = $('#response_form_template').html();
-    console.log(template)
     div.append(template);
     div.find('form').on('submit', _submitForm);
+    div.find('.show-more').click(function () {
+        div.find('.show-more').addClass('hidden');
+        div.find('form').removeClass('hidden');
+    });
 };
 
 

@@ -269,14 +269,22 @@
     padding-right: 24px;
 }
 
-
-.feedback_form {
+/*the feedback form*/
+.feedback-form {
     margin-top: 30px;
-    color: #c4c4c4;
+    color: #6F6F6F;
 }
 
-.feedback_form label {
+.feedback-form label {
     font-weight: 100;
+}
+
+.feedback-form .btn-default {
+    color: #6F6F6F;
+}
+
+.feedback-form .show-more {
+    cursor: pointer;
 }
 .leaflet-control-layers {
     margin-top: 10px;
