@@ -51,6 +51,7 @@ module.exports = {
     'common/js/norgeibilder.js',
     'common/js/datasets.js',
     'common/js/SplashScreen.js',
+    'common/js/ResponseForm.js',
     'common/js/setupMap.js'
   ],
   demoScriptsExternal3d: [
@@ -139,7 +140,8 @@ module.exports = {
     'thumbnail',
     'footer',
     'error',
-    'message'
+    'message',
+    'response_form'
   ],
 
   demonstrators: [
