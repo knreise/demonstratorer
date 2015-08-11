@@ -356,8 +356,8 @@ KR.Util = KR.Util || {};
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
-        'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
-        'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
+            'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
+            'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
 
         var dataset = {
             'api': 'cartodb',
@@ -368,6 +368,7 @@ KR.Util = KR.Util || {};
         };
         api.getData(dataset, callback);
     };
+
 
     ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
         KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
@@ -393,6 +394,13 @@ KR.Util = KR.Util || {};
             return 0;
         }));
     }
+
+
+    ns.round = function (number, decimals) {
+        decimals = decimals || 2;
+        var exp = Math.pow(10, decimals);
+        return Math.round(number * exp) / exp;
+    };
 
 }(KR.Util));
 
@@ -1063,12 +1071,9 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             camera.viewRectangle(extent, ellipsoid);
         }
 
-
         if (extent && config.cesiumViewerOpts.limitBounds) {
             _setupLimit(extent);
         }
-
-        CesiumMiniMap(viewer);
     }
 
 
@@ -2276,6 +2281,9 @@ KR.Config = KR.Config || {};
         if (!komm && !fylke) {
             var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    if (kommune < 1000) {
+                        kommune = '0' + kommune;
+                    }
                     dataset.kommune = kommune;
                     api.getData(dataset, dataLoaded, loadError);
                 });
@@ -2517,8 +2525,6 @@ var KR = this.KR || {};
             KR.Util.getLine(api, options.line, function (line) {
                 bbox = KR.CesiumUtils.getBounds(line);
                 map = _createMap('cesium-viewer', bbox);
-
-                map.viewer.scene.imageryLayers.removeAll();
 
                 getBaseLayer(options, map, map.addImageryProvider);
 

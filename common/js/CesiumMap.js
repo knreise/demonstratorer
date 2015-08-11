@@ -93,12 +93,9 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             camera.viewRectangle(extent, ellipsoid);
         }
 
-
         if (extent && config.cesiumViewerOpts.limitBounds) {
             _setupLimit(extent);
         }
-
-        CesiumMiniMap(viewer);
     }
 
 

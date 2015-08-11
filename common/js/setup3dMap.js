@@ -197,8 +197,6 @@ var KR = this.KR || {};
                 bbox = KR.CesiumUtils.getBounds(line);
                 map = _createMap('cesium-viewer', bbox);
 
-                map.viewer.scene.imageryLayers.removeAll();
-
                 getBaseLayer(options, map, map.addImageryProvider);
 
                 _addDatasets(_getDatasets(), bbox, function () {

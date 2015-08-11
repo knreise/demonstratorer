@@ -42,7 +42,6 @@ var KR = this.KR || {};
             if (features.features.length > 200) {
                 features = KR.Util.createFeatureCollection(_.first(features.features, 200));
             }
-            console.log(features.features.length);
 
             markerLayer.clearLayers().addData(features);
 
