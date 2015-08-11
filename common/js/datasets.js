@@ -216,6 +216,21 @@ KR.Config = KR.Config || {};
                 //template: KR.Util.getDatasetTemplate('ra_sparql'),
                 //bbox: false,
                 //isStatic: true,
+            },
+            'jernbane': {
+                id: 'jernbane',
+                dataset: {
+                    api: 'jernbanemuseet'
+                },
+                provider: 'Jernbanemuseet',
+                name: 'Jernbanemuseet',
+                template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+                getFeatureData: function (feature, callback) {
+                    api.getJernbaneItem(feature.properties.id, callback);
+                },
+                isStatic: true,
+                bbox: false,
+                description: 'Jernbanemuseet'
             }
         };
 

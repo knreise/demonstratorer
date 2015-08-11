@@ -1339,7 +1339,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            _setContent('');
+            _setContent('<i class="fa-li fa fa-spinner fa-spin">');
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
                 showFeature(newFeature, template, null, callbacks, index, numFeatures);
@@ -1352,6 +1352,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         if (_.isArray(img)) {
             img = img[0];
         }
+        //console.log(feature.properties);
 
         if (!feature.properties.images) {
             feature.properties.images = null;
@@ -2615,6 +2616,21 @@ KR.Config = KR.Config || {};
                 //template: KR.Util.getDatasetTemplate('ra_sparql'),
                 //bbox: false,
                 //isStatic: true,
+            },
+            'jernbane': {
+                id: 'jernbane',
+                dataset: {
+                    api: 'jernbanemuseet'
+                },
+                provider: 'Jernbanemuseet',
+                name: 'Jernbanemuseet',
+                template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+                getFeatureData: function (feature, callback) {
+                    api.getJernbaneItem(feature.properties.id, callback);
+                },
+                isStatic: true,
+                bbox: false,
+                description: 'Jernbanemuseet'
             }
         };
 

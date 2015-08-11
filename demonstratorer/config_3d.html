@@ -455,6 +455,39 @@
 </script>
 
 
+<script type="text/template" id="jernbanemuseet_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<p><%= description %></p>
+
+<% _.each(pages, function (page) { %>
+    <h4><%= page.title %></h4>
+    <% _.each(page.blocks, function (block) { %>
+        <% if (block.type === 'text') { %>
+            <%= block.data %>
+        <% } else if (block.type === 'image_video') { %>
+            <% _.each(block.data, function (data) { %>
+                <% if (data.type === 'image') { %>
+                    <img class="fullwidth" src="<%= data.url %>" />
+                <% } else if (data.type === 'video') { %>
+                    <video class="video-js vjs-default-skin fullwidth" controls
+                     preload="auto" height="315" data-setup='{}'>
+                      <source src="<%= data.url.mp4 %>" type='video/mp4'>
+                    </video>
+                <% } %>
+                <% if (_.has(data.contents, 'no')) { %>
+                        <p><%= data.contents.no.title %></p>
+                    <% } %>
+
+            <% }) %>
+        <% } %>
+    <% }) %>
+<% }) %>|
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
