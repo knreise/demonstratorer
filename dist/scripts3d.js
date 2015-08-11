@@ -356,8 +356,8 @@ KR.Util = KR.Util || {};
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
-        'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
-        'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
+            'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
+            'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
 
         var dataset = {
             'api': 'cartodb',
@@ -367,6 +367,13 @@ KR.Util = KR.Util || {};
             }
         };
         api.getData(dataset, callback);
+    };
+
+
+    ns.round = function (number, decimals) {
+        decimals = decimals || 2;
+        var exp = Math.pow(10, decimals);
+        return Math.round(number * exp) / exp;
     };
 
 }(KR.Util));

@@ -356,8 +356,8 @@ KR.Util = KR.Util || {};
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
-        'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
-        'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
+            'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
+            'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
 
         var dataset = {
             'api': 'cartodb',
@@ -367,6 +367,13 @@ KR.Util = KR.Util || {};
             }
         };
         api.getData(dataset, callback);
+    };
+
+
+    ns.round = function (number, decimals) {
+        decimals = decimals || 2;
+        var exp = Math.pow(10, decimals);
+        return Math.round(number * exp) / exp;
     };
 
 }(KR.Util));
@@ -2750,6 +2757,34 @@ var KR = this.KR || {};
         }
     };
 
+    function _setupLocationUrl(map) {
+
+        var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+        var moved = function () {
+            var c = map.getCenter();
+            var str = strTemplate({
+                zoom: map.getZoom(),
+                lat: KR.Util.round(c.lat, 4),
+                lon: KR.Util.round(c.lng, 4)
+            });
+            location.hash = str;
+        }
+        map.on('moveend', moved);
+        moved();
+    }
+
+    function _getLocationUrl(map) {
+        var hash = location.hash;
+        if (hash && hash !== '') {
+            var parts = hash.replace('#', '').split('/');
+            var zoom = parseInt(parts[0], 10);
+            var lat = parseFloat(parts[1]);
+            var lon = parseFloat(parts[2]);
+            map.setView([lat, lon], zoom);
+        }
+    }
+
+
     function _getFilter(buffer) {
         return function (features) {
             if (!features || !features.length) {
@@ -2975,6 +3010,10 @@ var KR = this.KR || {};
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }
+
+            //track poition from url
+            _getLocationUrl(map);
+            _setupLocationUrl(map);
         }
 
         options.map = map;
