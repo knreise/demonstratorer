@@ -22,6 +22,34 @@ var KR = this.KR || {};
         }
     };
 
+    function _setupLocationUrl(map) {
+
+        var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+        var moved = function () {
+            var c = map.getCenter();
+            var str = strTemplate({
+                zoom: map.getZoom(),
+                lat: KR.Util.round(c.lat, 4),
+                lon: KR.Util.round(c.lng, 4)
+            });
+            location.hash = str;
+        }
+        map.on('moveend', moved);
+        moved();
+    }
+
+    function _getLocationUrl(map) {
+        var hash = location.hash;
+        if (hash && hash !== '') {
+            var parts = hash.replace('#', '').split('/');
+            var zoom = parseInt(parts[0], 10);
+            var lat = parseFloat(parts[1]);
+            var lon = parseFloat(parts[2]);
+            map.setView([lat, lon], zoom);
+        }
+    }
+
+
     function _getFilter(buffer) {
         return function (features) {
             if (!features || !features.length) {
@@ -247,6 +275,10 @@ var KR = this.KR || {};
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }
+
+            //track poition from url
+            _getLocationUrl(map);
+            _setupLocationUrl(map);
         }
 
         options.map = map;

@@ -36,10 +36,13 @@ var KR = this.KR || {};
         return {
             polyline: {
                 positions: heightCurve,
-                width: options.width || 10.0,
-                material: new Cesium.PolylineGlowMaterialProperty({
-                    color: options.color || Cesium.Color.BLUE,
-                    glowPower: options.glow || 0.1,
+                width: 5, //options.width || 10.0,
+                material: new Cesium.PolylineOutlineMaterialProperty({
+                    //color: options.color || Cesium.Color.BLUE//,
+                    //glowPower: options.glow || 0.1,
+                    color: Cesium.Color.ORANGE,
+                    outlineWidth: 2,
+                    outlineColor: Cesium.Color.BLACK
                 })
             }
         };
@@ -161,11 +164,9 @@ var KR = this.KR || {};
                 var props = {
                     template: dataset.template,
                     datasetId: datasetId,
-                    'marker-color': KR.Style.colorForFeature({properties: {datasetId: datasetId}}, true)
+                    'marker-color': KR.Style.colorForFeature({properties: {datasetId: datasetId}}, false)
                 };
-                map.loadDataset2(dataset.dataset, bbox, api, props, function (res) {
-                    map.viewer.dataSources.add(res);
-                });
+                map.loadDataset2(dataset.dataset, bbox, api, props);
             });
 
             map.addClickhandler(function (properties) {
@@ -195,8 +196,6 @@ var KR = this.KR || {};
             KR.Util.getLine(api, options.line, function (line) {
                 bbox = KR.CesiumUtils.getBounds(line);
                 map = _createMap('cesium-viewer', bbox);
-
-                map.viewer.scene.imageryLayers.removeAll();
 
                 getBaseLayer(options, map, map.addImageryProvider);
 
