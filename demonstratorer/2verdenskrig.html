@@ -530,10 +530,28 @@
             noListThreshold: Infinity,
             isStatic: true,
             bbox: false
+        },
+        {
+            id: 'jernbane',
+            dataset: {
+                api: 'jernbanemuseet'
+            },
+            provider: 'Jernbanemuseet',
+            name: 'Jernbanemuseet',
+            template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+            getFeatureData: function (feature, callback) {
+                api.getJernbaneItem(feature.properties.id, callback);
+            },
+            isStatic: true,
+            bbox: false
         }
     ];
 
-    var api = new KR.API();
+    var api = new KR.API({
+        jernbanemuseet: {
+            apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
+        }
+    });
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');
 
