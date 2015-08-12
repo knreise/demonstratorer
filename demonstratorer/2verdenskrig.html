@@ -632,7 +632,10 @@
             template: KR.Util.getDatasetTemplate('wikipedia'),
             style: {template: true},
             bbox: false,
-            isStatic: true
+            isStatic: true,
+            getFeatureData: function (feature, callback) {
+                api.getWikipediaItem(feature.properties.id, callback);
+            }
         },
         {
             name: 'Digitalt Museum',
