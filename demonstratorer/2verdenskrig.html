@@ -84,6 +84,38 @@
 </div>
 </script>
 
+
+<script type="text/template" id="response_form_template">
+
+<div class="feedback-form">
+  <p class="show-more"><i class="fa fa-envelope-o"></i> Tilbakemelding</p>
+  <form class="hidden">
+    <h4>Tilbakemelding</h4>
+    <div class="form-group">
+      <label for="form_email">Har du spørsmål eller kommentarer til denne informasjonen eller ønsker du å 
+        si fra om feil eller mangler, så kan du gjøre det her:</label>
+      <textarea id="form_message" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="form_email">Din epost:</label>
+      <input type="email" class="form-control" id="form_email">
+    </div>
+    <button type="submit" class="btn btn-default">Send</button>
+  </form>
+  <div id="form-success" class="media hidden">
+      <button class="close pull-right" aria-label="Close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="media-left">
+        <i class="fa fa-check-circle fa-3x"></i>
+      </div>
+      <div class="media-body">
+      </div>
+  </div>
+</div>
+</script>
+
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
 
@@ -459,25 +491,25 @@
     <h4><%= page.title %></h4>
     <% _.each(page.blocks, function (block) { %>
         <% if (block.type === 'text') { %>
-            <%= block.data %>
+            <%= block.text %>
         <% } else if (block.type === 'image_video') { %>
-            <% _.each(block.data, function (data) { %>
-                <% if (data.type === 'image') { %>
-                    <img class="fullwidth" src="<%= data.url %>" />
-                <% } else if (data.type === 'video') { %>
-                    <video class="video-js vjs-default-skin fullwidth" controls
-                     preload="auto" height="315" data-setup='{}'>
-                      <source src="<%= data.url.mp4 %>" type='video/mp4'>
+            <% _.each(block.media, function (media) { %>
+                <% if (media.type === 'image') { %>
+                    <img class="fullwidth" src="<%= media.url %>" />
+                <% } else if (media.type === 'video') { %>
+                    <video class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup='{}'>
+                        <source src="<%= media.url %>" type='video/mp4'>
                     </video>
                 <% } %>
-                <% if (_.has(data.contents, 'no')) { %>
-                        <p><%= data.contents.no.title %></p>
-                    <% } %>
-
+                <p>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
+                </p>
             <% }) %>
         <% } %>
     <% }) %>
-<% }) %>|
+<% }) %>
+
 </script>
 
 

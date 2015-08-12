@@ -42,6 +42,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'extras')) {
                     feature.properties = _.extend(feature.properties, dataset.extras);
                 }
+                feature.properties.feedbackForm = dataset.feedbackForm;
                 if (_.has(dataset, 'mappings')) {
                     _.each(dataset.mappings, function (value, key) {
                         feature.properties[key] = feature.properties[value];
