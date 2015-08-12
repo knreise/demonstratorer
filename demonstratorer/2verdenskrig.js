@@ -1,9 +1,34 @@
 (function () {
     'use strict';
 
-    var topics = ['krig', 'andre-verdskrigen', 'krigsminne', 'andre-verdenskrig', 'ww2', 'krigsminneforteljingar', 'krigen', 'krigsminnelandskap-troms', 'krigsminner', 'ww2-nord', 'ww2-troms', 'krigshistorie', 'krigsminneprosjekt-sør-troms', 'verdenskrig', '2.-verdenskrig', '2.-verdenskrigen'];
+    var diFoTopics = ['krig', 'andre-verdskrigen', 'krigsminne', 'andre-verdenskrig', 'ww2', 'krigsminneforteljingar', 'krigen', 'krigsminnelandskap-troms', 'krigsminner', 'ww2-nord', 'ww2-troms', 'krigshistorie', 'krigsminneprosjekt-sør-troms', 'verdenskrig', '2.-verdenskrig', '2.-verdenskrigen'];
 
-    topics = _.map(topics, function(t) {return 'dc_subject_text:' + t;});
+    diFoTopics = _.map(diFoTopics, function(t) {return 'dc_subject_text:' + t;});
+
+    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?img (SAMPLE(?point) as ?point)  {' +
+        ' ?id a ?type ;' +
+        '    rdfs:label ?name ;' +
+        ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
+        ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
+        ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
+        ' ?loccat rdfs:label ?loccatlabel .' +
+        ' FILTER regex(?description, "#andreverdenskrig", "i" )' +
+        ' optional {' +
+        ' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+        ' ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
+        ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+        '    }' +
+        ' }';
+
+
+    var api = new KR.API({
+        jernbanemuseet: {
+            apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
+        }
+    });
+
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
     //The datasets in use
     var datasets = [
@@ -12,17 +37,47 @@
             dataset: {
                 dataset: 'difo',
                 api: 'norvegiana',
-                query: topics
+                query: diFoTopics
             },
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity,
             isStatic: true,
             bbox: false
+        },
+        {
+            id: 'jernbane',
+            dataset: {
+                api: 'jernbanemuseet'
+            },
+            provider: 'Jernbanemuseet',
+            name: 'Jernbanemuseet',
+            template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+            getFeatureData: function (feature, callback) {
+                api.getJernbaneItem(feature.properties.id, callback);
+            },
+            isStatic: true,
+            bbox: false
+        },
+        {
+            id: 'riksantikvaren',
+            name: 'Riksantikvaren',
+            hideFromGenerator: true,
+            provider: 'Riksantikvaren',
+            dataset: {
+                api: 'kulturminnedataSparql',
+                sparqlQuery: sparqlQuery
+            },
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
+            bbox: false,
+            isStatic: true,
+            init: kulturminneFunctions.initKulturminnePoly,
+            loadWhenLessThan: {
+                count: 5,
+                callback: kulturminneFunctions.loadKulturminnePoly
+            }
         }
     ];
-
-    var api = new KR.API();
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');
 
