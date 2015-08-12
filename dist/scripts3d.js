@@ -356,8 +356,8 @@ KR.Util = KR.Util || {};
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
-        'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
-        'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
+            'ST_Intersects(the_geom, ' + makeEnvelope + ')' +
+            'ORDER BY st_area(st_intersection(the_geom, ' + makeEnvelope + ')) DESC LIMIT 1';
 
         var dataset = {
             'api': 'cartodb',
@@ -367,6 +367,13 @@ KR.Util = KR.Util || {};
             }
         };
         api.getData(dataset, callback);
+    };
+
+
+    ns.round = function (number, decimals) {
+        decimals = decimals || 2;
+        var exp = Math.pow(10, decimals);
+        return Math.round(number * exp) / exp;
     };
 
 }(KR.Util));
@@ -1038,12 +1045,9 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
             camera.viewRectangle(extent, ellipsoid);
         }
 
-
         if (extent && config.cesiumViewerOpts.limitBounds) {
             _setupLimit(extent);
         }
-
-        CesiumMiniMap(viewer);
     }
 
 
@@ -1477,7 +1481,12 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            _setContent('');
+            var content = '';
+            if (feature.properties.title) {
+                content += '<h3>' + feature.properties.title + '</h3>';
+            }
+            content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
+            _setContent(content);
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
                 showFeature(newFeature, template, null, callbacks, index, numFeatures);
@@ -1491,12 +1500,18 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             img = img[0];
         }
 
+
+        if (!feature.properties.images) {
+            feature.properties.images = null;
+        }
+
         if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
             feature.properties.license = feature.properties.allProps.europeana_rights[0];
         } else {
             feature.properties.license = null;
         }
 
+        console.log(feature.properties);
 
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
@@ -2227,12 +2242,30 @@ KR.Config = KR.Config || {};
                     count: 5,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
-            }
+            },
+            'jernbane': {
+                id: 'jernbane',
+                dataset: {
+                    api: 'jernbanemuseet'
+                },
+                provider: 'Jernbanemuseet',
+                name: 'Jernbanemuseet',
+                template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+                getFeatureData: function (feature, callback) {
+                    api.getJernbaneItem(feature.properties.id, callback);
+                },
+                isStatic: true,
+                bbox: false,
+                description: 'Jernbanemuseet'
+            },
         };
 
         if (!komm && !fylke) {
             var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    if (kommune < 1000) {
+                        kommune = '0' + kommune;
+                    }
                     dataset.kommune = kommune;
                     api.getData(dataset, dataLoaded, loadError);
                 });
@@ -2474,8 +2507,6 @@ var KR = this.KR || {};
             KR.Util.getLine(api, options.line, function (line) {
                 bbox = KR.CesiumUtils.getBounds(line);
                 map = _createMap('cesium-viewer', bbox);
-
-                map.viewer.scene.imageryLayers.removeAll();
 
                 getBaseLayer(options, map, map.addImageryProvider);
 
