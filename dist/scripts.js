@@ -1190,8 +1190,10 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             url: location.href,
             provider: feature.properties.provider
         }
-        $(this._contentContainer).append(div);
-        ResponseForm(div, params);
+        if (feature.properties.feedbackForm) {
+            $(this._contentContainer).append(div);
+            KR.ResponseForm(div, params);
+        }
     },
 
     showFeatures: function (features, template, getData, noListThreshold, forceList) {
@@ -1838,6 +1840,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'extras')) {
                     feature.properties = _.extend(feature.properties, dataset.extras);
                 }
+                feature.properties.feedbackForm = dataset.feedbackForm;
                 if (_.has(dataset, 'mappings')) {
                     _.each(dataset.mappings, function (value, key) {
                         feature.properties[key] = feature.properties[value];
@@ -2448,7 +2451,8 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt',
-                allowTopic: true
+                allowTopic: true,
+                feedbackForm: true
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -2743,8 +2747,8 @@ KR.SplashScreen = function (map, title, description, image) {
 };
 
 'use strict';
-
-var ResponseForm = function (div, baseData) {
+var KR = this.KR || {};
+KR.ResponseForm = function (div, baseData) {
     var COL_NAMES = {
         message: 'entry.868210343',
         email: 'entry.1581354915',
@@ -2754,10 +2758,9 @@ var ResponseForm = function (div, baseData) {
     };
 
     function _postToForm(data, callback) {
-        console.log(data);
-        var gData = _.reduce(data, function(acc, value, key) {
-          acc[COL_NAMES[key]] = value;
-          return acc;
+        var gData = _.reduce(data, function (acc, value, key) {
+            acc[COL_NAMES[key]] = value;
+            return acc;
         }, {});
 
         var url = 'https://docs.google.com/forms/d/19mND_7aFPj2ocUEJV9J2I6bK0RlVkx7IcKJb4pMNo7I/formResponse';
@@ -2775,7 +2778,7 @@ var ResponseForm = function (div, baseData) {
         div.find('form').addClass('hidden');
         div.find('#form-success').removeClass('hidden').find('.media-body').text(
             'Din melding er sendt til ' + provider + '. De vil ta kontakt hvis' +
-            ' de har behov for ytterligere informasjon'
+                ' de har behov for ytterligere informasjon'
         );
     }
 
@@ -2795,13 +2798,13 @@ var ResponseForm = function (div, baseData) {
         _postToForm(data, function () {
             _showSuccess(data.provider);
         });
-        return false; 
+        return false;
     }
 
     function _resetForm() {
         div.find('#form_email').val('');
         div.find('#form_message').val('');
-        div.find('#form-success').addClass('hidden')
+        div.find('#form-success').addClass('hidden');
         div.find('form').addClass('hidden');
         div.find('.show-more').removeClass('hidden');
     }

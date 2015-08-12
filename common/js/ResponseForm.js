@@ -1,6 +1,6 @@
 'use strict';
-
-var ResponseForm = function (div, baseData) {
+var KR = this.KR || {};
+KR.ResponseForm = function (div, baseData) {
     var COL_NAMES = {
         message: 'entry.868210343',
         email: 'entry.1581354915',
@@ -10,9 +10,9 @@ var ResponseForm = function (div, baseData) {
     };
 
     function _postToForm(data, callback) {
-        var gData = _.reduce(data, function(acc, value, key) {
-          acc[COL_NAMES[key]] = value;
-          return acc;
+        var gData = _.reduce(data, function (acc, value, key) {
+            acc[COL_NAMES[key]] = value;
+            return acc;
         }, {});
 
         var url = 'https://docs.google.com/forms/d/19mND_7aFPj2ocUEJV9J2I6bK0RlVkx7IcKJb4pMNo7I/formResponse';
@@ -30,7 +30,7 @@ var ResponseForm = function (div, baseData) {
         div.find('form').addClass('hidden');
         div.find('#form-success').removeClass('hidden').find('.media-body').text(
             'Din melding er sendt til ' + provider + '. De vil ta kontakt hvis' +
-            ' de har behov for ytterligere informasjon'
+                ' de har behov for ytterligere informasjon'
         );
     }
 
@@ -50,13 +50,13 @@ var ResponseForm = function (div, baseData) {
         _postToForm(data, function () {
             _showSuccess(data.provider);
         });
-        return false; 
+        return false;
     }
 
     function _resetForm() {
         div.find('#form_email').val('');
         div.find('#form_message').val('');
-        div.find('#form-success').addClass('hidden')
+        div.find('#form-success').addClass('hidden');
         div.find('form').addClass('hidden');
         div.find('.show-more').removeClass('hidden');
     }

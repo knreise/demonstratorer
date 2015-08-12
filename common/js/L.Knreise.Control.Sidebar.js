@@ -65,8 +65,10 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             url: location.href,
             provider: feature.properties.provider
         }
-        $(this._contentContainer).append(div);
-        ResponseForm(div, params);
+        if (feature.properties.feedbackForm) {
+            $(this._contentContainer).append(div);
+            KR.ResponseForm(div, params);
+        }
     },
 
     showFeatures: function (features, template, getData, noListThreshold, forceList) {
