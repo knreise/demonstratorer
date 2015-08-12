@@ -204,6 +204,10 @@
 .feedback-form .show-more {
     cursor: pointer;
 }
+
+.wikipedia-content h2 {
+    font-size: 18px;
+}
 html, body, #cesium , #cesium-viewer {
       width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
   }

@@ -204,3 +204,7 @@
 .feedback-form .show-more {
     cursor: pointer;
 }
+
+.wikipedia-content h2 {
+    font-size: 18px;
+}
