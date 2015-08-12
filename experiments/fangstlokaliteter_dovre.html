@@ -451,22 +451,23 @@
         <% if (block.type === 'text') { %>
             <%= block.text %>
         <% } else if (block.type === 'image_video') { %>
-            <% _.each(block.data, function (data) { %>
-                <% if (data.type === 'image') { %>
-                    <img class="fullwidth" src="<%= data.url %>" />
-                <% } else if (data.type === 'video') { %>
+            <% _.each(block.media, function (media) { %>
+                <% if (media.type === 'image') { %>
+                    <img class="fullwidth" src="<%= media.url %>" />
+                <% } else if (media.type === 'video') { %>
                     <video class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup='{}'>
-                        <source src="<%= data.url %>" type='video/mp4'>
+                        <source src="<%= media.url %>" type='video/mp4'>
                     </video>
                 <% } %>
                 <p>
-                    <strong><%= data.title %></strong><br/>
-                    <em><%= data.description %></em>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
                 </p>
             <% }) %>
         <% } %>
     <% }) %>
-<% }) %>|
+<% }) %>
+
 </script>
 
 
