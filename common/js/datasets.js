@@ -70,7 +70,8 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt',
-                allowTopic: true
+                allowTopic: true,
+                feedbackForm: true
             },
             'verneomr': {
                 id: 'verneomraader',

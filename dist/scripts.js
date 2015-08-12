@@ -376,6 +376,15 @@ KR.Util = KR.Util || {};
         return Math.round(number * exp) / exp;
     };
 
+    var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+    ns.getPositionHash = function (lat, lng, zoom) {
+        return hashTemplate({
+            zoom: zoom,
+            lat: ns.round(lat, 4),
+            lon: ns.round(lng, 4)
+        });
+    }
+
 }(KR.Util));
 
 /*global L:false */
@@ -1133,6 +1142,13 @@ L.Knreise.Control = L.Knreise.Control || {};
     A Leaflet wrapper for displaying sidebar data.
 */
 
+function getLocationLink(feature) {
+    var baseUrl = location.href.replace(location.hash, '');
+    var coords = feature.geometry.coordinates;
+    var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
+    return baseUrl + hash;
+}
+
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
@@ -1183,6 +1199,17 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
+
+        var div = $('<div></div>');
+        var params = {
+            id: feature.id,
+            url: getLocationLink(feature),
+            provider: feature.properties.provider
+        }
+        if (feature.properties.feedbackForm) {
+            $(this._contentContainer).append(div);
+            KR.ResponseForm(div, params);
+        }
     },
 
     showFeatures: function (features, template, getData, noListThreshold, forceList) {
@@ -1829,6 +1856,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'extras')) {
                     feature.properties = _.extend(feature.properties, dataset.extras);
                 }
+                feature.properties.feedbackForm = dataset.feedbackForm;
                 if (_.has(dataset, 'mappings')) {
                     _.each(dataset.mappings, function (value, key) {
                         feature.properties[key] = feature.properties[value];
@@ -2439,7 +2467,8 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt',
-                allowTopic: true
+                allowTopic: true,
+                feedbackForm: true
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -2736,6 +2765,81 @@ KR.SplashScreen = function (map, title, description, image) {
 
 };
 
+'use strict';
+var KR = this.KR || {};
+KR.ResponseForm = function (div, baseData) {
+
+    var COL_NAMES = {
+        message: 'entry.126368279',
+        email: 'entry.748218122',
+        id: 'entry.2043404140',
+        url: 'entry.243673559',
+        provider: 'entry.826324496'
+    };
+    var FORM_URL = 'https://docs.google.com/forms/d/1ah66lattC8it7OTIM6de20NSNkBeiQ0vabpsHSaPU7s/formResponse';
+
+    function _postToForm(data, callback) {
+        var gData = _.reduce(data, function (acc, value, key) {
+            acc[COL_NAMES[key]] = value;
+            return acc;
+        }, {});
+
+
+        $.ajax({
+            url: FORM_URL,
+            data: gData,
+            type: 'POST',
+            dataType: 'xml',
+            success: callback,
+            error: callback
+        });
+    }
+
+    function _showSuccess(provider) {
+        div.find('form').addClass('hidden');
+        div.find('#form-success').removeClass('hidden').find('.media-body').text(
+            'Din melding er sendt til ' + provider + '. De vil ta kontakt hvis' +
+                ' de har behov for ytterligere informasjon'
+        );
+    }
+
+    function _submitForm(e) {
+        e.preventDefault();
+        var email = div.find('#form_email').val();
+        var message = div.find('#form_message').val();
+
+        if (email === '' || message === '') {
+            return false;
+        }
+
+        var data = _.extend({}, baseData, {
+            email: email,
+            message: message
+        });
+        _postToForm(data, function () {
+            _showSuccess(data.provider);
+        });
+        return false;
+    }
+
+    function _resetForm() {
+        div.find('#form_email').val('');
+        div.find('#form_message').val('');
+        div.find('#form-success').addClass('hidden');
+        div.find('form').addClass('hidden');
+        div.find('.show-more').removeClass('hidden');
+    }
+
+    var template = $('#response_form_template').html();
+    div.append(template);
+    div.find('form').on('submit', _submitForm);
+    div.find('.show-more').click(function () {
+        div.find('.show-more').addClass('hidden');
+        div.find('form').removeClass('hidden');
+    });
+    div.find('.close ').click(_resetForm);
+};
+
 /*global L:false, alert:false, KR:false, turf:false */
 
 /*
@@ -2765,12 +2869,7 @@ var KR = this.KR || {};
         var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
-            var str = strTemplate({
-                zoom: map.getZoom(),
-                lat: KR.Util.round(c.lat, 4),
-                lon: KR.Util.round(c.lng, 4)
-            });
-            location.hash = str;
+            location.hash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
         }
         map.on('moveend', moved);
         moved();

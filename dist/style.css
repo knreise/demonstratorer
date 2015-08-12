@@ -268,6 +268,25 @@
     padding-left: 24px;
     padding-right: 24px;
 }
+
+/*the feedback form*/
+.feedback-form {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #6F6F6F;
+}
+
+.feedback-form label {
+    font-weight: 100;
+}
+
+.feedback-form .btn-default {
+    color: #6F6F6F;
+}
+
+.feedback-form .show-more {
+    cursor: pointer;
+}
 .leaflet-control-layers {
     margin-top: 10px;
 }
