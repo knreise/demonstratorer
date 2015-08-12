@@ -76,7 +76,31 @@
                 count: 5,
                 callback: kulturminneFunctions.loadKulturminnePoly
             }
-        }
+        },
+        {
+            name: 'Wikipedia',
+            provider: 'Wikipedia',
+            dataset: {
+                api: 'wikipedia',
+                category: 'Kulturminner_i_Norge_fra_andre_verdenskrig'
+            },
+            template: KR.Util.getDatasetTemplate('wikipedia'),
+            style: {template: true},
+            bbox: false,
+            isStatic: true
+        },
+        {
+            name: 'Digitalt Museum',
+            dataset: {
+                api: 'norvegiana',
+                dataset: 'DiMu',
+                query: 'dc_subject_facet:Krig'
+            },
+            template: KR.Util.getDatasetTemplate('digitalt_museum'),
+            isStatic: true,
+            thumbnails: true,
+            bbox: true
+        },
     ];
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');

@@ -402,6 +402,15 @@ KR.Util = KR.Util || {};
         return Math.round(number * exp) / exp;
     };
 
+    var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+    ns.getPositionHash = function (lat, lng, zoom) {
+        return hashTemplate({
+            zoom: zoom,
+            lat: ns.round(lat, 4),
+            lon: ns.round(lng, 4)
+        });
+    }
+
 }(KR.Util));
 
 /*global L:false */
