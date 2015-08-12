@@ -376,6 +376,15 @@ KR.Util = KR.Util || {};
         return Math.round(number * exp) / exp;
     };
 
+    var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+    ns.getPositionHash = function (lat, lng, zoom) {
+        return hashTemplate({
+            zoom: zoom,
+            lat: ns.round(lat, 4),
+            lon: ns.round(lng, 4)
+        });
+    }
+
 }(KR.Util));
 
 /*global L:false */
@@ -1133,6 +1142,13 @@ L.Knreise.Control = L.Knreise.Control || {};
     A Leaflet wrapper for displaying sidebar data.
 */
 
+function getLocationLink(feature) {
+    var baseUrl = location.href.replace(location.hash, '');
+    var coords = feature.geometry.coordinates;
+    var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
+    return baseUrl + hash;
+}
+
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
@@ -1187,7 +1203,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         var div = $('<div></div>');
         var params = {
             id: feature.id,
-            url: location.href,
+            url: getLocationLink(feature),
             provider: feature.properties.provider
         }
         if (feature.properties.feedbackForm) {
@@ -2848,12 +2864,7 @@ var KR = this.KR || {};
         var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
-            var str = strTemplate({
-                zoom: map.getZoom(),
-                lat: KR.Util.round(c.lat, 4),
-                lon: KR.Util.round(c.lng, 4)
-            });
-            location.hash = str;
+            location.hash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
         }
         map.on('moveend', moved);
         moved();

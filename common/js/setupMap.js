@@ -27,12 +27,7 @@ var KR = this.KR || {};
         var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
-            var str = strTemplate({
-                zoom: map.getZoom(),
-                lat: KR.Util.round(c.lat, 4),
-                lon: KR.Util.round(c.lng, 4)
-            });
-            location.hash = str;
+            location.hash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
         }
         map.on('moveend', moved);
         moved();
