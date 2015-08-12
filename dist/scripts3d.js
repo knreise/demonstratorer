@@ -1507,7 +1507,12 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            _setContent('<i class="fa-li fa fa-spinner fa-spin">');
+            var content = '';
+            if (feature.properties.title) {
+                content += '<h3>' + feature.properties.title + '</h3>';
+            }
+            content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
+            _setContent(content);
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
                 showFeature(newFeature, template, null, callbacks, index, numFeatures);
@@ -1520,7 +1525,11 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         if (_.isArray(img)) {
             img = img[0];
         }
-        //console.log(feature.properties);
+
+
+        if (!feature.properties.images) {
+            feature.properties.images = null;
+        }
 
         if (!feature.properties.images) {
             feature.properties.images = null;
@@ -1532,6 +1541,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             feature.properties.license = null;
         }
 
+        console.log(feature.properties);
 
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
