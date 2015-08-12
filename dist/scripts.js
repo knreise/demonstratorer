@@ -2606,6 +2606,9 @@ KR.Config = KR.Config || {};
         if (!komm && !fylke) {
             var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    if (kommune < 1000) {
+                        kommune = '0' + kommune;
+                    }
                     dataset.kommune = kommune;
                     api.getData(dataset, dataLoaded, loadError);
                 });
@@ -2765,16 +2768,6 @@ KR.SplashScreen = function (map, title, description, image) {
 'use strict';
 var KR = this.KR || {};
 KR.ResponseForm = function (div, baseData) {
-    /*
-    var COL_NAMES = {
-        message: 'entry.868210343',
-        email: 'entry.1581354915',
-        id: 'entry.819887708',
-        url: 'entry.795495135',
-        provider: 'entry.2062104757'
-    };
-    var FORM_URL = 'https://docs.google.com/forms/d/19mND_7aFPj2ocUEJV9J2I6bK0RlVkx7IcKJb4pMNo7I/formResponse';
-    */
 
     var COL_NAMES = {
         message: 'entry.126368279',

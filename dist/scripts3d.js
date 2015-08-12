@@ -2248,6 +2248,9 @@ KR.Config = KR.Config || {};
         if (!komm && !fylke) {
             var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                    if (kommune < 1000) {
+                        kommune = '0' + kommune;
+                    }
                     dataset.kommune = kommune;
                     api.getData(dataset, dataLoaded, loadError);
                 });
