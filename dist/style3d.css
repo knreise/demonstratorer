@@ -185,6 +185,25 @@
     padding-left: 24px;
     padding-right: 24px;
 }
+
+/*the feedback form*/
+.feedback-form {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #6F6F6F;
+}
+
+.feedback-form label {
+    font-weight: 100;
+}
+
+.feedback-form .btn-default {
+    color: #6F6F6F;
+}
+
+.feedback-form .show-more {
+    cursor: pointer;
+}
 html, body, #cesium , #cesium-viewer {
       width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
   }
