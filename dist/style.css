@@ -287,6 +287,10 @@
 .feedback-form .show-more {
     cursor: pointer;
 }
+
+.wikipedia-content h2 {
+    font-size: 18px;
+}
 .leaflet-control-layers {
     margin-top: 10px;
 }
