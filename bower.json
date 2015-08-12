@@ -30,12 +30,12 @@
     "L.EasyButton": "*",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
     "L.TileLayer.Kartverket": "~1.0.0",
-    "KNreiseAPI": "1.5.3",
+    "KNreiseAPI": "1.5.4",
     "html.sortable": "~0.2.9",
     "cesium-minimap": "0.0.2",
     "cilogi-marker": "https://github.com/cilogi/cilogi-marker.git"
   },
   "resolutions": {
-    "KNreiseAPI": "1.5.3"
+    "KNreiseAPI": "1.5.4"
   }
 }

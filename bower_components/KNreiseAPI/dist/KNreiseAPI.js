@@ -1228,7 +1228,6 @@ KR.SparqlAPI = function (BASE_URL, apiName) {
         });
     }
 
-
     function getData(dataset, callback, errorCallback, options) {
         dataset = _.extend({}, {geomType: 'point'}, dataset);
         if (dataset.kommune) {
@@ -1239,6 +1238,8 @@ KR.SparqlAPI = function (BASE_URL, apiName) {
             _sendQuery(query, _parseResponse, callback, errorCallback);
         } else if (dataset.lokalitet && dataset.type === 'lokalitetpoly') {
             _polyForLokalitet(dataset, callback, errorCallback);
+        } else if (dataset.sparqlQuery) {
+            _sendQuery(dataset.sparqlQuery, _parseResponse, callback, errorCallback);
         } else {
             KR.Util.handleError(errorCallback, 'not enough parameters');
         }
