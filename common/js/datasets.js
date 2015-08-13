@@ -84,7 +84,10 @@ KR.Config = KR.Config || {};
                 name: 'Verneområder',
                 template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
-                    api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                    api.getItem(
+                        {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                        callback
+                    );
                 },
                 toPoint: {
                     showAlways: true,
@@ -213,7 +216,10 @@ KR.Config = KR.Config || {};
                 name: 'Jernbanemuseet',
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
-                    api.getJernbaneItem(feature.properties.id, callback);
+                    api.getItem(
+                        {api: 'jernbanemuseet', id:  feature.properties.id},
+                        callback
+                    );
                 },
                 isStatic: true,
                 bbox: false,

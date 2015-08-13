@@ -566,7 +566,10 @@
             name: 'Verneområder',
             template: _.template($('#verneomraader_template').html()),
             getFeatureData: function (feature, callback) {
-                api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                api.getItem(
+                    {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                    callback
+                );
             },
             toPoint: {
                 showAlways: true,
