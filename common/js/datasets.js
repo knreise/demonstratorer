@@ -228,6 +228,11 @@ KR.Config = KR.Config || {};
             'arkeologi': {
                 grouped: true,
                 name: 'Arkeologi',
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         name: 'MUSIT',
@@ -263,6 +268,11 @@ KR.Config = KR.Config || {};
             'historie': {
                 grouped: true,
                 name: 'Historie',
+                style: {
+                    fillcolor: '#D252B9',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         id: 'riksantikvaren',
@@ -325,6 +335,11 @@ KR.Config = KR.Config || {};
             'kunst': {
                 grouped: true,
                 name: 'Kunst',
+                style: {
+                    fillcolor: '#72B026',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         name: 'DiMu',

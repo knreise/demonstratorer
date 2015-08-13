@@ -126,6 +126,9 @@ KR.Style = {};
         }
     };
 
+    ns.groups = {
+
+    };
 
     /*
         Gets the style config for a dataset in KR.Style.datasets
@@ -196,6 +199,11 @@ KR.Style = {};
 
     function getConfig(feature) {
         var config;
+
+        if (feature.properties && feature.properties.groupId) {
+            return ns.groups[feature.properties.groupId];
+        }
+
         if (feature.properties && feature.properties.datasetId) {
             config = ns.getDatasetStyle(feature.properties.datasetId);
         }
@@ -376,6 +384,29 @@ KR.Style = {};
                 return getFillColor(config, feature, useBaseColor);
             }
             return hexToName(getFillColor(config, feature));
+        }
+    };
+
+    ns.colorForDataset = function (dataset, hex, useBaseColor) {
+        var config, datasetId;
+        if (dataset.grouped) {
+            config = ns.groups[KR.Util.stamp(dataset)];
+            if (!config) {
+                datasetId = dataset.datasets[0].extras.datasetId;
+            }
+        } else {
+            if (!datasetId) {
+                datasetId = dataset.extras.datasetId;
+            }
+            config = getConfig({
+                properties: {datasetId: datasetId}
+            });
+        }
+        if (config) {
+            if (hex) {
+                return getFillColor(config, null, useBaseColor);
+            }
+            return hexToName(getFillColor(config, null));
         }
     };
 
