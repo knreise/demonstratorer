@@ -211,7 +211,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         }
     }
 
-    function _addDataset(dataset, filter, initBounds) {
+    function _addDataset(dataset, filter, initBounds, loadedCallback) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
         if (dataset.datasets) {
@@ -353,6 +353,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
         _reloadData(null, initBounds, undefined, function () {
             _checkLoadWhenLessThan(dataset);
+            if (loadedCallback) {
+                loadedCallback();
+            }
         });
 
         if (!_isStatic(dataset) || dataset.minZoom) {
@@ -395,11 +398,16 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
         Can be supplied an initial bbox for filtering and a filter function
     */
-    function loadDatasets(datasets, bounds, filter) {
+    function loadDatasets(datasets, bounds, filter, loadedCallback) {
 
         datasets = _.filter(datasets, function (dataset) {
             return !dataset.noLoad;
         });
+
+        var loaded;
+        if (loadedCallback) {
+            loaded = _.after(datasets.length, loadedCallback);
+        }
 
         var res = _.map(datasets, function (dataset) {
 
@@ -426,7 +434,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            return _addDataset(dataset, filter, bounds);
+            return _addDataset(dataset, filter, bounds, loaded);
         });
         reloads = _.pluck(res, 'reload');
         return _.pluck(res, 'layer');

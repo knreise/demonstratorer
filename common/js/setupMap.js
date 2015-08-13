@@ -1,4 +1,4 @@
-/*global L:false, alert:false, KR:false, turf:false */
+/*global L:false, alert:false, KR:false, turf:false, location: false */
 
 /*
     Utility for setting up a Leaflet map based on config
@@ -23,24 +23,22 @@ var KR = this.KR || {};
     };
 
     function _setupLocationUrl(map) {
-
-        var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
             location.hash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
-        }
+        };
         map.on('moveend', moved);
         moved();
     }
 
-    function _getLocationUrl(map) {
+    function _getLocationUrl() {
         var hash = location.hash;
         if (hash && hash !== '') {
             var parts = hash.replace('#', '').split('/');
             var zoom = parseInt(parts[0], 10);
             var lat = parseFloat(parts[1]);
             var lon = parseFloat(parts[2]);
-            map.setView([lat, lon], zoom);
+            return {lat: lat, lon: lon, zoom: zoom};
         }
     }
 
@@ -263,9 +261,15 @@ var KR = this.KR || {};
             }
 
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
-
             map.fitBounds(bounds);
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter);
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, function () {
+                var locationFromUrl = _getLocationUrl(map);
+                if (locationFromUrl) {
+                    map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
+                }
+                _setupLocationUrl(map);
+            });
+
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
@@ -275,10 +279,6 @@ var KR = this.KR || {};
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }
-
-            //track poition from url
-            _getLocationUrl(map);
-            _setupLocationUrl(map);
         }
 
         options.map = map;

@@ -243,7 +243,7 @@ KR.Config = KR.Config || {};
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
                         dataset: {
-                            filter: 'FILTER regex(?loccatlabel, \'^Arkeologisk\', "i")',
+                            filter: 'FILTER regex(?loccatlabel, "^Arkeologisk", "i") .',
                             api: 'kulturminnedataSparql',
                             kommune: komm,
                             fylke: fylke
@@ -269,7 +269,7 @@ KR.Config = KR.Config || {};
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
                         dataset: {
-                            filter: 'FILTER (!regex(?loccatlabel, \'^Arkeologisk\', "i"))',
+                            filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
                             api: 'kulturminnedataSparql',
                             kommune: komm,
                             fylke: fylke
@@ -331,10 +331,10 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 bboxFunc: sparqlBoox
             };
-
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
-
+            _.extend(list.arkeologi.datasets[1], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;
