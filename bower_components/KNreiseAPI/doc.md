@@ -74,11 +74,12 @@ Note: For some apis the getBbox uses the getWithin function, as bbox is not supp
             <function> errorCalback
         );
       
-* **getNorvegianaItem**: Gets a single item from norvegiana. Calls successCallback with a GeoJSON Feature.
+* **getItem**: Gets a single item from an api. Calls successCallback with a GeoJSON Feature.
     
-        getNorvegianaItem(
-            <string> itemId,
-            <function>successCallback
+        getItem(
+            <Dataset> dataset, // with 'api' and 'id'
+            <function> successCallback,
+            <function> errorCalback
         );
       
 ###Data types

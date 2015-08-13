@@ -353,6 +353,10 @@ KR.Util = KR.Util || {};
         };
     };
 
+    /*
+        Query cartodb to find the municipality which "mostly" covers a given
+        bbox. 
+    */
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
@@ -370,12 +374,18 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Round a number to n decimals
+    */
     ns.round = function (number, decimals) {
         decimals = decimals || 2;
         var exp = Math.pow(10, decimals);
         return Math.round(number * exp) / exp;
     };
 
+    /*
+        Given lat, lng and zoom, return an url hash
+    */
     var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
     ns.getPositionHash = function (lat, lng, zoom) {
         return hashTemplate({
@@ -383,7 +393,7 @@ KR.Util = KR.Util || {};
             lat: ns.round(lat, 4),
             lon: ns.round(lng, 4)
         });
-    }
+    };
 
 }(KR.Util));
 
@@ -1520,8 +1530,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             feature.properties.license = null;
         }
 
-        console.log(feature.properties);
-
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -2134,7 +2142,10 @@ KR.Config = KR.Config || {};
                 name: 'Verneområder',
                 template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
-                    api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                    api.getItem(
+                        {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                        callback
+                    );
                 },
                 toPoint: {
                     showAlways: true,
@@ -2263,7 +2274,10 @@ KR.Config = KR.Config || {};
                 name: 'Jernbanemuseet',
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
-                    api.getJernbaneItem(feature.properties.id, callback);
+                    api.getItem(
+                        {api: 'jernbanemuseet', id:  feature.properties.id},
+                        callback
+                    );
                 },
                 isStatic: true,
                 bbox: false,
