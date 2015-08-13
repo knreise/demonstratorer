@@ -3330,6 +3330,9 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
     'use strict';
 
     function _showCollection(collection) {
+
+        console.log(collection);
+
         var map = KR.Util.createMap('map', {layer: layer});
         KR.SplashScreen(
             map,
@@ -3340,7 +3343,7 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
         );
         $('title').append(collection.title);
 
-        var bounds = L.latLngBounds.fromBBoxArray(turf.extent(collection.features));
+        var bounds = L.latLngBounds.fromBBoxArray(turf.extent(collection.geo_json));
         var sidebar = KR.Util.setupSidebar(map);
 
         var _addClusterClick = KR.Util.clusterClick(sidebar);
@@ -3349,7 +3352,7 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
         L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
         map.fitBounds(bounds);
 
-        var featureLayer = L.Knreise.geoJson(collection.features, {
+        var featureLayer = L.Knreise.geoJson(collection.geo_json, {
             onEachFeature: function (feature, layer) {
                 _addFeatureClick(feature, layer);
             }
