@@ -2134,7 +2134,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         }
     }
 
-    function _addDataset(dataset, filter, initBounds) {
+    function _addDataset(dataset, filter, initBounds, loadedCallback) {
         var vectorLayer = _createVectorLayer(dataset, map);
 
         if (dataset.datasets) {
@@ -2276,6 +2276,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
         _reloadData(null, initBounds, undefined, function () {
             _checkLoadWhenLessThan(dataset);
+            if (loadedCallback) {
+                loadedCallback();
+            }
         });
 
         if (!_isStatic(dataset) || dataset.minZoom) {
@@ -2318,11 +2321,16 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
         Can be supplied an initial bbox for filtering and a filter function
     */
-    function loadDatasets(datasets, bounds, filter) {
+    function loadDatasets(datasets, bounds, filter, loadedCallback) {
 
         datasets = _.filter(datasets, function (dataset) {
             return !dataset.noLoad;
         });
+
+        var loaded;
+        if (loadedCallback) {
+            loaded = _.after(datasets.length, loadedCallback);
+        }
 
         var res = _.map(datasets, function (dataset) {
 
@@ -2349,7 +2357,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            return _addDataset(dataset, filter, bounds);
+            return _addDataset(dataset, filter, bounds, loaded);
         });
         reloads = _.pluck(res, 'reload');
         return _.pluck(res, 'layer');
@@ -2744,6 +2752,94 @@ KR.Config = KR.Config || {};
                 isStatic: true,
                 bbox: false,
                 description: 'Jernbanemuseet'
+            },
+            'arkeologi': {
+                grouped: true,
+                name: 'Arkeologi',
+                datasets: [
+                    {
+                        name: 'MUSIT',
+                        provider: 'Universitetsmuseene',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'MUSIT'
+                        },
+                        template: KR.Util.getDatasetTemplate('musit')
+                    },
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER regex(?loccatlabel, "^Arkeologisk", "i") .',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    }
+                ],
+                description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
+            },
+            'historie': {
+                grouped: true,
+                name: 'Historie',
+                datasets: [
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    },
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: '-dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false
+                    },
+                ],
+                description: 'Historiedata fra Riksantikvaren og Digitalt museum '
+            },
+            'kunst': {
+                grouped: true,
+                name: 'Kunst',
+                datasets: [
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: 'dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false
+                    },
+                ],
+                description: 'Kunstdata fra Digitalt museum '
             }
         };
 
@@ -2763,10 +2859,10 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 bboxFunc: KR.Util.sparqlBbox
             };
-
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
-
+            _.extend(list.arkeologi.datasets[1], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;
@@ -2977,7 +3073,7 @@ KR.ResponseForm = function (div, baseData) {
     div.find('.close ').click(_resetForm);
 };
 
-/*global L:false, alert:false, KR:false, turf:false */
+/*global L:false, alert:false, KR:false, turf:false, location: false */
 
 /*
     Utility for setting up a Leaflet map based on config
@@ -2988,24 +3084,22 @@ var KR = this.KR || {};
     'use strict';
 
     function _setupLocationUrl(map) {
-
-        var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
             location.hash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
-        }
+        };
         map.on('moveend', moved);
         moved();
     }
 
-    function _getLocationUrl(map) {
+    function _getLocationUrl() {
         var hash = location.hash;
         if (hash && hash !== '') {
             var parts = hash.replace('#', '').split('/');
             var zoom = parseInt(parts[0], 10);
             var lat = parseFloat(parts[1]);
             var lon = parseFloat(parts[2]);
-            map.setView([lat, lon], zoom);
+            return {lat: lat, lon: lon, zoom: zoom};
         }
     }
 
@@ -3187,9 +3281,15 @@ var KR = this.KR || {};
             }
 
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
-
             map.fitBounds(bounds);
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter);
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, function () {
+                var locationFromUrl = _getLocationUrl(map);
+                if (locationFromUrl) {
+                    map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
+                }
+                _setupLocationUrl(map);
+            });
+
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
@@ -3199,10 +3299,6 @@ var KR = this.KR || {};
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }
-
-            //track poition from url
-            _getLocationUrl(map);
-            _setupLocationUrl(map);
         }
 
         options.map = map;

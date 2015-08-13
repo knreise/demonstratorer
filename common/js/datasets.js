@@ -238,6 +238,94 @@ KR.Config = KR.Config || {};
                 isStatic: true,
                 bbox: false,
                 description: 'Jernbanemuseet'
+            },
+            'arkeologi': {
+                grouped: true,
+                name: 'Arkeologi',
+                datasets: [
+                    {
+                        name: 'MUSIT',
+                        provider: 'Universitetsmuseene',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'MUSIT'
+                        },
+                        template: KR.Util.getDatasetTemplate('musit')
+                    },
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER regex(?loccatlabel, "^Arkeologisk", "i") .',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    }
+                ],
+                description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
+            },
+            'historie': {
+                grouped: true,
+                name: 'Historie',
+                datasets: [
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    },
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: '-dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false
+                    },
+                ],
+                description: 'Historiedata fra Riksantikvaren og Digitalt museum '
+            },
+            'kunst': {
+                grouped: true,
+                name: 'Kunst',
+                datasets: [
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: 'dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false
+                    },
+                ],
+                description: 'Kunstdata fra Digitalt museum '
             }
         };
 
@@ -257,10 +345,10 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 bboxFunc: KR.Util.sparqlBbox
             };
-
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
-
+            _.extend(list.arkeologi.datasets[1], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;
