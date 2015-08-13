@@ -103,12 +103,25 @@
 <% if (image) { %> 
 <img class="splash-image" src="<%= image %>">
 <% } %>
-<% if (description) { %> 
-<div class="splash-content"><%= description %></div>
-<% } %>
-<label class="splash-content">
-    <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
-</label>
+<div class="splash-content">
+    <% if (description) { %> 
+    <div><%= description %></div>
+    <% } %>
+    <% if (creator) { %> 
+
+        <table class="sidebar-table">
+            <tr>
+              <td>Laget av</td>
+              <td><%= creator %></td>
+            </tr>
+        </table>
+
+    <% } %>
+
+    <label>
+        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
+    </label>
+</div>
 </script>
 
 <script type="text/template" id="verneomraader_template">
