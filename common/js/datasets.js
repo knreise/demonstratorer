@@ -308,7 +308,8 @@ KR.Config = KR.Config || {};
                             dataset: 'Foto-SF'
                         },
                         isStatic: true,
-                        bbox: false
+                        bbox: false,
+                        template: KR.Util.getDatasetTemplate('foto_sf')
                     },
                     {
                         dataset: {

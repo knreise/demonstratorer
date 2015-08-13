@@ -133,7 +133,8 @@ module.exports = {
     'husmann',
     'brukerminne',
     'popup',
-    'jernbanemuseet'
+    'jernbanemuseet',
+    'foto_sf'
   ],
   demoTemplates: [
     'list_item',
