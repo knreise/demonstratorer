@@ -376,6 +376,15 @@ KR.Util = KR.Util || {};
         return Math.round(number * exp) / exp;
     };
 
+    var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+    ns.getPositionHash = function (lat, lng, zoom) {
+        return hashTemplate({
+            zoom: zoom,
+            lat: ns.round(lat, 4),
+            lon: ns.round(lng, 4)
+        });
+    }
+
 }(KR.Util));
 
 /*global L:false */
@@ -1643,6 +1652,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'extras')) {
                     feature.properties = _.extend(feature.properties, dataset.extras);
                 }
+                feature.properties.feedbackForm = dataset.feedbackForm;
                 if (_.has(dataset, 'mappings')) {
                     _.each(dataset.mappings, function (value, key) {
                         feature.properties[key] = feature.properties[value];
@@ -2110,7 +2120,8 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt',
-                allowTopic: true
+                allowTopic: true,
+                feedbackForm: true
             },
             'verneomr': {
                 id: 'verneomraader',
