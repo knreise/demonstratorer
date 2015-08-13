@@ -353,6 +353,10 @@ KR.Util = KR.Util || {};
         };
     };
 
+    /*
+        Query cartodb to find the municipality which "mostly" covers a given
+        bbox. 
+    */
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
@@ -370,12 +374,18 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Round a number to n decimals
+    */
     ns.round = function (number, decimals) {
         decimals = decimals || 2;
         var exp = Math.pow(10, decimals);
         return Math.round(number * exp) / exp;
     };
 
+    /*
+        Given lat, lng and zoom, return an url hash
+    */
     var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
     ns.getPositionHash = function (lat, lng, zoom) {
         return hashTemplate({
@@ -383,7 +393,7 @@ KR.Util = KR.Util || {};
             lat: ns.round(lat, 4),
             lon: ns.round(lng, 4)
         });
-    }
+    };
 
 }(KR.Util));
 
