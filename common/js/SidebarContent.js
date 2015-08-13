@@ -140,7 +140,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         } else {
             feature.properties.license = null;
         }
-
+        console.log(feature.properties);
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));

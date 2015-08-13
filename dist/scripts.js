@@ -1379,7 +1379,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         } else {
             feature.properties.license = null;
         }
-
+        console.log(feature.properties);
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -2715,8 +2715,33 @@ KR.Config = KR.Config || {};
                             query: '-dc_subject_facet:Kunst'
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                        isStatic: false
+                        isStatic: false,
+                        bbox: true
                     },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Industrimuseum'
+                        },
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Foto-SF'
+                        },
+                        isStatic: true,
+                        bbox: false
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Kystreise'
+                        },
+                        isStatic: true,
+                        bbox: false
+                    }
                 ],
                 description: 'Historiedata fra Riksantikvaren og Digitalt museum '
             },
