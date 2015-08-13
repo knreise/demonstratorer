@@ -203,7 +203,22 @@ KR.Config = KR.Config || {};
                     count: 5,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
-            }
+            },
+            'jernbane': {
+                id: 'jernbane',
+                dataset: {
+                    api: 'jernbanemuseet'
+                },
+                provider: 'Jernbanemuseet',
+                name: 'Jernbanemuseet',
+                template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+                getFeatureData: function (feature, callback) {
+                    api.getJernbaneItem(feature.properties.id, callback);
+                },
+                isStatic: true,
+                bbox: false,
+                description: 'Jernbanemuseet'
+            },
         };
 
         if (!komm && !fylke) {
