@@ -52,7 +52,8 @@ module.exports = {
     'common/js/datasets.js',
     'common/js/SplashScreen.js',
     'common/js/ResponseForm.js',
-    'common/js/setupMap.js'
+    'common/js/setupMap.js',
+    'common/js/setupCollection.js'
   ],
   demoScriptsExternal3d: [
         'bower_components/jquery/dist/jquery.min.js',
