@@ -1159,6 +1159,15 @@ function getLocationLink(feature) {
     return baseUrl + hash;
 }
 
+function setFeatureHash(featureId){
+    var hash = location.hash.split(':')[0];
+    if (featureId) {
+        location.hash = hash + ':' + encodeURIComponent(featureId);
+    } else {
+        location.hash = hash;
+    }
+}
+
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
@@ -1210,6 +1219,11 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 
+        if (feature.id) {
+            console.log('set hash');
+            setFeatureHash(feature.id);
+        }
+
         var div = $('<div></div>');
         var params = {
             id: feature.id,
@@ -1229,6 +1243,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     _removeContent: function () {
         $(this.getContainer()).html('');
+        setFeatureHash();
     }
 
 });
@@ -2909,7 +2924,14 @@ var KR = this.KR || {};
         var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
-            location.hash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
+            var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
+
+            var hash = location.hash.split(':');
+            if (hash.length > 1) {
+                var prevId = _.rest(hash).join(':');
+                locationHash += ':' + prevId;
+            }
+            location.hash = locationHash;
         }
         map.on('moveend', moved);
         moved();
