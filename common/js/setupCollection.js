@@ -7,7 +7,13 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
 
     function _showCollection(collection) {
         var map = KR.Util.createMap('map', {layer: layer});
-        KR.SplashScreen(map, collection.title, collection.description, collection.image);
+        KR.SplashScreen(
+            map,
+            collection.title,
+            collection.description,
+            collection.image,
+            collection.creator
+        );
         $('title').append(collection.title);
 
         var bounds = L.latLngBounds.fromBBoxArray(turf.extent(collection.features));

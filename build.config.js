@@ -143,7 +143,8 @@ module.exports = {
     'footer',
     'error',
     'message',
-    'response_form'
+    'response_form',
+    'splashscreen'
   ],
 
   demonstrators: [

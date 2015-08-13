@@ -141,6 +141,20 @@
 </div>
 </script>
 
+
+<script type="text/template" id="splashscreen_template">
+<h2><%= title %></h2>
+<% if (image) { %> 
+<img class="splash-image" src="<%= image %>">
+<% } %>
+<% if (description) { %> 
+<div class="splash-content"><%= description %></div>
+<% } %>
+<label class="splash-content">
+    <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
+</label>
+</script>
+
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
 
