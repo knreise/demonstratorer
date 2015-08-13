@@ -594,7 +594,10 @@
             name: 'Verneområder',
             template: KR.Util.getDatasetTemplate('verneomraader'),
             getFeatureData: function (feature, callback) {
-                api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                api.getItem(
+                    {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                    callback
+                );
             },
             toPoint: {
                 showAlways: true,

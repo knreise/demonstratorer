@@ -524,13 +524,19 @@ KR.NorvegianaAPI = function (apiName) {
             item.item.fields.abm_latLong[0].split(','),
             parseFloat
         );
+
+        var id;
+        if (_.has(allProperties, 'delving_hubId')) {
+            id = apiName + '_' + allProperties.delving_hubId[0];
+        }
+
         var feature = KR.Util.createGeoJSONFeature(
             {
                 lat: position[0],
                 lng: position[1]
             },
             properties,
-            apiName + '_' + allProperties.delving_hubId[0]
+            id
         );
         return feature;
     }
@@ -662,32 +668,9 @@ KR.NorvegianaAPI = function (apiName) {
         _get(params, parameters, callback, errorCallback, options);
     }
 
-
-    function _getOrQuery(parameters, callback, errorCallback, options) {
-        var queries = parameters.query;
-        var features = [];
-
-        var sum = _.after(queries.length, function () {
-            var unique = _.uniq(features, false, function (feature) {
-                return feature.properties.allProps.europeana_uri[0];
-            });
-            callback(KR.Util.createFeatureCollection(unique));
-        });
-
-        var finished = function (geoJson) {
-            features = features.concat(geoJson.features);
-            sum();
-        };
-
-        _.each(queries, function (query) {
-            parameters.query = query;
-            getData(parameters, finished, errorCallback, options);
-        });
-    }
-
     function getData(parameters, callback, errorCallback, options) {
         if (parameters.query && _.isArray(parameters.query)) {
-            var query = 'delving_spec:' + parameters.dataset + 
+            var query = 'delving_spec:' + parameters.dataset +
                 ' AND (' + parameters.query.join(' OR ') + ')' +
                 ' AND delving_hasGeoHash:true';
             var params = {
@@ -707,12 +690,10 @@ KR.NorvegianaAPI = function (apiName) {
             }
             return;
         }
-
-        var params = {};
-        _get(params, parameters, callback, errorCallback, options);
+        _get({}, parameters, callback, errorCallback, options);
     }
 
-    function getItem(id, callback) {
+    function getItem(id, callback, errorCallback) {
         var params = {
             id: id,
             format: 'json'
@@ -723,7 +704,8 @@ KR.NorvegianaAPI = function (apiName) {
             function (response) {
                 return _parseNorvegianaItem(response.result);
             },
-            callback
+            callback,
+            errorCallback
         );
     }
 
@@ -816,27 +798,32 @@ KR.WikipediaAPI = function (BASE_URL, MAX_RADIUS, linkBase, apiName) {
     }
 
     function _parseWikimediaItem(item, extdaDataDict) {
-
+        extdaDataDict = extdaDataDict || {};
         var extraData = extdaDataDict[item.pageid];
+        if (extraData) {
+            item = _.extend(item, extraData);
+        }
+
         var thumbnail;
-        if (_.has(extraData, 'thumbnail')) {
-            thumbnail = extraData.thumbnail.source;
+        if (_.has(item, 'thumbnail')) {
+            thumbnail = item.thumbnail.source;
         }
 
         var images = null;
-        if (extraData.pageimage) {
-            images = [_getWikimediaImageUrl(extraData.pageimage)];
+        if (item.pageimage) {
+            images = [_getWikimediaImageUrl(item.pageimage)];
         }
         var link = linkBase + item.pageid;
         var params = {
             thumbnail: thumbnail,
             images: images,
             title: item.title,
-            content: extraData.extract,
+            content: item.extract,
             link: link,
             dataset: 'Wikipedia',
             provider: 'Wikipedia',
-            contentType: 'TEXT'
+            contentType: 'TEXT',
+            id: item.pageid
         };
         return KR.Util.createGeoJSONFeature(
             {lat: item.lat, lng: item.lon},
@@ -896,8 +883,76 @@ KR.WikipediaAPI = function (BASE_URL, MAX_RADIUS, linkBase, apiName) {
         }, errorCallback);
     }
 
+    function _parseCategoryResult(results) {
+
+        var features = _.chain(results)
+            .reduce(function (acc, dict) {
+                _.each(dict, function (parameters, key) {
+                    if (_.has(acc, key)) {
+                        acc[key] = _.extend(acc[key], parameters);
+                    } else {
+                        acc[key] = parameters;
+                    }
+                });
+
+                return acc;
+            }, {})
+            .filter(function (item) {
+                return _.has(item, 'coordinates');
+            }).map(function (item) {
+                item.lat = item.coordinates[0].lat;
+                item.lon = item.coordinates[0].lon;
+                return item;
+            })
+            .map(_parseWikimediaItem)
+            .value();
+        return KR.Util.createFeatureCollection(features);
+    }
+
+
+    function getData(parameters, callback, errorCallback, options) {
+        var params = {
+            'action': 'query',
+            'generator': 'categorymembers',
+            'gcmtitle': 'Kategori:' + parameters.category,
+            'prop': 'coordinates',
+            'format': 'json'
+        };
+
+        var result = [];
+        function sendRequest(cont) {
+            var mergedParams = _.extend({}, params, cont);
+            var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(mergedParams);
+            KR.Util.sendRequest(url, null, function (response) {
+                result.push(response.query.pages);
+                if (_.has(response, 'continue')) {
+                    sendRequest(response['continue']);
+                } else {
+
+                    callback(_parseCategoryResult(result));
+                }
+            }, errorCallback);
+        }
+        sendRequest({'continue': ''});
+    }
+
+    function getItem(id, callback, errorCallback) {
+        var params = {
+            'action': 'query',
+            'pageids': id,
+            'prop': 'coordinates|pageimages|extracts',
+            'format': 'json'
+        };
+        var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, function (res) {
+            return _parseWikimediaItem(res.query.pages[id]);
+        }, callback, errorCallback);
+    }
+
     return {
-        getWithin: getWithin
+        getWithin: getWithin,
+        getData: getData,
+        getItem: getItem
     };
 };
 
@@ -1734,6 +1789,17 @@ KR.API = function (options) {
         );
     }
 
+    function getItem(dataset, callback, errorCallback) {
+        var api = _getAPI(dataset.api);
+        if (_.has(api, 'getItem')) {
+            api.getItem(dataset.id, callback, errorCallback);
+        } else if (errorCallback) {
+            errorCallback('No getItem function for api ' + dataset.api);
+        } else {
+            throw new Error('No getItem function for api ' + dataset.api);
+        }
+    }
+
     return {
         getData: getData,
         getWithin: getWithin,
@@ -1743,12 +1809,7 @@ KR.API = function (options) {
         datasets: function () {
             return _.extend({}, datasets);
         },
-        getNorvegianaItem: function (item, callback) {
-            apis.norvegiana.getItem(item, callback);
-        },
-        getJernbaneItem: function (item, callback) {
-            apis.jernbanemuseet.getItem(item, callback);
-        }
+        getItem: getItem
     };
 
 };

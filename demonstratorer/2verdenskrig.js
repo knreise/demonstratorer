@@ -54,7 +54,10 @@
             name: 'Jernbanemuseet',
             template: KR.Util.getDatasetTemplate('jernbanemuseet'),
             getFeatureData: function (feature, callback) {
-                api.getJernbaneItem(feature.properties.id, callback);
+                api.getItem(
+                    {api: 'jernbanemuseet', id:  feature.properties.id},
+                    callback
+                );
             },
             isStatic: true,
             bbox: false
@@ -89,7 +92,10 @@
             bbox: false,
             isStatic: true,
             getFeatureData: function (feature, callback) {
-                api.getWikipediaItem(feature.properties.id, callback);
+                api.getItem(
+                    {api: 'wikipedia', id: feature.properties.id},
+                    callback
+                );
             }
         },
         {
