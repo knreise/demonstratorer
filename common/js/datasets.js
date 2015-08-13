@@ -242,6 +242,11 @@ KR.Config = KR.Config || {};
             'arkeologi': {
                 grouped: true,
                 name: 'Arkeologi',
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         name: 'MUSIT',
@@ -277,6 +282,11 @@ KR.Config = KR.Config || {};
             'historie': {
                 grouped: true,
                 name: 'Historie',
+                style: {
+                    fillcolor: '#D252B9',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         id: 'riksantikvaren',
@@ -305,14 +315,45 @@ KR.Config = KR.Config || {};
                             query: '-dc_subject_facet:Kunst'
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                        isStatic: false
+                        isStatic: false,
+                        bbox: true
                     },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Industrimuseum'
+                        },
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Foto-SF'
+                        },
+                        isStatic: true,
+                        bbox: false,
+                        template: KR.Util.getDatasetTemplate('foto_sf')
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Kystreise'
+                        },
+                        isStatic: true,
+                        bbox: false
+                    }
                 ],
                 description: 'Historiedata fra Riksantikvaren og Digitalt museum '
             },
             'kunst': {
                 grouped: true,
                 name: 'Kunst',
+                style: {
+                    fillcolor: '#72B026',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         name: 'DiMu',

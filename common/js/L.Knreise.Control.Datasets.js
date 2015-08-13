@@ -19,13 +19,6 @@
         var _error = null;
         var label, _icon;
 
-        function _getDatasetId() {
-            if (dataset.grouped) {
-                return dataset.datasets[0].extras.datasetId;
-            }
-            return dataset.extras.datasetId;
-        }
-
         function _getIcon(iconAppend) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa';
@@ -43,9 +36,7 @@
             }
 
             if (layer.enabled) {
-                icon.style.color = KR.Style.colorForFeature({
-                    properties: {datasetId: _getDatasetId()}
-                }, true, true);
+                icon.style.color = KR.Style.colorForDataset(dataset, true, true);
             } else {
                 icon.style.color = '#ddd';
             }

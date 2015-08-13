@@ -611,6 +611,9 @@ KR.Style = {};
         }
     };
 
+    ns.groups = {
+
+    };
 
     /*
         Gets the style config for a dataset in KR.Style.datasets
@@ -681,6 +684,11 @@ KR.Style = {};
 
     function getConfig(feature) {
         var config;
+
+        if (feature.properties && feature.properties.groupId) {
+            return ns.groups[feature.properties.groupId];
+        }
+
         if (feature.properties && feature.properties.datasetId) {
             config = ns.getDatasetStyle(feature.properties.datasetId);
         }
@@ -861,6 +869,29 @@ KR.Style = {};
                 return getFillColor(config, feature, useBaseColor);
             }
             return hexToName(getFillColor(config, feature));
+        }
+    };
+
+    ns.colorForDataset = function (dataset, hex, useBaseColor) {
+        var config, datasetId;
+        if (dataset.grouped) {
+            config = ns.groups[KR.Util.stamp(dataset)];
+            if (!config) {
+                datasetId = dataset.datasets[0].extras.datasetId;
+            }
+        } else {
+            if (!datasetId) {
+                datasetId = dataset.extras.datasetId;
+            }
+            config = getConfig({
+                properties: {datasetId: datasetId}
+            });
+        }
+        if (config) {
+            if (hex) {
+                return getFillColor(config, null, useBaseColor);
+            }
+            return hexToName(getFillColor(config, null));
         }
     };
 
@@ -1469,7 +1500,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         } else {
             feature.properties.license = null;
         }
-
+        console.log(feature.properties);
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -1577,13 +1608,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         var _error = null;
         var label, _icon;
 
-        function _getDatasetId() {
-            if (dataset.grouped) {
-                return dataset.datasets[0].extras.datasetId;
-            }
-            return dataset.extras.datasetId;
-        }
-
         function _getIcon(iconAppend) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa';
@@ -1601,9 +1625,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             }
 
             if (layer.enabled) {
-                icon.style.color = KR.Style.colorForFeature({
-                    properties: {datasetId: _getDatasetId()}
-                }, true, true);
+                icon.style.color = KR.Style.colorForDataset(dataset, true, true);
             } else {
                 icon.style.color = '#ddd';
             }
@@ -1978,9 +2000,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
     function _copyProperties(dataset) {
         var params = _.reduce(_.without(_.keys(dataset), 'datasets'), function (acc, key) {
-            acc[key] = dataset[key];
+            if (key !== 'style') {
+                acc[key] = dataset[key];
+            }
             return acc;
         }, {});
+
+        if (dataset.style) {
+            params.extras = params.extras || {};
+            var groupId = KR.Util.stamp(dataset);
+            params.extras.groupId = groupId
+            KR.Style.groups[groupId] = dataset.style;
+        }
         dataset.datasets  = _.map(dataset.datasets, function (dataset) {
             return _.extend({}, params, dataset);
         });
@@ -2756,6 +2787,11 @@ KR.Config = KR.Config || {};
             'arkeologi': {
                 grouped: true,
                 name: 'Arkeologi',
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         name: 'MUSIT',
@@ -2791,6 +2827,11 @@ KR.Config = KR.Config || {};
             'historie': {
                 grouped: true,
                 name: 'Historie',
+                style: {
+                    fillcolor: '#D252B9',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         id: 'riksantikvaren',
@@ -2819,14 +2860,45 @@ KR.Config = KR.Config || {};
                             query: '-dc_subject_facet:Kunst'
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                        isStatic: false
+                        isStatic: false,
+                        bbox: true
                     },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Industrimuseum'
+                        },
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Foto-SF'
+                        },
+                        isStatic: true,
+                        bbox: false,
+                        template: KR.Util.getDatasetTemplate('foto_sf')
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Kystreise'
+                        },
+                        isStatic: true,
+                        bbox: false
+                    }
                 ],
                 description: 'Historiedata fra Riksantikvaren og Digitalt museum '
             },
             'kunst': {
                 grouped: true,
                 name: 'Kunst',
+                style: {
+                    fillcolor: '#72B026',
+                    circle: false,
+                    thumbnail: true
+                },
                 datasets: [
                     {
                         name: 'DiMu',
@@ -3330,8 +3402,6 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
     'use strict';
 
     function _showCollection(collection) {
-
-        console.log(collection);
 
         var map = KR.Util.createMap('map', {layer: layer});
         KR.SplashScreen(

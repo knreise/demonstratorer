@@ -55,9 +55,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
     function _copyProperties(dataset) {
         var params = _.reduce(_.without(_.keys(dataset), 'datasets'), function (acc, key) {
-            acc[key] = dataset[key];
+            if (key !== 'style') {
+                acc[key] = dataset[key];
+            }
             return acc;
         }, {});
+
+        if (dataset.style) {
+            params.extras = params.extras || {};
+            var groupId = KR.Util.stamp(dataset);
+            params.extras.groupId = groupId
+            KR.Style.groups[groupId] = dataset.style;
+        }
         dataset.datasets  = _.map(dataset.datasets, function (dataset) {
             return _.extend({}, params, dataset);
         });
