@@ -828,6 +828,11 @@ KR.Style = {};
         };
     };
 
+    ns.getPathStyleForGroup = function (groupId, clickable) {
+        var feature = {properties: {groupId: groupId}};
+        return ns.getPathStyle(feature, clickable);
+    };
+
 }(KR.Style));
 
 /*global L:false, KR:false*/
@@ -2490,8 +2495,12 @@ KR.Config = KR.Config || {};
         var initKulturminnePoly = function (map, dataset) {
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
-                    feature.properties.datasetId = dataset.id;
-                    layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    if (dataset.extras && dataset.extras.groupId) {
+                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
+                    } else {
+                        feature.properties.datasetId = dataset.id;
+                        layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    }
                     layer.on('click', function () {
                         var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
                             return (parentLayer.feature.properties.id === feature.properties.lok);
@@ -2812,7 +2821,7 @@ KR.Config = KR.Config || {};
         };
 
         if (!komm && !fylke) {
-            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
                     if (kommune < 1000) {
                         kommune = '0' + kommune;
@@ -2825,7 +2834,7 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: sparqlBoox
+                bboxFunc: sparqlBbox
             };
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);

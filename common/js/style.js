@@ -429,4 +429,9 @@ KR.Style = {};
         };
     };
 
+    ns.getPathStyleForGroup = function (groupId, clickable) {
+        var feature = {properties: {groupId: groupId}};
+        return ns.getPathStyle(feature, clickable);
+    };
+
 }(KR.Style));
