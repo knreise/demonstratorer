@@ -3,13 +3,13 @@
         <span class="header-text" title="<%= title %>"><%= title %></span>
         <span class="header-box">
             <div><i class="fa fa-<%= icon %> fa-lg"></i></div>
-            <% if (distance) { %><div><%=distance %> km</div><% } %>
+            <% if (!_.isUndefined(distance)) { %><div><%=distance %> km</div><% } %>
         </span>
     </div>
     <% if (!minimal) { %>
     <div class="panel-body">
-    <% if (thumbnail) { %>
-        <div class="image" style="background-image: url(<%= thumbnail %>);"></div>
+    <% if (image) { %>
+        <div class="image" style="background-image: url(<%= image %>);"></div>
     <%} else if (contentType === 'TEXT') { %>
         <div class="text-box">
             <p><% print(content ? content : 'Ingen tekst') %></p>

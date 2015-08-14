@@ -381,6 +381,34 @@ KR.Util = KR.Util || {};
     };
 
 
+
+    ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
+        KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+            dataset.kommune = kommune;
+            api.getData(dataset, dataLoaded, loadError);
+        });
+    };
+
+
+    ns.distanceAndSort = function (featurecollection, point) {
+
+        var measured = _.map(featurecollection.features, function (feature) {
+            feature.properties.distance = turf.distance(point, feature);
+            return feature;
+        });
+        return turf.featurecollection(measured.sort(function (a, b) {
+            if (a.properties.distance < b.properties.distance) {
+                return -1;
+            }
+            if (a.properties.distance > b.properties.distance) {
+                return 1;
+            }
+            return 0;
+        }));
+    }
+
+
+
     /*
         Round a number to n decimals
     */
@@ -1430,6 +1458,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         if (_.isArray(img)) {
             img = img[0];
         }
+
 
 
         if (!feature.properties.images) {
@@ -2720,7 +2749,7 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: sparqlBoox
+                bboxFunc: KR.Util.sparqlBbox
             };
 
             _.extend(list.riksantikvaren, raParams);
@@ -3197,7 +3226,7 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
         'DigitaltMuseum': KR.Util.getDatasetTemplate('digitalt_museum'),
         'Musit': KR.Util.getDatasetTemplate('musit'),
         'Artsdatabanken': KR.Util.getDatasetTemplate('popup')
-    }
+    };
 
     function _showCollection(collection) {
 
@@ -3215,9 +3244,7 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
 
         _.each(collection.geo_json.features, function (feature) {
             feature.properties.datasetId = feature.properties.provider;
-            console.log(feature.properties.provider)
             if (_.has(templates, feature.properties.provider)) {
-                console.log("!!")
                 feature.template = templates[feature.properties.provider];
             }
         });

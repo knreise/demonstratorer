@@ -10,9 +10,22 @@ var map = L.map('map', {
 
 L.tileLayer.kartverket('topo2graatone').addTo(map);
 
-var api = new KR.API();
+
+var api = new KR.API({
+    flickr: {
+        apikey: 'ab1f664476dabf83a289735f97a6d56c'
+    }
+});
 
 var datasets = [
+    {
+        provider: 'Riksantikvaren',
+        dataset: {
+            api: 'kulturminnedataSparql'
+        },
+        bboxFunc: KR.Util.sparqlBbox,
+        template: KR.Util.getDatasetTemplate('ra_sparql')
+    },
     {
         dataset: {
             api: 'norvegiana',
@@ -20,10 +33,31 @@ var datasets = [
         }
     },
     {
-        dataset:{
+        dataset: {
             api: 'norvegiana',
             dataset: 'MUSIT'
         }
+    },
+    {
+        dataset: {
+            api: 'norvegiana',
+            dataset: 'DiMu'
+        },
+        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+    },
+    {
+        dataset: {
+            api: 'wikipedia'
+        },
+    },
+    {
+        dataset:  {
+            api: 'flickr',
+            user_id: 'trondheim_byarkiv'
+        },
+        provider: 'Trondheim byarkiv',
+        contentType: 'IMAGE',
+        template: KR.Util.getDatasetTemplate('flickr'),
     }
 ];
 
@@ -48,14 +82,27 @@ var pilegrimsledenDovre = {
     mapper: KR.API.mappers.pilegrimsleden_dovre
 };
 
-var circleStyle = {
-    stroke: false,
-    fillColor: '#f00',
-    radius: 10,
-    fillOpacity: 0.8
+
+var markerFunction = function (position) {
+    return new cilogi.L.Marker(position, {
+        fontIconSize: 2,
+        fontIconName: "\uf05b",
+        altIconName: "\uf05b",
+        fontIconColor: "#FF0000",
+        fontIconFont: 'awesome',
+        opacity: 1
+    });
+}
+
+var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {markerFunction: markerFunction});
+
+var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml';
+
+var getLineFunc = function (callback) {
+    KR.Util.getLine(api, pilegrimsleden, callback);
 };
 
-var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {circleStyle: circleStyle});
-
-var linemap = new KR.LineMap(api, map, pilegrimsledenDovre);
+var linemap = new KR.LineMap(api, map, getLineFunc);
 linemap.init(followMap.positionChanged);
+
+KR.SplashScreen(map, 'Gudbrandsdalsleden - guidet tur', $('#description_template').html());

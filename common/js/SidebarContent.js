@@ -131,6 +131,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         }
 
 
+
         if (!feature.properties.images) {
             feature.properties.images = null;
         }
