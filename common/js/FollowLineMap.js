@@ -25,6 +25,7 @@ var KR = this.KR || {};
             }
         );
 
+
         var markerLayer = L.Knreise.geoJson().addTo(map);
 
         markerLayer.on('click', function (e) {
@@ -34,26 +35,41 @@ var KR = this.KR || {};
             }
         });
 
-        function _gotFeatures(features) {
+        function _gotFeatures(features, position) {
+
+            features = KR.Util.distanceAndSort(features, turf.point([position.lng, position.lat]));
+
+            if (features.features.length > 200) {
+                features = KR.Util.createFeatureCollection(_.first(features.features, 200));
+            }
+
             markerLayer.clearLayers().addData(features);
+
             previewStrip.showFeatures(markerLayer.getLayers());
             if (!features.features.length) {
                 previewStrip.showMessage('<em>Ingen funnet!</em>');
             }
+
         }
 
         var marker;
         function _updateMarker(position) {
             if (!marker) {
-                if (options.circleStyle) {
+                if (options.markerFunction) {
+                    marker = options.markerFunction(position);
+                    marker.addTo(map);
+                    marker.setZIndexOffset(1000);
+                } else if (options.circleStyle) {
                     marker = L.circleMarker(
                         position,
                         options.circleStyle
                     ).addTo(map);
                 } else if (options.icon) {
-                    marker = L.marker(position, {icon: options.icon}).addTo(map);
+                    marker = L.marker(position, {icon: options.icon});
+                    marker.setZIndexOffset(1000);
                 } else {
                     marker = L.marker(position).addTo(map);
+                    marker.setZIndexOffset(1000);
                 }
             } else {
                 marker.setLatLng(position);
@@ -68,23 +84,39 @@ var KR = this.KR || {};
             function datasetLoaded(features) {
                 _.each(features.features, function (feature) {
                     feature.properties.datasetId = id;
+                    feature.template = dataset.template;
+                    if (!feature.properties.provider) {
+                        feature.properties.provider = dataset.provider;
+                    }
+                    if (!feature.properties.contentType) {
+                        feature.properties.contentType = dataset.contentType;
+                    }
                 });
 
                 loadedFunc(features);
             }
 
-            api.getBbox(
-                dataset.dataset,
-                bbox,
-                datasetLoaded,
-                errorCallback,
-                {allPages: true}
-            );
+            if (dataset.bboxFunc) {
+                dataset.bboxFunc(
+                    api,
+                    dataset.dataset,
+                    bbox,
+                    datasetLoaded,
+                    errorCallback
+                );
+            } else {
+                api.getBbox(
+                    dataset.dataset,
+                    bbox,
+                    datasetLoaded,
+                    errorCallback,
+                    {allPages: false}
+                );
+            }
         }
 
         function positionChanged(position) {
             previewStrip.moveStart();
-            markerLayer.clearLayers();
             map.setZoom(options.zoom);
             map.panTo(position);
             _updateMarker(position);
@@ -93,7 +125,7 @@ var KR = this.KR || {};
 
             var found = [];
             var featuresLoaded = _.after(datasets.length, function () {
-                _gotFeatures(KR.Util.createFeatureCollection(found));
+                _gotFeatures(KR.Util.createFeatureCollection(found), position);
             });
 
             function errorCallback() {

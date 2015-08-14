@@ -41,6 +41,85 @@
 <div id="cesium-viewer"></div>
 
 
+<script type="text/template" id="cesium_sparql_kulturminne_template">
+<h3><%= label %></h3>
+
+<div class="cesium-sidebar-body">
+    <p><%= loklab%></p>
+    <p><%= beskrivelse%></p>
+    <img class="fullwidth" src="<%= lokimg %>" />
+</div>
+</script>
+
+
+<script type="text/template" id="cesium_wikipedia_template">
+
+<h3><%= title %></h3>
+
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= content %></p>
+
+
+
+<a href=\"<%= link %>\"></a>
+</script>
+
+
+<script type="text/template" id="cesium_arc_kulturminne_template">
+
+<h3><%= Navn %></h3>
+
+
+</script>
+
+
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <%= title %>
+        </div>
+    </div>
+</a>
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
+    <i class="fa fa-<%= icon %> icon-white"></i>
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" width="50" height="50" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
 <script type="text/template" id="list_item_template">
 <a href="#" class="list-group-item">
     <div class="media">
@@ -124,8 +203,42 @@
 </div>
 </script>
 
+
+<script type="text/template" id="splashscreen_template">
+<h2><%= title %></h2>
+<% if (image) { %> 
+<img class="splash-image" src="<%= image %>">
+<% } %>
+<div class="splash-content">
+    <% if (description) { %> 
+    <div><%= description %></div>
+    <% } %>
+    <% if (creator) { %> 
+
+        <table class="sidebar-table">
+            <tr>
+              <td>Laget av</td>
+              <td><%= creator %></td>
+            </tr>
+        </table>
+
+    <% } %>
+
+    <label>
+        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
+    </label>
+</div>
+</script>
+
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <p><%= content %></p>
 
@@ -141,6 +254,13 @@
 
 <script type="text/template" id="kulturminne_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <table class="sidebar-table">
     <tr>
@@ -177,6 +297,14 @@
 
 <script type="text/template" id="kulturminne2_template">
 <h3>Kulturminne</h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <dl>
     <dt>Navn</dt>
     <dd><%= LokalitetNavn %></dd>
@@ -196,6 +324,13 @@
 
 <script type="text/template" id="musit_template">
 <h3><%= allProps.dc_title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
@@ -229,6 +364,14 @@
 
 <script type="text/template" id="digitalt_museum_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
@@ -271,6 +414,15 @@
 
 <script type="text/template" id="digitalt_fortalt_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
@@ -311,6 +463,13 @@
 <script type="text/template" id="folketelling_template">
 <% if (property.id.indexOf('g') === 0) { %> 
     <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <% if (distanceBearing) { %>
+    <div class="distance">
+        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+        <%= distanceBearing.dist %>
+    </div>
+    <% } %>
 
     <p><%= property.bildelenke %></p>
 
@@ -364,6 +523,14 @@
 
     <h3><%= property.bostedets_navn %></h3>
 
+    
+    <% if (distanceBearing) { %>
+    <div class="distance">
+        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+        <%= distanceBearing.dist %>
+    </div>
+    <% } %>
+
     <% _.each(residents, function (resident) { %>
       <table class="sidebar-table">
           <tr colspan="2">
@@ -395,6 +562,14 @@
 
 <script type="text/template" id="wikipedia_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
@@ -408,6 +583,14 @@
 
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if (img) { %>
 <img class="fullwidth" src="<%= img %>" />
 <% } %>
@@ -427,11 +610,27 @@
 <script type="text/template" id="fangstgrop_template">
 <h3>Fangstgrop</h3>
 
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 </script>
 
 
 <script type="text/template" id="flickr_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <img class="fullwidth" src="<%= image %>" />
 
 </script>
@@ -439,6 +638,15 @@
 
 <script type="text/template" id="husmann_template">
 <h3>Kulturminne</h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <dl>
     <dt>Navn</dt>
     <dd><%= Navn %></dd>
@@ -448,6 +656,14 @@
 
 <script type="text/template" id="brukerminne_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
 <p><%= KortBeskrivelse %></p>
@@ -482,6 +698,14 @@
 
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
@@ -492,6 +716,15 @@
 
 <script type="text/template" id="jernbanemuseet_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>

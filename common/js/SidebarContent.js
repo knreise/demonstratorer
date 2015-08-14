@@ -8,7 +8,7 @@ var KR = this.KR || {};
 
 KR.SidebarContent = function (wrapper, element, top, options) {
     'use strict';
-
+    var map;
     var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
     element = $(element);
@@ -109,7 +109,28 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         return li;
     }
 
+    function distanceAndBearing(feature) {
+        if (map && map.userPosition) {
+            var pos = turf.point([
+                map.userPosition.lng,
+                map.userPosition.lat
+            ]);
+            var distBear =  KR.Util.distanceAndBearing(pos, feature);
+            var dist = distBear.distance;
+            if (dist < 1000) {
+                dist = KR.Util.round(dist, 0) + ' Meter';
+            } else {
+                dist = KR.Util.round(dist / 1000, 2) + ' Kilometer';
+            }
+            return {
+                dist: dist,
+                rot: distBear.bearing - 45 //-45 because of rotation of fa-location-arrow
+            };
+        }
+    }
+
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+        var distBear = distanceAndBearing(feature);
         if (getData) {
             var content = '';
             if (feature.properties.title) {
@@ -142,9 +163,13 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         }
 
         var color = KR.Style.colorForFeature(feature, true, true);
-        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
-            template(_.extend({image: null}, feature.properties));
+        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
+        feature.properties = _.extend(feature.properties, {
+            distanceBearing: distBear
+        });
+
+        content += template(_.extend({image: null}, feature.properties));
 
         if (options.footerTemplate && feature.properties.link) {
             content += options.footerTemplate(feature.properties);
@@ -223,6 +248,9 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     return {
         showFeature: showFeature,
-        showFeatures: showFeatures
+        showFeatures: showFeatures,
+        setMap: function (_map) {
+            map = _map;
+        }
     };
 };

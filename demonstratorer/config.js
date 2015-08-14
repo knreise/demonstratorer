@@ -19,5 +19,10 @@
         $('title').append(qs.title);
     }
 
-    KR.setupMapFromUrl(api, qs.datasets.split(','), qs);
+    if (qs.norvegianaCollection) {
+        KR.setupCollectionMap(api, qs.norvegianaCollection, qs.layer);
+    } else {
+        KR.setupMapFromUrl(api, qs.datasets.split(','), qs);
+    }
+
 }());

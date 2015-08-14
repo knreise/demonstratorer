@@ -1,4 +1,13 @@
 <h3>Kulturminne</h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <dl>
     <dt>Navn</dt>
     <dd><%= Navn %></dd>

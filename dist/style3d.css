@@ -137,12 +137,12 @@
     color: #333;
 }
 
-.knreise-sidebar .sidebar-table {
+.sidebar-table {
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.knreise-sidebar .sidebar-table tr td:first-child {
+.sidebar-table tr td:first-child {
     font-weight: bold;
     padding-right: 10px;
 }
@@ -175,6 +175,10 @@
     width: 100%;
 }
 
+.leaflet-sidebar .distance {
+    color: #6F6F6F;
+}
+
 
 #splashscreen {
     padding-left: 0;
@@ -182,6 +186,7 @@
 }
 
 #splashscreen h2, #splashscreen .splash-content {
+    margin-top: 24px; 
     padding-left: 24px;
     padding-right: 24px;
 }

@@ -52,7 +52,8 @@ module.exports = {
     'common/js/datasets.js',
     'common/js/SplashScreen.js',
     'common/js/ResponseForm.js',
-    'common/js/setupMap.js'
+    'common/js/setupMap.js',
+    'common/js/setupCollection.js'
   ],
   demoScriptsExternal3d: [
         'bower_components/jquery/dist/jquery.min.js',
@@ -142,7 +143,8 @@ module.exports = {
     'footer',
     'error',
     'message',
-    'response_form'
+    'response_form',
+    'splashscreen'
   ],
 
   demonstrators: [
@@ -151,6 +153,12 @@ module.exports = {
       name: 'Gudbrandsdalsleden',
       description: 'Hele pilegrimsleden med alt relevant innhold langs og i en viss avstand til denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
       //url: 'demonstratorer/config.html?datasets=verneomr%2Cartobs%2Cwikipedia&allstatic=true&line=http%3A%2F%2Fpilegrimsleden.no%2Fassets%2Fkml%2Fgudbrands_062015_r.kml&buffer=2&linecolor=%23000000&layer=norges_grunnkart_graatone'
+    }, 
+    {
+      id: 'gudbrandsdalsleden_line',
+      name: 'Gudbrandsdalsleden - "guidet tur"',
+      description: 'Velkommen til en guidet tur langs Gudbrandsdalsleden. Mens du beveger deg langs leden vil vi vise deg relevant innhold.',
+      url: 'demonstratorer/linemap.html'
     }, 
     {
       id: 'telemark',
@@ -320,15 +328,24 @@ module.exports = {
         scripts: [
           'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.min.js',
-          'common/js/L.Knreise.GeoJSON.js',
-          'common/js/PreviewStrip.js',
+          'bower_components/togeojson/togeojson.js',
           'bower_components/turf/turf.min.js',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
-          'common/js/L.Knreise.Control.Sidebar.js',
-          'common/js/SidebarContent.js',
           'bower_components/audiojs/audiojs/audio.min.js',
           'bower_components/video.js/dist/video-js/video.js',
           'bower_components/jquery-touchswipe/jquery.touchSwipe.js',
+          'bower_components/Leaflet-MiniMap/dist/Control.MiniMap.min.js',
+          'bower_components/CryptoJS/build/components/core.js',
+          'bower_components/CryptoJS/build/components/md5.js',
+          'bower_components/L.EasyButton/easy-button.js',
+          'bower_components/cilogi-marker/dist/cilogi-marker.min.js',
+          'bower_components/wellknown/wellknown.js',
+          'bower_components/proj4/dist/proj4.js',
+          'common/js/SplashScreen.js',
+          'common/js/L.Knreise.Control.Sidebar.js',
+          'common/js/SidebarContent.js',
+          'common/js/L.Knreise.GeoJSON.js',
+          'common/js/PreviewStrip.js',
           'common/js/FollowLineMap.js',
           'common/js/AlongLine.js',
           'common/js/LineMap.js',
@@ -337,9 +354,11 @@ module.exports = {
         css: [
           'bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css',
           'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
+          'bower_components/video.js/dist/video-js/video-js.css',
+          'bower_components/Leaflet-MiniMap/dist/Control.MiniMap.min.css',
+          'bower_components/cilogi-marker/dist/cilogi-marker.css',
           'common/css/L.Knreise.Control.Sidebar.css',
           'common/css/L.Knreise.Control.Datasets.css',
-          'bower_components/video.js/dist/video-js/video-js.css',
           'common/css/fullscreenmap.css',
           'common/css/markers.css',
           'common/css/strip.css'
