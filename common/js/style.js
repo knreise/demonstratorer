@@ -135,6 +135,7 @@ KR.Style = {};
         if (!config) {
             config = ns.datasets[name];
         }
+
         return config;
     };
 
