@@ -60,14 +60,31 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         }
     },
 
-    _featureClicked: function (e) {
-        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
-            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
-                return;
+    deselectAllNew: function () {
+
+        _.each(this.getLayers(), function (layer) {
+            if (layer.setIcon) {
+                layer.setIcon(this._createFeatureIcon(layer.feature, false));
+                layer.setZIndexOffset(0);
             }
-        }
-        e.layer._map.fire('layerSelected');
-        var layer = e.layer;
+            if (layer.setStyle) {
+                var feature = layer.feature;
+                if (!feature) {
+                    var parent = this.getParentLayer(layer._leaflet_id);
+                    feature = parent.feature;
+                }
+
+                layer.setStyle(this._createFeatureIcon(feature, false));
+
+                if (layer.getParent) {
+                    var p = layer.getParent();
+                    p.setStyle(this._createFeatureIcon(feature, false));
+                }
+            }
+        }, this);
+    },
+
+    setLayerSelected: function (layer) {
         if (layer.setIcon) {
             layer.setIcon(this._createFeatureIcon(layer.feature, true));
             layer.setZIndexOffset(1000);
@@ -91,6 +108,17 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
 
         }
         this._selectedLayer = layer;
+    },
+
+    _featureClicked: function (e) {
+        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
+            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
+                return;
+            }
+        }
+        e.layer._map.fire('layerSelected');
+        var layer = e.layer;
+        this.setLayerSelected(layer);
     },
 
     getParentLayer: function (id) {

@@ -1103,14 +1103,31 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         }
     },
 
-    _featureClicked: function (e) {
-        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
-            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
-                return;
+    deselectAllNew: function () {
+
+        _.each(this.getLayers(), function (layer) {
+            if (layer.setIcon) {
+                layer.setIcon(this._createFeatureIcon(layer.feature, false));
+                layer.setZIndexOffset(0);
             }
-        }
-        e.layer._map.fire('layerSelected');
-        var layer = e.layer;
+            if (layer.setStyle) {
+                var feature = layer.feature;
+                if (!feature) {
+                    var parent = this.getParentLayer(layer._leaflet_id);
+                    feature = parent.feature;
+                }
+
+                layer.setStyle(this._createFeatureIcon(feature, false));
+
+                if (layer.getParent) {
+                    var p = layer.getParent();
+                    p.setStyle(this._createFeatureIcon(feature, false));
+                }
+            }
+        }, this);
+    },
+
+    setLayerSelected: function (layer) {
         if (layer.setIcon) {
             layer.setIcon(this._createFeatureIcon(layer.feature, true));
             layer.setZIndexOffset(1000);
@@ -1134,6 +1151,17 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
 
         }
         this._selectedLayer = layer;
+    },
+
+    _featureClicked: function (e) {
+        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
+            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
+                return;
+            }
+        }
+        e.layer._map.fire('layerSelected');
+        var layer = e.layer;
+        this.setLayerSelected(layer);
     },
 
     getParentLayer: function (id) {
@@ -1352,6 +1380,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.on('hide', function () {
             if (this._map) {
                 this._map.fire('layerSelected');
+                this._map.fire('layerDeselect');
             }
 
         }, this);
@@ -1537,7 +1566,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         } else {
             feature.properties.license = null;
         }
-        console.log(feature.properties);
+
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -2413,7 +2442,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
     function commonCluster(layers) {
         var addedLayers = {};
 
+        var deselectAll = function () {
+            _.each(layers, function (layer) {
+                layer.deselectAllNew();
+            });
+        }
+
+        map.on('layerDeselect', deselectAll);
+
         var mc = new L.Knreise.MarkerClusterGroup().addTo(map);
+
+        mc.on('clusterclick', deselectAll);
+
         _addClusterClick(mc);
         _.each(layers, function (layer) {
             layer.on('dataAdded', function () {
@@ -2429,6 +2469,17 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
                     if (addedLayers[layerId]) {
                         mc.removeLayers(addedLayers[layerId]);
                     }
+                });
+
+                layer.on('click', function (e) {
+                    deselectAll();
+                    var selectedLayer = e.layer;
+                    var parentLayer = _.find(layers, function (l) {
+                        return !!_.find(l.getLayers(), function (sl) {
+                            return (sl === selectedLayer);
+                        });
+                    });
+                    parentLayer.setLayerSelected(selectedLayer);
                 });
             });
         });

@@ -55,6 +55,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.on('hide', function () {
             if (this._map) {
                 this._map.fire('layerSelected');
+                this._map.fire('layerDeselect');
             }
 
         }, this);

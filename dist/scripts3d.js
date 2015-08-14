@@ -1687,7 +1687,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         } else {
             feature.properties.license = null;
         }
-        console.log(feature.properties);
+
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -2207,7 +2207,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
     function commonCluster(layers) {
         var addedLayers = {};
 
+        var deselectAll = function () {
+            _.each(layers, function (layer) {
+                layer.deselectAllNew();
+            });
+        }
+
+        map.on('layerDeselect', deselectAll);
+
         var mc = new L.Knreise.MarkerClusterGroup().addTo(map);
+
+        mc.on('clusterclick', deselectAll);
+
         _addClusterClick(mc);
         _.each(layers, function (layer) {
             layer.on('dataAdded', function () {
@@ -2223,6 +2234,17 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
                     if (addedLayers[layerId]) {
                         mc.removeLayers(addedLayers[layerId]);
                     }
+                });
+
+                layer.on('click', function (e) {
+                    deselectAll();
+                    var selectedLayer = e.layer;
+                    var parentLayer = _.find(layers, function (l) {
+                        return !!_.find(l.getLayers(), function (sl) {
+                            return (sl === selectedLayer);
+                        });
+                    });
+                    parentLayer.setLayerSelected(selectedLayer);
                 });
             });
         });
