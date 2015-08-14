@@ -155,6 +155,11 @@ KR.Util = KR.Util || {};
 
 
     function _getTemplateForFeature(feature, dataset) {
+
+        if (!dataset) {
+            return;
+        }
+
         if (dataset.datasets) {
             var d = _.find(dataset.datasets, function (dataset) {
                 return (dataset._knreise_id === feature.properties.datasetID);
@@ -173,14 +178,17 @@ KR.Util = KR.Util || {};
             clusterLayer.on('clusterclick', function (e) {
                 var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
                     var feature = marker.feature;
-                    feature.template = _getTemplateForFeature(feature, dataset);
+                    if (dataset) {
+                        feature.template = _getTemplateForFeature(feature, dataset);
+                    }
                     return feature;
                 });
+                var props = _.extend({}, dataset, {template: null, getFeatureData: null, noListThreshold: null});
                 sidebar.showFeatures(
                     features,
-                    dataset.template,
-                    dataset.getFeatureData,
-                    dataset.noListThreshold
+                    props.template,
+                    props.getFeatureData,
+                    props.noListThreshold
                 );
             });
         };
@@ -595,12 +603,15 @@ KR.Style = {};
         return valueOrfunc(config, 'bordercolor', feature);
     }
 
+    function getGroupConfig(groupId) {
+        return ns.groups[groupId];
+    }
 
     function getConfig(feature) {
         var config;
 
         if (feature.properties && feature.properties.groupId) {
-            return ns.groups[feature.properties.groupId];
+            return getGroupConfig(feature.properties.groupId);
         }
 
         if (feature.properties && feature.properties.datasetId) {
@@ -679,11 +690,21 @@ KR.Style = {};
         if (!photos.length) {
             return;
         }
-
+        var rest;
+        if (_.isArray(color)) {
+            rest = _.rest(color);
+            color = color[0];
+        }
         var styleDict = {
             'border-color': color,
             'background-image': 'url(' + photos[0].feature.properties.thumbnail + ');'
         };
+        if (rest) {
+            styleDict['box-shadow'] = _.map(rest, function (c, index) {
+                var width = (index + 1) * 2;
+                return '0 0 0 ' + width + 'px ' + c;
+            }).join(',') + ';';
+        }
 
         if (selected) {
             styleDict['border-width'] = '3px';
@@ -721,17 +742,32 @@ KR.Style = {};
 
         var features = cluster.getAllChildMarkers();
 
-        var config = getConfig(features[0].feature);
+        var groups = _.uniq(_.map(features, function (feature) {
+            return feature.feature.properties.groupId;
+        }));
 
-        var color = selected ? SELECTED_COLOR : getFillColor(config, features[0].feature);
+
+        var config = getConfig(features[0].feature);
+        var colors;
+        if (_.compact(groups).length > 1) {
+            var groupIds = _.compact(groups);
+            if (groupIds.length > 1) {
+                colors = _.map(groupIds, _.compose(getFillColor,getGroupConfig));
+            }
+        } else {
+            colors = getFillColor(config, features[0].feature);
+        }
+        if (selected) {
+            colors = SELECTED_COLOR;
+        }
 
         if (config.thumbnail) {
-            var thumbnail = getClusterThumbnailIcon(features, color, selected);
+            var thumbnail = getClusterThumbnailIcon(features, colors, selected);
             if (thumbnail) {
                 return thumbnail;
             }
         }
-        return getClusterIcon(features, color);
+        return getClusterIcon(features, colors);
     };
 
 
@@ -1867,7 +1903,7 @@ var KR = this.KR || {};
     Init it with a KnreiseAPI, a Leaflet map, something that behaves as 
     L.Knreise.Control.Sidebar and an optional callback for errors.
 */
-KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
+KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster) {
     'use strict';
 
     var reloads = [];
@@ -1924,7 +1960,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         if (dataset.style) {
             params.extras = params.extras || {};
             var groupId = KR.Util.stamp(dataset);
-            params.extras.groupId = groupId
+            params.extras.groupId = groupId;
             KR.Style.groups[groupId] = dataset.style;
         }
         dataset.datasets  = _.map(dataset.datasets, function (dataset) {
@@ -1954,6 +1990,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             return acc.concat(data.toGeoJSON().features);
         }, []);
         layer.addData(KR.Util.createFeatureCollection(features));
+        layer.fire('dataAdded');
     }
 
     function _resetClusterData(clusterLayer, featurecollections) {
@@ -1977,14 +2014,19 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
     function _createVectorLayer(dataset, map) {
         var vectorLayer;
-        if (dataset.cluster) {
-            vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
-            if (_addClusterClick) {
-                _addClusterClick(vectorLayer, dataset);
-            }
+        if (useCommonCluster) {
+            vectorLayer = _createGeoJSONLayer(null, dataset);
         } else {
-            vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
+            if (dataset.cluster) {
+                vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
+                if (_addClusterClick) {
+                    _addClusterClick(vectorLayer, dataset);
+                }
+            } else {
+                vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
+            }
         }
+
         var enabled = true;
         if (dataset.minFeatures) {
             enabled = false;
@@ -2131,10 +2173,15 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             var finished = _.after(toLoad.length, function () {
                 vectorLayer.isLoading = false;
                 vectorLayer.fire('dataloadend');
-                if (dataset.cluster) {
-                    _resetClusterData(vectorLayer, featurecollections);
-                } else {
+
+                if (useCommonCluster) {
                     _resetDataGeoJson(vectorLayer, featurecollections);
+                } else {
+                    if (dataset.cluster) {
+                        _resetClusterData(vectorLayer, featurecollections);
+                    } else {
+                        _resetDataGeoJson(vectorLayer, featurecollections);
+                    }
                 }
                 if (callback) {
                     callback();
@@ -2153,14 +2200,19 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                         geoJson = filter(geoJson);
                     }
                     var geoJSONLayer;
-                    if (dataset.cluster) {
-                        geoJSONLayer = _createGeoJSONLayer(
-                            mapper(checkData(geoJson, vectorLayer)),
-                            dataset
-                        );
-                        dataset.geoJSONLayer = geoJSONLayer;
-                    } else {
+
+                    if (useCommonCluster) {
                         geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                    } else {
+                        if (dataset.cluster) {
+                            geoJSONLayer = _createGeoJSONLayer(
+                                mapper(checkData(geoJson, vectorLayer)),
+                                dataset
+                            );
+                            dataset.geoJSONLayer = geoJSONLayer;
+                        } else {
+                            geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                        }
                     }
                     featurecollections.push(geoJSONLayer);
                     finished();
@@ -2260,6 +2312,31 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
+    function commonCluster(layers) {
+        var addedLayers = {};
+
+        var mc = new L.Knreise.MarkerClusterGroup().addTo(map);
+        _addClusterClick(mc);
+        _.each(layers, function (layer) {
+            layer.on('dataAdded', function () {
+                var layerId = L.stamp(layer);
+                if (addedLayers[layerId]) {
+                    mc.removeLayers(addedLayers[layerId]);
+                }
+                var subLayers = layer.getLayers();
+                addedLayers[layerId] = subLayers;
+                mc.addLayers(subLayers);
+
+                layer.on('hide', function () {
+                    if (addedLayers[layerId]) {
+                        mc.removeLayers(addedLayers[layerId]);
+                    }
+                });
+            });
+        });
+    }
+
+
     /*
         Loads a list of datasets, creates Leaflet layers of either 
         L.Knreise.GeoJSON or L.Knreise.MarkerClusterGroup according to
@@ -2306,7 +2383,12 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             return _addDataset(dataset, filter, bounds, loaded);
         });
         reloads = _.pluck(res, 'reload');
-        return _.pluck(res, 'layer');
+
+        var layers = _.pluck(res, 'layer');
+        if (useCommonCluster) {
+            commonCluster(layers);
+        }
+        return layers;
     }
 
     return {
@@ -3311,7 +3393,7 @@ var KR = this.KR || {};
 
         var map = _createMap(options);
         var sidebar = _setupSidebar(map);
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
@@ -3329,13 +3411,14 @@ var KR = this.KR || {};
 
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
             map.fitBounds(bounds);
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, function () {
+            var datasetsLoaded = function () {
                 var locationFromUrl = _getLocationUrl(map);
                 if (locationFromUrl) {
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _setupLocationUrl(map);
-            });
+            };
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded);
 
             if (lineLayer) {
                 lineLayer.addTo(map);
