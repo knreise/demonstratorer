@@ -196,12 +196,15 @@ KR.Style = {};
         return valueOrfunc(config, 'bordercolor', feature);
     }
 
+    function getGroupConfig(groupId) {
+        return ns.groups[groupId];
+    }
 
     function getConfig(feature) {
         var config;
 
         if (feature.properties && feature.properties.groupId) {
-            return ns.groups[feature.properties.groupId];
+            return getGroupConfig(feature.properties.groupId);
         }
 
         if (feature.properties && feature.properties.datasetId) {
@@ -280,11 +283,21 @@ KR.Style = {};
         if (!photos.length) {
             return;
         }
-
+        var rest;
+        if (_.isArray(color)) {
+            rest = _.rest(color);
+            color = color[0];
+        }
         var styleDict = {
             'border-color': color,
             'background-image': 'url(' + photos[0].feature.properties.thumbnail + ');'
         };
+        if (rest) {
+            styleDict['box-shadow'] = _.map(rest, function (c, index) {
+                var width = (index + 1) * 2;
+                return '0 0 0 ' + width + 'px ' + c;
+            }).join(',') + ';';
+        }
 
         if (selected) {
             styleDict['border-width'] = '3px';
@@ -322,17 +335,32 @@ KR.Style = {};
 
         var features = cluster.getAllChildMarkers();
 
-        var config = getConfig(features[0].feature);
+        var groups = _.uniq(_.map(features, function (feature) {
+            return feature.feature.properties.groupId;
+        }));
 
-        var color = selected ? SELECTED_COLOR : getFillColor(config, features[0].feature);
+
+        var config = getConfig(features[0].feature);
+        var colors;
+        if (_.compact(groups).length > 1) {
+            var groupIds = _.compact(groups);
+            if (groupIds.length > 1) {
+                colors = _.map(groupIds, _.compose(getFillColor,getGroupConfig));
+            }
+        } else {
+            colors = getFillColor(config, features[0].feature);
+        }
+        if (selected) {
+            colors = SELECTED_COLOR;
+        }
 
         if (config.thumbnail) {
-            var thumbnail = getClusterThumbnailIcon(features, color, selected);
+            var thumbnail = getClusterThumbnailIcon(features, colors, selected);
             if (thumbnail) {
                 return thumbnail;
             }
         }
-        return getClusterIcon(features, color);
+        return getClusterIcon(features, colors);
     };
 
 
@@ -427,6 +455,11 @@ KR.Style = {};
             opacity: 0.8,
             fillOpacity: 0.4
         };
+    };
+
+    ns.getPathStyleForGroup = function (groupId, clickable) {
+        var feature = {properties: {groupId: groupId}};
+        return ns.getPathStyle(feature, clickable);
     };
 
 }(KR.Style));

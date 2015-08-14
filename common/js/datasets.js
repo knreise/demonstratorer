@@ -32,11 +32,16 @@ KR.Config = KR.Config || {};
             }
         };
 
-        var initKulturminnePoly = function (map, dataset) {
+        var initKulturminnePoly = function (map, dataset, vectorLayer) {
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
-                    feature.properties.datasetId = dataset.id;
-                    layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    if (dataset.extras && dataset.extras.groupId) {
+                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
+                    } else {
+                        feature.properties.datasetId = dataset.id;
+                        layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    }
+
                     layer.on('click', function () {
                         var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
                             return (parentLayer.feature.properties.id === feature.properties.lok);
@@ -47,6 +52,13 @@ KR.Config = KR.Config || {};
                     });
                 }
             }).addTo(map);
+
+            vectorLayer.on('hide', function () {
+                map.removeLayer(dataset.extraFeatures);
+            });
+            vectorLayer.on('show', function () {
+                map.addLayer(dataset.extraFeatures);
+            });
         };
 
         return {
@@ -371,7 +383,7 @@ KR.Config = KR.Config || {};
         };
 
         if (!komm && !fylke) {
-            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
                     if (kommune < 1000) {
                         kommune = '0' + kommune;

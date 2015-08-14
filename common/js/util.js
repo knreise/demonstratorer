@@ -104,6 +104,11 @@ KR.Util = KR.Util || {};
 
 
     function _getTemplateForFeature(feature, dataset) {
+
+        if (!dataset) {
+            return;
+        }
+
         if (dataset.datasets) {
             var d = _.find(dataset.datasets, function (dataset) {
                 return (dataset._knreise_id === feature.properties.datasetID);

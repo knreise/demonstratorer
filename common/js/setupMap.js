@@ -189,7 +189,7 @@ var KR = this.KR || {};
 
         var map = KR.Util.createMap('map', options);
         var sidebar = KR.Util.setupSidebar(map);
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
@@ -207,13 +207,14 @@ var KR = this.KR || {};
 
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
             map.fitBounds(bounds);
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, function () {
+            var datasetsLoaded = function () {
                 var locationFromUrl = _getLocationUrl(map);
                 if (locationFromUrl) {
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _setupLocationUrl(map);
-            });
+            };
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded);
 
             if (lineLayer) {
                 lineLayer.addTo(map);
