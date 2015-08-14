@@ -1618,7 +1618,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
     }
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-
         var distBear = distanceAndBearing(feature);
         if (getData) {
             var content = '';
@@ -2304,14 +2303,15 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 minZoom: 14,
                 template: KR.Util.getDatasetTemplate('folketelling'),
-                getFeatureData: function (feature, callback) {
+                getFeatureData: function (oldFeature, callback) {
                     api.getData({
                         api: 'folketelling',
                         type: 'propertyData',
-                        propertyId: feature.properties.efid
+                        propertyId: oldFeature.properties.efid
                     }, function (feature) {
-                        feature.properties.provider = 'Folketelling 1910';
-                        callback(feature);
+                        oldFeature.properties = feature.properties
+                        oldFeature.properties.provider = 'Folketelling 1910';
+                        callback(oldFeature);
                     });
                 },
                 mappings: {

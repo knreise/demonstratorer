@@ -130,7 +130,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
     }
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-
         var distBear = distanceAndBearing(feature);
         if (getData) {
             var content = '';
