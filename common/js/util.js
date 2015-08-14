@@ -127,7 +127,7 @@ KR.Util = KR.Util || {};
                     }
                     return feature;
                 });
-                var props = _.extend({}, dataset, {template: null, getFeatureData: null, noListThreshold: null});
+                var props = _.extend({}, {template: null, getFeatureData: null, noListThreshold: null}, dataset);
                 sidebar.showFeatures(
                     features,
                     props.template,
