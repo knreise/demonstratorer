@@ -413,7 +413,9 @@ KR.Util = KR.Util || {};
         Round a number to n decimals
     */
     ns.round = function (number, decimals) {
-        decimals = decimals || 2;
+        if (_.isUndefined(decimals)) {
+            decimals = 2;
+        }
         var exp = Math.pow(10, decimals);
         return Math.round(number * exp) / exp;
     };
@@ -482,6 +484,13 @@ KR.Util = KR.Util || {};
         });
         map.addControl(sidebar);
         return sidebar;
+    };
+
+    ns.distanceAndBearing = function(point1, point2) {
+        return {
+            distance: turf.distance(point1, point2, 'kilometers') * 1000,
+            bearing: turf.bearing(point1, point2)
+        };
     };
 
 }(KR.Util));
@@ -1292,11 +1301,16 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             }
 
         }, this);
+        this.sidebar = new KR.SidebarContent(this._container, this._contentContainer, this._top, this.options, this._map);
+    },
 
-        this.sidebar = new KR.SidebarContent(this._container, this._contentContainer, this._top, this.options);
+    addTo: function (map) {
+        this.sidebar.setMap(map);
+        return L.Control.Sidebar.prototype.addTo.apply(this, arguments);
     },
 
     showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
+
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 
@@ -1337,7 +1351,7 @@ var KR = this.KR || {};
 
 KR.SidebarContent = function (wrapper, element, top, options) {
     'use strict';
-
+    var map;
     var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
     element = $(element);
@@ -1438,7 +1452,29 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         return li;
     }
 
+    function distanceAndBearing(feature) {
+        if (map && map.userPosition) {
+            var pos = turf.point([
+                map.userPosition.lng,
+                map.userPosition.lat
+            ]);
+            var distBear =  KR.Util.distanceAndBearing(pos, feature);
+            var dist = distBear.distance;
+            if (dist < 1000) {
+                dist = KR.Util.round(dist, 0) + ' Meter';
+            } else {
+                dist = KR.Util.round(dist / 1000, 2) + ' Kilometer';
+            }
+            return {
+                dist: dist,
+                rot: distBear.bearing - 45 //-45 because of rotation of fa-location-arrow
+            };
+        }
+    }
+
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+
+        var distBear = distanceAndBearing(feature);
         if (getData) {
             var content = '';
             if (feature.properties.title) {
@@ -1460,7 +1496,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         }
 
 
-
         if (!feature.properties.images) {
             feature.properties.images = null;
         }
@@ -1471,11 +1506,14 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             feature.properties.license = null;
         }
 
-        console.log(feature);
         var color = KR.Style.colorForFeature(feature, true, true);
-        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
-            template(_.extend({image: null}, feature.properties));
+        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
+        feature.properties = _.extend(feature.properties, {
+            distanceBearing: distBear
+        });
+
+        content += template(_.extend({image: null}, feature.properties));
 
         if (options.footerTemplate && feature.properties.link) {
             content += options.footerTemplate(feature.properties);
@@ -1554,7 +1592,10 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     return {
         showFeature: showFeature,
-        showFeatures: showFeatures
+        showFeatures: showFeatures,
+        setMap: function (_map) {
+            map = _map;
+        }
     };
 };
 
@@ -2406,6 +2447,7 @@ L.Knreise = L.Knreise || {};
 
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            _map.userPosition = p;
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(

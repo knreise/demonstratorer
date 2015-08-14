@@ -41,6 +41,7 @@ L.Knreise = L.Knreise || {};
 
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            _map.userPosition = p;
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(

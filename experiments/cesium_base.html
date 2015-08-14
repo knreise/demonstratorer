@@ -135,6 +135,13 @@
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
 
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <p><%= content %></p>
 
 <table class="sidebar-table">
@@ -149,6 +156,13 @@
 
 <script type="text/template" id="kulturminne_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <table class="sidebar-table">
     <tr>
@@ -185,6 +199,14 @@
 
 <script type="text/template" id="kulturminne2_template">
 <h3>Kulturminne</h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <dl>
     <dt>Navn</dt>
     <dd><%= LokalitetNavn %></dd>
@@ -204,6 +226,13 @@
 
 <script type="text/template" id="musit_template">
 <h3><%= allProps.dc_title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
@@ -237,6 +266,14 @@
 
 <script type="text/template" id="digitalt_museum_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
@@ -279,6 +316,15 @@
 
 <script type="text/template" id="digitalt_fortalt_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
@@ -319,6 +365,13 @@
 <script type="text/template" id="folketelling_template">
 <% if (property.id.indexOf('g') === 0) { %> 
     <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <% if (distanceBearing) { %>
+    <div class="distance">
+        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+        <%= distanceBearing.dist %>
+    </div>
+    <% } %>
 
     <p><%= property.bildelenke %></p>
 
@@ -372,6 +425,14 @@
 
     <h3><%= property.bostedets_navn %></h3>
 
+    
+    <% if (distanceBearing) { %>
+    <div class="distance">
+        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+        <%= distanceBearing.dist %>
+    </div>
+    <% } %>
+
     <% _.each(residents, function (resident) { %>
       <table class="sidebar-table">
           <tr colspan="2">
@@ -403,6 +464,14 @@
 
 <script type="text/template" id="wikipedia_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
@@ -416,6 +485,14 @@
 
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if (img) { %>
 <img class="fullwidth" src="<%= img %>" />
 <% } %>
@@ -435,11 +512,27 @@
 <script type="text/template" id="fangstgrop_template">
 <h3>Fangstgrop</h3>
 
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 </script>
 
 
 <script type="text/template" id="flickr_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <img class="fullwidth" src="<%= image %>" />
 
 </script>
@@ -447,6 +540,15 @@
 
 <script type="text/template" id="husmann_template">
 <h3>Kulturminne</h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <dl>
     <dt>Navn</dt>
     <dd><%= Navn %></dd>
@@ -456,6 +558,14 @@
 
 <script type="text/template" id="brukerminne_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
 
 <% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
 <p><%= KortBeskrivelse %></p>
@@ -490,6 +600,14 @@
 
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
@@ -500,6 +618,15 @@
 
 <script type="text/template" id="jernbanemuseet_template">
 <h3><%= title %></h3>
+
+
+<% if (distanceBearing) { %>
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+<% } %>
+
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
