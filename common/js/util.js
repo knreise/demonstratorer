@@ -103,12 +103,10 @@ KR.Util = KR.Util || {};
     };
 
 
-    function _getTemplateForFeature(feature, dataset) {
-
+    ns.getTemplateForFeature = function (feature, dataset) {
         if (!dataset) {
             return;
         }
-
         if (dataset.datasets) {
             var d = _.find(dataset.datasets, function (dataset) {
                 return (dataset._knreise_id === feature.properties.datasetID);
@@ -116,7 +114,7 @@ KR.Util = KR.Util || {};
             return d.template;
         }
         return dataset.template;
-    }
+    };
 
 
     /*
@@ -127,8 +125,8 @@ KR.Util = KR.Util || {};
             clusterLayer.on('clusterclick', function (e) {
                 var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
                     var feature = marker.feature;
-                    if (dataset) {
-                        feature.template = _getTemplateForFeature(feature, dataset);
+                    if (dataset && !feature.template) {
+                        feature.template = ns.getTemplateForFeature(feature, dataset);
                     }
                     return feature;
                 });

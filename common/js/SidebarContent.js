@@ -123,6 +123,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
 
         var img = feature.properties.images;

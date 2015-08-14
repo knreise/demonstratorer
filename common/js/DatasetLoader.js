@@ -48,6 +48,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
                         feature.properties[key] = feature.properties[value];
                     });
                 }
+                feature.template = KR.Util.getTemplateForFeature(feature, dataset);
             });
             return features;
         };
