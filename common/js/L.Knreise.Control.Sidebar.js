@@ -8,6 +8,13 @@ L.Knreise.Control = L.Knreise.Control || {};
     A Leaflet wrapper for displaying sidebar data.
 */
 
+function getLocationLink(feature) {
+    var baseUrl = location.href.replace(location.hash, '');
+    var coords = feature.geometry.coordinates;
+    var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
+    return baseUrl + hash;
+}
+
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
@@ -58,6 +65,17 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
+
+        var div = $('<div></div>');
+        var params = {
+            id: feature.id,
+            url: getLocationLink(feature),
+            provider: feature.properties.provider
+        }
+        if (feature.properties.feedbackForm) {
+            $(this._contentContainer).append(div);
+            KR.ResponseForm(div, params);
+        }
     },
 
     showFeatures: function (features, template, getData, noListThreshold, forceList) {

@@ -84,6 +84,65 @@
 </div>
 </script>
 
+
+<script type="text/template" id="response_form_template">
+
+<div class="feedback-form">
+  <p class="show-more"><i class="fa fa-envelope-o"></i> Tilbakemelding</p>
+  <form class="hidden">
+    <h4>Tilbakemelding</h4>
+    <div class="form-group">
+      <label for="form_email">Har du spørsmål eller kommentarer til denne informasjonen eller ønsker du å 
+        si fra om feil eller mangler, så kan du gjøre det her:</label>
+      <textarea id="form_message" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="form_email">Din epost:</label>
+      <input type="email" class="form-control" id="form_email">
+    </div>
+    <button type="submit" class="btn btn-default">Send</button>
+  </form>
+  <div id="form-success" class="media hidden">
+      <button class="close pull-right" aria-label="Close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="media-left">
+        <i class="fa fa-check-circle fa-3x"></i>
+      </div>
+      <div class="media-body">
+      </div>
+  </div>
+</div>
+</script>
+
+
+<script type="text/template" id="splashscreen_template">
+<h2><%= title %></h2>
+<% if (image) { %> 
+<img class="splash-image" src="<%= image %>">
+<% } %>
+<div class="splash-content">
+    <% if (description) { %> 
+    <div><%= description %></div>
+    <% } %>
+    <% if (creator) { %> 
+
+        <table class="sidebar-table">
+            <tr>
+              <td>Laget av</td>
+              <td><%= creator %></td>
+            </tr>
+        </table>
+
+    <% } %>
+
+    <label>
+        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
+    </label>
+</div>
+</script>
+
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
 
@@ -359,7 +418,9 @@
     <img class="fullwidth" src="<%= images[0] %>" />
 <% } %>
 
-<p><%= content %></p>
+<div class="wikipedia-content">
+    <%= content %>
+</div>
 
 </script>
 
@@ -448,6 +509,39 @@
 </script>
 
 
+<script type="text/template" id="jernbanemuseet_template">
+<h3><%= title %></h3>
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<p><%= description %></p>
+
+<% _.each(pages, function (page) { %>
+    <h4><%= page.title %></h4>
+    <% _.each(page.blocks, function (block) { %>
+        <% if (block.type === 'text') { %>
+            <%= block.text %>
+        <% } else if (block.type === 'image_video') { %>
+            <% _.each(block.media, function (media) { %>
+                <% if (media.type === 'image') { %>
+                    <img class="fullwidth" src="<%= media.url %>" />
+                <% } else if (media.type === 'video') { %>
+                    <video class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup='{}'>
+                        <source src="<%= media.url %>" type='video/mp4'>
+                    </video>
+                <% } %>
+                <p>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
+                </p>
+            <% }) %>
+        <% } %>
+    <% }) %>
+<% }) %>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
@@ -499,7 +593,10 @@
             name: 'Verneområder',
             template: _.template($('#verneomraader_template').html()),
             getFeatureData: function (feature, callback) {
-                api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                api.getItem(
+                    {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                    callback
+                );
             },
             toPoint: {
                 showAlways: true,

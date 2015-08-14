@@ -111,7 +111,12 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            _setContent('');
+            var content = '';
+            if (feature.properties.title) {
+                content += '<h3>' + feature.properties.title + '</h3>';
+            }
+            content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
+            _setContent(content);
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
                 showFeature(newFeature, template, null, callbacks, index, numFeatures);
@@ -125,6 +130,8 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             img = img[0];
         }
 
+
+
         if (!feature.properties.images) {
             feature.properties.images = null;
         }
@@ -135,7 +142,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             feature.properties.license = null;
         }
 
-
+        console.log(feature);
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));

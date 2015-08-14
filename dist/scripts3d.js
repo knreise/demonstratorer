@@ -134,7 +134,7 @@ KR.Util = KR.Util || {};
     ns.featureClick = function (sidebar) {
         return function _addFeatureClick(feature, layer, dataset) {
             layer.on('click', function (e) {
-                if (dataset.toPoint && dataset.toPoint.stopPolyClick) {
+                if (dataset && dataset.toPoint && dataset.toPoint.stopPolyClick) {
                     if (!e.parent) {
                         return;
                     }
@@ -173,14 +173,17 @@ KR.Util = KR.Util || {};
             clusterLayer.on('clusterclick', function (e) {
                 var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
                     var feature = marker.feature;
-                    feature.template = _getTemplateForFeature(feature, dataset);
+                    if (dataset) {
+                        feature.template = _getTemplateForFeature(feature, dataset);
+                    }
                     return feature;
                 });
+                var props = _.extend({}, dataset, {template: null, getFeatureData: null, noListThreshold: null});
                 sidebar.showFeatures(
                     features,
-                    dataset.template,
-                    dataset.getFeatureData,
-                    dataset.noListThreshold
+                    props.template,
+                    props.getFeatureData,
+                    props.noListThreshold
                 );
             });
         };
@@ -233,12 +236,16 @@ KR.Util = KR.Util || {};
 
     //utility for Leaflet if defined
     if (typeof L !== 'undefined') {
-        L.latLngBounds.fromBBoxString = function (bbox) {
-            bbox = KR.Util.splitBbox(bbox);
+
+        L.latLngBounds.fromBBoxArray = function (bbox) {
             return new L.LatLngBounds(
                 new L.LatLng(bbox[1], bbox[0]),
                 new L.LatLng(bbox[3], bbox[2])
             );
+        };
+
+        L.latLngBounds.fromBBoxString = function (bbox) {
+            return L.latLngBounds.fromBBoxArray(KR.Util.splitBbox(bbox));
         };
     }
 
@@ -353,6 +360,10 @@ KR.Util = KR.Util || {};
         };
     };
 
+    /*
+        Query cartodb to find the municipality which "mostly" covers a given
+        bbox. 
+    */
     ns.mostlyCoveringMunicipality = function (api, bbox, callback) {
         var makeEnvelope = 'ST_MakeEnvelope(' + bbox + ', 4326)';
         var query = 'SELECT komm FROM kommuner WHERE ' +
@@ -368,6 +379,7 @@ KR.Util = KR.Util || {};
         };
         api.getData(dataset, callback);
     };
+
 
 
     ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
@@ -396,10 +408,80 @@ KR.Util = KR.Util || {};
     }
 
 
+
+    /*
+        Round a number to n decimals
+    */
     ns.round = function (number, decimals) {
         decimals = decimals || 2;
         var exp = Math.pow(10, decimals);
         return Math.round(number * exp) / exp;
+    };
+
+    /*
+        Given lat, lng and zoom, return an url hash
+    */
+    var hashTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
+    ns.getPositionHash = function (lat, lng, zoom) {
+        return hashTemplate({
+            zoom: zoom,
+            lat: ns.round(lat, 4),
+            lon: ns.round(lng, 4)
+        });
+    };
+
+    ns.WORLD = {
+        'type': 'Feature',
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [[
+                [-180, -90],
+                [-180,  90],
+                [ 180,  90],
+                [ 180, -90],
+                [-180, -90]
+            ]]
+        }
+    };
+
+    ns.createMap = function (div, options) {
+        //create the map
+        var map = L.map(div, {
+            minZoom: 3,
+            maxZoom: 21,
+            maxBounds: L.geoJson(ns.WORLD).getBounds()
+        });
+
+
+        var baseLayer = options.layer || 'norges_grunnkart_graatone';
+        if (_.isString(baseLayer)) {
+            KR.Util.getBaseLayer(baseLayer, function (layer) {
+                layer.addTo(map);
+            });
+        } else {
+            baseLayer.addTo(map);
+        }
+        return map;
+    };
+
+    ns.setupSidebar = function (map) {
+        var popupTemplate = KR.Util.getDatasetTemplate('popup');
+        var listElementTemplate = _.template($('#list_item_template').html());
+        var markerTemplate = _.template($('#marker_template').html());
+        var thumbnailTemplate = _.template($('#thumbnail_template').html());
+        var footerTemplate = _.template($('#footer_template').html());
+
+        //the sidebar, used for displaying information
+        var sidebar = L.Knreise.Control.sidebar('sidebar', {
+            position: 'left',
+            template: popupTemplate,
+            listElementTemplate: listElementTemplate,
+            markerTemplate: markerTemplate,
+            thumbnailTemplate: thumbnailTemplate,
+            footerTemplate: footerTemplate
+        });
+        map.addControl(sidebar);
+        return sidebar;
     };
 
 }(KR.Util));
@@ -541,6 +623,7 @@ KR.Style = {};
         if (!config) {
             config = ns.datasets[name];
         }
+
         return config;
     };
 
@@ -1507,7 +1590,12 @@ KR.SidebarContent = function (wrapper, element, top, options) {
 
     function showFeature(feature, template, getData, callbacks, index, numFeatures) {
         if (getData) {
-            _setContent('');
+            var content = '';
+            if (feature.properties.title) {
+                content += '<h3>' + feature.properties.title + '</h3>';
+            }
+            content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
+            _setContent(content);
             getData(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
                 showFeature(newFeature, template, null, callbacks, index, numFeatures);
@@ -1521,6 +1609,8 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             img = img[0];
         }
 
+
+
         if (!feature.properties.images) {
             feature.properties.images = null;
         }
@@ -1531,7 +1621,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             feature.properties.license = null;
         }
 
-
+        console.log(feature);
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -1662,6 +1752,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                 if (_.has(dataset, 'extras')) {
                     feature.properties = _.extend(feature.properties, dataset.extras);
                 }
+                feature.properties.feedbackForm = dataset.feedbackForm;
                 if (_.has(dataset, 'mappings')) {
                     _.each(dataset.mappings, function (value, key) {
                         feature.properties[key] = feature.properties[value];
@@ -2129,7 +2220,8 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
                 description: 'Digitalt fortalt',
-                allowTopic: true
+                allowTopic: true,
+                feedbackForm: true
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -2142,7 +2234,10 @@ KR.Config = KR.Config || {};
                 name: 'Verneområder',
                 template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
-                    api.getNorvegianaItem('kulturnett_Naturbase_' + feature.properties.iid, callback);
+                    api.getItem(
+                        {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                        callback
+                    );
                 },
                 toPoint: {
                     showAlways: true,
@@ -2261,7 +2356,25 @@ KR.Config = KR.Config || {};
                     count: 5,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
-            }
+            },
+            'jernbane': {
+                id: 'jernbane',
+                dataset: {
+                    api: 'jernbanemuseet'
+                },
+                provider: 'Jernbanemuseet',
+                name: 'Jernbanemuseet',
+                template: KR.Util.getDatasetTemplate('jernbanemuseet'),
+                getFeatureData: function (feature, callback) {
+                    api.getItem(
+                        {api: 'jernbanemuseet', id:  feature.properties.id},
+                        callback
+                    );
+                },
+                isStatic: true,
+                bbox: false,
+                description: 'Jernbanemuseet'
+            },
         };
 
         if (!komm && !fylke) {

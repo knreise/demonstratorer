@@ -51,7 +51,9 @@ module.exports = {
     'common/js/norgeibilder.js',
     'common/js/datasets.js',
     'common/js/SplashScreen.js',
-    'common/js/setupMap.js'
+    'common/js/ResponseForm.js',
+    'common/js/setupMap.js',
+    'common/js/setupCollection.js'
   ],
   demoScriptsExternal3d: [
         'bower_components/jquery/dist/jquery.min.js',
@@ -131,7 +133,8 @@ module.exports = {
     'flickr',
     'husmann',
     'brukerminne',
-    'popup'
+    'popup',
+    'jernbanemuseet'
   ],
   demoTemplates: [
     'list_item',
@@ -139,7 +142,9 @@ module.exports = {
     'thumbnail',
     'footer',
     'error',
-    'message'
+    'message',
+    'response_form',
+    'splashscreen'
   ],
 
   demonstrators: [
@@ -193,6 +198,11 @@ module.exports = {
       id: 'trondheim',
       name: 'Trondheim',
       description: 'Demonstrator med fokus på Trondheim'
+    },
+    {
+      id: '2verdenskrig',
+      name: '2. verdenskrig',
+      description: '2. verdenskrig'
     }
   ],
   experiments: [
