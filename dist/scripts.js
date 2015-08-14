@@ -626,6 +626,7 @@ KR.Style = {};
         if (!config) {
             config = ns.datasets[name];
         }
+
         return config;
     };
 
@@ -1567,6 +1568,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             feature.properties.license = null;
         }
 
+        console.log(feature);
         var color = KR.Style.colorForFeature(feature, true, true);
         var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>' +
             template(_.extend({image: null}, feature.properties));
@@ -3566,6 +3568,13 @@ var KR = this.KR || {};
 KR.setupCollectionMap = function (api, collectionName, layer) {
     'use strict';
 
+    var templates = {
+        'Digitalt fortalt': KR.Util.getDatasetTemplate('digitalt_fortalt'),
+        'DigitaltMuseum': KR.Util.getDatasetTemplate('digitalt_museum'),
+        'Musit': KR.Util.getDatasetTemplate('musit'),
+        'Artsdatabanken': KR.Util.getDatasetTemplate('popup')
+    };
+
     function _showCollection(collection) {
 
         var map = KR.Util.createMap('map', {layer: layer});
@@ -3579,6 +3588,14 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
         $('title').append(collection.title);
 
         var bounds = L.latLngBounds.fromBBoxArray(turf.extent(collection.geo_json));
+
+        _.each(collection.geo_json.features, function (feature) {
+            feature.properties.datasetId = feature.properties.provider;
+            if (_.has(templates, feature.properties.provider)) {
+                feature.template = templates[feature.properties.provider];
+            }
+        });
+
         var sidebar = KR.Util.setupSidebar(map);
 
         var _addClusterClick = KR.Util.clusterClick(sidebar);

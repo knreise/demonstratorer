@@ -446,6 +446,7 @@ KR.NorvegianaAPI = function (apiName) {
     var requests = [];
 
     var BASE_URL = 'http://kulturnett2.delving.org/api/search';
+    var BASE_COLLECTION_URL = 'http://acc.norvegiana.delving.org/en/api/knreise-collection/';
 
     function _formatLatLng(latLng) {
         return latLng.lat + ',' + latLng.lng;
@@ -504,7 +505,7 @@ KR.NorvegianaAPI = function (apiName) {
             thumbnail: _fixThumbnail(thumbUrl),
             images: allProperties.delving_thumbnail,
             title: _firstOrNull(allProperties.dc_title),
-            content: _firstOrNull(allProperties.dc_description),
+            content: _.map(allProperties.dc_description, function (d) { return '<p>' + d + '</p>' }).join('\n'),
             link: _firstOrNull(allProperties.europeana_isShownAt),
             dataset: _firstOrNull(allProperties.europeana_collectionTitle),
             provider: _firstOrNull(allProperties.abm_contentProvider),
@@ -709,11 +710,34 @@ KR.NorvegianaAPI = function (apiName) {
         );
     }
 
+    function _collectionParser(data) {
+
+        var features = _.map(data.geo_json.features, function (feature) {
+                var properties = _createProperties(feature.properties);
+                var id;
+                if (_.has(properties.allProps, 'delving_hubId')) {
+                    id = apiName + '_' + properties.allProps.delving_hubId;
+                }
+                feature.properties = properties;
+                feature.id = id;
+                return feature;
+        });
+
+        data.geo_json = KR.Util.createFeatureCollection(features);
+        return data;
+    }
+
+    function getCollection(collectionName, callback, errorCallback) {
+        var url = BASE_COLLECTION_URL + collectionName;
+        KR.Util.sendRequest(url, _collectionParser, callback, errorCallback);
+    }
+
     return {
         getWithin: getWithin,
         getItem: getItem,
         getBbox: getBbox,
-        getData: getData
+        getData: getData,
+        getCollection: getCollection
     };
 };
 
@@ -828,7 +852,7 @@ KR.WikipediaAPI = function (BASE_URL, MAX_RADIUS, linkBase, apiName) {
         return KR.Util.createGeoJSONFeature(
             {lat: item.lat, lng: item.lon},
             params,
-            apiName + '_' + link
+            apiName + '_' + item.pageid
         );
     }
 
@@ -1207,8 +1231,11 @@ KR.SparqlAPI = function (BASE_URL, apiName) {
             '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
             '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
             '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
-            ' }' +
-            '}';
+            ' }';
+            if (dataset.filter) {
+                query += ' ' + dataset.filter;
+            }
+            query += '}';
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
         }
@@ -1243,8 +1270,11 @@ KR.SparqlAPI = function (BASE_URL, apiName) {
             '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=400&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
             '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
             '  }' +
-            ' FILTER regex(?kommune, "^.*' + fylke + '[0-9]{2}") .' +
-            ' } order by ?img';
+            ' FILTER regex(?kommune, "^.*' + fylke + '[0-9]{2}") .';
+            if (dataset.filter) {
+                query += ' ' + dataset.filter;
+            }
+            query += ' } order by ?img';
 
         if (dataset.limit) {
             query += 'LIMIT ' + dataset.limit;
@@ -1809,7 +1839,8 @@ KR.API = function (options) {
         datasets: function () {
             return _.extend({}, datasets);
         },
-        getItem: getItem
+        getItem: getItem,
+        getCollection: norvegianaAPI.getCollection
     };
 
 };
