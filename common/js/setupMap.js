@@ -8,20 +8,6 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
-    var WORLD = {
-        'type': 'Feature',
-        'geometry': {
-            'type': 'Polygon',
-            'coordinates': [[
-                [-180, -90],
-                [-180,  90],
-                [ 180,  90],
-                [ 180, -90],
-                [-180, -90]
-            ]]
-        }
-    };
-
     function _setupLocationUrl(map) {
 
         var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
@@ -64,54 +50,13 @@ var KR = this.KR || {};
     }
 
 
-    function _setupSidebar(map) {
-        var popupTemplate = KR.Util.getDatasetTemplate('popup');
-        var listElementTemplate = _.template($('#list_item_template').html());
-        var markerTemplate = _.template($('#marker_template').html());
-        var thumbnailTemplate = _.template($('#thumbnail_template').html());
-        var footerTemplate = _.template($('#footer_template').html());
-
-        //the sidebar, used for displaying information
-        var sidebar = L.Knreise.Control.sidebar('sidebar', {
-            position: 'left',
-            template: popupTemplate,
-            listElementTemplate: listElementTemplate,
-            markerTemplate: markerTemplate,
-            thumbnailTemplate: thumbnailTemplate,
-            footerTemplate: footerTemplate
-        });
-        map.addControl(sidebar);
-        return sidebar;
-    }
-
-
-
-    function _createMap(options) {
-        //create the map
-        var map = L.map('map', {
-            minZoom: 3,
-            maxZoom: 21,
-            maxBounds: L.geoJson(WORLD).getBounds()
-        });
-
-
-        var baseLayer = options.layer || 'norges_grunnkart_graatone';
-        if (_.isString(baseLayer)) {
-            KR.Util.getBaseLayer(baseLayer, function (layer) {
-                layer.addTo(map);
-            });
-        } else {
-            baseLayer.addTo(map);
-        }
-        return map;
-    }
-
     function _loadDatasets(api, datasets, fromUrl, komm, fylke) {
         if (fromUrl) {
             datasets = KR.Config.getDatasets(datasets, api, komm, fylke);
         }
         return datasets;
     }
+
 
     function _addInverted(map, geoJson) {
         var style = {
@@ -122,7 +67,7 @@ var KR = this.KR || {};
 
         var data = _.reduce(geoJson.features, function (geom, feature) {
             return turf.erase(geom, feature);
-        }, WORLD);
+        }, KR.Util.WORLD);
         L.geoJson(data, style).addTo(map);
     }
 
@@ -244,8 +189,8 @@ var KR = this.KR || {};
         options = options || {};
         options = _.extend({geomFilter: false, showGeom: false}, options);
 
-        var map = _createMap(options);
-        var sidebar = _setupSidebar(map);
+        var map = KR.Util.createMap('map', options);
+        var sidebar = KR.Util.setupSidebar(map);
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {

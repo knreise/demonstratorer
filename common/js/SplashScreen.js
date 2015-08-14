@@ -6,7 +6,7 @@ var KR = this.KR || {};
     Simple splash screen for a leaflet map
 */
 
-KR.SplashScreen = function (map, title, description, image) {
+KR.SplashScreen = function (map, title, description, image, creator) {
     'use strict';
 
     function getShouldStayClosed() {
@@ -53,29 +53,22 @@ KR.SplashScreen = function (map, title, description, image) {
         sidebar.show = _.bind(showSidebar, sidebar);
 
         map.addControl(sidebar);
+        var template = _.template($('#splashscreen_template').html());
 
-        var content = '<h2>' + title + '</h2>';
-        if (image) {
-            content += '<img class="splash-image" src="' + image +'" />';
-        }
-        if (description) {
-            content += '<div class="splash-content">'+ description + '</div>';
-        }
-        sidebar.setContent(content);
+        sidebar.setContent(template({
+            title: title,
+            image: image,
+            description: description,
+            creator: creator
+        }));
         return sidebar;
     }
 
     function setupRememberCheckbox(sidebar) {
 
-        var checkbox = $('<input type="checkbox">');
+        var checkbox = $(sidebar.getContainer()).find('#persist_splash_cb');
 
         checkbox.prop('checked', getShouldStayClosed());
-        var label = $('<label class="splash-content"></label');
-        label.append([
-            checkbox,
-            ' Ikke vis ved oppstart.'
-        ]);
-        $(sidebar.getContainer()).append(label);
 
         function toggle() {
             setShouldStayClosed(checkbox.prop('checked'));

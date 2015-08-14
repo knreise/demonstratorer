@@ -101,6 +101,33 @@
 </div>
 </script>
 
+
+<script type="text/template" id="splashscreen_template">
+<h2><%= title %></h2>
+<% if (image) { %> 
+<img class="splash-image" src="<%= image %>">
+<% } %>
+<div class="splash-content">
+    <% if (description) { %> 
+    <div><%= description %></div>
+    <% } %>
+    <% if (creator) { %> 
+
+        <table class="sidebar-table">
+            <tr>
+              <td>Laget av</td>
+              <td><%= creator %></td>
+            </tr>
+        </table>
+
+    <% } %>
+
+    <label>
+        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
+    </label>
+</div>
+</script>
+
 <script type="text/template" id="verneomraader_template">
 <h3><%= title %></h3>
 
