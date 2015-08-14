@@ -32,7 +32,7 @@ KR.Config = KR.Config || {};
             }
         };
 
-        var initKulturminnePoly = function (map, dataset) {
+        var initKulturminnePoly = function (map, dataset, vectorLayer) {
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
                     if (dataset.extras && dataset.extras.groupId) {
@@ -41,6 +41,7 @@ KR.Config = KR.Config || {};
                         feature.properties.datasetId = dataset.id;
                         layer.setStyle(KR.Style.getPathStyle(feature, true));
                     }
+
                     layer.on('click', function () {
                         var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
                             return (parentLayer.feature.properties.id === feature.properties.lok);
@@ -51,6 +52,13 @@ KR.Config = KR.Config || {};
                     });
                 }
             }).addTo(map);
+
+            vectorLayer.on('hide', function () {
+                map.removeLayer(dataset.extraFeatures);
+            });
+            vectorLayer.on('show', function () {
+                map.addLayer(dataset.extraFeatures);
+            });
         };
 
         return {

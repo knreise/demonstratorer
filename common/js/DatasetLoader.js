@@ -214,23 +214,23 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
 
-    function _initDataset(dataset) {
+    function _initDataset(dataset, vectorLayer) {
         if (dataset.init) {
-            dataset.init(map, dataset);
+            dataset.init(map, dataset, vectorLayer);
         }
     }
 
     function _addDataset(dataset, filter, initBounds, loadedCallback) {
         var vectorLayer = _createVectorLayer(dataset, map);
-
         if (dataset.datasets) {
-
             dataset.datasets = _.filter(dataset.datasets, function (dataset) {
                 return !dataset.noLoad;
             });
-            _.each(dataset.datasets, _initDataset);
+            _.each(dataset.datasets, function (dataset) {
+                _initDataset(dataset, vectorLayer);
+            });
         } else {
-            _initDataset(dataset);
+            _initDataset(dataset, vectorLayer);
         }
 
         function checkData(geoJson, vectorLayer) {
