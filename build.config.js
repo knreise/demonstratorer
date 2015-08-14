@@ -155,6 +155,12 @@ module.exports = {
       //url: 'demonstratorer/config.html?datasets=verneomr%2Cartobs%2Cwikipedia&allstatic=true&line=http%3A%2F%2Fpilegrimsleden.no%2Fassets%2Fkml%2Fgudbrands_062015_r.kml&buffer=2&linecolor=%23000000&layer=norges_grunnkart_graatone'
     }, 
     {
+      id: 'gudbrandsdalsleden_line',
+      name: 'Gudbrandsdalsleden - "guidet tur"',
+      description: 'Velkommen til en guidet tur langs Gudbrandsdalsleden. Mens du beveger deg langs leden vil vi vise deg relevant innhold.',
+      url: 'demonstratorer/linemap.html'
+    }, 
+    {
       id: 'telemark',
       name: 'Telemark',
       description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.'//,
