@@ -226,7 +226,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
         }
     }
 
-    function _addDataset(dataset, filter, initBounds, loadedCallback) {
+    function _addDataset(dataset, filter, initBounds, loadedCallback, skipLoadOutside) {
         var vectorLayer = _createVectorLayer(dataset, map);
         if (dataset.datasets) {
             dataset.datasets = _.filter(dataset.datasets, function (dataset) {
@@ -255,15 +255,26 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
         var _reloadData = function (e, bbox, forceVisible, callback) {
             var first = !e;
 
+            var newBounds = bbox || map.getBounds().toBBoxString();
+            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
+            if (skipLoadOutside && newBounds) {
+                var current = L.latLngBounds.fromBBoxString(newBounds);
+                var fence = L.latLngBounds.fromBBoxString(skipLoadOutside);
+
+                if (!fence.intersects(current)) {
+                    shouldLoad = false;
+                }
+            }
+
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
-            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
+            
             if (!shouldLoad) {
                 vectorLayer.clearLayers();
                 return;
             }
 
-            var newBounds = bbox || map.getBounds().toBBoxString();
+            
             var toLoad;
             if (dataset.datasets) {
                 toLoad = _.filter(dataset.datasets, function (d) {
@@ -448,7 +459,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
 
         Can be supplied an initial bbox for filtering and a filter function
     */
-    function loadDatasets(datasets, bounds, filter, loadedCallback) {
+    function loadDatasets(datasets, bounds, filter, loadedCallback, skipLoadOutside) {
 
         datasets = _.filter(datasets, function (dataset) {
             return !dataset.noLoad;
@@ -484,7 +495,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            return _addDataset(dataset, filter, bounds, loaded);
+            return _addDataset(dataset, filter, bounds, loaded, skipLoadOutside);
         });
         reloads = _.pluck(res, 'reload');
 

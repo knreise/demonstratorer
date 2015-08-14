@@ -2209,7 +2209,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
         }
     }
 
-    function _addDataset(dataset, filter, initBounds, loadedCallback) {
+    function _addDataset(dataset, filter, initBounds, loadedCallback, skipLoadOutside) {
         var vectorLayer = _createVectorLayer(dataset, map);
         if (dataset.datasets) {
             dataset.datasets = _.filter(dataset.datasets, function (dataset) {
@@ -2238,15 +2238,26 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
         var _reloadData = function (e, bbox, forceVisible, callback) {
             var first = !e;
 
+            var newBounds = bbox || map.getBounds().toBBoxString();
+            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
+            if (skipLoadOutside && newBounds) {
+                var current = L.latLngBounds.fromBBoxString(newBounds);
+                var fence = L.latLngBounds.fromBBoxString(skipLoadOutside);
+
+                if (!fence.intersects(current)) {
+                    shouldLoad = false;
+                }
+            }
+
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
-            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
+            
             if (!shouldLoad) {
                 vectorLayer.clearLayers();
                 return;
             }
 
-            var newBounds = bbox || map.getBounds().toBBoxString();
+            
             var toLoad;
             if (dataset.datasets) {
                 toLoad = _.filter(dataset.datasets, function (d) {
@@ -2431,7 +2442,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
 
         Can be supplied an initial bbox for filtering and a filter function
     */
-    function loadDatasets(datasets, bounds, filter, loadedCallback) {
+    function loadDatasets(datasets, bounds, filter, loadedCallback, skipLoadOutside) {
 
         datasets = _.filter(datasets, function (dataset) {
             return !dataset.noLoad;
@@ -2467,7 +2478,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            return _addDataset(dataset, filter, bounds, loaded);
+            return _addDataset(dataset, filter, bounds, loaded, skipLoadOutside);
         });
         reloads = _.pluck(res, 'reload');
 
@@ -3273,15 +3284,15 @@ var KR = this.KR || {};
 
 
     function _getFilter(buffer) {
-        return function (features) {
-            if (!features || !features.length) {
-                return features;
+        return function (featureCollection) {
+            
+            if (!featureCollection || !featureCollection.features.length) {
+                return featureCollection;
             }
-
-            if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
-                return turf.within(features, buffer);
+            if (featureCollection.features[0].geometry.type.indexOf('Polygon') === -1) {
+                return turf.within(featureCollection, buffer);
             }
-            var intersects =  _.filter(features.features, function (feature) {
+            var intersects =  _.filter(featureCollection.features, function (feature) {
                 var bbox = turf.extent(feature);
                 var bboxPolygon = turf.bboxPolygon(bbox);
                 return !!turf.intersect(bboxPolygon, buffer.features[0]);
@@ -3457,7 +3468,13 @@ var KR = this.KR || {};
                 }
                 _setupLocationUrl(map);
             };
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded);
+
+            var skipLoadOutside;
+            if (options.geomFilter && bounds) {
+                skipLoadOutside = bounds.toBBoxString()
+            }
+
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded, skipLoadOutside);
 
             if (lineLayer) {
                 lineLayer.addTo(map);

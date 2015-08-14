@@ -30,15 +30,15 @@ var KR = this.KR || {};
 
 
     function _getFilter(buffer) {
-        return function (features) {
-            if (!features || !features.length) {
-                return features;
+        return function (featureCollection) {
+            
+            if (!featureCollection || !featureCollection.features.length) {
+                return featureCollection;
             }
-
-            if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
-                return turf.within(features, buffer);
+            if (featureCollection.features[0].geometry.type.indexOf('Polygon') === -1) {
+                return turf.within(featureCollection, buffer);
             }
-            var intersects =  _.filter(features.features, function (feature) {
+            var intersects =  _.filter(featureCollection.features, function (feature) {
                 var bbox = turf.extent(feature);
                 var bboxPolygon = turf.bboxPolygon(bbox);
                 return !!turf.intersect(bboxPolygon, buffer.features[0]);
@@ -214,7 +214,13 @@ var KR = this.KR || {};
                 }
                 _setupLocationUrl(map);
             };
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded);
+
+            var skipLoadOutside;
+            if (options.geomFilter && bounds) {
+                skipLoadOutside = bounds.toBBoxString()
+            }
+
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded, skipLoadOutside);
 
             if (lineLayer) {
                 lineLayer.addTo(map);
