@@ -96,7 +96,7 @@ var markerFunction = function (position) {
 
 var followMap = new KR.FollowLineMap(map, api, sidebar, datasets, {markerFunction: markerFunction});
 
-var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_r.kml';
+var pilegrimsleden = 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml';
 
 var getLineFunc = function (callback) {
     KR.Util.getLine(api, pilegrimsleden, callback);
