@@ -175,6 +175,10 @@
     width: 100%;
 }
 
+.leaflet-sidebar .distance {
+    color: #6F6F6F;
+}
+
 
 #splashscreen {
     padding-left: 0;

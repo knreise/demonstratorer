@@ -362,7 +362,9 @@ KR.Util = KR.Util || {};
         Round a number to n decimals
     */
     ns.round = function (number, decimals) {
-        decimals = decimals || 2;
+        if (_.isUndefined(decimals)) {
+            decimals = 2;
+        }
         var exp = Math.pow(10, decimals);
         return Math.round(number * exp) / exp;
     };
@@ -431,6 +433,13 @@ KR.Util = KR.Util || {};
         });
         map.addControl(sidebar);
         return sidebar;
+    };
+
+    ns.distanceAndBearing = function(point1, point2) {
+        return {
+            distance: turf.distance(point1, point2, 'kilometers') * 1000,
+            bearing: turf.bearing(point1, point2)
+        };
     };
 
 }(KR.Util));

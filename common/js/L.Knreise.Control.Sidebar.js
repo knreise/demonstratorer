@@ -58,11 +58,16 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             }
 
         }, this);
+        this.sidebar = new KR.SidebarContent(this._container, this._contentContainer, this._top, this.options, this._map);
+    },
 
-        this.sidebar = new KR.SidebarContent(this._container, this._contentContainer, this._top, this.options);
+    addTo: function (map) {
+        this.sidebar.setMap(map);
+        return L.Control.Sidebar.prototype.addTo.apply(this, arguments);
     },
 
     showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
+
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 
