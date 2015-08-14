@@ -3197,7 +3197,7 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
         'DigitaltMuseum': KR.Util.getDatasetTemplate('digitalt_museum'),
         'Musit': KR.Util.getDatasetTemplate('musit'),
         'Artsdatabanken': KR.Util.getDatasetTemplate('popup')
-    }
+    };
 
     function _showCollection(collection) {
 
@@ -3215,9 +3215,7 @@ KR.setupCollectionMap = function (api, collectionName, layer) {
 
         _.each(collection.geo_json.features, function (feature) {
             feature.properties.datasetId = feature.properties.provider;
-            console.log(feature.properties.provider)
             if (_.has(templates, feature.properties.provider)) {
-                console.log("!!")
                 feature.template = templates[feature.properties.provider];
             }
         });
