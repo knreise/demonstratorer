@@ -340,8 +340,11 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Mearure the distance from each feature in a featurecollection to a given
+        point, add it as a property and sort the featurecollection on the distance
+    */
     ns.distanceAndSort = function (featurecollection, point) {
-
         var measured = _.map(featurecollection.features, function (feature) {
             feature.properties.distance = turf.distance(point, feature);
             return feature;
@@ -415,6 +418,9 @@ KR.Util = KR.Util || {};
         return map;
     };
 
+    /*
+        Utility for setting up the sidebar
+    */
     ns.setupSidebar = function (map, options) {
         options = options || {};
         var popupTemplate = KR.Util.getDatasetTemplate('popup');
@@ -438,6 +444,9 @@ KR.Util = KR.Util || {};
         return sidebar;
     };
 
+    /*
+    Get distance and bearing between two points
+    */
     ns.distanceAndBearing = function (point1, point2) {
         return {
             distance: turf.distance(point1, point2, 'kilometers') * 1000,

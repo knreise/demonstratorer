@@ -391,8 +391,11 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Mearure the distance from each feature in a featurecollection to a given
+        point, add it as a property and sort the featurecollection on the distance
+    */
     ns.distanceAndSort = function (featurecollection, point) {
-
         var measured = _.map(featurecollection.features, function (feature) {
             feature.properties.distance = turf.distance(point, feature);
             return feature;
@@ -466,6 +469,9 @@ KR.Util = KR.Util || {};
         return map;
     };
 
+    /*
+        Utility for setting up the sidebar
+    */
     ns.setupSidebar = function (map, options) {
         options = options || {};
         var popupTemplate = KR.Util.getDatasetTemplate('popup');
@@ -489,6 +495,9 @@ KR.Util = KR.Util || {};
         return sidebar;
     };
 
+    /*
+    Get distance and bearing between two points
+    */
     ns.distanceAndBearing = function (point1, point2) {
         return {
             distance: turf.distance(point1, point2, 'kilometers') * 1000,
@@ -1001,15 +1010,7 @@ KR.PathTracer = function (viewer, line, geojson) {
                 stop: stopTime
             })]),
             position: position,
-            orientation: new Cesium.VelocityOrientationProperty(position)/*,
-            path : {
-                resolution : 1,
-                material : new Cesium.PolylineGlowMaterialProperty({
-                    glowPower : 0.1,
-                    color : Cesium.Color.YELLOW
-                }),
-                width : 10
-            }*/
+            orientation: new Cesium.VelocityOrientationProperty(position)
         });
         return entity;
     }
@@ -1495,7 +1496,7 @@ KR.CesiumSidebar = function (element, err, closeCallback, options) {
     element.addClass('knreise-sidebar');
 
     function _setContent(content) {
-        _contentContainer.html('');
+        _contentContainer.html(content);
     }
 
     function mapProperties(properties) {
@@ -1507,16 +1508,6 @@ KR.CesiumSidebar = function (element, err, closeCallback, options) {
 
     function showFeature(properties) {
         sidebarContent.showFeature(mapProperties(properties));
-    }
-
-    function _createListElement(feature) {
-        var li = $('<a href="#" class="list-group-item">' + feature.title + '</a>');
-        li.on('click', function (e) {
-            e.preventDefault();
-            showFeature(feature);
-            return false;
-        });
-        return li;
     }
 
     function showList(propertiesArray) {
@@ -1552,7 +1543,7 @@ KR.CesiumSidebar = function (element, err, closeCallback, options) {
     };
 };
 
-/*global audiojs:false*/
+/*global audiojs:false, turf:false*/
 
 var KR = this.KR || {};
 
@@ -2491,7 +2482,7 @@ KR.Config = KR.Config || {};
                         type: 'propertyData',
                         propertyId: oldFeature.properties.efid
                     }, function (feature) {
-                        oldFeature.properties = feature.properties
+                        oldFeature.properties = feature.properties;
                         oldFeature.properties.provider = 'Folketelling 1910';
                         callback(oldFeature);
                     });
@@ -2739,15 +2730,6 @@ KR.Config = KR.Config || {};
         };
 
         if (!komm && !fylke) {
-            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
-                KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
-                    if (kommune < 1000) {
-                        kommune = '0' + kommune;
-                    }
-                    dataset.kommune = kommune;
-                    api.getData(dataset, dataLoaded, loadError);
-                });
-            };
             var raParams = {
                 bbox: true,
                 minZoom: 12,

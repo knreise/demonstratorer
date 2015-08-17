@@ -34,15 +34,7 @@ KR.PathTracer = function (viewer, line, geojson) {
                 stop: stopTime
             })]),
             position: position,
-            orientation: new Cesium.VelocityOrientationProperty(position)/*,
-            path : {
-                resolution : 1,
-                material : new Cesium.PolylineGlowMaterialProperty({
-                    glowPower : 0.1,
-                    color : Cesium.Color.YELLOW
-                }),
-                width : 10
-            }*/
+            orientation: new Cesium.VelocityOrientationProperty(position)
         });
         return entity;
     }

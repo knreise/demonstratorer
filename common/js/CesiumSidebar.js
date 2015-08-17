@@ -38,7 +38,7 @@ KR.CesiumSidebar = function (element, err, closeCallback, options) {
     element.addClass('knreise-sidebar');
 
     function _setContent(content) {
-        _contentContainer.html('');
+        _contentContainer.html(content);
     }
 
     function mapProperties(properties) {
@@ -50,16 +50,6 @@ KR.CesiumSidebar = function (element, err, closeCallback, options) {
 
     function showFeature(properties) {
         sidebarContent.showFeature(mapProperties(properties));
-    }
-
-    function _createListElement(feature) {
-        var li = $('<a href="#" class="list-group-item">' + feature.title + '</a>');
-        li.on('click', function (e) {
-            e.preventDefault();
-            showFeature(feature);
-            return false;
-        });
-        return li;
     }
 
     function showList(propertiesArray) {

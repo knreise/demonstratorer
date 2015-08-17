@@ -136,7 +136,7 @@ KR.Config = KR.Config || {};
                         type: 'propertyData',
                         propertyId: oldFeature.properties.efid
                     }, function (feature) {
-                        oldFeature.properties = feature.properties
+                        oldFeature.properties = feature.properties;
                         oldFeature.properties.provider = 'Folketelling 1910';
                         callback(oldFeature);
                     });
@@ -384,15 +384,6 @@ KR.Config = KR.Config || {};
         };
 
         if (!komm && !fylke) {
-            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
-                KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
-                    if (kommune < 1000) {
-                        kommune = '0' + kommune;
-                    }
-                    dataset.kommune = kommune;
-                    api.getData(dataset, dataLoaded, loadError);
-                });
-            };
             var raParams = {
                 bbox: true,
                 minZoom: 12,

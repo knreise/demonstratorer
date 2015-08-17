@@ -1,4 +1,4 @@
-/*global audiojs:false*/
+/*global audiojs:false, turf:false*/
 
 var KR = this.KR || {};
 

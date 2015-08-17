@@ -391,8 +391,11 @@ KR.Util = KR.Util || {};
     };
 
 
+    /*
+        Mearure the distance from each feature in a featurecollection to a given
+        point, add it as a property and sort the featurecollection on the distance
+    */
     ns.distanceAndSort = function (featurecollection, point) {
-
         var measured = _.map(featurecollection.features, function (feature) {
             feature.properties.distance = turf.distance(point, feature);
             return feature;
@@ -466,6 +469,9 @@ KR.Util = KR.Util || {};
         return map;
     };
 
+    /*
+        Utility for setting up the sidebar
+    */
     ns.setupSidebar = function (map, options) {
         options = options || {};
         var popupTemplate = KR.Util.getDatasetTemplate('popup');
@@ -489,6 +495,9 @@ KR.Util = KR.Util || {};
         return sidebar;
     };
 
+    /*
+    Get distance and bearing between two points
+    */
     ns.distanceAndBearing = function (point1, point2) {
         return {
             distance: turf.distance(point1, point2, 'kilometers') * 1000,
@@ -1460,7 +1469,7 @@ L.Knreise.Control.sidebar = function (placeholder, options) {
     return new L.Knreise.Control.Sidebar(placeholder, options);
 };
 
-/*global audiojs:false*/
+/*global audiojs:false, turf:false*/
 
 var KR = this.KR || {};
 
@@ -2062,6 +2071,9 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         return new L.Control.Datasets(layers, options);
     };
 }());
+
+/*global L:false */
+'use strict';
 
 L.Knreise = L.Knreise || {};
 L.Knreise.Icon = L.AwesomeMarkers.Icon.extend({
@@ -2713,16 +2725,16 @@ L.Knreise = L.Knreise || {};
 var KR = this.KR || {};
 
 //see: https://github.com/mylen/leaflet.TileLayer.WMTS
-L.TileLayer.WMTS=L.TileLayer.extend({defaultWmtsParams:{service:"WMTS",request:"GetTile",version:"1.0.0",layer:"",style:"",tilematrixSet:"",format:"image/jpeg"},initialize:function(a,b){this._url=a;var c=L.extend({},this.defaultWmtsParams),d=b.tileSize||this.options.tileSize;c.width=c.height=b.detectRetina&&L.Browser.retina?2*d:d;for(var e in b)this.options.hasOwnProperty(e)||"matrixIds"==e||(c[e]=b[e]);this.wmtsParams=c,this.matrixIds=b.matrixIds||this.getDefaultMatrix(),L.setOptions(this,b)},onAdd:function(a){L.TileLayer.prototype.onAdd.call(this,a)},getTileUrl:function(a,b){var c=this._map;return crs=c.options.crs,tileSize=this.options.tileSize,nwPoint=a.multiplyBy(tileSize),nwPoint.x+=1,nwPoint.y-=1,sePoint=nwPoint.add(new L.Point(tileSize,tileSize)),nw=crs.project(c.unproject(nwPoint,b)),se=crs.project(c.unproject(sePoint,b)),tilewidth=se.x-nw.x,b=c.getZoom(),ident=this.matrixIds[b].identifier,X0=this.matrixIds[b].topLeftCorner.lng,Y0=this.matrixIds[b].topLeftCorner.lat,tilecol=Math.floor((nw.x-X0)/tilewidth),tilerow=-Math.floor((nw.y-Y0)/tilewidth),url=L.Util.template(this._url,{s:this._getSubdomain(a)}),url+L.Util.getParamString(this.wmtsParams,url)+"&tilematrix="+ident+"&tilerow="+tilerow+"&tilecol="+tilecol},setParams:function(a,b){return L.extend(this.wmtsParams,a),b||this.redraw(),this},getDefaultMatrix:function(){for(var a=new Array(22),b=0;22>b;b++)a[b]={identifier:""+b,topLeftCorner:new L.LatLng(20037508.3428,-20037508.3428)};return a}}),L.tileLayer.wmts=function(a,b){return new L.TileLayer.WMTS(a,b)};
-
+L.TileLayer.WMTS = L.TileLayer.extend({defaultWmtsParams: {service: "WMTS",request:"GetTile",version:"1.0.0",layer:"",style:"",tilematrixSet:"",format:"image/jpeg"},initialize:function(a,b){this._url=a;var c=L.extend({},this.defaultWmtsParams),d=b.tileSize||this.options.tileSize;c.width=c.height=b.detectRetina&&L.Browser.retina?2*d:d;for(var e in b)this.options.hasOwnProperty(e)||"matrixIds"==e||(c[e]=b[e]);this.wmtsParams=c,this.matrixIds=b.matrixIds||this.getDefaultMatrix(),L.setOptions(this,b)},onAdd:function(a){L.TileLayer.prototype.onAdd.call(this,a)},getTileUrl:function(a,b){var c=this._map;return crs=c.options.crs,tileSize=this.options.tileSize,nwPoint=a.multiplyBy(tileSize),nwPoint.x+=1,nwPoint.y-=1,sePoint=nwPoint.add(new L.Point(tileSize,tileSize)),nw=crs.project(c.unproject(nwPoint,b)),se=crs.project(c.unproject(sePoint,b)),tilewidth=se.x-nw.x,b=c.getZoom(),ident=this.matrixIds[b].identifier,X0=this.matrixIds[b].topLeftCorner.lng,Y0=this.matrixIds[b].topLeftCorner.lat,tilecol=Math.floor((nw.x-X0)/tilewidth),tilerow=-Math.floor((nw.y-Y0)/tilewidth),url=L.Util.template(this._url,{s:this._getSubdomain(a)}),url+L.Util.getParamString(this.wmtsParams,url)+"&tilematrix="+ident+"&tilerow="+tilerow+"&tilecol="+tilecol},setParams:function(a,b){return L.extend(this.wmtsParams,a),b||this.redraw(),this},getDefaultMatrix:function(){for(var a=new Array(22),b=0;22>b;b++)a[b]={identifier:""+b,topLeftCorner:new L.LatLng(20037508.3428,-20037508.3428)};return a}}),L.tileLayer.wmts=function(a,b){return new L.TileLayer.WMTS(a,b)};
 
 (function (ns) {
     'use strict';
 
     function getMatrix(tilematrixSet) {
         var matrixIds3857 = new Array(30);
-        for (var i= 0; i<22; i++) {
-            matrixIds3857[i]= {
+        var i;
+        for (i = 0; i < 22; i++) {
+            matrixIds3857[i] = {
                 identifier: tilematrixSet + ':' + i,
                 topLeftCorner: new L.LatLng(2.0037508E7, -2.003750834E7)
             };
@@ -2899,7 +2911,7 @@ KR.Config = KR.Config || {};
                         type: 'propertyData',
                         propertyId: oldFeature.properties.efid
                     }, function (feature) {
-                        oldFeature.properties = feature.properties
+                        oldFeature.properties = feature.properties;
                         oldFeature.properties.provider = 'Folketelling 1910';
                         callback(oldFeature);
                     });
@@ -3147,15 +3159,6 @@ KR.Config = KR.Config || {};
         };
 
         if (!komm && !fylke) {
-            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
-                KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
-                    if (kommune < 1000) {
-                        kommune = '0' + kommune;
-                    }
-                    dataset.kommune = kommune;
-                    api.getData(dataset, dataLoaded, loadError);
-                });
-            };
             var raParams = {
                 bbox: true,
                 minZoom: 12,

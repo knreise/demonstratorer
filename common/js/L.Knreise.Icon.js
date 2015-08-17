@@ -1,3 +1,6 @@
+/*global L:false */
+'use strict';
+
 L.Knreise = L.Knreise || {};
 L.Knreise.Icon = L.AwesomeMarkers.Icon.extend({
     options: {
