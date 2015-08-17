@@ -70,7 +70,7 @@
             minZoom: 13
         },
         {
-            provider: 'Riksantikvaren',
+            provider: 'Riksantikvaren - Husmann',
             name: 'Brukeropprettet minne',
             dataset: {
                 api: 'kulturminnedata',
