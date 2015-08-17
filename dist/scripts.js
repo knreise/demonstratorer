@@ -3202,8 +3202,12 @@ var KR = this.KR || {};
 KR.SplashScreen = function (map, title, description, image, creator) {
     'use strict';
 
+    function getUrl() {
+        return window.location.href.replace(window.location.hash, '');
+    }
+
     function getShouldStayClosed() {
-        var url = window.location.href;
+        var url = getUrl();
         var name = 'remember_' + url + '=';
         var ca = document.cookie.split('; ');
         var l = _.find(ca, function (cookie) {
@@ -3216,22 +3220,20 @@ KR.SplashScreen = function (map, title, description, image, creator) {
     }
 
     function setShouldStayClosed(value) {
-        var url = window.location.href;
-        document.cookie = 'remember_' + url + '=' + value;
+        document.cookie = 'remember_' + getUrl() + '=' + value;
     }
 
-    function hideSidebar (e) {
+    function hideSidebar() {
         if (this._gray) {
             this._container.removeChild(this._gray);
         }
         L.Control.Sidebar.prototype.hide.apply(this, arguments);
-    };
+    }
 
-    function showSidebar (e) {
+    function showSidebar() {
         this._gray = L.DomUtil.create('div', 'gray', this._container);
         L.Control.Sidebar.prototype.show.apply(this, arguments);
-    };
-
+    }
 
     function createSidebar() {
         var el = L.DomUtil.create('div', '', document.body);
