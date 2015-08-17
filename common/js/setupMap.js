@@ -8,6 +8,13 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
+    var DEFAULT_OPTIONS = {
+        geomFilter: false,
+        showGeom: false,
+        loactionHash: true,
+        featureHash: true
+    };
+
     function _setupLocationUrl(map) {
         var moved = function () {
             var c = map.getCenter();
@@ -28,7 +35,7 @@ var KR = this.KR || {};
 
     function _getLocationUrl() {
         var hash = location.hash;
-        if (hash && hash !== '') {
+        if (hash && hash !== '' && hash.indexOf(':') !== 1) {
             var parts = hash.replace('#', '').split('/');
             var zoom = parseInt(parts[0], 10);
             var lat = parseFloat(parts[1]);
@@ -219,10 +226,10 @@ var KR = this.KR || {};
 
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
-        options = _.extend({geomFilter: false, showGeom: false}, options);
+        options = _.extend({}, DEFAULT_OPTIONS, options);
 
         var map = KR.Util.createMap('map', options);
-        var sidebar = KR.Util.setupSidebar(map);
+        var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
@@ -247,8 +254,9 @@ var KR = this.KR || {};
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _checkLoadItemFromUrl(featurecollections);
-
-                _setupLocationUrl(map);
+                if (options.loactionHash) {
+                    _setupLocationUrl(map);
+                }
             };
 
             var skipLoadOutside;
@@ -256,7 +264,13 @@ var KR = this.KR || {};
                 skipLoadOutside = bounds.toBBoxString();
             }
 
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded, skipLoadOutside);
+            var layers = datasetLoader.loadDatasets(
+                datasets,
+                bounds.toBBoxString(),
+                filter,
+                datasetsLoaded,
+                skipLoadOutside
+            );
 
             if (lineLayer) {
                 lineLayer.addTo(map);

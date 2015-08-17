@@ -406,7 +406,7 @@ KR.Util = KR.Util || {};
             }
             return 0;
         }));
-    }
+    };
 
 
     /*
@@ -466,27 +466,30 @@ KR.Util = KR.Util || {};
         return map;
     };
 
-    ns.setupSidebar = function (map) {
+    ns.setupSidebar = function (map, options) {
+        options = options || {};
         var popupTemplate = KR.Util.getDatasetTemplate('popup');
         var listElementTemplate = _.template($('#list_item_template').html());
         var markerTemplate = _.template($('#marker_template').html());
         var thumbnailTemplate = _.template($('#thumbnail_template').html());
         var footerTemplate = _.template($('#footer_template').html());
 
-        //the sidebar, used for displaying information
-        var sidebar = L.Knreise.Control.sidebar('sidebar', {
+        var sidebarOptions = _.extend({}, {
             position: 'left',
             template: popupTemplate,
             listElementTemplate: listElementTemplate,
             markerTemplate: markerTemplate,
             thumbnailTemplate: thumbnailTemplate,
             footerTemplate: footerTemplate
-        });
+        }, options);
+
+        //the sidebar, used for displaying information
+        var sidebar = L.Knreise.Control.sidebar('sidebar', sidebarOptions);
         map.addControl(sidebar);
         return sidebar;
     };
 
-    ns.distanceAndBearing = function(point1, point2) {
+    ns.distanceAndBearing = function (point1, point2) {
         return {
             distance: turf.distance(point1, point2, 'kilometers') * 1000,
             bearing: turf.bearing(point1, point2)
@@ -1377,7 +1380,6 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                 //Update the collection of picked entities.
                 pickedEntities.removeAll();
                 var objects = _.map(pickedObjects, function (pickedObj) {
-                    console.log(pickedObj);
                     var entity = pickedObj.id;
                     pickedEntities.add(entity);
                     return entity.properties;

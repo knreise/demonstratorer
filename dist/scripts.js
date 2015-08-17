@@ -406,7 +406,7 @@ KR.Util = KR.Util || {};
             }
             return 0;
         }));
-    }
+    };
 
 
     /*
@@ -466,27 +466,30 @@ KR.Util = KR.Util || {};
         return map;
     };
 
-    ns.setupSidebar = function (map) {
+    ns.setupSidebar = function (map, options) {
+        options = options || {};
         var popupTemplate = KR.Util.getDatasetTemplate('popup');
         var listElementTemplate = _.template($('#list_item_template').html());
         var markerTemplate = _.template($('#marker_template').html());
         var thumbnailTemplate = _.template($('#thumbnail_template').html());
         var footerTemplate = _.template($('#footer_template').html());
 
-        //the sidebar, used for displaying information
-        var sidebar = L.Knreise.Control.sidebar('sidebar', {
+        var sidebarOptions = _.extend({}, {
             position: 'left',
             template: popupTemplate,
             listElementTemplate: listElementTemplate,
             markerTemplate: markerTemplate,
             thumbnailTemplate: thumbnailTemplate,
             footerTemplate: footerTemplate
-        });
+        }, options);
+
+        //the sidebar, used for displaying information
+        var sidebar = L.Knreise.Control.sidebar('sidebar', sidebarOptions);
         map.addControl(sidebar);
         return sidebar;
     };
 
-    ns.distanceAndBearing = function(point1, point2) {
+    ns.distanceAndBearing = function (point1, point2) {
         return {
             distance: turf.distance(point1, point2, 'kilometers') * 1000,
             bearing: turf.bearing(point1, point2)
@@ -1435,7 +1438,8 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             $(this._contentContainer).append(div);
             KR.ResponseForm(div, params);
         }
-        if (feature.id) {
+
+        if (feature.id && this.options.featureHash) {
             setFeatureHash(feature.id);
         }
     },
@@ -3384,6 +3388,13 @@ var KR = this.KR || {};
 (function (ns) {
     'use strict';
 
+    var DEFAULT_OPTIONS = {
+        geomFilter: false,
+        showGeom: false,
+        loactionHash: true,
+        featureHash: true
+    };
+
     function _setupLocationUrl(map) {
         var moved = function () {
             var c = map.getCenter();
@@ -3404,7 +3415,7 @@ var KR = this.KR || {};
 
     function _getLocationUrl() {
         var hash = location.hash;
-        if (hash && hash !== '') {
+        if (hash && hash !== '' && hash.indexOf(':') !== 1) {
             var parts = hash.replace('#', '').split('/');
             var zoom = parseInt(parts[0], 10);
             var lat = parseFloat(parts[1]);
@@ -3595,10 +3606,10 @@ var KR = this.KR || {};
 
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
-        options = _.extend({geomFilter: false, showGeom: false}, options);
+        options = _.extend({}, DEFAULT_OPTIONS, options);
 
         var map = KR.Util.createMap('map', options);
-        var sidebar = KR.Util.setupSidebar(map);
+        var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
@@ -3623,8 +3634,9 @@ var KR = this.KR || {};
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _checkLoadItemFromUrl(featurecollections);
-
-                _setupLocationUrl(map);
+                if (options.loactionHash) {
+                    _setupLocationUrl(map);
+                }
             };
 
             var skipLoadOutside;
@@ -3632,7 +3644,13 @@ var KR = this.KR || {};
                 skipLoadOutside = bounds.toBBoxString();
             }
 
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded, skipLoadOutside);
+            var layers = datasetLoader.loadDatasets(
+                datasets,
+                bounds.toBBoxString(),
+                filter,
+                datasetsLoaded,
+                skipLoadOutside
+            );
 
             if (lineLayer) {
                 lineLayer.addTo(map);

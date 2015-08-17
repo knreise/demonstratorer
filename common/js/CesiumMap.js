@@ -243,7 +243,6 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                 //Update the collection of picked entities.
                 pickedEntities.removeAll();
                 var objects = _.map(pickedObjects, function (pickedObj) {
-                    console.log(pickedObj);
                     var entity = pickedObj.id;
                     pickedEntities.add(entity);
                     return entity.properties;

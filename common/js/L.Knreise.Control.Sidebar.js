@@ -98,7 +98,8 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
             $(this._contentContainer).append(div);
             KR.ResponseForm(div, params);
         }
-        if (feature.id) {
+
+        if (feature.id && this.options.featureHash) {
             setFeatureHash(feature.id);
         }
     },
