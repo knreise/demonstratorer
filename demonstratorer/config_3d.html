@@ -676,6 +676,16 @@
 </script>
 
 
+<script type="text/template" id="foto_sf_template">
+<h3><%= title %></h3>
+<% if(allProps.europeana_isShownBy) { %>
+    <img class="fullwidth" src="<%= allProps.europeana_isShownBy[0] %>" />
+<% } %>
+<p><%= content %></p>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>

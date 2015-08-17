@@ -1,4 +1,4 @@
-/*global L:false, KR: false, audiojs:false */
+/*global L:false, KR: false, audiojs:false, location: false */
 'use strict';
 
 L.Knreise = L.Knreise || {};
@@ -8,14 +8,19 @@ L.Knreise.Control = L.Knreise.Control || {};
     A Leaflet wrapper for displaying sidebar data.
 */
 
-function getLocationLink(feature) {
+function getFeatureLink(feature) {
     var baseUrl = location.href.replace(location.hash, '');
     var coords = feature.geometry.coordinates;
     var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
-    return baseUrl + hash;
+
+    var url = baseUrl + hash;
+    if (feature.id) {
+        url = url + ':' + encodeURIComponent(feature.id);
+    }
+    return url;
 }
 
-function setFeatureHash(featureId){
+function setFeatureHash(featureId) {
     var hash = location.hash.split(':')[0];
     if (featureId) {
         location.hash = hash + ':' + encodeURIComponent(featureId);
@@ -64,6 +69,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.on('hide', function () {
             if (this._map) {
                 this._map.fire('layerSelected');
+                this._map.fire('layerDeselect');
             }
 
         }, this);
@@ -80,27 +86,27 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 
-        if (feature.id) {
-            console.log('set hash');
-            setFeatureHash(feature.id);
-        }
+
 
         var div = $('<div></div>');
         var params = {
             id: feature.id,
-            url: getLocationLink(feature),
+            url: getFeatureLink(feature),
             provider: feature.properties.provider
-        }
+        };
         if (feature.properties.feedbackForm) {
             $(this._contentContainer).append(div);
             KR.ResponseForm(div, params);
+        }
+        if (feature.id) {
+            setFeatureHash(feature.id);
         }
     },
 
     showFeatures: function (features, template, getData, noListThreshold, forceList) {
         this.show();
         this.sidebar.showFeatures(features, template, getData, noListThreshold, forceList);
-    }, 
+    },
 
     _removeContent: function () {
         $(this.getContainer()).html('');

@@ -1,4 +1,4 @@
-/*global L:false, alert:false, KR:false, turf:false */
+/*global L:false, alert:false, KR:false, turf:false, location: false */
 
 /*
     Utility for setting up a Leaflet map based on config
@@ -9,10 +9,9 @@ var KR = this.KR || {};
     'use strict';
 
     function _setupLocationUrl(map) {
-
-        var strTemplate = _.template('#<%= zoom %>/<%= lat %>/<%= lon %>');
         var moved = function () {
             var c = map.getCenter();
+
             var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
 
             var hash = location.hash.split(':');
@@ -21,33 +20,40 @@ var KR = this.KR || {};
                 locationHash += ':' + prevId;
             }
             location.hash = locationHash;
-        }
+        };
+
         map.on('moveend', moved);
         moved();
     }
 
-    function _getLocationUrl(map) {
+    function _getLocationUrl() {
         var hash = location.hash;
         if (hash && hash !== '') {
             var parts = hash.replace('#', '').split('/');
             var zoom = parseInt(parts[0], 10);
             var lat = parseFloat(parts[1]);
             var lon = parseFloat(parts[2]);
-            map.setView([lat, lon], zoom);
+            return {lat: lat, lon: lon, zoom: zoom};
+        }
+    }
+
+    function _getHashFeature() {
+        var hash = location.hash.split(':');
+        if (hash.length > 1) {
+            return _.rest(hash).join(':');
         }
     }
 
 
     function _getFilter(buffer) {
-        return function (features) {
-            if (!features || !features.length) {
-                return features;
+        return function (featureCollection) {
+            if (!featureCollection || !featureCollection.features.length) {
+                return featureCollection;
             }
-
-            if (features.features[0].geometry.type.indexOf('Polygon') === -1) {
-                return turf.within(features, buffer);
+            if (featureCollection.features[0].geometry.type.indexOf('Polygon') === -1) {
+                return turf.within(featureCollection, buffer);
             }
-            var intersects =  _.filter(features.features, function (feature) {
+            var intersects =  _.filter(featureCollection.features, function (feature) {
                 var bbox = turf.extent(feature);
                 var bboxPolygon = turf.bboxPolygon(bbox);
                 return !!turf.intersect(bboxPolygon, buffer.features[0]);
@@ -192,13 +198,32 @@ var KR = this.KR || {};
         });
     }
 
+    function _checkLoadItemFromUrl(featurecollections) {
+        var featureId = _getHashFeature();
+        if (featureId) {
+            var findLayer = function (l) {
+                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId));
+            };
+
+            var datasetLayer = _.find(_.flatten(featurecollections), function (layer) {
+                return _.find(layer.getLayers(), findLayer);
+            });
+
+            if (datasetLayer) {
+                var selectedLayer = _.find(datasetLayer.getLayers(), findLayer);
+                selectedLayer.fire('click');
+                datasetLayer.setLayerSelected(selectedLayer);
+            }
+        }
+    }
+
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
         options = _.extend({geomFilter: false, showGeom: false}, options);
 
         var map = KR.Util.createMap('map', options);
         var sidebar = KR.Util.setupSidebar(map);
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
@@ -215,9 +240,24 @@ var KR = this.KR || {};
             }
 
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
-
             map.fitBounds(bounds);
-            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter);
+            var datasetsLoaded = function (featurecollections) {
+                var locationFromUrl = _getLocationUrl(map);
+                if (locationFromUrl) {
+                    map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
+                }
+                _checkLoadItemFromUrl(featurecollections);
+
+                _setupLocationUrl(map);
+            };
+
+            var skipLoadOutside;
+            if (options.geomFilter && bounds) {
+                skipLoadOutside = bounds.toBBoxString();
+            }
+
+            var layers = datasetLoader.loadDatasets(datasets, bounds.toBBoxString(), filter, datasetsLoaded, skipLoadOutside);
+
             if (lineLayer) {
                 lineLayer.addTo(map);
             }
@@ -227,10 +267,6 @@ var KR = this.KR || {};
             if (options.title) {
                 KR.SplashScreen(map, options.title, options.description, options.image);
             }
-
-            //track poition from url
-            _getLocationUrl(map);
-            _setupLocationUrl(map);
         }
 
         options.map = map;

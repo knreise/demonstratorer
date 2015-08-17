@@ -154,7 +154,10 @@ KR.Util = KR.Util || {};
     };
 
 
-    function _getTemplateForFeature(feature, dataset) {
+    ns.getTemplateForFeature = function (feature, dataset) {
+        if (!dataset) {
+            return;
+        }
         if (dataset.datasets) {
             var d = _.find(dataset.datasets, function (dataset) {
                 return (dataset._knreise_id === feature.properties.datasetID);
@@ -162,7 +165,7 @@ KR.Util = KR.Util || {};
             return d.template;
         }
         return dataset.template;
-    }
+    };
 
 
     /*
@@ -173,8 +176,8 @@ KR.Util = KR.Util || {};
             clusterLayer.on('clusterclick', function (e) {
                 var features = _.map(e.layer.getAllChildMarkers(), function (marker) {
                     var feature = marker.feature;
-                    if (dataset) {
-                        feature.template = _getTemplateForFeature(feature, dataset);
+                    if (dataset && !feature.template) {
+                        feature.template = ns.getTemplateForFeature(feature, dataset);
                     }
                     return feature;
                 });
@@ -380,8 +383,6 @@ KR.Util = KR.Util || {};
         api.getData(dataset, callback);
     };
 
-
-
     ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
         KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
             dataset.kommune = kommune;
@@ -406,7 +407,6 @@ KR.Util = KR.Util || {};
             return 0;
         }));
     }
-
 
 
     /*
@@ -623,6 +623,9 @@ KR.Style = {};
         }
     };
 
+    ns.groups = {
+
+    };
 
     /*
         Gets the style config for a dataset in KR.Style.datasets
@@ -691,9 +694,17 @@ KR.Style = {};
         return valueOrfunc(config, 'bordercolor', feature);
     }
 
+    function getGroupConfig(groupId) {
+        return ns.groups[groupId];
+    }
 
     function getConfig(feature) {
         var config;
+
+        if (feature.properties && feature.properties.groupId) {
+            return getGroupConfig(feature.properties.groupId);
+        }
+
         if (feature.properties && feature.properties.datasetId) {
             config = ns.getDatasetStyle(feature.properties.datasetId);
         }
@@ -770,11 +781,21 @@ KR.Style = {};
         if (!photos.length) {
             return;
         }
-
+        var rest;
+        if (_.isArray(color)) {
+            rest = _.rest(color);
+            color = color[0];
+        }
         var styleDict = {
             'border-color': color,
             'background-image': 'url(' + photos[0].feature.properties.thumbnail + ');'
         };
+        if (rest) {
+            styleDict['box-shadow'] = _.map(rest, function (c, index) {
+                var width = (index + 1) * 2;
+                return '0 0 0 ' + width + 'px ' + c;
+            }).join(',') + ';';
+        }
 
         if (selected) {
             styleDict['border-width'] = '3px';
@@ -812,17 +833,32 @@ KR.Style = {};
 
         var features = cluster.getAllChildMarkers();
 
-        var config = getConfig(features[0].feature);
+        var groups = _.uniq(_.map(features, function (feature) {
+            return feature.feature.properties.groupId;
+        }));
 
-        var color = selected ? SELECTED_COLOR : getFillColor(config, features[0].feature);
+
+        var config = getConfig(features[0].feature);
+        var colors;
+        if (_.compact(groups).length > 1) {
+            var groupIds = _.compact(groups);
+            if (groupIds.length > 1) {
+                colors = _.map(groupIds, _.compose(getFillColor,getGroupConfig));
+            }
+        } else {
+            colors = getFillColor(config, features[0].feature);
+        }
+        if (selected) {
+            colors = SELECTED_COLOR;
+        }
 
         if (config.thumbnail) {
-            var thumbnail = getClusterThumbnailIcon(features, color, selected);
+            var thumbnail = getClusterThumbnailIcon(features, colors, selected);
             if (thumbnail) {
                 return thumbnail;
             }
         }
-        return getClusterIcon(features, color);
+        return getClusterIcon(features, colors);
     };
 
 
@@ -877,6 +913,29 @@ KR.Style = {};
         }
     };
 
+    ns.colorForDataset = function (dataset, hex, useBaseColor) {
+        var config, datasetId;
+        if (dataset.grouped) {
+            config = ns.groups[KR.Util.stamp(dataset)];
+            if (!config) {
+                datasetId = dataset.datasets[0].extras.datasetId;
+            }
+        } else {
+            if (!datasetId) {
+                datasetId = dataset.extras.datasetId;
+            }
+            config = getConfig({
+                properties: {datasetId: datasetId}
+            });
+        }
+        if (config) {
+            if (hex) {
+                return getFillColor(config, null, useBaseColor);
+            }
+            return hexToName(getFillColor(config, null));
+        }
+    };
+
 
     /*
         Gets Leaflet style for a path feature
@@ -894,6 +953,11 @@ KR.Style = {};
             opacity: 0.8,
             fillOpacity: 0.4
         };
+    };
+
+    ns.getPathStyleForGroup = function (groupId, clickable) {
+        var feature = {properties: {groupId: groupId}};
+        return ns.getPathStyle(feature, clickable);
     };
 
 }(KR.Style));
@@ -1632,13 +1696,13 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             });
             return;
         }
+
         template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
 
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
         }
-
 
         if (!feature.properties.images) {
             feature.properties.images = null;
@@ -1752,7 +1816,7 @@ var KR = this.KR || {};
     Init it with a KnreiseAPI, a Leaflet map, something that behaves as 
     L.Knreise.Control.Sidebar and an optional callback for errors.
 */
-KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
+KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster) {
     'use strict';
 
     var reloads = [];
@@ -1793,6 +1857,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                         feature.properties[key] = feature.properties[value];
                     });
                 }
+                feature.template = KR.Util.getTemplateForFeature(feature, dataset);
             });
             return features;
         };
@@ -1800,9 +1865,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
     function _copyProperties(dataset) {
         var params = _.reduce(_.without(_.keys(dataset), 'datasets'), function (acc, key) {
-            acc[key] = dataset[key];
+            if (key !== 'style') {
+                acc[key] = dataset[key];
+            }
             return acc;
         }, {});
+
+        if (dataset.style) {
+            params.extras = params.extras || {};
+            var groupId = KR.Util.stamp(dataset);
+            params.extras.groupId = groupId;
+            KR.Style.groups[groupId] = dataset.style;
+        }
         dataset.datasets  = _.map(dataset.datasets, function (dataset) {
             return _.extend({}, params, dataset);
         });
@@ -1830,6 +1904,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             return acc.concat(data.toGeoJSON().features);
         }, []);
         layer.addData(KR.Util.createFeatureCollection(features));
+        layer.fire('dataAdded');
     }
 
     function _resetClusterData(clusterLayer, featurecollections) {
@@ -1853,14 +1928,19 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
     function _createVectorLayer(dataset, map) {
         var vectorLayer;
-        if (dataset.cluster) {
-            vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
-            if (_addClusterClick) {
-                _addClusterClick(vectorLayer, dataset);
-            }
+        if (useCommonCluster) {
+            vectorLayer = _createGeoJSONLayer(null, dataset);
         } else {
-            vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
+            if (dataset.cluster) {
+                vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
+                if (_addClusterClick) {
+                    _addClusterClick(vectorLayer, dataset);
+                }
+            } else {
+                vectorLayer = _createGeoJSONLayer(null, dataset).addTo(map);
+            }
         }
+
         var enabled = true;
         if (dataset.minFeatures) {
             enabled = false;
@@ -1950,23 +2030,23 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
     }
 
 
-    function _initDataset(dataset) {
+    function _initDataset(dataset, vectorLayer) {
         if (dataset.init) {
-            dataset.init(map, dataset);
+            dataset.init(map, dataset, vectorLayer);
         }
     }
 
-    function _addDataset(dataset, filter, initBounds) {
+    function _addDataset(dataset, filter, initBounds, loadedCallback, skipLoadOutside) {
         var vectorLayer = _createVectorLayer(dataset, map);
-
         if (dataset.datasets) {
-
             dataset.datasets = _.filter(dataset.datasets, function (dataset) {
                 return !dataset.noLoad;
             });
-            _.each(dataset.datasets, _initDataset);
+            _.each(dataset.datasets, function (dataset) {
+                _initDataset(dataset, vectorLayer);
+            });
         } else {
-            _initDataset(dataset);
+            _initDataset(dataset, vectorLayer);
         }
 
         function checkData(geoJson, vectorLayer) {
@@ -1985,15 +2065,25 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         var _reloadData = function (e, bbox, forceVisible, callback) {
             var first = !e;
 
+            var newBounds = bbox || map.getBounds().toBBoxString();
+            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
+            if (skipLoadOutside && newBounds) {
+                var current = L.latLngBounds.fromBBoxString(newBounds);
+                var fence = L.latLngBounds.fromBBoxString(skipLoadOutside);
+
+                if (!fence.intersects(current)) {
+                    shouldLoad = false;
+                }
+            }
+
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
-            var shouldLoad = forceVisible || _checkShouldLoad(dataset);
+
             if (!shouldLoad) {
                 vectorLayer.clearLayers();
                 return;
             }
 
-            var newBounds = bbox || map.getBounds().toBBoxString();
             var toLoad;
             if (dataset.datasets) {
                 toLoad = _.filter(dataset.datasets, function (d) {
@@ -2007,13 +2097,18 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             var finished = _.after(toLoad.length, function () {
                 vectorLayer.isLoading = false;
                 vectorLayer.fire('dataloadend');
-                if (dataset.cluster) {
-                    _resetClusterData(vectorLayer, featurecollections);
-                } else {
+
+                if (useCommonCluster) {
                     _resetDataGeoJson(vectorLayer, featurecollections);
+                } else {
+                    if (dataset.cluster) {
+                        _resetClusterData(vectorLayer, featurecollections);
+                    } else {
+                        _resetDataGeoJson(vectorLayer, featurecollections);
+                    }
                 }
                 if (callback) {
-                    callback();
+                    callback(featurecollections);
                 }
             });
 
@@ -2029,14 +2124,19 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
                         geoJson = filter(geoJson);
                     }
                     var geoJSONLayer;
-                    if (dataset.cluster) {
-                        geoJSONLayer = _createGeoJSONLayer(
-                            mapper(checkData(geoJson, vectorLayer)),
-                            dataset
-                        );
-                        dataset.geoJSONLayer = geoJSONLayer;
-                    } else {
+
+                    if (useCommonCluster) {
                         geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                    } else {
+                        if (dataset.cluster) {
+                            geoJSONLayer = _createGeoJSONLayer(
+                                mapper(checkData(geoJson, vectorLayer)),
+                                dataset
+                            );
+                            dataset.geoJSONLayer = geoJSONLayer;
+                        } else {
+                            geoJSONLayer = L.geoJson(mapper(checkData(geoJson, vectorLayer)));
+                        }
                     }
                     featurecollections.push(geoJSONLayer);
                     finished();
@@ -2096,8 +2196,11 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             lastBounds = newBounds;
         };
 
-        _reloadData(null, initBounds, undefined, function () {
+        _reloadData(null, initBounds, undefined, function (fc) {
             _checkLoadWhenLessThan(dataset);
+            if (loadedCallback) {
+                loadedCallback(fc);
+            }
         });
 
         if (!_isStatic(dataset) || dataset.minZoom) {
@@ -2133,6 +2236,53 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
         });
     }
 
+    function commonCluster(layers) {
+        var addedLayers = {};
+
+        var deselectAll = function () {
+            _.each(layers, function (layer) {
+                layer.deselectAllNew();
+            });
+        };
+
+        map.on('layerDeselect', deselectAll);
+
+        var mc = new L.Knreise.MarkerClusterGroup().addTo(map);
+
+        mc.on('clusterclick', deselectAll);
+
+        _addClusterClick(mc);
+        _.each(layers, function (layer) {
+            layer.on('dataAdded', function () {
+                var layerId = L.stamp(layer);
+                if (addedLayers[layerId]) {
+                    mc.removeLayers(addedLayers[layerId]);
+                }
+                var subLayers = layer.getLayers();
+                addedLayers[layerId] = subLayers;
+                mc.addLayers(subLayers);
+
+                layer.on('hide', function () {
+                    if (addedLayers[layerId]) {
+                        mc.removeLayers(addedLayers[layerId]);
+                    }
+                });
+
+                layer.on('click', function (e) {
+                    deselectAll();
+                    var selectedLayer = e.layer;
+                    var parentLayer = _.find(layers, function (l) {
+                        return !!_.find(l.getLayers(), function (sl) {
+                            return (sl === selectedLayer);
+                        });
+                    });
+                    parentLayer.setLayerSelected(selectedLayer);
+                });
+            });
+        });
+    }
+
+
     /*
         Loads a list of datasets, creates Leaflet layers of either 
         L.Knreise.GeoJSON or L.Knreise.MarkerClusterGroup according to
@@ -2140,11 +2290,24 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
 
         Can be supplied an initial bbox for filtering and a filter function
     */
-    function loadDatasets(datasets, bounds, filter) {
-
+    function loadDatasets(datasets, bounds, filter, loadedCallback, skipLoadOutside) {
         datasets = _.filter(datasets, function (dataset) {
             return !dataset.noLoad;
         });
+
+        var loaded;
+        if (loadedCallback) {
+            var featurecollections  = [];
+
+            var finished = _.after(datasets.length, function () {
+                loadedCallback(featurecollections);
+            });
+
+            loaded = function (featureCollection) {
+                featurecollections.push(featureCollection);
+                finished();
+            };
+        }
 
         var res = _.map(datasets, function (dataset) {
 
@@ -2171,10 +2334,15 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback) {
             if (dataset.minZoom && dataset.bbox) {
                 dataset.isStatic = false;
             }
-            return _addDataset(dataset, filter, bounds);
+            return _addDataset(dataset, filter, bounds, loaded, skipLoadOutside);
         });
         reloads = _.pluck(res, 'reload');
-        return _.pluck(res, 'layer');
+
+        var layers = _.pluck(res, 'layer');
+        if (useCommonCluster) {
+            commonCluster(layers);
+        }
+        return layers;
     }
 
     return {
@@ -2217,11 +2385,16 @@ KR.Config = KR.Config || {};
             }
         };
 
-        var initKulturminnePoly = function (map, dataset) {
+        var initKulturminnePoly = function (map, dataset, vectorLayer) {
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
-                    feature.properties.datasetId = dataset.id;
-                    layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    if (dataset.extras && dataset.extras.groupId) {
+                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
+                    } else {
+                        feature.properties.datasetId = dataset.id;
+                        layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    }
+
                     layer.on('click', function () {
                         var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
                             return (parentLayer.feature.properties.id === feature.properties.lok);
@@ -2232,6 +2405,13 @@ KR.Config = KR.Config || {};
                     });
                 }
             }).addTo(map);
+
+            vectorLayer.on('hide', function () {
+                map.removeLayer(dataset.extraFeatures);
+            });
+            vectorLayer.on('show', function () {
+                map.addLayer(dataset.extraFeatures);
+            });
         };
 
         return {
@@ -2393,6 +2573,20 @@ KR.Config = KR.Config || {};
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
             },
+            'lokalwiki': {
+                id: 'lokalwiki',
+                name: 'Lokalhistoriewiki',
+                hideFromGenerator: true,
+                provider: 'Lokalhistoriewiki',
+                dataset: {
+                    api: 'lokalhistoriewiki'
+                },
+                style: {thumbnail: true},
+                minZoom: 13
+                //template: KR.Util.getDatasetTemplate('ra_sparql'),
+                //bbox: false,
+                //isStatic: true,
+            },
             'jernbane': {
                 id: 'jernbane',
                 dataset: {
@@ -2411,10 +2605,139 @@ KR.Config = KR.Config || {};
                 bbox: false,
                 description: 'Jernbanemuseet'
             },
+            'arkeologi': {
+                grouped: true,
+                name: 'Arkeologi',
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                    {
+                        name: 'MUSIT',
+                        provider: 'Universitetsmuseene',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'MUSIT'
+                        },
+                        template: KR.Util.getDatasetTemplate('musit')
+                    },
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER regex(?loccatlabel, "^Arkeologisk", "i") .',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    }
+                ],
+                description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
+            },
+            'historie': {
+                grouped: true,
+                name: 'Historie',
+                style: {
+                    fillcolor: '#D252B9',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    },
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: '-dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Industrimuseum'
+                        },
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Foto-SF'
+                        },
+                        isStatic: true,
+                        bbox: false,
+                        template: KR.Util.getDatasetTemplate('foto_sf')
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Kystreise'
+                        },
+                        isStatic: true,
+                        bbox: false
+                    }
+                ],
+                description: 'Historiedata fra Riksantikvaren og Digitalt museum '
+            },
+            'kunst': {
+                grouped: true,
+                name: 'Kunst',
+                style: {
+                    fillcolor: '#72B026',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: 'dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false
+                    },
+                ],
+                description: 'Kunstdata fra Digitalt museum '
+            }
         };
 
         if (!komm && !fylke) {
-            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
                     if (kommune < 1000) {
                         kommune = '0' + kommune;
@@ -2429,10 +2752,10 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 bboxFunc: KR.Util.sparqlBbox
             };
-
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
-
+            _.extend(list.arkeologi.datasets[1], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;

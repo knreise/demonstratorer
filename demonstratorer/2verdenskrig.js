@@ -43,7 +43,8 @@
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity,
             isStatic: true,
-            bbox: false
+            bbox: false,
+            feedbackForm: true
         },
         {
             id: 'jernbane',
