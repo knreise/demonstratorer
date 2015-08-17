@@ -779,54 +779,14 @@
             minZoom: 13
         },
         {
-            name: 'Brukeropprettetminne',
+            provider: 'Riksantikvaren - Husmann',
+            name: 'Brukeropprettet minne',
             dataset: {
                 api: 'kulturminnedata',
                 layer: 2
             },
             template: KR.Util.getDatasetTemplate('brukerminne'),
         }
-
-
-        /*,
-
-        
-        {
-            name: 'Kulturminner',
-            dataset_name_override: 'Kulturminnesok',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'Kulturminnesok',
-                query: '-delving_title:Fangstlokalitet'
-            },
-            template: KR.Util.getDatasetTemplate('kulturminne'),
-            smallMarker: true
-        },
-
-        {
-            name: 'Trondheim byarkiv',
-            dataset_name_override: 'Trondheim byarkiv',
-            provider: 'Trondheim byarkiv',
-            dataset:  {
-                api: 'flickr',
-                user_id: 'trondheim_byarkiv'
-            },
-            template: KR.Util.getDatasetTemplate('flickr'),
-            style: {fillcolor: '#D252B9'}
-        },
-        {
-            name: 'Riksantikvaren',
-            provider: 'Riksantikvaren',
-            dataset: {
-                api: 'kulturminnedataSparql',
-                kommune: '1601'
-            },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            bbox: false,
-            style: {fillcolor: '#728224'}
-        },
-        */
-
     ];
 
 
