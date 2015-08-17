@@ -32,11 +32,16 @@ KR.Config = KR.Config || {};
             }
         };
 
-        var initKulturminnePoly = function (map, dataset) {
+        var initKulturminnePoly = function (map, dataset, vectorLayer) {
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
-                    feature.properties.datasetId = dataset.id;
-                    layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    if (dataset.extras && dataset.extras.groupId) {
+                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
+                    } else {
+                        feature.properties.datasetId = dataset.id;
+                        layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    }
+
                     layer.on('click', function () {
                         var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
                             return (parentLayer.feature.properties.id === feature.properties.lok);
@@ -47,6 +52,13 @@ KR.Config = KR.Config || {};
                     });
                 }
             }).addTo(map);
+
+            vectorLayer.on('hide', function () {
+                map.removeLayer(dataset.extraFeatures);
+            });
+            vectorLayer.on('show', function () {
+                map.addLayer(dataset.extraFeatures);
+            });
         };
 
         return {
@@ -208,6 +220,20 @@ KR.Config = KR.Config || {};
                     callback: kulturminneFunctions.loadKulturminnePoly
                 }
             },
+            'lokalwiki': {
+                id: 'lokalwiki',
+                name: 'Lokalhistoriewiki',
+                hideFromGenerator: true,
+                provider: 'Lokalhistoriewiki',
+                dataset: {
+                    api: 'lokalhistoriewiki'
+                },
+                style: {thumbnail: true},
+                minZoom: 13
+                //template: KR.Util.getDatasetTemplate('ra_sparql'),
+                //bbox: false,
+                //isStatic: true,
+            },
             'jernbane': {
                 id: 'jernbane',
                 dataset: {
@@ -226,10 +252,139 @@ KR.Config = KR.Config || {};
                 bbox: false,
                 description: 'Jernbanemuseet'
             },
+            'arkeologi': {
+                grouped: true,
+                name: 'Arkeologi',
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                    {
+                        name: 'MUSIT',
+                        provider: 'Universitetsmuseene',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'MUSIT'
+                        },
+                        template: KR.Util.getDatasetTemplate('musit')
+                    },
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER regex(?loccatlabel, "^Arkeologisk", "i") .',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    }
+                ],
+                description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
+            },
+            'historie': {
+                grouped: true,
+                name: 'Historie',
+                style: {
+                    fillcolor: '#D252B9',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                    {
+                        id: 'riksantikvaren',
+                        name: 'Riksantikvaren',
+                        provider: 'Riksantikvaren',
+                        dataset: {
+                            filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
+                            api: 'kulturminnedataSparql',
+                            kommune: komm,
+                            fylke: fylke
+                        },
+                        template: KR.Util.getDatasetTemplate('ra_sparql'),
+                        bbox: false,
+                        isStatic: true,
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        loadWhenLessThan: {
+                            count: 5,
+                            callback: kulturminneFunctions.loadKulturminnePoly
+                        }
+                    },
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: '-dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Industrimuseum'
+                        },
+                        isStatic: false,
+                        bbox: true
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Foto-SF'
+                        },
+                        isStatic: true,
+                        bbox: false,
+                        template: KR.Util.getDatasetTemplate('foto_sf')
+                    },
+                    {
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'Kystreise'
+                        },
+                        isStatic: true,
+                        bbox: false
+                    }
+                ],
+                description: 'Historiedata fra Riksantikvaren og Digitalt museum '
+            },
+            'kunst': {
+                grouped: true,
+                name: 'Kunst',
+                style: {
+                    fillcolor: '#72B026',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                    {
+                        name: 'DiMu',
+                        dataset: {
+                            api: 'norvegiana',
+                            dataset: 'DiMu',
+                            query: 'dc_subject_facet:Kunst'
+                        },
+                        template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                        isStatic: false
+                    },
+                ],
+                description: 'Kunstdata fra Digitalt museum '
+            }
         };
 
         if (!komm && !fylke) {
-            var sparqlBoox = function (api, dataset, bounds, dataLoaded, loadError) {
+            var sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
                 KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
                     if (kommune < 1000) {
                         kommune = '0' + kommune;
@@ -244,10 +399,10 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 bboxFunc: KR.Util.sparqlBbox
             };
-
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
-
+            _.extend(list.arkeologi.datasets[1], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;
