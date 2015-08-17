@@ -183,6 +183,11 @@ KR.ArcgisAPI = function (BASE_URL, apiName) {
 
         esri2geo.toGeoJSON(response, function (err, data) {
             if (!err) {
+                _.each(data.features, function (feature) {
+                    if (_.has(feature.properties, 'Navn')) {
+                        feature.properties.title = feature.properties.Navn;
+                    }
+                });
                 callback(data);
             } else {
                 callback(KR.Util.createFeatureCollection([]));
@@ -213,8 +218,8 @@ KR.ArcgisAPI = function (BASE_URL, apiName) {
         var layer = dataset.layer;
         var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
-             _parseArcGisResponse(response, callback, errorCallback);
-         }, errorCallback);
+            _parseArcGisResponse(response, callback, errorCallback);
+        }, errorCallback);
     }
 
     return {
@@ -1019,8 +1024,8 @@ KR.FolketellingAPI = function (apiName) {
         var features = _.map(response.results, function (item) {
             var properties = KR.Util.dictWithout(item, 'latitude', 'longitude');
             var geom = {
-                lat: item.latitude,
-                lng: item.longitude
+                lat: parseFloat(item.latitude),
+                lng: parseFloat(item.longitude)
             };
             return KR.Util.createGeoJSONFeature(geom, properties, apiName + '_' + item.autoid);
         });
