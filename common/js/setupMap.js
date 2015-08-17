@@ -254,6 +254,7 @@ var KR = this.KR || {};
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _checkLoadItemFromUrl(featurecollections);
+
                 if (options.loactionHash) {
                     _setupLocationUrl(map);
                 }

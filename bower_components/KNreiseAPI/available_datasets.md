@@ -24,6 +24,7 @@ Kulturminnedata
 CartoDB
 -------
 * Naturvernområder (table: naturvernomrader_utm33_2)
+* +++ (see knreise.cartodb.com)
 
 Ut.no
 -----

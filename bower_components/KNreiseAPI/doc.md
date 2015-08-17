@@ -2,9 +2,9 @@ KNReise API
 ===================
 
 
-This library provides a uniform access to several og the APIs and datasets that are used the the KNReise demos.
+This library provides a uniform access to several of the APIs and datasets that are used the the KNReise demos.
 
-The API depends on the external libraries [underscore.js][underscore] and [jQuery][jquery]. 
+The API depends on the external libraries [underscore.js][underscore] and [jQuery][jquery], in addition 
 
 [underscore]: http://underscorejs.org
 [jquery]: https://jquery.com
@@ -20,18 +20,20 @@ Create a new API instance like this (usually only done once):
 
     var api = new KR.API({
         cartodb: {
-            apikey: 'CARTODB_API KEY',
             user: 'knreise'
         },
         flickr: {
             apikey: 'FLICKR_API KEY'
+        },
+        jernbanemuseet: {
+            apikey: 'JERNBANEMUSEET_API_KEY'
         }
     });
 
-Note: The cartoDB and flickr config is only needed iof you intend to use thse
+Note: The cartoDB, flickr and jernbanemuseet config is only needed iof you intend to use thse
 APIS.
 
-    
+
 ###Methods
 
 * **getData**: Gets all the data in a dataset
@@ -66,10 +68,18 @@ Note: For some apis the getBbox uses the getWithin function, as bbox is not supp
             <Options> options
         );
         
-* **getMunicipalityBounds**: Gets the bbox for one or more municipalities identified by their [municipality number][kommunenummer] . Calls successCallback with a bbox-string.
+* **getMunicipalityBounds**: Gets the bbox for one or more municipalities identified by their [municipality number][kommunenummer]. Calls successCallback with a bbox-string.
 
         getMunicipalityBounds(
             <Number | Number[]> municipalities,
+            <function> successCallback,
+            <function> errorCalback
+        );
+
+* **getCountyBounds**: Works as getMunicipalityBounds, but with norwegian counties. Use [fylkesnummer][fylkesnummer]
+
+        getCountyBounds(
+            <Number | Number[]> counties,
             <function> successCallback,
             <function> errorCalback
         );
@@ -81,7 +91,9 @@ Note: For some apis the getBbox uses the getWithin function, as bbox is not supp
             <function> successCallback,
             <function> errorCalback
         );
-      
+
+* **getCollection**: Gets a norvegiana-Collection.
+
 ###Data types
 
 | Datatype   | Description                                                                                     |
@@ -125,7 +137,7 @@ See the [norvegiana documentation][norvegiana-doc] for further info.
 
 
 ####wikipedia
-This dataset takes no parameters
+* ***category***: ``<string>`` The ``getData`` method can ba called with a wikipedia-category
 
 
 #### kulturminnedata
@@ -161,6 +173,13 @@ To use this api you must provide a config-object when initializing the api.
 * ***user_id***: ``<string>`` The Flickr user id to get photos from
 * ***tags***: ``<string[]>`` A list of tags to query by
 * ***tag_mode***: ``<string>`` Tag mode, as pr the [flickr documentation][flickrdoc] (default: ``all``)
+
+
+#### kml
+* ***url***: ``<string>`` Url to the KML file to fetch
+
+#### jernbanemuseet
+This dataset takes no parameters
 
 
 [bbox]: http://en.wikipedia.org/wiki/Minimum_bounding_box

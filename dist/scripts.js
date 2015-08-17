@@ -2315,6 +2315,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
     }
 
     function _addDataset(dataset, filter, initBounds, loadedCallback, skipLoadOutside) {
+
         var vectorLayer = _createVectorLayer(dataset, map);
         if (dataset.datasets) {
             dataset.datasets = _.filter(dataset.datasets, function (dataset) {
@@ -2359,6 +2360,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
 
             if (!shouldLoad) {
                 vectorLayer.clearLayers();
+                if (callback) {
+                    callback([]);
+                }
                 return;
             }
 
@@ -2475,6 +2479,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
         };
 
         _reloadData(null, initBounds, undefined, function (fc) {
+
             _checkLoadWhenLessThan(dataset);
             if (loadedCallback) {
                 loadedCallback(fc);
@@ -3637,6 +3642,7 @@ var KR = this.KR || {};
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _checkLoadItemFromUrl(featurecollections);
+
                 if (options.loactionHash) {
                     _setupLocationUrl(map);
                 }
