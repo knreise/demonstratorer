@@ -1696,7 +1696,11 @@ KR.API = function (options) {
         },
         lokalhistoriewiki: {
             api: KR.WikipediaAPI,
-            params: {url: 'http://crossorigin.me/http://test.lokalhistoriewiki.no:8080/api.php', linkBase: 'http://lokalhistoriewiki.no/?curid='}
+            params: {
+                url: 'http://crossorigin.me/http://test.lokalhistoriewiki.no:8080/api.php',
+                linkBase: 'http://lokalhistoriewiki.no/?curid=',
+                maxRadius: 100000
+            }
         },
         jernbanemuseet: {
             api: KR.JernbanemuseetAPI,

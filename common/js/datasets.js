@@ -229,7 +229,8 @@ KR.Config = KR.Config || {};
                     api: 'lokalhistoriewiki'
                 },
                 style: {thumbnail: true},
-                minZoom: 13
+                bbox: true,
+                isStatic: false
             },
             'jernbane': {
                 id: 'jernbane',
