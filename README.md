@@ -58,6 +58,6 @@ Development - getting started
     - the watch target (```grunt watch```) re-runs the default target when things change
 8. For some of the demonstrators to work, a locally running webserver is required, I've used python:
     - (cd to root of project): ```python -m SimpleHTTPServer
+    - Another option is node simple-http-server: npm install simple-http-server -g
+    - And then: (cd to root of project): ```nserver -p 8000
     - The project is now available at localhost:8000
-
-
