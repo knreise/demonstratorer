@@ -200,7 +200,7 @@ module.exports = {
       id: 'oslo',
       name: 'Oslo',
       description: 'Stedsbegrenset demonstrator med spesiell fokus på kunst og arkitektur, men også innhold fra pilotarbeidet knyttet til Akerselva og integrasjon med andre lokale kilder.',
-      url: 'demonstratorer/config.html?datasets=difo%2Cfolketelling%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true'
+      url: 'demonstratorer/config.html?datasets=difo%2Cfolketelling%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true&title=Oslo'
     },
     {
       id: 'folkemusikk',
