@@ -305,7 +305,8 @@ var KR = this.KR || {};
 
     function setupClick(element, limits, layer, datasets, title, filters) {
         var use3d = false;
-        var generateUrl = function () {
+
+        var getParams = function () {
             var params = _.extend(
                 {},
                 datasets.getValues(),
@@ -317,14 +318,16 @@ var KR = this.KR || {};
             if (_.has(params, 'komm') || _.has(params, 'fylke')) {
                 params = _.extend(params, filters.getValues());
             }
+            return params;
+        }
 
+        var generateUrl = function () {
+            var params = getParams();
             var path = window.location.pathname;
-
             var page = '/config.html';
             if (use3d) {
                 page = '/config_3d.html';
             }
-
 
             var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') + page + '?' + KR.Util.createQueryParameterString(params);
             $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
@@ -338,6 +341,12 @@ var KR = this.KR || {};
         filters.callback(generateUrl);
 
         element.on('click', generateUrl);
+
+        $('#show-params').on('click', function () {
+            var params = getParams();
+            params.datasets = params.datasets.split(',');
+            $('#params').html(JSON.stringify(params, null, 2));
+        });
 
         $('#3d').on('change', function () {
             use3d = this.checked;

@@ -3536,12 +3536,17 @@ var KR = this.KR || {};
 
     function _countyHandler(options, api, datasets, fromUrl, callback) {
         datasets = _loadDatasets(api, datasets, fromUrl, null, options.fylke);
+
+        if (_.isString(options.fylke)) {
+            options.fylke = options.fylke.split(',');
+        }
+
         _getloader(
             options,
             api,
             datasets,
             api.getCountyBounds,
-            options.fylke.split(','),
+            options.fylke,
             'county',
             callback
         );
