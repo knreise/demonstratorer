@@ -66,12 +66,12 @@ module.exports = function (grunt) {
                             }
 
                             try {
-                                demonstrator.desc = fs.readFileSync('demonstratorer/desc2_' + demonstrator.id + '.txt', 'utf8');
+                                demonstrator.desc = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.txt', 'utf8');
                             } catch (e) {
                                 demonstrator.desc = '';
                             }
 
-                            demonstrator.inline_js = fs.readFileSync('demonstratorer/' + demonstrator.id + '.js', 'utf8');
+                            demonstrator.inline_js = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.js', 'utf8');
                             demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
                             demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
 
@@ -92,7 +92,7 @@ module.exports = function (grunt) {
                         name: null,
                         desc: null,
                         image: null,
-                        inline_js: fs.readFileSync('demonstratorer/config.js', 'utf8'),
+                        inline_js: fs.readFileSync('demonstratorer_content/config.js', 'utf8'),
                         scriptLinks: userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']),
                         cssLinks: userConfig.demoCssExternal.concat(['dist/style.css'])
                     };
@@ -107,7 +107,7 @@ module.exports = function (grunt) {
                     var demonstrator = {
                         template_markup: getTemplates(fs),
                         name: null,
-                        inline_js: fs.readFileSync('demonstratorer/config3d.js', 'utf8'),
+                        inline_js: fs.readFileSync('demonstratorer_content/config3d.js', 'utf8'),
                         scriptLinks: userConfig.demoScriptsExternal3d.concat(['dist/scripts3d.min.js']),
                         cssLinks: userConfig.demoCssExternal3d.concat(['dist/style3d.css'])
                     };
