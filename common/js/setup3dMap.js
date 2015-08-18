@@ -76,6 +76,8 @@ var KR = this.KR || {};
                         }
                     ));
                 } else { //fallback 
+
+                    //DO NOT USE THIS TILE SERVER WITHOUT AGREEMENT WITH Norkart AS (norkart.no)
                     callback(map.getTiles('http://www.webatlas.no/wacloud/servicerepository/combine.aspx?X={x}&Y={y}&Z={z}&layers=TMS_WEBATLAS_STANDARD:1'));
                 }
             });
