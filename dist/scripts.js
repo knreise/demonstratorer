@@ -1347,7 +1347,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
 L.Knreise.geoJson = function (geojson, options) {
     return new L.Knreise.GeoJSON(geojson, options);
 };
-/*global L:false, KR: false, audiojs:false, location: false */
+/*global L:false, KR: false, audiojs:false */
 'use strict';
 
 L.Knreise = L.Knreise || {};
@@ -1356,28 +1356,6 @@ L.Knreise.Control = L.Knreise.Control || {};
 /*
     A Leaflet wrapper for displaying sidebar data.
 */
-
-function getFeatureLink(feature) {
-    var baseUrl = location.href.replace(location.hash, '');
-    var coords = feature.geometry.coordinates;
-    var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
-
-    var url = baseUrl + hash;
-    if (feature.id) {
-        url = url + ':' + encodeURIComponent(feature.id);
-    }
-    return url;
-}
-
-function setFeatureHash(featureId) {
-    var hash = location.hash.split(':')[0];
-    if (featureId) {
-        location.hash = hash + ':' + encodeURIComponent(featureId);
-    } else {
-        location.hash = hash;
-    }
-}
-
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
@@ -1436,20 +1414,21 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 
 
+        if (KR.UrlFunctions) {
+            var div = $('<div></div>');
+            var params = {
+                id: feature.id,
+                url: KR.UrlFunctions.getFeatureLink(feature),
+                provider: feature.properties.provider
+            };
+            if (feature.properties.feedbackForm) {
+                $(this._contentContainer).append(div);
+                KR.ResponseForm(div, params);
+            }
 
-        var div = $('<div></div>');
-        var params = {
-            id: feature.id,
-            url: getFeatureLink(feature),
-            provider: feature.properties.provider
-        };
-        if (feature.properties.feedbackForm) {
-            $(this._contentContainer).append(div);
-            KR.ResponseForm(div, params);
-        }
-
-        if (feature.id && this.options.featureHash) {
-            setFeatureHash(feature.id);
+            if (feature.id && this.options.featureHash) {
+                KR.UrlFunctions.setFeatureHash(feature.id);
+            }
         }
     },
 
@@ -1460,7 +1439,9 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     _removeContent: function () {
         $(this.getContainer()).html('');
-        setFeatureHash();
+        if (KR.UrlFunctions) {
+            KR.UrlFunctions.setFeatureHash();
+        }
     }
 
 });
@@ -1468,6 +1449,72 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 L.Knreise.Control.sidebar = function (placeholder, options) {
     return new L.Knreise.Control.Sidebar(placeholder, options);
 };
+
+/*global window:false */
+
+var KR = this.KR || {};
+KR.UrlFunctions = {};
+(function (ns) {
+    'use strict';
+
+    ns.setupLocationUrl = function (map) {
+        var moved = function () {
+            var c = map.getCenter();
+
+            var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
+
+            var hash = window.location.hash.split(':');
+            if (hash.length > 1) {
+                var prevId = _.rest(hash).join(':');
+                locationHash += ':' + prevId;
+            }
+            window.location.hash = locationHash;
+        };
+
+        map.on('moveend', moved);
+        moved();
+    };
+
+    ns.getLocationUrl = function () {
+        var hash = window.location.hash;
+        if (hash && hash !== '' && hash.indexOf(':') !== 1) {
+            var parts = hash.replace('#', '').split('/');
+            var zoom = parseInt(parts[0], 10);
+            var lat = parseFloat(parts[1]);
+            var lon = parseFloat(parts[2]);
+            return {lat: lat, lon: lon, zoom: zoom};
+        }
+    };
+
+    ns.getHashFeature = function () {
+        var hash = window.location.hash.split(':');
+        if (hash.length > 1) {
+            return _.rest(hash).join(':');
+        }
+    };
+
+    ns.setFeatureHash = function (featureId) {
+        var hash = window.location.hash.split(':')[0];
+        if (featureId) {
+            window.location.hash = hash + ':' + encodeURIComponent(featureId);
+        } else {
+            window.location.hash = hash;
+        }
+    };
+
+    ns.getFeatureLink = function (feature) {
+        var baseUrl = window.location.href.replace(window.location.hash, '');
+        var coords = feature.geometry.coordinates;
+        var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
+
+        var url = baseUrl + hash;
+        if (feature.id) {
+            url = url + ':' + encodeURIComponent(feature.id);
+        }
+        return url;
+    };
+
+}(KR.UrlFunctions));
 
 /*global audiojs:false, turf:false*/
 
@@ -3386,7 +3433,7 @@ KR.ResponseForm = function (div, baseData) {
     div.find('.close ').click(_resetForm);
 };
 
-/*global L:false, alert:false, KR:false, turf:false, location: false */
+/*global L:false, alert:false, KR:false, turf:false */
 
 /*
     Utility for setting up a Leaflet map based on config
@@ -3402,42 +3449,6 @@ var KR = this.KR || {};
         loactionHash: true,
         featureHash: true
     };
-
-    function _setupLocationUrl(map) {
-        var moved = function () {
-            var c = map.getCenter();
-
-            var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
-
-            var hash = location.hash.split(':');
-            if (hash.length > 1) {
-                var prevId = _.rest(hash).join(':');
-                locationHash += ':' + prevId;
-            }
-            location.hash = locationHash;
-        };
-
-        map.on('moveend', moved);
-        moved();
-    }
-
-    function _getLocationUrl() {
-        var hash = location.hash;
-        if (hash && hash !== '' && hash.indexOf(':') !== 1) {
-            var parts = hash.replace('#', '').split('/');
-            var zoom = parseInt(parts[0], 10);
-            var lat = parseFloat(parts[1]);
-            var lon = parseFloat(parts[2]);
-            return {lat: lat, lon: lon, zoom: zoom};
-        }
-    }
-
-    function _getHashFeature() {
-        var hash = location.hash.split(':');
-        if (hash.length > 1) {
-            return _.rest(hash).join(':');
-        }
-    }
 
 
     function _getFilter(buffer) {
@@ -3594,7 +3605,7 @@ var KR = this.KR || {};
     }
 
     function _checkLoadItemFromUrl(featurecollections) {
-        var featureId = _getHashFeature();
+        var featureId = KR.UrlFunctions.getHashFeature();
         if (featureId) {
             var findLayer = function (l) {
                 return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId));
@@ -3637,14 +3648,14 @@ var KR = this.KR || {};
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
             map.fitBounds(bounds);
             var datasetsLoaded = function (featurecollections) {
-                var locationFromUrl = _getLocationUrl(map);
+                var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
                 if (locationFromUrl) {
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _checkLoadItemFromUrl(featurecollections);
 
                 if (options.loactionHash) {
-                    _setupLocationUrl(map);
+                    KR.UrlFunctions.setupLocationUrl(map);
                 }
             };
 

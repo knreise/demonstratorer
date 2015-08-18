@@ -1,4 +1,4 @@
-/*global L:false, KR: false, audiojs:false, location: false */
+/*global L:false, KR: false, audiojs:false */
 'use strict';
 
 L.Knreise = L.Knreise || {};
@@ -7,28 +7,6 @@ L.Knreise.Control = L.Knreise.Control || {};
 /*
     A Leaflet wrapper for displaying sidebar data.
 */
-
-function getFeatureLink(feature) {
-    var baseUrl = location.href.replace(location.hash, '');
-    var coords = feature.geometry.coordinates;
-    var hash = KR.Util.getPositionHash(coords[1], coords[0], 16);
-
-    var url = baseUrl + hash;
-    if (feature.id) {
-        url = url + ':' + encodeURIComponent(feature.id);
-    }
-    return url;
-}
-
-function setFeatureHash(featureId) {
-    var hash = location.hash.split(':')[0];
-    if (featureId) {
-        location.hash = hash + ':' + encodeURIComponent(featureId);
-    } else {
-        location.hash = hash;
-    }
-}
-
 L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     initialize: function (placeholder, options) {
@@ -87,20 +65,21 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 
 
+        if (KR.UrlFunctions) {
+            var div = $('<div></div>');
+            var params = {
+                id: feature.id,
+                url: KR.UrlFunctions.getFeatureLink(feature),
+                provider: feature.properties.provider
+            };
+            if (feature.properties.feedbackForm) {
+                $(this._contentContainer).append(div);
+                KR.ResponseForm(div, params);
+            }
 
-        var div = $('<div></div>');
-        var params = {
-            id: feature.id,
-            url: getFeatureLink(feature),
-            provider: feature.properties.provider
-        };
-        if (feature.properties.feedbackForm) {
-            $(this._contentContainer).append(div);
-            KR.ResponseForm(div, params);
-        }
-
-        if (feature.id && this.options.featureHash) {
-            setFeatureHash(feature.id);
+            if (feature.id && this.options.featureHash) {
+                KR.UrlFunctions.setFeatureHash(feature.id);
+            }
         }
     },
 
@@ -111,7 +90,9 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     _removeContent: function () {
         $(this.getContainer()).html('');
-        setFeatureHash();
+        if (KR.UrlFunctions) {
+            KR.UrlFunctions.setFeatureHash();
+        }
     }
 
 });

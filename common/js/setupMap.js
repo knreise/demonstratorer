@@ -1,4 +1,4 @@
-/*global L:false, alert:false, KR:false, turf:false, location: false */
+/*global L:false, alert:false, KR:false, turf:false */
 
 /*
     Utility for setting up a Leaflet map based on config
@@ -14,42 +14,6 @@ var KR = this.KR || {};
         loactionHash: true,
         featureHash: true
     };
-
-    function _setupLocationUrl(map) {
-        var moved = function () {
-            var c = map.getCenter();
-
-            var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
-
-            var hash = location.hash.split(':');
-            if (hash.length > 1) {
-                var prevId = _.rest(hash).join(':');
-                locationHash += ':' + prevId;
-            }
-            location.hash = locationHash;
-        };
-
-        map.on('moveend', moved);
-        moved();
-    }
-
-    function _getLocationUrl() {
-        var hash = location.hash;
-        if (hash && hash !== '' && hash.indexOf(':') !== 1) {
-            var parts = hash.replace('#', '').split('/');
-            var zoom = parseInt(parts[0], 10);
-            var lat = parseFloat(parts[1]);
-            var lon = parseFloat(parts[2]);
-            return {lat: lat, lon: lon, zoom: zoom};
-        }
-    }
-
-    function _getHashFeature() {
-        var hash = location.hash.split(':');
-        if (hash.length > 1) {
-            return _.rest(hash).join(':');
-        }
-    }
 
 
     function _getFilter(buffer) {
@@ -206,7 +170,7 @@ var KR = this.KR || {};
     }
 
     function _checkLoadItemFromUrl(featurecollections) {
-        var featureId = _getHashFeature();
+        var featureId = KR.UrlFunctions.getHashFeature();
         if (featureId) {
             var findLayer = function (l) {
                 return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId));
@@ -249,14 +213,14 @@ var KR = this.KR || {};
             L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
             map.fitBounds(bounds);
             var datasetsLoaded = function (featurecollections) {
-                var locationFromUrl = _getLocationUrl(map);
+                var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
                 if (locationFromUrl) {
                     map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
                 }
                 _checkLoadItemFromUrl(featurecollections);
 
                 if (options.loactionHash) {
-                    _setupLocationUrl(map);
+                    KR.UrlFunctions.setupLocationUrl(map);
                 }
             };
 
