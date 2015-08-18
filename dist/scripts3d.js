@@ -450,10 +450,13 @@ KR.Util = KR.Util || {};
     };
 
     ns.createMap = function (div, options) {
+        options = options || {};
+
+
         //create the map
         var map = L.map(div, {
-            minZoom: 3,
-            maxZoom: 21,
+            minZoom: options.minZoom || 3,
+            maxZoom: options.maxZoom || 21,
             maxBounds: L.geoJson(ns.WORLD).getBounds()
         });
 
