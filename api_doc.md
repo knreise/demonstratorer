@@ -60,7 +60,8 @@ The DatasetWrapper passed to the DatasetLoader is a wrapper around the Dataset o
 | description       | string         | null          | no        | Will show up as a descriptioon on the generator page                                                                                      |
 | init              | function       | null          | no        | If set, will be called on dataset initialization, with params ``map`` and ``dataset``                                                     |
 | loadWhenLessThan  | dict           | null          | no        | If set, with params ``count`` (int) and ``callback`` (function) will call callback when there are less than count features on the map, callback is called with ``map``, ``dataset`` and ``features`` |
-
+| allowTopic        | bool           | false         | no        | For Norvegiana-datasets: should the user be able to set a "topic" in the generator                                                        |
+| feedbackForm      | bool           | false         | no        | Should the dataset display a feedback-form when viewing an item in the sidebar?                                                           |
 
 ***toPointOptions***
 

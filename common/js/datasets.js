@@ -230,9 +230,6 @@ KR.Config = KR.Config || {};
                 },
                 style: {thumbnail: true},
                 minZoom: 13
-                //template: KR.Util.getDatasetTemplate('ra_sparql'),
-                //bbox: false,
-                //isStatic: true,
             },
             'jernbane': {
                 id: 'jernbane',
