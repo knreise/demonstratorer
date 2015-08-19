@@ -18,6 +18,11 @@ module.exports = function (grunt) {
         grunt.util._.templateSettings.evaluate =  /\{\{(.+?)\}\}/g;
     }
 
+    function resetTemplateSettings() {
+        grunt.util._.templateSettings.interpolate =/<%=([\s\S]+?)%>/g;
+        grunt.util._.templateSettings.evaluate = /<%([\s\S]+?)%>/g;
+    }
+
     function getTemplates(fs) {
         var templates = getTemplateMarkup(
             userConfig.demoTemplates,
@@ -75,6 +80,7 @@ module.exports = function (grunt) {
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/demonstratorFromParams.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate(d));
+                            resetTemplateSettings()
                             done();
                         }
                       }
@@ -104,6 +110,7 @@ module.exports = function (grunt) {
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate(demonstrator));
+                            resetTemplateSettings()
                             done();
                         }
                     };
@@ -126,6 +133,7 @@ module.exports = function (grunt) {
 
                     var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
                     fs.writeSync(fd, pageTemplate(demonstrator));
+                    resetTemplateSettings()
                     done();
                 },
 
@@ -140,6 +148,7 @@ module.exports = function (grunt) {
                     };
                     var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo3d.html.tpl', fs);
                     fs.writeSync(fd, pageTemplate(demonstrator));
+                    resetTemplateSettings()
                     done();
                 }
             },
@@ -155,6 +164,7 @@ module.exports = function (grunt) {
                         }
                     });
                     fs.writeSync(fd, t({demos: demos}));
+                    resetTemplateSettings()
                     done();
                 }
             },
@@ -181,6 +191,7 @@ module.exports = function (grunt) {
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/demonstrator.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate(demonstrator));
+                            resetTemplateSettings()
                             done();
                         }
                     };
@@ -192,6 +203,7 @@ module.exports = function (grunt) {
                     setTemplateSettings();
                     var pageTemplate = getTemplateFromFile('grunt_templates/examples.html.tpl', fs);
                     fs.writeSync(fd, pageTemplate({demonstrators: userConfig.experiments}));
+                    resetTemplateSettings()
                     done();
                 }
             }
@@ -243,19 +255,15 @@ module.exports = function (grunt) {
           main: {
             options: {
               mode: 'tgz',
-              archive: function () {
-                // The global value git.tag is set by another task
-                var pkg = taskConfig.pkg;
-                return pkg.name + '_' + pkg.version + '.tar.gz';
-              }
+              archive: '<%= pkg.name %>_<%= pkg.version %>.tar.gz'
             },
             files: [
-              {src: ['dist/**'], dest: 'demonstratorer/'},
-              {src: ['demonstratorer/**'], dest: 'demonstratorer/'},
-              {src: ['experiments/**'], dest: 'demonstratorer/'},
-              {src: ['common/**'], dest: 'demonstratorer/'},
-              {src: ['bower_components/**'], dest: 'demonstratorer/'},
-              {src: ['index.html'], dest: 'demonstratorer/'}
+              {src: ['dist/**'], dest: 'demonstratorer_<%= pkg.version %>/'},
+              {src: ['demonstratorer/**'], dest: 'demonstratorer_<%= pkg.version %>/'},
+              {src: ['experiments/**'], dest: 'demonstratorer_<%= pkg.version %>/'},
+              {src: ['common/**'], dest: 'demonstratorer_<%= pkg.version %>/'},
+              {src: ['bower_components/**'], dest: 'demonstratorer_<%= pkg.version %>/'},
+              {src: ['index.html'], dest: 'demonstratorer_<%= pkg.version %>/'}
             ]
           }
         },
@@ -294,6 +302,7 @@ module.exports = function (grunt) {
         'file-creator:build-generators',
         'file-creator:build-index'
     ]);
+    
     grunt.registerTask('default', [
         'concat',
         'uglify',

@@ -61,3 +61,23 @@ Development - getting started
     - Another option is node simple-http-server: npm install simple-http-server -g
     - And then: (cd to root of project): ```nserver -p 8000
     - The project is now available at localhost:8000
+
+
+Releasing a new version
+-----------------------
+1. Make sure all your changes are commited
+2. Run ``grunt release``
+    - This bumps the version number, commits the package.json and bower.json, creates a new tag and creates a .tar.gz file with data ready to be transferred to the webhost
+3. Transfer the kulturraadet-demonstratorer_VERSION.tar.gz to the webhost
+    - ``scp kulturraadet-demonstratorer_VERSION.tar.gz knreise@login.domeneshop.no:~/www``
+4. Login to server and change dir
+    - ``ssh knreise@login.domeneshop.no``
+    - ``cd www``
+5. unpack file
+    - ``tar -zxvf kulturraadet-demonstratorer_VERSION.tar.gz``
+6. Check that new version is working, visit http://knreise.no/demonstratorer_VERSION
+7. When happy, go back to server:
+    - delete durrent version: ``rm -r demonstratorer``
+    ⁻ rename new: ``mv demonstratorer_VERSION/ demonstratorer/``
+8. Cleanup by removing .tar.gz-file: ``rm kulturraadet-demonstratorer_VERSION.tar.gz``
+9. New version is now live, exit ssh: ``exit``
