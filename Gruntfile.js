@@ -238,6 +238,26 @@ module.exports = function (grunt) {
                     'dist/scripts3d.min.js': ['<%= concat.script3d.dest %>']
                 }
             }
+        },
+        compress: {
+          main: {
+            options: {
+              mode: 'tgz',
+              archive: function () {
+                // The global value git.tag is set by another task
+                var pkg = taskConfig.pkg;
+                return pkg.name + '_' + pkg.version + '.tar.gz';
+              }
+            },
+            files: [
+              {src: ['dist/**']},
+              {src: ['demonstratorer/**']},
+              {src: ['experiments/**']},
+              {src: ['common/**']},
+              {src: ['bower_components/**']},
+              {src: ['index.html']}
+            ]
+          }
         }
     };
 
@@ -247,6 +267,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-file-creator');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-compress');
 
     grunt.registerTask('demos', [
         'concat',
@@ -260,5 +281,16 @@ module.exports = function (grunt) {
         'uglify',
         'file-creator:build-experiments',
         'file-creator:build-experiments-index'
+    ]);
+
+    grunt.registerTask('release', [
+        'concat',
+        'uglify',
+        'file-creator:build-experiments',
+        'file-creator:build-experiments-index',
+        'file-creator:build-demos',
+        'file-creator:build-generators',
+        'file-creator:build-index',
+        'compress'
     ]);
 };
