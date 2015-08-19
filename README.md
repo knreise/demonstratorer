@@ -78,6 +78,6 @@ Releasing a new version
 6. Check that new version is working, visit http://knreise.no/demonstratorer_VERSION
 7. When happy, go back to server:
     - delete durrent version: ``rm -r demonstratorer``
-    ⁻ rename new: ``mv demonstratorer_VERSION/ demonstratorer/``
+    - rename new: ``mv demonstratorer_VERSION/ demonstratorer/``
 8. Cleanup by removing .tar.gz-file: ``rm kulturraadet-demonstratorer_VERSION.tar.gz``
 9. New version is now live, exit ssh: ``exit``
