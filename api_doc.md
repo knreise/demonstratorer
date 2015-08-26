@@ -122,8 +122,9 @@ The options dict exposes a lot of options:
 | title          | string            | null            | no        | If set, enables the SplashScreen and uses this as title                                                       |
 | image          | string            | null            | no        | Url to image for SplashScreen                                                                                 |
 | description    | string            | null            | no        | HTML-markup to display as description in SplashScreen                                                         |
-
+| clusterRadius  | number            | 80              | no        | The maxClusterRadius to use for markerCLuster (see [Leaflet.markercluster][mcDoc]).                           |
 * One of komm, fylke, line or bbox must be set
 
+[mcDoc]: https://github.com/Leaflet/Leaflet.markercluster#all-options
 
 The line parameter can be either a function that takes a callback and calls it with a GeoJSON line geometry, a string on the form utno/ID (fetches a line geom from ut.no), or a link to a KML-file.
