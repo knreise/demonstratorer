@@ -35,5 +35,8 @@
     "html.sortable": "~0.2.9",
     "cesium-minimap": "0.0.2",
     "cilogi-marker": "https://github.com/cilogi/cilogi-marker.git"
+  },
+  "resolutions": {
+    "KNreiseAPI": "1.7.4"
   }
 }

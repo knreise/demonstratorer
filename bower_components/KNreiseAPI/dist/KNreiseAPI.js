@@ -1661,6 +1661,10 @@ KR.API = function (options) {
             api: KR.WikipediaAPI,
             params: {url: 'http://crossorigin.me/https://no.wikipedia.org/w/api.php', linkBase: 'http://no.wikipedia.org/?curid='}
         },
+        wikipediaNN: {
+            api: KR.WikipediaAPI,
+            params: {url: 'http://crossorigin.me/https://nn.wikipedia.org/w/api.php', linkBase: 'http://nn.wikipedia.org/?curid='}
+        },
         cartodb: {
             api: KR.CartodbAPI,
             params: {user: 'knreise'}
