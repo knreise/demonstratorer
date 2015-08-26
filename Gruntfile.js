@@ -79,7 +79,7 @@ module.exports = function (grunt) {
                             };
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/demonstratorFromParams.html.tpl', fs);
-                            fs.writeSync(fd, pageTemplate(d));
+                            fs.writeSync(fd, pageTemplate({data: d}));
                             resetTemplateSettings()
                             done();
                         }
@@ -109,7 +109,7 @@ module.exports = function (grunt) {
                             demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
-                            fs.writeSync(fd, pageTemplate(demonstrator));
+                            fs.writeSync(fd, pageTemplate({data: demonstrator}));
                             resetTemplateSettings()
                             done();
                         }
@@ -132,7 +132,7 @@ module.exports = function (grunt) {
                     };
 
                     var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
-                    fs.writeSync(fd, pageTemplate(demonstrator));
+                    fs.writeSync(fd, pageTemplate({data: demonstrator}));
                     resetTemplateSettings()
                     done();
                 },
@@ -147,7 +147,7 @@ module.exports = function (grunt) {
                         cssLinks: userConfig.demoCssExternal3d.concat(['dist/style3d.css'])
                     };
                     var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo3d.html.tpl', fs);
-                    fs.writeSync(fd, pageTemplate(demonstrator));
+                    fs.writeSync(fd, pageTemplate({data: demonstrator}));
                     resetTemplateSettings()
                     done();
                 }
@@ -189,7 +189,7 @@ module.exports = function (grunt) {
                             demonstrator.scriptLinks = userConfig.commonScripts.concat(demonstrator.scripts);
                             demonstrator.cssLinks = userConfig.commonCss.concat(demonstrator.css);
 
-                            var pageTemplate = getTemplateFromFile('./grunt_templates/demonstrator.html.tpl', fs);
+                            var pageTemplate = getTemplateFromFile('./grunt_templates/experiment.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate(demonstrator));
                             resetTemplateSettings()
                             done();
