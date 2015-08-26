@@ -199,7 +199,7 @@ var KR = this.KR || {};
 
         var map = KR.Util.createMap('map', options);
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {

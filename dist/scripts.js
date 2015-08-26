@@ -2144,8 +2144,10 @@ var KR = this.KR || {};
     Init it with a KnreiseAPI, a Leaflet map, something that behaves as 
     L.Knreise.Control.Sidebar and an optional callback for errors.
 */
-KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster) {
+KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster, maxClusterRadius) {
     'use strict';
+
+    maxClusterRadius = maxClusterRadius || 80;
 
     var reloads = [];
 
@@ -2260,7 +2262,10 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
             vectorLayer = _createGeoJSONLayer(null, dataset);
         } else {
             if (dataset.cluster) {
-                vectorLayer = new L.Knreise.MarkerClusterGroup({dataset: dataset}).addTo(map);
+                vectorLayer = new L.Knreise.MarkerClusterGroup({
+                    dataset: dataset,
+                    maxClusterRadius: maxClusterRadius
+                }).addTo(map);
                 if (_addClusterClick) {
                     _addClusterClick(vectorLayer, dataset);
                 }
@@ -2580,7 +2585,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster)
 
         map.on('layerDeselect', deselectAll);
 
-        var mc = new L.Knreise.MarkerClusterGroup().addTo(map);
+        var mc = new L.Knreise.MarkerClusterGroup({maxClusterRadius: maxClusterRadius}).addTo(map);
 
         mc.on('clusterclick', deselectAll);
 
@@ -3635,7 +3640,7 @@ var KR = this.KR || {};
 
         var map = KR.Util.createMap('map', options);
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster);
+        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
