@@ -112,6 +112,7 @@ KR.Config = KR.Config || {};
             },
             'artobs': {
                 name: 'Artsobservasjoner',
+                hideFromGenerator: true,
                 dataset: {
                     api: 'norvegiana',
                     dataset: 'Artsdatabanken'
@@ -223,14 +224,16 @@ KR.Config = KR.Config || {};
             'lokalwiki': {
                 id: 'lokalwiki',
                 name: 'Lokalhistoriewiki',
-                hideFromGenerator: true,
+                hideFromGenerator: false,
                 provider: 'Lokalhistoriewiki',
                 dataset: {
                     api: 'lokalhistoriewiki'
                 },
                 style: {thumbnail: true},
+                minZoom: 13,
                 bbox: true,
-                isStatic: false
+                isStatic: false,
+                description: 'Stedfestede artikler fra lokalhistoriewiki.no som drives av Norsk lokalhistorisk institutt (NLI)'
             },
             'jernbane': {
                 id: 'jernbane',
@@ -239,6 +242,7 @@ KR.Config = KR.Config || {};
                 },
                 provider: 'Jernbanemuseet',
                 name: 'Jernbanemuseet',
+                hideFromGenerator: true,
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
                     api.getItem(
@@ -378,7 +382,32 @@ KR.Config = KR.Config || {};
                     },
                 ],
                 description: 'Kunstdata fra Digitalt museum '
+            },
+            
+            'grorud': {
+                name: 'Byantikvaren Oslo - Groruddalen',
+                hideFromGenerator: true,
+                provider: 'grorud',
+                dataset: {
+                    api: 'cartodb',
+                    table: 'byantikvaren_groruddalen'
+                },
+                bbox: false,
+                isStatic: true,
+                description: 'Byantikvarens Groruddalsatlas'
+            },
+            'dimu': {
+                name: 'Digitalt Museum',
+                hideFromGenerator: false,
+                provider: 'dimu',
+                dataset: {dataset: 'DiMu', api: 'norvegiana'},
+                cluster: true,
+                isStatic: false,
+                description: 'Digitalt Museum',
+                allowTopic: true,
+                feedbackForm: true
             }
+
         };
 
         if (!komm && !fylke) {
