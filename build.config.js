@@ -151,6 +151,25 @@ module.exports = {
 
   demonstrators: [
     {
+      id: 'norge',
+      name: 'Norge',
+      description: 'Landsdekkende visning av sentrale datasett for hele landet.',
+      params: {
+	  	"datasets": [
+	  	"difo",
+	  	"verneomr",
+	  	"folketelling",
+	  	"wikipedia",
+	  	"lokalwiki",
+	  	"arkeologi",
+	  	"historie",
+	  	"kunst"
+	  	],
+	  	"bbox": "4.0223174095,57.6773017445,30.9705657959,71.4034238089",
+	  	"layer": "norges_grunnkart_graatone"
+		}    
+	},
+    {
       id: 'gudbrandsdalsleden',
       name: 'Gudbrandsdalsleden',
       description: 'Hele pilegrimsleden med alt relevant innhold langs og i en viss avstand til denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
@@ -170,7 +189,7 @@ module.exports = {
       id: 'dovre',
       name: 'Dovre',
       description: 'Løsning som fokuserer på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold - spesielt fra samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
-      image: 'http://placekitten.com/g/816/612/'
+      image: 'http://media31.dimu.no/media/image/H-DF/DF.5444/13948?width=800&height=580'
     },
     {
       id: 'keiserstien',
@@ -200,7 +219,8 @@ module.exports = {
       id: 'oslo',
       name: 'Oslo',
       description: 'Stedsbegrenset demonstrator med spesiell fokus på kunst og arkitektur, men også innhold fra pilotarbeidet knyttet til Akerselva og integrasjon med andre lokale kilder.',
-      url: 'demonstratorer/config.html?datasets=difo%2Cfolketelling%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true&title=Oslo'
+      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Clokalwiki%2Chistorie%2Ckunst%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true&title=Oslo',
+      appicon:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Akrobaten_gang_og_sykkelbro.jpg/320px-Akrobaten_gang_og_sykkelbro.jpg'
     },
     {
       id: 'folkemusikk',
