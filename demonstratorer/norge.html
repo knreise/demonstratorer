@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Gudbrandsdalsleden</title>
+        <title>KNReise - Norge</title>
 
 
         <link href='../bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -18,9 +18,6 @@
         <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
         <link href='../bower_components/cilogi-marker/dist/cilogi-marker.css' rel='stylesheet' />
         <link href='../dist/style.css' rel='stylesheet' />
-        
-        <meta name="apple-mobile-web-app-capable" content="yes">
-		<link rel="apple-touch-icon" href="">
 
     </head>
     <body>
@@ -707,107 +704,50 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Gudbrandsdalsleden';
-            var image = '';
-
+            
             (function () {
-    'use strict';
+                'use strict';
 
-    var api = new KR.API({
-        flickr: {
-            apikey: 'ab1f664476dabf83a289735f97a6d56c'
-        }
-    });
+                var title = 'Norge';
+                var image = '';
 
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+                var qs = {
+    "datasets": [
+        "difo",
+        "verneomr",
+        "folketelling",
+        "wikipedia",
+        "lokalwiki",
+        "arkeologi",
+        "historie",
+        "kunst"
+    ],
+    "bbox": "4.0223174095,57.6773017445,30.9705657959,71.4034238089",
+    "layer": "norges_grunnkart_graatone",
+    "title": "Norge"
+};
 
-    var datasets = [
-        {
-            id: 'verneomraader',
-            dataset: {
-                api: 'cartodb',
-                table: 'naturvernomrader_utm33_2',
-                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-            },
-            provider: 'Naturbase',
-            name: 'Verneområder',
-            template: _.template($('#verneomraader_template').html()),
-            getFeatureData: function (feature, callback) {
-                api.getItem(
-                    {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
-                    callback
-                );
-            },
-            toPoint: {
-                showAlways: true,
-                stopPolyClick: true,
-                minSize: 20
-            },
-            minZoom: 10,
-            cluster: false
-        },
-        {
-            name: 'Artsobservasjoner',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'Artsdatabanken'
-            },
-            cluster: false,
-            template: KR.Util.getDatasetTemplate('popup')
-        },
-        {
-            name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia'
-            },
-            style: {thumbnail: true},
-            minZoom: 13,
-            template: KR.Util.getDatasetTemplate('wikipedia')
-        },
-        {
-            id: 'riksantikvaren',
-            name: 'Riksantikvaren',
-            provider: 'Riksantikvaren',
-            dataset: {
-                api: 'kulturminnedataSparql',
-                kommune: '0511'
-            },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            bbox: false,
-            isStatic: true,
-            init: kulturminneFunctions.initKulturminnePoly,
-            loadWhenLessThan: {
-                count: 5,
-                callback: kulturminneFunctions.loadKulturminnePoly
-            }
-        },
-        {
-            name: 'Trondheim byarkiv',
-            dataset_name_override: 'Trondheim byarkiv',
-            provider: 'Trondheim byarkiv',
-            dataset:  {
-                api: 'flickr',
-                user_id: 'trondheim_byarkiv'
-            },
-            template: KR.Util.getDatasetTemplate('flickr'),
-            style: {fillcolor: '#D252B9'}
-        }
-    ];
+                //set up an instance of the Norvegiana API
+                var api = new KR.API({
+                    flickr: {
+                        apikey: 'ab1f664476dabf83a289735f97a6d56c'
+                    },
+                    jernbanemuseet: {
+                        apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
+                    }
+                });
 
-    var options = {
-        line: 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml',
-        title: title,
-        image: image,
-        description: $('#description_template').html(),
-        buffer: 2,
-        linecolor: '#000000'
-    };
+                if (qs.title && !title) {
+                    $('title').append(qs.title);
+                }
 
+                if (qs.norvegianaCollection) {
+                    KR.setupCollectionMap(api, qs.norvegianaCollection, qs.layer);
+                } else {
+                    KR.setupMapFromUrl(api, qs.datasets, qs);
+                }
 
-    KR.setupMap(api, datasets, options, false);
-}());
-
+            }());
         </script>
     </body>
 </html>
