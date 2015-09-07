@@ -33,42 +33,47 @@
             },
             minZoom: 10,
             cluster: false
+        },       
+        {
+            grouped: true,
+            name: 'Historie',
+            datasets: [
+                {
+                    name: 'MUSIT',
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'MUSIT'
+                    },
+                    template: KR.Util.getDatasetTemplate('musit')
+                },
+                {
+                    name: 'DiMu',
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'DiMu'
+                    },
+                    template: KR.Util.getDatasetTemplate('digitalt_museum')
+                },
+                {
+                    name: 'Kulturminner',
+                    id: 'Kulturminnesok',
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'Kulturminnesok',
+                        query: '-delving_title:Fangstlokalitet'
+                    },
+                    template: KR.Util.getDatasetTemplate('kulturminne')
+                }
+            ],
+            isStatic: false,
+            minZoom: 8
         },
         {
-            name: 'Artsobservasjoner',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'Artsdatabanken'
-            },
-            cluster: false,
-            template: KR.Util.getDatasetTemplate('popup')
-        },
-        {
-            name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia'
-            },
-            style: {thumbnail: true},
-            minZoom: 13,
-            template: KR.Util.getDatasetTemplate('wikipedia')
-        },
-        {
-            id: 'riksantikvaren',
-            name: 'Riksantikvaren',
-            provider: 'Riksantikvaren',
-            dataset: {
-                api: 'kulturminnedataSparql',
-                kommune: '0511'
-            },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            bbox: false,
-            isStatic: true,
-            init: kulturminneFunctions.initKulturminnePoly,
-            loadWhenLessThan: {
-                count: 5,
-                callback: kulturminneFunctions.loadKulturminnePoly
-            }
+            name: 'Digitalt fortalt',
+            dataset: {dataset: 'difo', api: 'norvegiana'},
+            cluster: true,
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
+            noListThreshold: Infinity
         },
         {
             name: 'Trondheim byarkiv',
@@ -80,13 +85,23 @@
             },
             template: KR.Util.getDatasetTemplate('flickr'),
             style: {fillcolor: '#D252B9'}
+        },
+        {
+            name: 'Wikipedia',
+            provider: 'Wikipedia',
+            dataset: {
+                api: 'wikipedia'
+            },
+            style: {thumbnail: true},
+            minZoom: 13,
+            template: KR.Util.getDatasetTemplate('wikipedia')
         }
     ];
 
     var options = {
         line: 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml',
         title: title,
-        image: image,
+        image: 'http://pilegrimsleden.no/uploads/made/uploads/images/Bilder_Gudbrandsdalsleden/RogerJensen_1000_575_90_s_c1.jpg',
         description: $('#description_template').html(),
         buffer: 2,
         linecolor: '#000000'
