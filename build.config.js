@@ -183,7 +183,8 @@ module.exports = {
     {
       id: 'telemark',
       name: 'Telemark',
-      description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.'
+      description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
+      image: 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200'
     },
     {
       id: 'dovre',
@@ -193,24 +194,41 @@ module.exports = {
     },
     {
       id: 'keiserstien',
-      name: 'Keiserstien',
-      description: 'Samarbeid med DNT og Riksantikvaren om å velge ut en av de rutene de arbeider med. Visning av data for en utvalgt historisk vandrerute og utvalgte data fra aktuelle kilder i nærheten av denne.',
+      name: 'Turistvegen over Folgefonna',
+      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Turistvegen over Folgefonna</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
       params: {
-        datasets: ['difo' ,'ark_hist', 'wikipedia'],
+        datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
         allstatic: true,
         line: 'utno/2.8158',
         buffer: 2,
-        linecolor: '#0033ff',
-        layer: 'norges_grunnkart_graatone'
+        linecolor: '#deb238',
+        layer: 'norges_grunnkart_graatone',
+        image: 'http://dms07.dimu.org/image/012wWX5cXPto?dimension=600x380',
+        description: '<p>Turistvegen over Folgefonna er en klassisk bretur, fra Sunndalen over Fonnabu/Folgefonna til Tokheim ved Sørfjorden.</p><p>«Folgefonnens is dækker det ujevne lands overflade, men selve fonnen er forholdsvis jevn i overflaten, og den syder sin rand udover til siderne og tildels sender den sin is langt ned i dalene». Slik ble Folgefonna skildret i «Norges Land og folk i 1896». Turistvegen over Folgefonna er en fottur som følger i sporene etter de europeiske turistene som flokket til fjord-Norge fra midten av 1800-tallet.</p></br>'
       }
     },
     {
       id: 'keiserstien3d',
-      name: 'Keiserstien 3D',
-      description: 'Samarbeid med DNT og Riksantikvaren om å velge ut en av de rutene de arbeider med. Visning av data for en utvalgt historisk vandrerute og utvalgte data fra aktuelle kilder i nærheten av denne.',
+      name: 'Turistvegen over Folgefonna - 3D',
+      description: '3D-visning av <b>Turistvegen over Folgefonna</b> - selve ruta sammen med data fra aktuelle kilder i nærheten av denne.',
       url: 'demonstratorer/keiserstien3d.html'
     },
     {
+      id: 'flyktningeruta',
+      name: 'Flyktningeruta',
+      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Flyktningeruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      params: {
+        datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
+        allstatic: true,
+        line: 'utno/2.11234',
+        buffer: 2,
+        linecolor: '#deb238',
+        layer: 'norges_grunnkart_graatone',
+        image: 'https://gfx.nrk.no/WzBhldVq62wY6EAlgNRIPwoDLjogR3DINIdh_Vw2LY9Q',
+        description: '<p>Foto: Dag Olav Brækkan</p><p>Flyktningeruta går fra Skullerudstua i Oslo og helt til Grenselosmuseet ved vannet Skjervangen i Eidskog. En tur på borti 120 km. Det fins flere flyktningeruter i Norge, men denne tar utgangspunkt i trafikken som gikk ut fra Oslo og østover til Sverige.</p></br>'
+      }
+    },
+	{
       id: 'kjaerlighetsstien',
       name: 'Kjærlighetsstien med Gamlegata',
       description: 'Brukergenerert og bearbeidet innhold knyttet til turrunde som omfatter Kjærlighetsstien og Gamlegata i Gvarv i Telemark'
@@ -219,8 +237,8 @@ module.exports = {
       id: 'oslo',
       name: 'Oslo',
       description: 'Stedsbegrenset demonstrator med spesiell fokus på kunst og arkitektur, men også innhold fra pilotarbeidet knyttet til Akerselva og integrasjon med andre lokale kilder.',
-      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Clokalwiki%2Chistorie%2Ckunst%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true&title=Oslo',
-      appicon:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Akrobaten_gang_og_sykkelbro.jpg/320px-Akrobaten_gang_og_sykkelbro.jpg'
+      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Clokalwiki%2Chistorie%2Ckunst%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true',
+      appicon:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Akrobaten_gang_og_sykkelbro.jpg/320px-Akrobaten_gang_og_sykkelbro.jpg',
     },
     {
       id: 'folkemusikk',
