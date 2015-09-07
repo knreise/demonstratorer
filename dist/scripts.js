@@ -3039,7 +3039,7 @@ KR.Config = KR.Config || {};
             },
             'riksantikvaren': {
                 id: 'riksantikvaren',
-                name: 'Riksantikvaren',
+                name: 'Kulturminnesøk',
                 hideFromGenerator: true,
                 provider: 'Riksantikvaren',
                 dataset: {
@@ -3238,11 +3238,22 @@ KR.Config = KR.Config || {};
                 dataset: {dataset: 'DiMu', api: 'norvegiana'},
                 cluster: true,
                 isStatic: false,
+                style: {thumbnail: true},
                 description: 'Digitalt Museum',
                 allowTopic: true,
                 feedbackForm: true
+            },
+            'brukerminner': {
+                name: 'Kulturminnesøk - brukerregistreringer',
+                hideFromGenerator: true,
+                provider: 'riksantikvaren',
+                dataset: {api: 'kulturminnedata', layer: 2},
+                cluster: true,
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Kulturminnesøk - brukerregistreringer',
+                template: KR.Util.getDatasetTemplate('brukerminne')
             }
-
         };
 
         if (!komm && !fylke) {
