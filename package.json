@@ -1,6 +1,6 @@
 {
   "name": "kulturraadet-demonstratorer",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Kultur- og naturreise - kartdemonstratorer",
   "main": "Gruntfile.js",
   "dependencies": {
