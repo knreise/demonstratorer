@@ -383,9 +383,17 @@ KR.Util = KR.Util || {};
         api.getData(dataset, callback);
     };
 
+    function fixKommuneNr(kommune) {
+        if (kommune < 1000) {
+            return '0' + kommune;
+        }
+        return kommune;
+    }
+
+
     ns.sparqlBbox = function (api, dataset, bounds, dataLoaded, loadError) {
         KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
-            dataset.kommune = kommune;
+            dataset.kommune = fixKommuneNr(kommune);
             api.getData(dataset, dataLoaded, loadError);
         });
     };
