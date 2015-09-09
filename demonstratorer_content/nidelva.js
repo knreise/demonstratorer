@@ -117,7 +117,9 @@
         line: 'http://crossorigin.me/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',
         buffer: 0.5,
         linecolor: '#87aed0',
-        layer: layer
+        layer: layer,
+        maxZoom: 18,
+        minZoom: 12
     });
 
     
