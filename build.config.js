@@ -250,6 +250,11 @@ module.exports = {
       name: 'Trondheim',
       description: 'Demonstrator med fokus på Trondheim'
     },
+	{
+      id: 'nidelva',
+      name: 'Nidelva',
+      description: 'Historie og kulturminner langs Nidelva i Trondheim kommune'
+    },
     {
       id: '2verdenskrig',
       name: '2. verdenskrig',
