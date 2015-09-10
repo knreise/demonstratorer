@@ -3261,6 +3261,18 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 description: 'Kulturminnesøk - brukerregistreringer',
                 template: KR.Util.getDatasetTemplate('brukerminne')
+            },
+            'dimufoto': {
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'norvegiana',
+                    dataset: 'DiMu',
+                    query: 'europeana_type_facet:IMAGE'
+                },
+                template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                isStatic: false,
+                style: {thumbnail: true},
+                noListThreshold: Infinity
             }
         };
 
