@@ -37,6 +37,15 @@
             }
         },
         {
+            provider: 'Riksantikvaren - Husmann',
+            name: 'Kulturminnesøk - brukerregistrering',
+            dataset: {
+                api: 'kulturminnedata',
+                layer: 2
+            },
+            template: KR.Util.getDatasetTemplate('brukerminne'),
+        },
+        {
             thumbnails: true,
             name: 'Universitetsmuseene (Musit)',
             dataset: {
@@ -70,14 +79,15 @@
             minZoom: 13
         },
         {
-            provider: 'Riksantikvaren - Husmann',
-            name: 'Brukeropprettet minne',
+            name: 'Lokalhistoriewiki',
+            provider: 'Lokalhistoriewiki',
             dataset: {
-                api: 'kulturminnedata',
-                layer: 2
+                api: 'lokalhistoriewiki'
             },
-            template: KR.Util.getDatasetTemplate('brukerminne'),
+            style: {thumbnail: true},
+            minZoom: 13,
         }
+
     ];
 
 
