@@ -37,7 +37,7 @@
             }
         },
         {
-            provider: 'Riksantikvaren - Husmann',
+            provider: 'Riksantikvaren',
             name: 'Kulturminnesøk - brukerregistrering',
             dataset: {
                 api: 'kulturminnedata',
@@ -97,6 +97,8 @@
         showGeom: true,
         title: title,
         image: image,
-        description: $('#description_template').html()
+        description: $('#description_template').html(),
+        maxZoom: 18,
+        minZoom: 9
     });
 }());
