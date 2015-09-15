@@ -140,7 +140,7 @@ var KR = this.KR || {};
             .map(layerTemplate)
             .value();
 
-        var map = L.map('layers_map').setView([65.5, 17.0], 4);
+        var map = L.map('layers_map').setView([61.3, 8.7], 10);
         var layer = L.tileLayer.kartverket(selected).addTo(map);
 
         element.html(options);
