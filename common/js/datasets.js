@@ -81,7 +81,7 @@ KR.Config = KR.Config || {};
                 cluster: true,
                 template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
                 noListThreshold: Infinity,
-                description: 'Digitalt fortalt',
+                description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
                 allowTopic: true,
                 feedbackForm: true
             },
@@ -108,7 +108,7 @@ KR.Config = KR.Config || {};
                 },
                 minZoom: 10,
                 cluster: false,
-                description: 'Verneområder fra Naturbase, polygoner og punkter'
+                description: 'Nasjonalparker og andre naturvernområder - ca. 2700 i hele landet.'
             },
             'artobs': {
                 name: 'Artsobservasjoner',
@@ -146,18 +146,7 @@ KR.Config = KR.Config || {};
                     'title': 'gaardsnavn_gateadr'
                 },
                 noListThreshold: 0,
-                description: 'Eiendommer fra folketelling 1910'
-            },
-            'wikipedia': {
-                name: 'Wikipedia',
-                provider: 'Wikipedia',
-                dataset: {
-                    api: 'wikipedia'
-                },
-                style: {thumbnail: true},
-                minZoom: 13,
-                template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Geotaggede artikler fra bokmålswikipedia'
+                description: 'Personer og eiendommer fra folketellingen 1910'
             },
             'ark_hist': {
                 grouped: true,
@@ -201,39 +190,6 @@ KR.Config = KR.Config || {};
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
-            },
-            'riksantikvaren': {
-                id: 'riksantikvaren',
-                name: 'Kulturminnesøk',
-                hideFromGenerator: true,
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    kommune: komm,
-                    fylke: fylke
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                bbox: false,
-                isStatic: true,
-                init: kulturminneFunctions.initKulturminnePoly,
-                loadWhenLessThan: {
-                    count: 5,
-                    callback: kulturminneFunctions.loadKulturminnePoly
-                }
-            },
-            'lokalwiki': {
-                id: 'lokalwiki',
-                name: 'Lokalhistoriewiki',
-                hideFromGenerator: false,
-                provider: 'Lokalhistoriewiki',
-                dataset: {
-                    api: 'lokalhistoriewiki'
-                },
-                style: {thumbnail: true},
-                minZoom: 13,
-                bbox: true,
-                isStatic: false,
-                description: 'Stedfestede artikler fra lokalhistoriewiki.no som drives av Norsk lokalhistorisk institutt (NLI)'
             },
             'jernbane': {
                 id: 'jernbane',
@@ -359,7 +315,7 @@ KR.Config = KR.Config || {};
                         bbox: false
                     }
                 ],
-                description: 'Historiedata fra Riksantikvaren og Digitalt museum '
+                description: 'Historie og kulturminner fra Riksantikvaren og Digitalt museum '
             },
             'kunst': {
                 grouped: true,
@@ -383,7 +339,62 @@ KR.Config = KR.Config || {};
                 ],
                 description: 'Kunstdata fra Digitalt museum '
             },
-            
+            'wikipedia': {
+                name: 'Wikipedia',
+                provider: 'Wikipedia',
+                dataset: {
+                    api: 'wikipedia'
+                },
+                style: {thumbnail: true},
+                minZoom: 13,
+                template: KR.Util.getDatasetTemplate('wikipedia'),
+                description: 'Stedfestede artikler fra bokmålswikipedia'
+            },
+            'lokalwiki': {
+                id: 'lokalwiki',
+                name: 'Lokalhistoriewiki',
+                hideFromGenerator: false,
+                provider: 'Lokalhistoriewiki',
+                dataset: {
+                    api: 'lokalhistoriewiki'
+                },
+                style: {thumbnail: true},
+                minZoom: 13,
+                bbox: true,
+                isStatic: false,
+                description: 'Stedfestede artikler fra lokalhistoriewiki.no'
+            },
+            'riksantikvaren': {
+                id: 'riksantikvaren',
+                name: 'Kulturminnesøk',
+                hideFromGenerator: false,
+                provider: 'Riksantikvaren',
+                dataset: {
+                    api: 'kulturminnedataSparql',
+                    kommune: komm,
+                    fylke: fylke
+                },
+                template: KR.Util.getDatasetTemplate('ra_sparql'),
+                bbox: false,
+                isStatic: true,
+                init: kulturminneFunctions.initKulturminnePoly,
+                loadWhenLessThan: {
+                    count: 5,
+                    callback: kulturminneFunctions.loadKulturminnePoly
+                },
+                description: 'Data fra Riksantikvarens kulturminnesøk'
+            },
+            'brukerminner': {
+                name: 'Kulturminnesøk - brukerregistreringer',
+                hideFromGenerator: false,
+                provider: 'riksantikvaren',
+                dataset: {api: 'kulturminnedata', layer: 2},
+                cluster: true,
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
+                template: KR.Util.getDatasetTemplate('brukerminne')
+            },
             'grorud': {
                 name: 'Byantikvaren Oslo - Groruddalen',
                 hideFromGenerator: true,
@@ -404,20 +415,9 @@ KR.Config = KR.Config || {};
                 cluster: true,
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Digitalt Museum',
+                description: 'Alle stedfestede data fra Digitalt Museum',
                 allowTopic: true,
                 feedbackForm: true
-            },
-            'brukerminner': {
-                name: 'Kulturminnesøk - brukerregistreringer',
-                hideFromGenerator: true,
-                provider: 'riksantikvaren',
-                dataset: {api: 'kulturminnedata', layer: 2},
-                cluster: true,
-                isStatic: false,
-                style: {thumbnail: true},
-                description: 'Kulturminnesøk - brukerregistreringer',
-                template: KR.Util.getDatasetTemplate('brukerminne')
             },
             'dimufoto': {
                 hideFromGenerator: true,
