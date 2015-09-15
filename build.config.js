@@ -166,7 +166,9 @@ module.exports = {
 	  	"kunst"
 	  	],
 	  	"bbox": "4.0223174095,57.6773017445,30.9705657959,71.4034238089",
-	  	"layer": "norges_grunnkart_graatone"
+	  	"layer": "norges_grunnkart_graatone",
+	  	"image": 'http://dms01.dimu.org/image/012s7YmtE6EN?dimension=1200x1200',
+	  	"description": '<p><small>Foto: Lindahl, Axel / Norsk Folkemuseum</small></p><p>Landsdekkende visning av sentrale datasett for hele landet. Kulturminner, historie og fakta fra Kulturminnesøk (Riksantikvaren), Digitalt Museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewike, Folketellingen 1910 (Digitalarkivet), Verneområder, Lokalhistoriewiki og Wikipedia.</p></br>'
 		}    
 	},
     {
@@ -254,6 +256,11 @@ module.exports = {
       id: 'nidelva',
       name: 'Nidelva',
       description: 'Historie og kulturminner langs Nidelva i Trondheim kommune'
+    },
+    {
+      id: 'akerselva',
+      name: 'Akerselva - DOGA',
+      description: 'Historie og kulturminner langs Akerselva og ved DOGA'
     },
     {
       id: '2verdenskrig',
