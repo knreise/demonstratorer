@@ -12,32 +12,24 @@
 
     <link href='bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
     <link href='bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+    <link href='common/css/generator.css' rel='stylesheet' />
+
   </head>
 
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">KNReise - demonstratorer</a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container">
-        <h1>KNReise - demonstratorer</h1>
-        <p>Kultur- og naturreise er et nasjonalt løft for å øke tilgangen til offentlig informasjon og lokal kunnskap om kultur og natur. Utrustet med en smarttelefon skal alle få tilgang til aktuelle fakta og fortellinger om natur og kultur på stedet der de er. Dette tverretatlige samarbeidet under Kommunal- og moderinseringsdepartementet, klima- og miljødepartementet og Kulturdepartementet legger til rette for at innhold i fagdatabaser åpnes opp og gjøres tilgjengelig. Innholdet kan tas i bruk og videreutvikles av andre til nye tjenester; av nærings- og reiseliv, i friluftsliv og undervisning. Målet er å øke kunnskap om og skape engasjement for kulturminner og naturverdier.</p>
-      </div>
-    </div>
-
+    <div class="well">
+		<img src="common/img/knreise_logo.png"/></br>
+		<h1>Kart og demonstratorer</h1>
+		<p><a href="http://kulturognaturreise.no">Kultur- og naturreise</a> er et prosjekt og et nasjonalt løft for å øke tilgangen til offentlig informasjon og lokal kunnskap om kultur og natur. Dette tverretatlige samarbeidet under Kommunal- og moderinseringsdepartementet, Klima- og miljødepartementet og Kulturdepartementet legger til rette for at innhold i fagdatabaser skal gjøres tilgjengelig. Innhold og formidlingsløsninger kan tas i bruk og videreutvikles av andre til nye tjenester; av nærings- og reiseliv, i friluftsliv og undervisning. Målet er å øke kunnskap om og skape engasjement for kulturminner og naturverdier.</p>
+		<p>Disse prototypene og kartløsningene er som en del av dette arbeidet utviklet med bistand fra <a href="http://norkart.no">Norkart</a> i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Løsningene er fremdeles under utvikling og utover høsten vil det bli jobbet med justering av både funksjonalitet, grensesnitt og design i tillegg til testing og feilretting. Det vil også bli jobbet med å få inn nye kilder og med forbedringer for de datasett og kilder som allerede er inne. Til dette arbeidet setter vi stor pris på <a href="mailto:havard.johansen@kulturradet.no">tilbakemeldinger, spørsmål og kommentarer</a>.</p>
+	</div>
+	
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-6">
           <h2>Demonstratorer</h2>
-            <p>Demonstratorer utviklet i løpet av prosjektet</p>
             <div class="list-group">
               {{ _.each(demos, function (demonstrator) { }}
                 <a href="{{= demonstrator.url }}" class="list-group-item">
@@ -47,28 +39,34 @@
             </div>
         </div>
         <div class="col-md-6">
-          <h2>Demonstratorgenerator</h2>
-          <p>Det er enkelt å generere sin egen demonstrator ved hjelp av et web-verktøy!</p>
-          <p><a class="btn btn-default" href="demonstratorer/generator.html" role="button">Prøv her &raquo;</a></p>
-       </div>
-    </div>
-    <div class="row">
+          <h2>Sett opp ditt eget kart</h2>
+          <p>Det er enkelt å generere sitt egen kart ved hjelp av et eget web-grensesnitt. Her kan du  velge område,  datasett og kartgrunnlag.</p>
+          <p>
+	          <a class="btn btn-small btn-info" href="demonstratorer/generator.html">
+			  <i class="fa fa-pencil-square-o fa-lg"></i> Lag ditt kart her</a>
+	      </p>
+        </div>
+	  </div>
+      <div class="row">
         <div class="col-md-6">
           <h2>Eksperimenter</h2>
           <p>Eksperimenter gjort under utviklingen</p>
           <p><a class="btn btn-default" href="experiments/index.html" role="button">Se liste &raquo;</a></p>  
         </div>
-        <div class="col-md-6">
-          <h2>Kode</h2>
-          <p>All koden er fritt tilgjengelig på <a href="https://github.com/knreise">GitHub</a> under Apache Software License, Version 1.1, se spesifikt <a href="https://github.com/knreise/demonstratorer">github.com/knreise/demonstratorer</a> og <a href="https://github.com/knreise/KNReiseAPI">github.com/knreise/KNReiseAPI</a></p>
-        </div>
+        <div class="col-md-6"></div>
       </div>
-
-      <hr>
-
-      <footer>
-        <p></p>
-      </footer>
-    </div>
+	</div>
+	
+	<footer class="generatorfooter">
+	<p class="small container" align="center">All koden er fritt tilgjengelig på <a href="https://github.com/knreise">GitHub</a> under Apache Software License, Version 1.1, se spesifikt <a href="https://github.com/knreise/demonstratorer">github.com/knreise/demonstratorer</a> og <a href="https://github.com/knreise/KNReiseAPI">github.com/knreise/KNReiseAPI</a>
+	</p>
+	<div class="generatorfooter">
+		<img src="../common/img/samarbeidspartnere_ra1.png"/>
+		<img src="../common/img/samarbeidspartnere_kulturradet.png"/>
+		<img src="../common/img/samarbeidspartnere_sk_4.png"/>
+		<img src="../common/img/samarbeidspartnere_riksarkivet.png"/>
+	</div>
+	</footer>
+    
   </body>
 </html>
