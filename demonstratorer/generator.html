@@ -8,96 +8,139 @@
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../common/css/generator.css' rel='stylesheet' />
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
+		<script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
 
         <title>KNReise - Demonstratorgenerator</title>
     </head>
     <body>
 
-        <h1>Demonstratorgenerator</h1>
-        <form autocomplete="off">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Link</h3>
-                    <div class="map-link"></div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Tittel</h3>
-                    <input id="title" type="text" class="form-control" placeholder="Navn på demonstrator">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">
-                  <div id="municipality_container"></div>
-                  <div id="county_container"></div>
-                  <div>
-                    <ul class="list-unstyled">
-                      <li>
-                        <input id="geomFilter_cb" type="checkbox" name="geomFilter" checked/> Begrens utvalg til kommune/fylke
-                      </li>
-                      <li>
-                        <input id="showGeom_cb" type="checkbox" name="showGeom" checked/> Vis kommune/fylke</li>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="col-md-2" id="line_container">
-                </div>
-                <div class="col-md-2" id="bbox_container">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <h3>Datasett</h3>
-                    <ul id="datasets" class="list-group"></ul>
-                </div>
-                <div class="col-md-2">
-                    <h3>Bakgrunnskart</h3>
-                    <select id="layers" class="form-control"></select>
-                    <div class="map" id="layers_map"></div>
-                    <h3>3d</h3>
-                    <input id="3d" type="checkbox" name="3d"/> Bruk 3d-kart?
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Link</h3>
-                    <div class="map-link"></div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <button id="show-params" class="btn btn-default" type="button">hent parametere</button>
-                    <div>
-                        <pre id="params" class="pre-scrollable"></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
+	        <div class="well">
+	        	<img src="../common/img/knreise_logo.png"/>
+				<h2>Sett opp ditt eget kart</h2>
+        	
+	        	<div>
+				   Dette er et grensesnitt for å sette opp egendefinerte kart med utvalgt informasjon fra ulike datasett med stedfestet kulturhistorie, naturinformasjon, historiske kilder og leksikalsk informasjon. Tjenesten er utviklet med bistand fra <a href="http://norkart.no">Norkart</a> i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a> - koden som er brukt ligger på <a href="https://github.com/knreise/demonstratorer/">GitHub</a> og det finnes også flere eksempler på <a href="../../">ferdig definerte kart</a>.
+				</div>
+	        </div>
+			
+			<div class="panel panel-default"  style="border: 0px">
+			  <div class="panel-body">
+			    <input id="title" type="text" class="form-control" placeholder="Navn på kart"/>
+			  </div>
+			</div>
+			
+			
+			<form autocomplete="off"> 
+			        
+			        
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+			  <div class="panel panel-default">
+			    <div class="panel-heading" role="tab" id="headingOne">
+			      <h4 class="panel-title">
+			        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+			          <span class="fa-stack fa-lg">
+					     <i class="fa fa-circle fa-stack-2x"></i>
+					     <i class="fa fa-inverse fa-stack-1x">1</i>
+					  </span> Velg område
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+			      <div class="panel-body">
+				      <div class="container-fluid">
+					    <div class="row">
+						    <div class="col-md-3">  
+					        	<div id="municipality_container"></div>
+								<div><input id="geomFilter_cb" type="checkbox" name="geomFilter" checked/> Begrens utvalg til kommune/fylke</div>
+								<div><input id="showGeom_cb" type="checkbox" name="showGeom" checked/> Vis kommune/fylke</div>
+						    </div>
+						    <div class="col-md-3">
+							    <div id="county_container"></div>
+						    </div>
+							<div class="col-md-3">
+								<div id="line_container"></div>
+							</div>
+							<div class="col-md-3">
+								<div id="bbox_container"></div>
+							</div>
+					    </div>
+				      </div>
+			      </div>
+			    </div>
+			  </div>
+			  <div class="panel panel-default">
+			    <div class="panel-heading" role="tab" id="headingTwo">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+			          <span class="fa-stack fa-lg">
+					     <i class="fa fa-circle fa-stack-2x"></i>
+					     <i class="fa fa-inverse fa-stack-1x">2</i>
+					  </span> Velg datasett
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+			      <div class="panel-body">
+			        <div id="datasets" class="list-group"></div>
+			    </div>
+			  </div>
+			  </div>
+			  <div class="panel panel-default">
+			    <div class="panel-heading" role="tab" id="headingThree">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+			          <span class="fa-stack fa-lg">
+					     <i class="fa fa-circle fa-stack-2x"></i>
+					     <i class="fa fa-inverse fa-stack-1x">3</i>
+					  </span> Velg kart
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+			      <div class="panel-body">
+			        <select id="layers" class="form-control"></select>
+			        <div class="map" id="layers_map"></div>
+			        <input id="3d" type="checkbox" name="3d"/> Bruk 3d-kart
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
+			
+            <div class="well">
+	            <b>LINK:</b>
+	            <div class="map-link"></div>
+	        </div>
 
-
+			
+			<!-- <button id="show-params" class="btn btn-default" type="button">hent parametere</button>
+            <pre id="params" class="pre-scrollable"></pre>
+            -->
+        
         </form>
+        
 
         <script type="text/template" id="dataset_template">
-            <li class="list-group-item">
-                <h4 class="list-group-item-heading">
-                    <input type="checkbox" value="<%= key %>" name="datasetsCheckbox" />
-                    <%= name %>
-                </h4>
+            <div class="list-group-item" style="float: left;height:135px;width: 360px;">
+                <div class="checkbox">
+				  <label>
+				    <input type="checkbox" value="<%= key %>" name="datasetsCheckbox" class="checkbox-primary"/>
+				    <b><%= name %></b>
+				  </label>
+				</div>
                 <p class="list-group-item-text">
                     <%= description %>
                 </p>
                 <% if (allowTopic) { %>
-                    <input id="<%= key %>-topic" class="form-control" type="text" placeholder="emneord" disabled="disabled">
+	               <p class="list-group-item-text" style="padding-top: 5px;"><input id="<%= key %>-topic" class="form-control input-sm" type="text" placeholder="emneord" disabled="disabled"></p>
                 <% } %>
-            </li>
+            </div>
         </script>
 
         <script type="text/template" id="municipality_template">
             <h3><input type="radio" name="inputType" /> Kommune</h3>
-            <select id="komm" class="form-control" multiple>
+            <select id="komm" class="form-control" multiple size="10">
             <% _.each(municipalities, function (municipality) { %>
                 <option value="<%= municipality.komm %>"><%= municipality.navn %></option>
             <% }) %>
@@ -106,7 +149,7 @@
 
         <script type="text/template" id="county_template">
             <h3><input type="radio" name="inputType" /> Fylke</h3>
-            <select id="fylke" class="form-control" multiple>
+            <select id="fylke" class="form-control" multiple size="10">
             <% _.each(counties, function (county) { %>
                 <option value="<%= county.fylkesnr %>"><%= county.navn %></option>
             <% }) %>
@@ -116,17 +159,17 @@
 
         <script type="text/template" id="line_template">
             <h3><input type="radio" name="inputType" /> Linje</h3>
-            <input id="line" type="text" class="form-control" placeholder="Linje">
+            <input id="line" type="text" class="form-control" placeholder="Linje" />
             <span id="helpBlock" class="help-block">For linjer fra ut.no: bruk formen utno/id</span>
             <h5>Buffer (km)</h5>
-            <input id="buffer" type="number" class="form-control" value="2">
+            <input id="buffer" type="number" class="form-control" value="2" />
             <h5>Linjefarge (hex)</h5>
-            <input id="linecolor" type="text" class="form-control" value="#0033ff">
+            <input id="linecolor" type="text" class="form-control" value="#0033ff" />
         </script>
 
         <script type="text/template" id="bbox_template">
             <h3><input type="radio" name="inputType" /> BBox</h3>
-            <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067">
+            <input id="bbox" type="text" class="form-control" value="3.779297,57.751076,31.464844,71.357067"/>
             <div class="map" id="bbox_map"></div>
         </script>
 
@@ -158,6 +201,19 @@
                 'use strict';
                 KR.initGenerator();
             }());
+
         </script>
+        
+        <footer class="generatorfooter">
+          <p class="small container" align="center">All koden er fritt tilgjengelig på <a href="https://github.com/knreise">GitHub</a> under Apache Software License, Version 1.1, se spesifikt <a href="https://github.com/knreise/demonstratorer">github.com/knreise/demonstratorer</a> og <a href="https://github.com/knreise/KNReiseAPI">github.com/knreise/KNReiseAPI</a>
+          </p>
+		  <div class="generatorfooter">
+				<img src="../common/img/samarbeidspartnere_ra1.png"/>
+				<img src="../common/img/samarbeidspartnere_kulturradet.png"/>
+				<img src="../common/img/samarbeidspartnere_sk_4.png"/>
+				<img src="../common/img/samarbeidspartnere_riksarkivet.png"/>
+			</div>
+      	</footer>
+      
     </body>
 </html>
