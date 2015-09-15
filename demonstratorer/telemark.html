@@ -749,7 +749,7 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
             }
         },
         {
-            provider: 'Riksantikvaren - Husmann',
+            provider: 'Riksantikvaren',
             name: 'Kulturminnesøk - brukerregistrering',
             dataset: {
                 api: 'kulturminnedata',
@@ -809,7 +809,9 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
         showGeom: true,
         title: title,
         image: image,
-        description: $('#description_template').html()
+        description: $('#description_template').html(),
+        maxZoom: 18,
+        minZoom: 9
     });
 }());
         </script>
