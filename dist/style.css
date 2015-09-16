@@ -274,6 +274,13 @@
     padding-right: 24px;
 }
 
+#splashscreen h2 {
+    margin-top: 12px; 
+    padding-left: 24px;
+    padding-right: 24px;
+    font-size: 22px;
+}
+
 /*the feedback form*/
 .feedback-form {
     margin-top: 30px;
