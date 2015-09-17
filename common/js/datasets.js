@@ -430,7 +430,35 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 noListThreshold: Infinity
-            }
+            },
+            'riksarkivet': {
+                name: 'Riksarkivet',
+                dataset_name_override: 'Riksarkivet',
+                provider: 'riksarkivet',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'national_archives_of_norway'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Riksarkivets Flickr-konto',
+            },
+            'nasjonalbiblioteket': {
+                name: 'Nasjonalbiblioteket',
+                dataset_name_override: 'Nasjonalbiblioteket',
+                provider: 'nasjonalbiblioteket',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'national_library_of_norway'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Nasjonalbibliotekets Flickr-konto',
+            } 
         };
 
         if (!komm && !fylke) {

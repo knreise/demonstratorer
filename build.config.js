@@ -153,7 +153,7 @@ module.exports = {
     {
       id: 'norge',
       name: 'Norge',
-      description: 'Landsdekkende visning av sentrale datasett for hele landet.',
+      description: 'Landsdekkende visning av sentrale datasett. Kulturminner, historie og fakta fra Kulturminnesøk (Riksantikvaren), Digitalt Museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewike, Folketellingen 1910 (Digitalarkivet), Verneområder, Lokalhistoriewiki og Wikipedia.',
       params: {
 	  	"datasets": [
 	  	"difo",
@@ -168,13 +168,13 @@ module.exports = {
 	  	"bbox": "4.0223174095,57.6773017445,30.9705657959,71.4034238089",
 	  	"layer": "norges_grunnkart_graatone",
 	  	"image": 'http://dms01.dimu.org/image/012s7YmtE6EN?dimension=1200x1200',
-	  	"description": '<p><small>Foto: Lindahl, Axel / Norsk Folkemuseum</small></p><p>Landsdekkende visning av sentrale datasett for hele landet. Kulturminner, historie og fakta fra Kulturminnesøk (Riksantikvaren), Digitalt Museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewike, Folketellingen 1910 (Digitalarkivet), Verneområder, Lokalhistoriewiki og Wikipedia.</p></br>'
+	  	"description": '<p><small>Foto: Lindahl, Axel / Norsk Folkemuseum</small></p><p>Landsdekkende visning av sentrale datasett. Kulturminner, historie og fakta fra Kulturminnesøk (Riksantikvaren), Digitalt Museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewike, Folketellingen 1910 (Digitalarkivet), Verneområder, Lokalhistoriewiki og Wikipedia.</p></br>'
 		}    
 	},
     {
       id: 'gudbrandsdalsleden',
       name: 'Gudbrandsdalsleden',
-      description: 'Hele pilegrimsleden med alt relevant innhold langs og i en viss avstand til denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
+      description: 'Hele pilegrimsleden med alt relevant innhold langs denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
     }, 
     {
       id: 'gudbrandsdalsleden_line',
@@ -185,13 +185,13 @@ module.exports = {
     {
       id: 'telemark',
       name: 'Telemark',
-      description: 'Formidling av innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Askeladden, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
+      description: 'Innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnesøk, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
       image: 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200'
     },
     {
       id: 'dovre',
       name: 'Dovre',
-      description: 'Løsning som fokuserer på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold - spesielt fra samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
+      description: 'Kart med fokus på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold og samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
       image: 'http://media31.dimu.no/media/image/H-DF/DF.5444/13948?width=800&height=580'
     },
     {
@@ -250,7 +250,7 @@ module.exports = {
     {
       id: 'trondheim',
       name: 'Trondheim',
-      description: 'Demonstrator med fokus på Trondheim'
+      description: 'Demonstrator med fokus på Trondheim - innhold fra Digitalt fortalt, Kulturminnesøk, Trondheim byarkiv, Universitetsmueene, Digitalt Musuem og Wikipedia.'
     },
 	{
       id: 'nidelva',
@@ -265,7 +265,7 @@ module.exports = {
     {
       id: '2verdenskrig',
       name: '2. verdenskrig',
-      description: '2. verdenskrig'
+      description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
     }
   ],
   experiments: [

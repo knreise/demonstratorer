@@ -786,7 +786,7 @@ KR.Style = {};
         }
 
         var html = '<div class="outer">' +
-            '<div class="circle" style="background-image: url(' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
+            '<div class="circle" style="background-image: url(http://egbtmre.cloudimg.io/s/crop/50x50/' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
             '</div>';
 
         return new L.DivIcon({
@@ -811,7 +811,7 @@ KR.Style = {};
         }
         var styleDict = {
             'border-color': color,
-            'background-image': 'url(' + photos[0].feature.properties.thumbnail + ');'
+            'background-image': 'url(http://egbtmre.cloudimg.io/s/crop/50x50/' + photos[0].feature.properties.thumbnail + ');'
         };
         if (rest) {
             styleDict['box-shadow'] = _.map(rest, function (c, index) {
@@ -2797,7 +2797,35 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 noListThreshold: Infinity
-            }
+            },
+            'riksarkivet': {
+                name: 'Riksarkivet',
+                dataset_name_override: 'Riksarkivet',
+                provider: 'riksarkivet',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'national_archives_of_norway'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Riksarkivets Flickr-konto',
+            },
+            'nasjonalbiblioteket': {
+                name: 'Nasjonalbiblioteket',
+                dataset_name_override: 'Nasjonalbiblioteket',
+                provider: 'nasjonalbiblioteket',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'national_library_of_norway'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Nasjonalbibliotekets Flickr-konto',
+            } 
         };
 
         if (!komm && !fylke) {

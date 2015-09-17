@@ -266,7 +266,7 @@ KR.Style = {};
         }
 
         var html = '<div class="outer">' +
-            '<div class="circle" style="background-image: url(' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
+            '<div class="circle" style="background-image: url(http://egbtmre.cloudimg.io/s/crop/50x50/' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
             '</div>';
 
         return new L.DivIcon({
@@ -291,7 +291,7 @@ KR.Style = {};
         }
         var styleDict = {
             'border-color': color,
-            'background-image': 'url(' + photos[0].feature.properties.thumbnail + ');'
+            'background-image': 'url(http://egbtmre.cloudimg.io/s/crop/50x50/' + photos[0].feature.properties.thumbnail + ');'
         };
         if (rest) {
             styleDict['box-shadow'] = _.map(rest, function (c, index) {
