@@ -11,7 +11,7 @@ Prosjektet er i oppstartsfasen, og ingenting er låst enda.
 For utviklingsnotater, se https://www.evernote.com/shard/s314/sh/e525b518-c431-43d7-8fcb-7263fee568e3/cd5751ded0d168fc
 
 
-For live demo, se http://development.atlefren-kulturraadet.divshot.io/
+For live demo, se http://knreise.github.io/demonstratorer/
 
 
 Lisens
