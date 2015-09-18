@@ -458,7 +458,36 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Bilder fra Nasjonalbibliotekets Flickr-konto',
-            } 
+            },
+            'oslobyarkiv': {
+                name: 'Oslo Byarkiv',
+                dataset_name_override: 'Oslo Byarkiv',
+                provider: 'oslobyarkiv',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'byarkiv'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Oslo byarkiv sin Flickr-konto',
+            },
+            'nasjonalmuseet': {
+                name: 'Nasjonalmuseet',
+                dataset_name_override: 'Nasjonalmuseet',
+                provider: 'nasjonalmuseet',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'nasjonalmuseet'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Nasjonalmuseet sin Flickr-konto',
+            }
+
         };
 
         if (!komm && !fylke) {
