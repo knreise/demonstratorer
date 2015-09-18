@@ -120,6 +120,7 @@
         komm: 511,
         title: title,
         image: image,
+        layer: 'norges_grunnkart',
         description: $('#description_template').html()
     });
 }());

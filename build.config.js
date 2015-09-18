@@ -203,8 +203,8 @@ module.exports = {
         allstatic: true,
         line: 'utno/2.8158',
         buffer: 2,
-        linecolor: '#deb238',
-        layer: 'norges_grunnkart_graatone',
+        linecolor: '#000',
+        layer: 'norges_grunnkart',
         image: 'http://dms07.dimu.org/image/012wWX5cXPto?dimension=600x380',
         description: '<p>Turistvegen over Folgefonna er en klassisk bretur, fra Sunndalen over Fonnabu/Folgefonna til Tokheim ved Sørfjorden.</p><p>«Folgefonnens is dækker det ujevne lands overflade, men selve fonnen er forholdsvis jevn i overflaten, og den syder sin rand udover til siderne og tildels sender den sin is langt ned i dalene». Slik ble Folgefonna skildret i «Norges Land og folk i 1896». Turistvegen over Folgefonna er en fottur som følger i sporene etter de europeiske turistene som flokket til fjord-Norge fra midten av 1800-tallet.</p></br>'
       }
