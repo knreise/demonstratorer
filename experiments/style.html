@@ -33,7 +33,7 @@
             <%= marker %>
         </div>
         <div class="media-body">
-            <%= title %>
+            <h6><%= title %></h6>
         </div>
     </div>
 </a>
@@ -41,8 +41,7 @@
 
 
 <script type="text/template" id="marker_template">
-<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
-    <i class="fa fa-<%= icon %> icon-white"></i>
+<div class="" style="width: 3px; height: 45px; background-color: <%= color %>; border-radius:4px;">
 </div>
 </script>
 
@@ -76,7 +75,7 @@
             <%= marker %>
         </div>
         <div class="media-body">
-            <%= title %>
+            <h6><%= title %></h6>
         </div>
     </div>
 </a>
@@ -84,8 +83,7 @@
 
 
 <script type="text/template" id="marker_template">
-<div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
-    <i class="fa fa-<%= icon %> icon-white"></i>
+<div class="" style="width: 3px; height: 45px; background-color: <%= color %>; border-radius:4px;">
 </div>
 </script>
 
@@ -581,6 +579,20 @@
 <% } %>
 
 <img class="fullwidth" src="<%= image %>" />
+
+
+
+<ul class="list-unstyled distance">
+    <li>
+	    <a href="https://www.flickr.com/photos/<%= owner %>/<%= id %>/"  target="_blank" class="sidebar-link" >
+			<i class="fa fa-external-link-square"></i> Vis hos Flickr
+		</a>
+    </li>
+</ul>
+
+
+	
+
 
 </script>
 

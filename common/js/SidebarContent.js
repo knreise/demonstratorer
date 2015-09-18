@@ -186,7 +186,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             top.append(list);
             list.click(callbacks.close);
             var idx = index + 1;
-            top.append($('<div class="top-text pull-left">' + idx + ' av ' + numFeatures + '</div>'));
+            top.append($('<div class="top-text pull-left"><b>' + idx + '</b> av ' + numFeatures + '</div>'));
 
             var prev = $('<a class="prev-next-arrows prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>');
             wrapper.append(prev);

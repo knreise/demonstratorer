@@ -70,6 +70,17 @@
             },
             style: {thumbnail: true},
             minZoom: 13,
+        },
+        {
+            name: 'Oslo Byarkiv',
+            provider: 'Oslo Byarkiv',
+            dataset: {
+                    api: 'flickr',
+                    user_id: 'byarkiv'
+                },
+            template: KR.Util.getDatasetTemplate('flickr'),
+            style: {thumbnail: true},
+            minZoom: 13,
         }
     ];
 

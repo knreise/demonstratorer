@@ -1715,7 +1715,7 @@ KR.SidebarContent = function (wrapper, element, top, options) {
             top.append(list);
             list.click(callbacks.close);
             var idx = index + 1;
-            top.append($('<div class="top-text pull-left">' + idx + ' av ' + numFeatures + '</div>'));
+            top.append($('<div class="top-text pull-left"><b>' + idx + '</b> av ' + numFeatures + '</div>'));
 
             var prev = $('<a class="prev-next-arrows prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>');
             wrapper.append(prev);
@@ -3301,7 +3301,29 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Bilder fra Nasjonalbibliotekets Flickr-konto',
-            } 
+            },
+            'oslobyarkiv': {
+                name: 'Oslo Byarkiv',
+                dataset_name_override: 'Oslo Byarkiv',
+                provider: 'oslobyarkiv',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'byarkiv'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Oslo byarkiv sin Flickr-konto',
+            },
+            'kystreise': {
+                name: 'Kystreise',
+                dataset: {dataset: 'kystreise', api: 'norvegiana'},
+                cluster: true,
+                noListThreshold: Infinity,
+                description: 'Kystreise.no',
+                hideFromGenerator: true,
+            }
         };
 
         if (!komm && !fylke) {
