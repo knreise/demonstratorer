@@ -28,7 +28,8 @@
                         api: 'norvegiana',
                         dataset: 'DiMu'
                     },
-                    template: KR.Util.getDatasetTemplate('digitalt_museum')
+                    template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                    style: {fillcolor: '#333333'}
                 },
                 {
 		            name: 'Riksantikvaren',
@@ -43,6 +44,7 @@
 		        },	
         	],
             isStatic: false,
+            style: {thumbnail: true},
             minZoom: 8
         },
         {
