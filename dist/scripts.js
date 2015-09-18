@@ -3316,14 +3316,21 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 description: 'Bilder fra Oslo byarkiv sin Flickr-konto',
             },
-            'kystreise': {
-                name: 'Kystreise',
-                dataset: {dataset: 'kystreise', api: 'norvegiana'},
-                cluster: true,
-                noListThreshold: Infinity,
-                description: 'Kystreise.no',
+            'nasjonalmuseet': {
+                name: 'Nasjonalmuseet',
+                dataset_name_override: 'Nasjonalmuseet',
+                provider: 'nasjonalmuseet',
                 hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'nasjonalmuseet'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Nasjonalmuseet sin Flickr-konto',
             }
+
         };
 
         if (!komm && !fylke) {
