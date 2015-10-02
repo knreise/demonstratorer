@@ -60,9 +60,13 @@
         }
 
         function _showError(error) {
-            _error = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
-            _error.setAttribute('title', KR.parseError(error));
-            label.insertBefore(_error, label.childNodes[0]);
+            if (!_error) {
+                _error = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
+                _error.setAttribute('title', KR.parseError(error));
+                label.insertBefore(_error, label.childNodes[0]);
+            } else {
+                _error.setAttribute('title', _error.getAttribute('title') + ', ' + KR.parseError(error));
+            }
         }
 
         function _createLabel() {
