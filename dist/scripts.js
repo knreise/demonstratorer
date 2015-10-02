@@ -64,6 +64,8 @@ KR.Config = {
     templates: {}
 };
 
+KR.Config.ImageCaheUrl = 'http://egbtmre.cloudimg.io';
+
 KR.Util = KR.Util || {};
 
 (function (ns) {
@@ -521,6 +523,20 @@ KR.Util = KR.Util || {};
         };
     };
 
+
+    var cacheTemplate = _.template('<%= service %>/s/crop/<%= width %>x<%= height %>/<%= image %>');
+    ns.getImageCache = function (imageUrl, width, height) {
+        if (KR.Config.ImageCaheUrl) {
+            return cacheTemplate({
+                service: KR.Config.ImageCaheUrl,
+                width: width,
+                height: height,
+                image: imageUrl
+            });
+        }
+        return imageUrl;
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -790,8 +806,10 @@ KR.Style = {};
             styleDict['border-width'] = '3px';
         }
 
+        var thumbnail = KR.Util.getImageCache(feature.properties.thumbnail, 50, 50);
+
         var html = '<div class="outer">' +
-            '<div class="circle" style="background-image: url(http://egbtmre.cloudimg.io/s/crop/50x50/' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
+            '<div class="circle" style="background-image: url(' + thumbnail + ');border-color:' + color + ';"></div>' +
             '</div>';
 
         return new L.DivIcon({
@@ -814,9 +832,12 @@ KR.Style = {};
             rest = _.rest(color);
             color = color[0];
         }
+
+        var thumbnail = KR.Util.getImageCache(photos[0].feature.properties.thumbnail, 50, 50);
+
         var styleDict = {
             'border-color': color,
-            'background-image': 'url(http://egbtmre.cloudimg.io/s/crop/50x50/' + photos[0].feature.properties.thumbnail + ');'
+            'background-image': 'url(' + thumbnail + ');'
         };
         if (rest) {
             styleDict['box-shadow'] = _.map(rest, function (c, index) {
@@ -871,7 +892,7 @@ KR.Style = {};
         if (_.compact(groups).length > 1) {
             var groupIds = _.compact(groups);
             if (groupIds.length > 1) {
-                colors = _.map(groupIds, _.compose(getFillColor,getGroupConfig));
+                colors = _.map(groupIds, _.compose(getFillColor, getGroupConfig));
             }
         } else {
             colors = getFillColor(config, features[0].feature);
@@ -1619,7 +1640,8 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         var marker;
         if (feature.properties.thumbnail) {
             marker = options.thumbnailTemplate({
-                thumbnail: feature.properties.thumbnail,
+                thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
+                thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 60, 120),
                 color: KR.Style.colorForFeature(feature, true)
             });
         } else {
@@ -1851,7 +1873,6 @@ KR.SidebarContent = function (wrapper, element, top, options) {
         }
 
         function _showError(error) {
-            console.log(error, KR.parseError(error));
             if (!_error) {
                 _error = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
                 _error.setAttribute('title', KR.parseError(error));

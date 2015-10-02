@@ -13,6 +13,8 @@ KR.Config = {
     templates: {}
 };
 
+KR.Config.ImageCaheUrl = 'http://egbtmre.cloudimg.io';
+
 KR.Util = KR.Util || {};
 
 (function (ns) {
@@ -468,6 +470,20 @@ KR.Util = KR.Util || {};
             distance: turf.distance(point1, point2, 'kilometers') * 1000,
             bearing: turf.bearing(point1, point2)
         };
+    };
+
+
+    var cacheTemplate = _.template('<%= service %>/s/crop/<%= width %>x<%= height %>/<%= image %>');
+    ns.getImageCache = function (imageUrl, width, height) {
+        if (KR.Config.ImageCaheUrl) {
+            return cacheTemplate({
+                service: KR.Config.ImageCaheUrl,
+                width: width,
+                height: height,
+                image: imageUrl
+            });
+        }
+        return imageUrl;
     };
 
 }(KR.Util));

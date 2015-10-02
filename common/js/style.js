@@ -265,8 +265,10 @@ KR.Style = {};
             styleDict['border-width'] = '3px';
         }
 
+        var thumbnail = KR.Util.getImageCache(feature.properties.thumbnail, 50, 50);
+
         var html = '<div class="outer">' +
-            '<div class="circle" style="background-image: url(http://egbtmre.cloudimg.io/s/crop/50x50/' + feature.properties.thumbnail + ');border-color:' + color + ';"></div>' +
+            '<div class="circle" style="background-image: url(' + thumbnail + ');border-color:' + color + ';"></div>' +
             '</div>';
 
         return new L.DivIcon({
@@ -289,9 +291,12 @@ KR.Style = {};
             rest = _.rest(color);
             color = color[0];
         }
+
+        var thumbnail = KR.Util.getImageCache(photos[0].feature.properties.thumbnail, 50, 50);
+
         var styleDict = {
             'border-color': color,
-            'background-image': 'url(http://egbtmre.cloudimg.io/s/crop/50x50/' + photos[0].feature.properties.thumbnail + ');'
+            'background-image': 'url(' + thumbnail + ');'
         };
         if (rest) {
             styleDict['box-shadow'] = _.map(rest, function (c, index) {
@@ -346,7 +351,7 @@ KR.Style = {};
         if (_.compact(groups).length > 1) {
             var groupIds = _.compact(groups);
             if (groupIds.length > 1) {
-                colors = _.map(groupIds, _.compose(getFillColor,getGroupConfig));
+                colors = _.map(groupIds, _.compose(getFillColor, getGroupConfig));
             }
         } else {
             colors = getFillColor(config, features[0].feature);
