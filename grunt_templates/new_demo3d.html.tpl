@@ -7,7 +7,7 @@
         <title>KNReise - {{= data.name }}</title>
 
 {{ _.each(data.cssLinks, function (style) { }}
-        <link href='../{{= data.style }}' rel='stylesheet' />{{ } ) }}
+        <link href='../{{= style }}' rel='stylesheet' />{{ } ) }}
 
     </head>
     <body>
