@@ -71,9 +71,9 @@ var KR = this.KR || {};
                     callback();
                 }
             });
-        });
+        });;
 
-        var map = L.map('bbox_map').fitBounds(L.latLngBounds.fromBBoxString('3.779297,57.751076,31.464844,71.357067'));
+      var map = L.map('bbox_map').setView([64.3, 8.7], 3);
         L.tileLayer.kartverket('norges_grunnkart').addTo(map);
         map.on('moveend', function () {
             $('#bbox').val(map.getBounds().toBBoxString());
@@ -96,7 +96,8 @@ var KR = this.KR || {};
             callback: function (cb) {
                 callback = cb;
                 cb();
-            }
+            },
+            map: map
         };
 
     }
@@ -169,7 +170,8 @@ var KR = this.KR || {};
             callback: function (cb) {
                 callback = cb;
                 cb();
-            }
+            },
+            map: map
         };
     }
 
@@ -355,6 +357,7 @@ var KR = this.KR || {};
     }
 
     KR.initGenerator = function () {
+
         var counties, municipalities;
 
         var fetched = _.after(2, function () {
@@ -364,8 +367,16 @@ var KR = this.KR || {};
             var layer = buildLayerList($('#layers'));
             var filters = buildFilter();
             setupClick($('#generate'), limits, layer, datasets, title, filters);
-        });
 
+
+            $('#collapseOne').on('shown.bs.collapse', function () {
+                limits.map.invalidateSize();
+            });
+
+            $('#collapseThree').on('shown.bs.collapse', function () {
+                layer.map.invalidateSize();
+            });
+        });
 
         getCountyList(function (res) {
             counties = res;
@@ -377,5 +388,6 @@ var KR = this.KR || {};
             municipalities = res;
             fetched();
         });
+
     };
 }());
