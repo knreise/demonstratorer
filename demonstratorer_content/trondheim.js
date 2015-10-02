@@ -36,7 +36,8 @@
             provider: 'Trondheim byarkiv',
             dataset:  {
                 api: 'flickr',
-                user_id: 'trondheim_byarkiv'
+                user_id: 'trondheim_byarkiv',
+                accuracy: 16 //street level
             },
             template: KR.Util.getDatasetTemplate('flickr'),
             style: {fillcolor: '#D252B9'}

@@ -116,16 +116,16 @@ The datasets object passed to the api is a simple JavaScript object, but these d
 Other than the __api__ parameter, the parameters depend on the api, see the table below:
 
 
-| api                   | parameters                      |
-|-----------------------|---------------------------------|
-| norvegiana            | dataset, query                  |
-| wikipedia             | -                               |
-| kulturminnedata       | query, layer                    |
-| kulturminnedataSparql | limit, filter, fylke, geomType  |
-| cartodb               | table, columns, query           |
-| folketelling          | dataset, limit                  |
-| utno                  | type, id                        |
-| flickr                | user_id, tags, tag_mode         |
+| api                   | parameters                       |
+|-----------------------|----------------------------------|
+| norvegiana            | dataset, query                   |
+| wikipedia             | -                                |
+| kulturminnedata       | query, layer                     |
+| kulturminnedataSparql | limit, filter, fylke, geomType   |
+| cartodb               | table, columns, query            |
+| folketelling          | dataset, limit                   |
+| utno                  | type, id                         |
+| flickr                | user_id, tags, tag_mode, accuracy|
 
 
 
@@ -173,7 +173,7 @@ To use this api you must provide a config-object when initializing the api.
 * ***user_id***: ``<string>`` The Flickr user id to get photos from
 * ***tags***: ``<string[]>`` A list of tags to query by
 * ***tag_mode***: ``<string>`` Tag mode, as pr the [flickr documentation][flickrdoc] (default: ``all``)
-
+* ***accuracy****: ``<int>`` accuracy parameter from [flickr documentation][flickrdoc] (default: ``11``)
 
 #### kml
 * ***url***: ``<string>`` Url to the KML file to fetch
