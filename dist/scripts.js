@@ -3198,6 +3198,18 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('wikipedia'),
                 description: 'Stedfestede artikler fra bokmålswikipedia'
             },
+            'wikipediaNN': {
+                name: 'Wikipedia Nynorsk',
+                provider: 'Wikipedia Nynorsk',
+                dataset: {
+                    api: 'wikipediaNN'
+                },
+                style: {thumbnail: true},
+                minZoom: 13,
+                template: KR.Util.getDatasetTemplate('wikipedia'),
+                description: 'Stedfestede artikler fra nynorskwikipedia'
+            },
+
             'lokalwiki': {
                 id: 'lokalwiki',
                 name: 'Lokalhistoriewiki',
@@ -3334,6 +3346,20 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Bilder fra Nasjonalmuseet sin Flickr-konto',
+            },
+            'nve': {
+                name: 'NVE',
+                dataset_name_override: 'NVE',
+                provider: 'nve',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'nve'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra NVE Flickr-konto',
             }
 
         };

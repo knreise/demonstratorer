@@ -46,6 +46,8 @@
         line: getLine,
         title: title,
         image: image,
+        layer: 'topo2graatone',
+        linecolor: '#292778',
         description: $('#description_template').html()
     };
 
