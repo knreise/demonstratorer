@@ -232,8 +232,9 @@ module.exports = {
     },
 	{
       id: 'kjaerlighetsstien',
-      name: 'Kjærlighetsstien med Gamlegata',
-      description: 'Brukergenerert og bearbeidet innhold knyttet til turrunde som omfatter Kjærlighetsstien og Gamlegata i Gvarv i Telemark'
+      name: 'Kjærlighetsstien og Gamlegata',
+      description: 'Brukergenerert og bearbeidet innhold langs turrunden Kjærlighetsstien gjennomg Gamlegata i Gvarv i Telemark',
+      image: 'http://media31.dimu.no/media/image/H-DF/DF.4920/12312?width=600&height=380'
     },
     {
       id: 'oslo',
