@@ -178,8 +178,11 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         }).addTo(map);
     }
 
-    function _setupMove(steps, positionCallback, geoJson) {
+    function _setupMove(steps, positionCallback, geoJson, reverse) {
         var index = 0;
+        if (reverse) {
+            index = steps.length - 1;
+        }
 
         var zoomToIndex = _getZoomToIndex(steps, positionCallback);
 
@@ -222,7 +225,7 @@ KR.LineMap = function (api, map, getLineFunc, options) {
         _initHandlers(move);
     }
 
-    function _initScroll(geoJson, positionCallback) {
+    function _initScroll(geoJson, positionCallback, reverse) {
         var lines;
         if (geoJson.geometry.type === 'MultiLineString') {
             lines = _multiToSimple(geoJson);
@@ -230,16 +233,16 @@ KR.LineMap = function (api, map, getLineFunc, options) {
             lines = [geoJson];
         }
         var steps = _getSteps(lines, options.scrollLength);
-        _setupMove(steps, positionCallback, geoJson);
+        _setupMove(steps, positionCallback, geoJson, reverse);
     }
 
-    function init(callback) {
+    function init(callback, reverse) {
         var alongLine = new KR.AlongLine(api, getLineFunc);
 
         alongLine.getLine(function (res) {
             var geoJson = res.line.toGeoJSON();
             L.geoJson(geoJson).addTo(map);
-            _initScroll(geoJson.features[0], callback);
+            _initScroll(geoJson.features[0], callback, reverse);
         });
     }
 
