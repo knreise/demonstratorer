@@ -341,6 +341,11 @@ KR.Util = KR.Util || {};
                     api: 'kml',
                     url: line
                 };
+            } else if (_stringEndsWith(line, 'gpx')) {
+                lineData = {
+                    api: 'gpx',
+                    url: line
+                };
             }
         }
         if (lineData) {
