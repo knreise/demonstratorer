@@ -1474,6 +1474,22 @@ KR.GpxAPI = function (apiName) {
     };
 };
 
+
+var KR = this.KR || {};
+
+KR.GeoJsonAPI = function (apiName) {
+    'use strict';
+
+    function getData(dataset, callback, errorCallback) {
+
+        KR.Util.sendRequest(dataset.url, JSON.parse, callback, errorCallback);
+    }
+
+    return {
+        getData: getData
+    };
+};
+
 /*global toGeoJSON: false */
 var KR = this.KR || {};
 
@@ -1684,6 +1700,10 @@ KR.API = function (options) {
         },
         gpx: {
             api: KR.GpxAPI,
+            params: {}
+        },
+        geojson: {
+            api: KR.GeoJsonAPI,
             params: {}
         },
         lokalhistoriewiki: {

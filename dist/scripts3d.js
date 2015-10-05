@@ -348,6 +348,11 @@ KR.Util = KR.Util || {};
                     api: 'gpx',
                     url: line
                 };
+            } else if (_stringEndsWith(line, 'geojson')) {
+                lineData = {
+                    api: 'geojson',
+                    url: line
+                };
             }
         }
         if (lineData) {
