@@ -506,7 +506,8 @@ KR.Config = KR.Config || {};
                 hideFromGenerator: true,
                 dataset: {
                     api: 'flickr',
-                    user_id: 'nve'
+                    user_id: 'nve',
+                    accuracy: '6'
                 },
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
