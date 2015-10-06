@@ -22,7 +22,7 @@
 <% } else if(contentType === 'SOUND' && sound) { %>
     <audio src="<%= sound %>" preload="auto"></audio>
 <% } else if(contentType === 'IMAGE' && images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <p><%= allProps.abm_introduction %></p>
