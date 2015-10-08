@@ -82,6 +82,16 @@
             }
         },
         {
+            provider: 'Riksantikvaren',
+            name: 'Kulturminnesøk - brukerregistrering',
+            dataset: {
+                api: 'kulturminnedata',
+                layer: 2,
+                query: "Beskrivelse LIKE '%#andreverdenskrig%'"
+            },
+            template: KR.Util.getDatasetTemplate('brukerminne'),
+        },
+        {
             name: 'Wikipedia',
             provider: 'Wikipedia',
             dataset: {
@@ -110,7 +120,7 @@
             isStatic: true,
             thumbnails: true,
             bbox: true
-        },
+        }
     ];
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');
