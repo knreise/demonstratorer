@@ -83,7 +83,8 @@ KR.Config = KR.Config || {};
                 noListThreshold: Infinity,
                 description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
                 allowTopic: true,
-                feedbackForm: true
+                feedbackForm: true,
+                isStatic: false
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -513,7 +514,23 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Bilder fra NVE Flickr-konto',
+            },
+            'vestfoldmuseene': {
+                name: 'Vestfoldmuseene',
+                dataset_name_override: 'Vestfoldmuseene',
+                provider: 'Vestfoldmuseene',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'vestfoldmuseene',
+                    accuracy: '6'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Vestfoldmuseene sin Flickr-konto',
             }
+
 
         };
 
