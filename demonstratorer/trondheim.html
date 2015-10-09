@@ -138,10 +138,14 @@
         </table>
 
     <% } %>
-
-    <label>
-        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
-    </label>
+    
+    <div class="footer small">
+    	<p>Dette kartet er basert på åpne data og en løsning utviklet i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Se også <a href="http://knreise.no/demonstratorer">andre kart og informasjon om selve løsningen</a>. All koden er fritt tilgjengelig på <a href="https://github.com/knreise/demonstratorer">GitHub</a>.</p>
+		<p>
+        	<input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart
+		</p>
+	</div>
+    
 </div>
 </script>
 
@@ -248,7 +252,7 @@
 <% } %>
 
 <% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <p><%= allProps.dc_description %></p>
@@ -289,7 +293,7 @@
 <% } %>
 
 <% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <p><%= allProps.dc_description %></p>
@@ -352,7 +356,7 @@
 <% } else if(contentType === 'SOUND' && sound) { %>
     <audio src="<%= sound %>" preload="auto"></audio>
 <% } else if(contentType === 'IMAGE' && images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <p><%= allProps.abm_introduction %></p>
@@ -486,7 +490,7 @@
 <% } %>
 
 <% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <div class="wikipedia-content">
@@ -507,7 +511,7 @@
 <% } %>
 
 <% if (img) { %>
-<img class="fullwidth" src="<%= img %>" />
+<img class="fullwidth img-thumbnail" src="<%= img %>" />
 <% } %>
 
 <p><%= description %></p>
@@ -546,7 +550,7 @@
 </div>
 <% } %>
 
-<img class="fullwidth" src="<%= image %>" />
+<img class="fullwidth img-thumbnail" src="<%= image %>" />
 
 
 
@@ -636,7 +640,7 @@
 <% } %>
 
 <% if(images) { %>
-    <img class="fullwidth" src="<%= images[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 <p><%= content %></p>
 
@@ -688,7 +692,7 @@
 <script type="text/template" id="foto_sf_template">
 <h3><%= title %></h3>
 <% if(allProps.europeana_isShownBy) { %>
-    <img class="fullwidth" src="<%= allProps.europeana_isShownBy[0] %>" />
+    <img class="fullwidth img-thumbnail" src="<%= allProps.europeana_isShownBy[0] %>" />
 <% } %>
 <p><%= content %></p>
 

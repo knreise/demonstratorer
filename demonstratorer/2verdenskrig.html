@@ -138,10 +138,14 @@
         </table>
 
     <% } %>
-
-    <label>
-        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
-    </label>
+    
+    <div class="footer small">
+    	<p>Dette kartet er basert på åpne data og en løsning utviklet i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Se også <a href="http://knreise.no/demonstratorer">andre kart og informasjon om selve løsningen</a>. All koden er fritt tilgjengelig på <a href="https://github.com/knreise/demonstratorer">GitHub</a>.</p>
+		<p>
+        	<input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart
+		</p>
+	</div>
+    
 </div>
 </script>
 
@@ -289,7 +293,7 @@
 <% } %>
 
 <% if(images) { %>
-    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />aaa
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <p><%= allProps.dc_description %></p>
@@ -807,6 +811,16 @@
             }
         },
         {
+            provider: 'Riksantikvaren',
+            name: 'Kulturminnesøk - brukerregistrering',
+            dataset: {
+                api: 'kulturminnedata',
+                layer: 2,
+                query: "Beskrivelse LIKE '%#andreverdenskrig%'"
+            },
+            template: KR.Util.getDatasetTemplate('brukerminne'),
+        },
+        {
             name: 'Wikipedia',
             provider: 'Wikipedia',
             dataset: {
@@ -835,7 +849,7 @@
             isStatic: true,
             thumbnails: true,
             bbox: true
-        },
+        }
     ];
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');

@@ -138,10 +138,14 @@
         </table>
 
     <% } %>
-
-    <label>
-        <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart.
-    </label>
+    
+    <div class="footer small">
+    	<p>Dette kartet er basert på åpne data og en løsning utviklet i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Se også <a href="http://knreise.no/demonstratorer">andre kart og informasjon om selve løsningen</a>. All koden er fritt tilgjengelig på <a href="https://github.com/knreise/demonstratorer">GitHub</a>.</p>
+		<p>
+        	<input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart
+		</p>
+	</div>
+    
 </div>
 </script>
 
@@ -289,7 +293,7 @@
 <% } %>
 
 <% if(images) { %>
-    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />aaa
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
 
 <p><%= allProps.dc_description %></p>
@@ -733,12 +737,35 @@
             dataset: {
                 dataset: 'difo',
                 api: 'norvegiana',
-                query: 'dc_subject_facet:Musikk(6)'
+                query: 'dc_subject_facet:folkemusikk'
             },
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
+        },
+        {
+            name: 'Digitalt Museum',
+            dataset: {
+                api: 'norvegiana',
+                dataset: 'DiMu',
+                query: 'dc_subject_text:folkemusikk'
+            },
+            template: KR.Util.getDatasetTemplate('digitalt_museum'),
+            isStatic: true,
+            thumbnails: true,
+            bbox: true
+        },
+        {
+            provider: 'Riksantikvaren',
+            name: 'Kulturminnes�k - brukerregistrering',
+            dataset: {
+                api: 'kulturminnedata',
+                layer: 2,
+                query: "Beskrivelse LIKE '%#folkemusikk%'"
+            },
+            template: KR.Util.getDatasetTemplate('brukerminne'),
         }
+
     ];
 
     var api = new KR.API();
