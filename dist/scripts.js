@@ -3182,7 +3182,7 @@ KR.Config = KR.Config || {};
                             api: 'norvegiana',
                             dataset: 'Foto-SF'
                         },
-                        isStatic: true,
+                        isStatic: false,
                         bbox: false,
                         template: KR.Util.getDatasetTemplate('foto_sf')
                     },
@@ -3308,6 +3308,30 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Alle stedfestede data fra Digitalt Museum',
+                allowTopic: true,
+                feedbackForm: true
+            },
+            'musit': {
+                name: 'Universitetsmuseene',
+                hideFromGenerator: false,
+                provider: 'Universitetsmuseene',
+                dataset: {dataset: 'MUSIT', api: 'norvegiana'},
+                cluster: true,
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Alle stedfestede data fra Universitetsmuseene',
+                allowTopic: true,
+                feedbackForm: true
+            },
+            'industrimuseum': {
+                name: 'Industrimuseum',
+                hideFromGenerator: false,
+                provider: 'Industrimuseum',
+                dataset: {dataset: 'Industrimuseum', api: 'norvegiana'},
+                cluster: true,
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Alle stedfestede data fra Industrimuseum',
                 allowTopic: true,
                 feedbackForm: true
             },
