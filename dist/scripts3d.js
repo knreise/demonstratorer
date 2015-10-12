@@ -2855,6 +2855,18 @@ KR.Config = KR.Config || {};
                 allowTopic: true,
                 feedbackForm: true
             },
+            'kystreise': {
+                name: 'Kystreise',
+                hideFromGenerator: false,
+                provider: 'Kystreise',
+                dataset: {dataset: 'Kystreise', api: 'norvegiana'},
+                cluster: true,
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Alle stedfestede data fra Kystreise',
+                allowTopic: true,
+                feedbackForm: true
+            },
             'dimufoto': {
                 hideFromGenerator: true,
                 dataset: {
@@ -2946,7 +2958,7 @@ KR.Config = KR.Config || {};
                 dataset: {
                     api: 'flickr',
                     user_id: 'vestfoldmuseene',
-                    accuracy: '6'
+                    accuracy: '1'
                 },
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,

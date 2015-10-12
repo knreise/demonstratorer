@@ -329,7 +329,8 @@
 }
 
 #splashscreen .footer {
-    margin-top: 40px; 
+    margin-top: 40px;
+    color: rgba(255, 255, 255, 0.8)
 }
 
 #splashscreen a {
