@@ -159,15 +159,16 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 </div>
 </script>
 
-<script type="text/template" id="verneomraader_template">
-<h3><%= title %></h3>
 
-<% if (distanceBearing) { %>
+<script type="text/template" id="user_position_template">
 <div class="distance">
     <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
     <%= distanceBearing.dist %>
 </div>
-<% } %>
+</script>
+
+<script type="text/template" id="verneomraader_template">
+<h3><%= title %></h3>
 
 <p><%= content %></p>
 
@@ -183,13 +184,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
 <script type="text/template" id="kulturminne_template">
 <h3><%= title %></h3>
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <table class="sidebar-table">
     <tr>
@@ -227,13 +221,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="kulturminne2_template">
 <h3>Kulturminne</h3>
 
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
-
 <dl>
     <dt>Navn</dt>
     <dd><%= LokalitetNavn %></dd>
@@ -253,13 +240,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
 <script type="text/template" id="musit_template">
 <h3><%= allProps.dc_title %></h3>
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <% if(images) { %>
     <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
@@ -293,14 +273,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
 <script type="text/template" id="digitalt_museum_template">
 <h3><%= title %></h3>
-
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <% if(images) { %>
     <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
@@ -344,14 +316,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="digitalt_fortalt_template">
 <h3><%= title %></h3>
 
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
-
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
@@ -392,13 +356,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="folketelling_template">
 <% if (property.id.indexOf('g') === 0) { %> 
     <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
-
-    <% if (distanceBearing) { %>
-    <div class="distance">
-        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-        <%= distanceBearing.dist %>
-    </div>
-    <% } %>
 
     <p><%= property.bildelenke %></p>
 
@@ -492,12 +449,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="wikipedia_template">
 <h3><%= title %></h3>
 
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <% if(images) { %>
     <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
@@ -512,13 +463,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <% if (img) { %>
 <img class="fullwidth img-thumbnail" src="<%= img %>" />
@@ -539,26 +483,11 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="fangstgrop_template">
 <h3>Fangstgrop</h3>
 
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 </script>
 
 
 <script type="text/template" id="flickr_template">
 <h3><%= title %></h3>
-
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <img class="fullwidth img-thumbnail" src="<%= image %>" />
 
@@ -582,14 +511,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="husmann_template">
 <h3>Kulturminne</h3>
 
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
-
 <dl>
     <dt>Navn</dt>
     <dd><%= Navn %></dd>
@@ -599,14 +520,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
 <script type="text/template" id="brukerminne_template">
 <h3><%= title %></h3>
-
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
 <p><%= KortBeskrivelse %></p>
@@ -642,13 +555,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="popup_template">
 <h3><%= title %></h3>
 
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
-
 <% if(images) { %>
     <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
 <% } %>
@@ -659,14 +565,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
 <script type="text/template" id="jernbanemuseet_template">
 <h3><%= title %></h3>
-
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
 
 <% if(images) { %>
     <img class="fullwidth" src="<%= images[0] %>" />

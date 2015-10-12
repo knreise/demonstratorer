@@ -146,7 +146,8 @@ module.exports = {
     'error',
     'message',
     'response_form',
-    'splashscreen'
+    'splashscreen',
+    'user_position'
   ],
 
   demonstrators: [

@@ -22,11 +22,14 @@ L.Knreise = L.Knreise || {};
     ns.LocateButton = function (callback, error, options) {
         options = options || {};
         options.zoom = options.zoom || 10;
+        var isLocating = false;
         var marker;
         var _map;
         var _btn;
         var defaultIcon = options.icon || 'fa-user';
         var messageDisplayer = KR.Util.messageDisplayer($('#message_template').html());
+        var watchId;
+
 
         function _createMarker(pos) {
             return new cilogi.L.Marker(pos, {
@@ -42,6 +45,7 @@ L.Knreise = L.Knreise || {};
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
             _map.userPosition = p;
+            _map.fire('locationChange');
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(
@@ -64,9 +68,18 @@ L.Knreise = L.Knreise || {};
         }
 
         function _getLocation() {
+            if (isLocating) {
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                }
+                return;
+            }
+
+            isLocating = true;
+
             if (navigator.geolocation) {
                 _btn.changeIcon('fa-spinner fa-pulse');
-                navigator.geolocation.getCurrentPosition(_showPosition);
+                watchId = navigator.geolocation.watchPosition(_showPosition);
             } else {
                 if (error) {
                     error();
