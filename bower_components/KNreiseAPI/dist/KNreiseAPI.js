@@ -156,6 +156,14 @@ KR.Util = {};
         return bbox.split(',').map(parseFloat);
     };
 
+
+    ns.addCrossorigin = function (url) {
+        if (url.indexOf('http://crossorigin.me/') !== 0) {
+            return 'http://crossorigin.me/' + url;
+        }
+        return url;
+    };
+
 }(KR.Util));
 
 /*global L:false, esri2geo: false*/
@@ -1446,7 +1454,7 @@ KR.KmlAPI = function (apiName) {
         if (typeof toGeoJSON === 'undefined') {
             throw new Error('toGeoJSON not found!');
         }
-        var url = dataset.url;
+        var url = KR.Util.addCrossorigin(dataset.url);
         KR.Util.sendRequest(url, toGeoJSON.kml, callback, errorCallback);
     }
 
@@ -1465,7 +1473,7 @@ KR.GpxAPI = function (apiName) {
         if (typeof toGeoJSON === 'undefined') {
             throw new Error('toGeoJSON not found!');
         }
-        var url = dataset.url;
+        var url = KR.Util.addCrossorigin(dataset.url);
         KR.Util.sendRequest(url, toGeoJSON.gpx, callback, errorCallback);
     }
 
@@ -1481,8 +1489,8 @@ KR.GeoJsonAPI = function (apiName) {
     'use strict';
 
     function getData(dataset, callback, errorCallback) {
-
-        KR.Util.sendRequest(dataset.url, JSON.parse, callback, errorCallback);
+        var url = KR.Util.addCrossorigin(dataset.url);
+        KR.Util.sendRequest(url, JSON.parse, callback, errorCallback);
     }
 
     return {

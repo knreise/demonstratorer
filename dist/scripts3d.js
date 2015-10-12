@@ -49,7 +49,7 @@ var KR = this.KR || {};
         };
     };
 }(KR));
-/*global L: false, turf: false */
+/*global L: false, turf: false, alert: false */
 
 var KR = this.KR || {};
 
@@ -343,7 +343,7 @@ KR.Util = KR.Util || {};
                     api: 'kml',
                     url: line
                 };
-            } else if (_stringEndsWith(line, 'gpx')) {
+            } else if (_stringEndsWith(line, 'gpx') || line.indexOf('http://ut.no/tur/') !== -1) {
                 lineData = {
                     api: 'gpx',
                     url: line
@@ -359,6 +359,8 @@ KR.Util = KR.Util || {};
             api.getData(lineData, function (line) {
                 callback(line);
             });
+        } else {
+            alert('Kunne ikke laste linjegeometri');
         }
     };
 
