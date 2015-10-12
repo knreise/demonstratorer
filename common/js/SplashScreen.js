@@ -6,7 +6,7 @@ var KR = this.KR || {};
     Simple splash screen for a leaflet map
 */
 
-KR.SplashScreen = function (map, title, description, image, creator) {
+KR.SplashScreen = function (map, title, description, image, creator, showSpinner) {
     'use strict';
 
     function getUrl() {
@@ -61,7 +61,8 @@ KR.SplashScreen = function (map, title, description, image, creator) {
             title: title,
             image: image,
             description: description,
-            creator: creator
+            creator: creator,
+            spinner: !!showSpinner
         }));
         return sidebar;
     }
@@ -98,10 +99,17 @@ KR.SplashScreen = function (map, title, description, image, creator) {
         if (_.isUndefined(shouldStayClosed)) {
             setShouldStayClosed(true);
         }
-        setTimeout(function () {
-            sidebar.show();
-        }, 500);
+        sidebar.show();
     }
     setupRememberCheckbox(sidebar);
+
+    return {
+        finishedLoading: function () {
+            var spinner = $(sidebar.getContainer()).find('#splash_spinner');
+            if (spinner) {
+                spinner.remove();
+            }
+        }
+    }
 
 };
