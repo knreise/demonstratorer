@@ -120,6 +120,18 @@
             isStatic: true,
             thumbnails: true,
             bbox: true
+        },
+        {
+            name: 'Arkiv i Nordland',
+            provider: 'Arkiv i Nordland',
+            dataset: {
+                    api: 'flickr',
+                    user_id: 'arkivinordland',
+                    accuracy: '10'
+                },
+            template: KR.Util.getDatasetTemplate('flickr'),
+            style: {thumbnail: true},
+            minZoom: 8,
         }
     ];
 
