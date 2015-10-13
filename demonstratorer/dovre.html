@@ -590,6 +590,20 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
                     <em><%= media.description %></em>
                 </p>
             <% }) %>
+        <% } else if (block.type === 'links') { %>
+            <ul>
+            <% _.each(block.links, function (link) { %> 
+                <li><a href="<%= link.url%>"><%= link.title %></a></li>
+            <% }) %>
+            </ul>
+        <% } else if (block.type === 'audio') { %>
+            <% _.each(block.media, function (media) { %>
+                <p>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
+                </p>
+                <audio src="<%= media.url %>" preload="auto"></audio>
+            <% }) %>
         <% } %>
     <% }) %>
 <% }) %>

@@ -49,14 +49,15 @@
         {
             id: 'jernbane',
             dataset: {
-                api: 'jernbanemuseet'
+                api: 'jernbanemuseet',
+                presentation: 732
             },
             provider: 'Jernbanemuseet',
             name: 'Jernbanemuseet',
             template: KR.Util.getDatasetTemplate('jernbanemuseet'),
             getFeatureData: function (feature, callback) {
                 api.getItem(
-                    {api: 'jernbanemuseet', id:  feature.properties.id},
+                    {api: 'jernbanemuseet', id:  feature.properties.id, group: 264},
                     callback
                 );
             },
