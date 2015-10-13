@@ -2863,7 +2863,6 @@ L.Knreise = L.Knreise || {};
 
             if (navigator.geolocation) {
                 _btn.changeIcon('fa-spinner fa-pulse');
-                //navigator.geolocation.getCurrentPosition(_showPosition);
                 watchId = navigator.geolocation.watchPosition(_showPosition);
             } else {
                 if (error) {
