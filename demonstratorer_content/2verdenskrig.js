@@ -32,7 +32,7 @@
 
     //The datasets in use
     var datasets = [
-       /* {
+        {
             name: 'Digitalt fortalt',
             dataset: {
                 dataset: 'difo',
@@ -45,7 +45,7 @@
             isStatic: true,
             bbox: false,
             feedbackForm: true
-        },*/
+        },
         {
             id: 'jernbane',
             dataset: {
@@ -57,13 +57,13 @@
             template: KR.Util.getDatasetTemplate('jernbanemuseet'),
             getFeatureData: function (feature, callback) {
                 api.getItem(
-                    {api: 'jernbanemuseet', id:  feature.properties.id},
+                    {api: 'jernbanemuseet', id:  feature.properties.id, group: 264},
                     callback
                 );
             },
             isStatic: true,
             bbox: false
-        }/*,
+        },
         {
             id: 'riksantikvaren',
             name: 'Riksantikvaren',
@@ -133,7 +133,7 @@
             template: KR.Util.getDatasetTemplate('flickr'),
             style: {thumbnail: true},
             minZoom: 8,
-        } */
+        }
     ];
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');

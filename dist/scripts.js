@@ -1563,261 +1563,308 @@ KR.UrlFunctions = {};
 /*global audiojs:false, turf:false*/
 
 var KR = this.KR || {};
-
-/*
-    Handles display of content in a sidebar
-*/
-
-KR.SidebarContent = function (wrapper, element, top, options) {
+(function () {
     'use strict';
-    var map;
-    var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
-    element = $(element);
-    wrapper = $(wrapper);
-    top = $(top);
 
-    function _setContent(content) {
-        element.html(content);
-    }
+    function PositionDisplayer() {
+        var map, div, feature, content;
 
-    function _setupSwipe(callbacks) {
-        if (!callbacks) {
-            return;
-        }
-        element
-            .swipe({
-                swipe: function () {},
-                allowPageScroll: 'vertical'
-            })
-            .off('swipeLeft')
-            .on('swipeLeft', function () {
-                if (callbacks.next) {
-                    callbacks.next();
-                }
-            })
-            .off('swipeRight')
-            .on('swipeRight', function () {
-                if (callbacks.prev) {
-                    callbacks.prev();
-                }
-            });
-    }
+        var template = _.template($('#user_position_template').html());
 
-    function _createListCallbacks(feature, index, template, getData, features, close) {
-        var prev;
-        if (index > 0) {
-            prev = function (e) {
-                if (e) {
-                    e.preventDefault();
+        function _distanceAndBearing(feature) {
+            if (map && map.userPosition) {
+                var pos = turf.point([
+                    map.userPosition.lng,
+                    map.userPosition.lat
+                ]);
+                var distBear =  KR.Util.distanceAndBearing(pos, feature);
+                var dist = distBear.distance;
+                if (dist < 1000) {
+                    dist = KR.Util.round(dist, 0) + ' Meter';
+                } else {
+                    dist = KR.Util.round(dist / 1000, 2) + ' Kilometer';
                 }
-                index = index - 1;
-                feature = features[index];
-                var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                showFeature(feature, template, getData, callbacks, index, features.length);
-            };
-        }
-        var next;
-        if (index < features.length - 1) {
-            next = function (e) {
-                if (e) {
-                    e.preventDefault();
-                }
-                index = index + 1;
-                feature = features[index];
-                var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                showFeature(feature, template, getData, callbacks, index, features.length);
-            };
+                return {
+                    dist: dist,
+                    rot: distBear.bearing - 45 //-45 because of rotation of fa-location-arrow
+                };
+            }
         }
 
-        if (!close) {
-            close = function () {
-                showFeatures(features, template, getData, options.noListThreshold, true);
-            };
+
+        function _showPosition() {
+            if (div && map.userPosition && feature) {
+
+                if (content) {
+                    content.remove();
+                }
+
+                var header = div.find('h3').eq(0);
+                var distBear = _distanceAndBearing(feature);
+                content = $(template({distanceBearing: distBear}));
+                if (header.length) {
+                    header.after(content);
+                } else {
+                    div.prepend(content);
+                }
+            }
+        }
+
+        function selectFeature (_feature, _div) {
+            div = _div;
+            feature = _feature;
+            _showPosition();
         }
 
         return {
-            prev: prev,
-            close: close,
-            next: next
+            setMap: function (_map) {
+                map = _map;
+                map.on('locationChange', _showPosition);
+            },
+            selectFeature: selectFeature
         };
     }
 
-    function _createListElement(feature, index, template, getData, features) {
-        var marker;
-        if (feature.properties.thumbnail) {
-            marker = options.thumbnailTemplate({
-                thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
-                thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 60, 120),
-                color: KR.Style.colorForFeature(feature, true)
-            });
-        } else {
-            marker = options.markerTemplate({
-                icon: '',
-                color: KR.Style.colorForFeature(feature)
-            });
+
+    /*
+        Handles display of content in a sidebar
+    */
+    KR.SidebarContent = function (wrapper, element, top, options) {
+
+        var defaultTemplate = KR.Util.getDatasetTemplate('popup');
+
+        var positionDisplayer = PositionDisplayer();
+
+        element = $(element);
+        wrapper = $(wrapper);
+        top = $(top);
+
+        function _setContent(content) {
+            element.html(content);
         }
 
-        var li = $(options.listElementTemplate({
-            title: feature.properties.title,
-            marker: marker
-        }));
-
-        li.on('click', function (e) {
-            e.preventDefault();
-            var callbacks = _createListCallbacks(feature, index, template, getData, features);
-            showFeature(feature, template, getData, callbacks, index, features.length);
-            return false;
-        });
-        return li;
-    }
-
-    function distanceAndBearing(feature) {
-        if (map && map.userPosition) {
-            var pos = turf.point([
-                map.userPosition.lng,
-                map.userPosition.lat
-            ]);
-            var distBear =  KR.Util.distanceAndBearing(pos, feature);
-            var dist = distBear.distance;
-            if (dist < 1000) {
-                dist = KR.Util.round(dist, 0) + ' Meter';
-            } else {
-                dist = KR.Util.round(dist / 1000, 2) + ' Kilometer';
+        function _setupSwipe(callbacks) {
+            if (!callbacks) {
+                return;
             }
+            element
+                .swipe({
+                    swipe: function () {},
+                    allowPageScroll: 'vertical'
+                })
+                .off('swipeLeft')
+                .on('swipeLeft', function () {
+                    if (callbacks.next) {
+                        callbacks.next();
+                    }
+                })
+                .off('swipeRight')
+                .on('swipeRight', function () {
+                    if (callbacks.prev) {
+                        callbacks.prev();
+                    }
+                });
+        }
+
+        function _createListCallbacks(feature, index, template, getData, features, close) {
+            var prev;
+            if (index > 0) {
+                prev = function (e) {
+                    if (e) {
+                        e.preventDefault();
+                    }
+                    index = index - 1;
+                    feature = features[index];
+                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
+                    showFeature(feature, template, getData, callbacks, index, features.length);
+                };
+            }
+            var next;
+            if (index < features.length - 1) {
+                next = function (e) {
+                    if (e) {
+                        e.preventDefault();
+                    }
+                    index = index + 1;
+                    feature = features[index];
+                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
+                    showFeature(feature, template, getData, callbacks, index, features.length);
+                };
+            }
+
+            if (!close) {
+                close = function () {
+                    showFeatures(features, template, getData, options.noListThreshold, true);
+                };
+            }
+
             return {
-                dist: dist,
-                rot: distBear.bearing - 45 //-45 because of rotation of fa-location-arrow
+                prev: prev,
+                close: close,
+                next: next
             };
         }
-    }
 
-    function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-        var distBear = distanceAndBearing(feature);
-        if (getData) {
-            var content = '';
-            if (feature.properties.title) {
-                content += '<h3>' + feature.properties.title + '</h3>';
+        function _createListElement(feature, index, template, getData, features) {
+            var marker;
+            if (feature.properties.thumbnail) {
+                marker = options.thumbnailTemplate({
+                    thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
+                    thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 60, 120),
+                    color: KR.Style.colorForFeature(feature, true)
+                });
+            } else {
+                marker = options.markerTemplate({
+                    icon: '',
+                    color: KR.Style.colorForFeature(feature)
+                });
             }
-            content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
-            _setContent(content);
-            getData(feature, function (newFeature) {
-                newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                showFeature(newFeature, template, null, callbacks, index, numFeatures);
+
+            var li = $(options.listElementTemplate({
+                title: feature.properties.title,
+                marker: marker
+            }));
+
+            li.on('click', function (e) {
+                e.preventDefault();
+                var callbacks = _createListCallbacks(feature, index, template, getData, features);
+                showFeature(feature, template, getData, callbacks, index, features.length);
+                return false;
             });
-            return;
+            return li;
         }
 
-        template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
 
-        var img = feature.properties.images;
-        if (_.isArray(img)) {
-            img = img[0];
-        }
 
-        if (!feature.properties.images) {
-            feature.properties.images = null;
-        }
-
-        if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
-            feature.properties.license = feature.properties.allProps.europeana_rights[0];
-        } else {
-            feature.properties.license = null;
-        }
-
-        var color = KR.Style.colorForFeature(feature, true, true);
-        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
-
-        feature.properties = _.extend(feature.properties, {
-            distanceBearing: distBear
-        });
-
-        content += template(_.extend({image: null}, feature.properties));
-
-        if (options.footerTemplate && feature.properties.link) {
-            content += options.footerTemplate(feature.properties);
-        }
-
-        _setContent(content);
-        _setupSwipe(callbacks);
-
-        wrapper.find('.prev-next-arrows').remove();
-
-        top.html('');
-        if (callbacks) {
-            var list = $('<a class="pull-left list-btn"><i class="fa fa-bars"></i></a>');
-            top.append(list);
-            list.click(callbacks.close);
-            var idx = index + 1;
-            top.append($('<div class="top-text pull-left"><b>' + idx + '</b> av ' + numFeatures + '</div>'));
-
-            var prev = $('<a class="prev-next-arrows prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>');
-            wrapper.append(prev);
-            if (callbacks.prev) {
-                prev.click(callbacks.prev).addClass('active');
+        function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+            //var distBear = distanceAndBearing(feature);
+            if (getData) {
+                var content = '';
+                if (feature.properties.title) {
+                    content += '<h3>' + feature.properties.title + '</h3>';
+                }
+                content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
+                _setContent(content);
+                getData(feature, function (newFeature) {
+                    newFeature.properties = _.extend(feature.properties, newFeature.properties);
+                    showFeature(newFeature, template, null, callbacks, index, numFeatures);
+                });
+                return;
             }
 
+            template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
 
-            var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
-            wrapper.append(next);
-            if (callbacks.next) {
-                next.click(callbacks.next).addClass('active');
+            var img = feature.properties.images;
+            if (_.isArray(img)) {
+                img = img[0];
             }
+
+            if (!feature.properties.images) {
+                feature.properties.images = null;
+            }
+
+            if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
+                feature.properties.license = feature.properties.allProps.europeana_rights[0];
+            } else {
+                feature.properties.license = null;
+            }
+
+            var color = KR.Style.colorForFeature(feature, true, true);
+            var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
+
+            content += template(_.extend({image: null}, feature.properties));
+
+            if (options.footerTemplate && feature.properties.link) {
+                content += options.footerTemplate(feature.properties);
+            }
+
+            content = $(['<div>', content, '</div>'].join(' '));
+
+            positionDisplayer.selectFeature(feature, content);
+
+            _setContent(content);
+            _setupSwipe(callbacks);
+
+            wrapper.find('.prev-next-arrows').remove();
+
+            top.html('');
+            if (callbacks) {
+                var list = $('<a class="pull-left list-btn"><i class="fa fa-bars"></i></a>');
+                top.append(list);
+                list.click(callbacks.close);
+                var idx = index + 1;
+                top.append($('<div class="top-text pull-left"><b>' + idx + '</b> av ' + numFeatures + '</div>'));
+
+                var prev = $('<a class="prev-next-arrows prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>');
+                wrapper.append(prev);
+                if (callbacks.prev) {
+                    prev.click(callbacks.prev).addClass('active');
+                }
+
+
+                var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
+                wrapper.append(next);
+                if (callbacks.next) {
+                    next.click(callbacks.next).addClass('active');
+                }
+            }
+
+            if (typeof audiojs !== 'undefined') {
+                audiojs.createAll();
+            }
+            element.scrollTop(0);
         }
 
-        if (typeof audiojs !== 'undefined') {
-            audiojs.createAll();
+        function showFeatures(features, template, getData, noListThreshold, forceList) {
+            noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
+            var shouldSkipList = (features.length <= noListThreshold);
+            if (shouldSkipList && forceList !== true) {
+                var feature = features[0];
+                element.html('');
+                var callbacks = _createListCallbacks(feature, 0, template, getData, features);
+                this.showFeature(feature, template, getData, callbacks, 0, features.length);
+                return;
+            }
+
+            var count = $('<span class="circle">' + features.length + '</span>');
+            top.html(count);
+
+            var grouped = _.chain(features)
+                .groupBy(function (feature) {
+                    return feature.properties.provider;
+                })
+                .map(function (featuresInGroup, key) {
+                    var wrap = $('<div></div>');
+                    var list = $('<div class="list-group"></ul>');
+                    var elements = _.map(featuresInGroup, function (feature) {
+                        var index = _.findIndex(features, function (a) {
+                            return a === feature;
+                        });
+                        return _createListElement(feature, index, template, getData, features);
+                    }, this);
+
+                    list.append(elements);
+                    wrap.append('<h5 class="providertext">' + key + '</h5>');
+                    wrap.append(list);
+                    return wrap;
+                }).value();
+
+            element.html(grouped);
+            element.scrollTop(0);
         }
-        element.scrollTop(0);
-    }
 
-    function showFeatures(features, template, getData, noListThreshold, forceList) {
-        noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
-        var shouldSkipList = (features.length <= noListThreshold);
-        if (shouldSkipList && forceList !== true) {
-            var feature = features[0];
-            element.html('');
-            var callbacks = _createListCallbacks(feature, 0, template, getData, features);
-            this.showFeature(feature, template, getData, callbacks, 0, features.length);
-            return;
-        }
-
-        var count = $('<span class="circle">' + features.length + '</span>');
-        top.html(count);
-
-        var grouped = _.chain(features)
-            .groupBy(function (feature) {
-                return feature.properties.provider;
-            })
-            .map(function (featuresInGroup, key) {
-                var wrap = $('<div></div>');
-                var list = $('<div class="list-group"></ul>');
-                var elements = _.map(featuresInGroup, function (feature) {
-                    var index = _.findIndex(features, function (a) {
-                        return a === feature;
-                    });
-                    return _createListElement(feature, index, template, getData, features);
-                }, this);
-
-                list.append(elements);
-                wrap.append('<h5 class="providertext">' + key + '</h5>');
-                wrap.append(list);
-                return wrap;
-            }).value();
-
-        element.html(grouped);
-        element.scrollTop(0);
-    }
-
-    return {
-        showFeature: showFeature,
-        showFeatures: showFeatures,
-        setMap: function (_map) {
-            map = _map;
-        }
+        return {
+            showFeature: showFeature,
+            showFeatures: showFeatures,
+            setMap: function (_map) {
+                //map = _map;
+                positionDisplayer.setMap(_map);
+            }
+        };
     };
-};
 
+}());
 /*global L:false, KR: false */
 
 /*
@@ -2759,11 +2806,14 @@ L.Knreise = L.Knreise || {};
     ns.LocateButton = function (callback, error, options) {
         options = options || {};
         options.zoom = options.zoom || 10;
+        var isLocating = false;
         var marker;
         var _map;
         var _btn;
         var defaultIcon = options.icon || 'fa-user';
         var messageDisplayer = KR.Util.messageDisplayer($('#message_template').html());
+        var watchId;
+
 
         function _createMarker(pos) {
             return new cilogi.L.Marker(pos, {
@@ -2779,6 +2829,7 @@ L.Knreise = L.Knreise || {};
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
             _map.userPosition = p;
+            _map.fire('locationChange');
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(
@@ -2801,9 +2852,18 @@ L.Knreise = L.Knreise || {};
         }
 
         function _getLocation() {
+            if (isLocating) {
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                }
+                return;
+            }
+
+            isLocating = true;
+
             if (navigator.geolocation) {
                 _btn.changeIcon('fa-spinner fa-pulse');
-                navigator.geolocation.getCurrentPosition(_showPosition);
+                watchId = navigator.geolocation.watchPosition(_showPosition);
             } else {
                 if (error) {
                     error();
@@ -3499,7 +3559,7 @@ var KR = this.KR || {};
     Simple splash screen for a leaflet map
 */
 
-KR.SplashScreen = function (map, title, description, image, creator) {
+KR.SplashScreen = function (map, title, description, image, creator, showSpinner) {
     'use strict';
 
     function getUrl() {
@@ -3554,7 +3614,8 @@ KR.SplashScreen = function (map, title, description, image, creator) {
             title: title,
             image: image,
             description: description,
-            creator: creator
+            creator: creator,
+            spinner: !!showSpinner
         }));
         return sidebar;
     }
@@ -3591,11 +3652,18 @@ KR.SplashScreen = function (map, title, description, image, creator) {
         if (_.isUndefined(shouldStayClosed)) {
             setShouldStayClosed(true);
         }
-        setTimeout(function () {
-            sidebar.show();
-        }, 500);
+        sidebar.show();
     }
     setupRememberCheckbox(sidebar);
+
+    return {
+        finishedLoading: function () {
+            var spinner = $(sidebar.getContainer()).find('#splash_spinner');
+            if (spinner) {
+                spinner.remove();
+            }
+        }
+    }
 
 };
 
@@ -3877,6 +3945,11 @@ var KR = this.KR || {};
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 
+        var splashScreen;
+        if (options.title) {
+            splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, true);
+        }
+
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
                 datasets = _.map(datasets, function (dataset) {
@@ -3903,6 +3976,11 @@ var KR = this.KR || {};
                 if (options.loactionHash) {
                     KR.UrlFunctions.setupLocationUrl(map);
                 }
+
+                if (splashScreen) {
+                    splashScreen.finishedLoading();
+                }
+
             };
 
             var skipLoadOutside;
@@ -3923,9 +4001,6 @@ var KR = this.KR || {};
             }
             if (datasets.length > 1) {
                 L.control.datasets(layers).addTo(map);
-            }
-            if (options.title) {
-                KR.SplashScreen(map, options.title, options.description, options.image);
             }
         }
 

@@ -1,12 +1,5 @@
 <h3><%= name %></h3>
 
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
-
 <% if (img) { %>
 <img class="fullwidth img-thumbnail" src="<%= img %>" />
 <% } %>

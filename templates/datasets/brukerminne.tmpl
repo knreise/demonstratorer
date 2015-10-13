@@ -1,13 +1,5 @@
 <h3><%= title %></h3>
 
-
-<% if (distanceBearing) { %>
-<div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-    <%= distanceBearing.dist %>
-</div>
-<% } %>
-
 <% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
 <p><%= KortBeskrivelse %></p>
 <% } %>

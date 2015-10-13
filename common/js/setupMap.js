@@ -201,6 +201,11 @@ var KR = this.KR || {};
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 
+        var splashScreen;
+        if (options.title) {
+            splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, true);
+        }
+
         function showDatasets(bounds, datasets, filter, lineLayer) {
             if (options.allstatic) {
                 datasets = _.map(datasets, function (dataset) {
@@ -227,6 +232,11 @@ var KR = this.KR || {};
                 if (options.loactionHash) {
                     KR.UrlFunctions.setupLocationUrl(map);
                 }
+
+                if (splashScreen) {
+                    splashScreen.finishedLoading();
+                }
+
             };
 
             var skipLoadOutside;
@@ -247,9 +257,6 @@ var KR = this.KR || {};
             }
             if (datasets.length > 1) {
                 L.control.datasets(layers).addTo(map);
-            }
-            if (options.title) {
-                KR.SplashScreen(map, options.title, options.description, options.image);
             }
         }
 

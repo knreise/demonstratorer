@@ -1,13 +1,6 @@
 <% if (property.id.indexOf('g') === 0) { %> 
     <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
 
-    <% if (distanceBearing) { %>
-    <div class="distance">
-        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-        <%= distanceBearing.dist %>
-    </div>
-    <% } %>
-
     <p><%= property.bildelenke %></p>
 
     <table class="sidebar-table">

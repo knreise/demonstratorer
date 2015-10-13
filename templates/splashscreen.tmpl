@@ -17,11 +17,19 @@
 
     <% } %>
     
+    <% if (spinner) { %>
+        <p id="splash_spinner">
+            <i class="fa fa-spinner fa-pulse fa-4x"></i>
+            Laster data..
+        </p>
+    <%} %>
+
     <div class="footer small">
-    	<p>Dette kartet er basert på åpne data og en løsning utviklet i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Se også <a href="http://knreise.no/demonstratorer">andre kart og informasjon om selve løsningen</a>. All koden er fritt tilgjengelig på <a href="https://github.com/knreise/demonstratorer">GitHub</a>.</p>
-		<p>
-        	<input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart
-		</p>
-	</div>
+        <p>
+            Dette kartet er basert på åpne data og en løsning utviklet i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Se også <a href="http://knreise.no/demonstratorer">andre kart og informasjon om selve løsningen</a>. All koden er fritt tilgjengelig på <a href="https://github.com/knreise/demonstratorer">GitHub</a>.</p>
+        <p>
+            <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart
+        </p>
+    </div>
     
 </div>
