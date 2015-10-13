@@ -713,9 +713,9 @@ KR.NorvegianaAPI = function (apiName) {
         _get({}, parameters, callback, errorCallback, options);
     }
 
-    function getItem(id, callback, errorCallback) {
+    function getItem(dataset, callback, errorCallback) {
         var params = {
-            id: id,
+            id: dataset.id,
             format: 'json'
         };
         var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
@@ -982,10 +982,10 @@ KR.WikipediaAPI = function (apiName, options) {
         sendRequest({'continue': ''});
     }
 
-    function getItem(id, callback, errorCallback) {
+    function getItem(dataset, callback, errorCallback) {
         var params = {
             'action': 'query',
-            'pageids': id,
+            'pageids': dataset.id,
             'prop': 'coordinates|pageimages|extracts',
             'format': 'json'
         };
@@ -1526,9 +1526,18 @@ var KR = this.KR || {};
 KR.JernbanemuseetAPI = function (apiName, options) {
     'use strict';
 
+    var DEFAULT_GROUP = 192;
+
+    function _getGroup (dataset) {
+        if (_.has(dataset, 'group')) {
+            return dataset.group;
+        }
+        return DEFAULT_GROUP;
+    }
+
     var lang = options.lang || 'no';
 
-    var BASE_URL = 'https://api.kulturpunkt.org/v2/owners/54/groups/192';
+    var BASE_URL = 'https://api.kulturpunkt.org/v2/owners/54';
     var API_KEY = options.apikey;
     function _getHeaders() {
         return {
@@ -1539,10 +1548,22 @@ KR.JernbanemuseetAPI = function (apiName, options) {
     function _parser(response) {
         var features = _.map(response.data.records, function (item) {
             var properties = _.extend(item.contents[lang], {id: item.record_id});
-            var geom = {
-                lat: item.latitude,
-                lng: item.longitude
-            };
+
+            var geom;
+
+            if (_.has(item, 'latitude') && _.has(item, 'longitude')) {
+                geom = {
+                    lat: item.latitude,
+                    lng: item.longitude
+                };
+            } else if (_.has(item, 'location')) {
+                geom = {
+                    lat: item.location.latitude,
+                    lng: item.location.longitude
+                };
+            } else {
+                console.error('no geometry');
+            }
             return KR.Util.createGeoJSONFeature(geom, properties, apiName + '_' + item.record_id);
         });
 
@@ -1558,7 +1579,7 @@ KR.JernbanemuseetAPI = function (apiName, options) {
                     type: block.type
                 };
             }
-            if (block.type === 'image_video') {
+            if (block.type === 'image_video' || block.type === 'audio') {
                 var media = _.map(block.data, function (data) {
                     var url;
                     if (data.type === 'image') {
@@ -1567,6 +1588,10 @@ KR.JernbanemuseetAPI = function (apiName, options) {
                     if (data.type === 'video') {
                         url = data.url.mp4;
                     }
+                    if (data.type === 'audio') {
+                        url = data.url.ogg;
+                    }
+
                     var description = '';
                     var title = '';
                     if (_.has(data.contents, lang)) {
@@ -1586,6 +1611,13 @@ KR.JernbanemuseetAPI = function (apiName, options) {
                     type: block.type
                 };
             }
+            if (block.type === 'links') {
+                return {
+                    links: block.data,
+                    type: 'links'
+                }
+            }
+
         });
     }
 
@@ -1604,7 +1636,7 @@ KR.JernbanemuseetAPI = function (apiName, options) {
         });
 
         var images, thumbnail;
-        if (response.data.images) {
+        if (response.data.images.length) {
             images = _.pluck(response.data.images, 'url');
             thumbnail = response.data.images[0].thumbnail;
         }
@@ -1622,8 +1654,8 @@ KR.JernbanemuseetAPI = function (apiName, options) {
         return KR.Util.createGeoJSONFeature(geom, properties, apiName + '_' + id);
     }
 
-    function getItem(id, callback, errorCallback) {
-        var url = BASE_URL + '/records/' + id;
+    function getItem(dataset, callback, errorCallback) {
+        var url = BASE_URL + '/groups/' + _getGroup(dataset) + '/records/' + dataset.id;
         KR.Util.sendRequest(url, _parseItem, callback, errorCallback, _getHeaders());
     }
 
@@ -1653,7 +1685,7 @@ KR.JernbanemuseetAPI = function (apiName, options) {
             'radius': distance
         };
 
-        var url = BASE_URL + '/nearby?' + KR.Util.createQueryParameterString(params);
+        var url = BASE_URL + '/groups/' + _getGroup(dataset) + '/nearby?' + KR.Util.createQueryParameterString(params);
         if (options.getDetails) {
             KR.Util.sendRequest(url, null, function (response) {
                 _parseItems(response, callback, errorCallback);
@@ -1664,12 +1696,15 @@ KR.JernbanemuseetAPI = function (apiName, options) {
     }
 
     function getData(dataset, callback, errorCallback, options) {
-        var url = BASE_URL + '/geography';
+        var url = BASE_URL + '/groups/' + _getGroup(dataset) + '/geography';
         if (options.getDetails) {
             KR.Util.sendRequest(url, null, function (response) {
                 _parseItems(response, callback, errorCallback);
             }, null, _getHeaders());
         } else {
+            if (dataset.presentation) {
+                url = 'https://api.kulturpunkt.org/v2/owners/54/presentations/' + dataset.presentation;
+            }
             KR.Util.sendRequest(url, _parser, callback, errorCallback, _getHeaders());
         }
     }
@@ -1870,7 +1905,7 @@ KR.API = function (options) {
     function getItem(dataset, callback, errorCallback) {
         var api = _getAPI(dataset.api);
         if (_.has(api, 'getItem')) {
-            api.getItem(dataset.id, callback, errorCallback);
+            api.getItem(dataset, callback, errorCallback);
         } else if (errorCallback) {
             errorCallback('No getItem function for api ' + dataset.api);
         } else {
