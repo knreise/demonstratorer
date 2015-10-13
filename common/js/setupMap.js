@@ -203,7 +203,7 @@ var KR = this.KR || {};
 
         var splashScreen;
         if (options.title) {
-            splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, true);
+            splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, false);
         }
 
         function showDatasets(bounds, datasets, filter, lineLayer) {
