@@ -1167,11 +1167,18 @@ KR.SparqlAPI = function (apiName, options) {
             geom.coordinates = _transform(geom.coordinates);
         }
         if (geom.type === 'Polygon') {
-
             geom.coordinates = _.map(geom.coordinates, function (ring) {
                 return _.map(ring, _transform);
             });
         }
+        if (geom.type === 'MultiPolygon') {
+            geom.coordinates = _.map(geom.coordinates, function (g) {
+                return _.map(g.coordinates, function (ring) {
+                    return _.map(ring, _transform);
+                });
+            });
+        }
+
 
         return geom;
     }
@@ -1216,8 +1223,23 @@ KR.SparqlAPI = function (apiName, options) {
             KR.Util.handleError(errorCallback);
             return;
         }
-        bindings[0].lok.type = 'Polygon';
-        return KR.Util.createGeoJSONFeatureFromGeom(_parseGeom(bindings[0].lok), {});
+
+        var features = _.map(bindings, function (binding) {
+            binding.lok.type = 'Polygon';
+            return KR.Util.createGeoJSONFeatureFromGeom(_parseGeom(binding.lok), {});
+        });
+
+
+        var polygons = _.map(features, function (feature) {
+            return feature.geometry;
+        });
+
+        var collection = {
+            'type': 'GeometryCollection',
+            'geometries': polygons
+        };
+
+        return KR.Util.createGeoJSONFeatureFromGeom(collection, {});
     }
 
     function _sendQuery(query, parse, callback, errorCallback) {
@@ -1310,7 +1332,7 @@ KR.SparqlAPI = function (apiName, options) {
     function _polyForLokalitetQuery(lokalitet) {
         return 'SELECT ?lok where ' +
             '{ ' +
-            '  <' + lokalitet + '> <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?lok . ' +
+            '  <' + lokalitet.trim() + '> <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?lok . ' +
             '}';
     }
 
