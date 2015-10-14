@@ -478,7 +478,7 @@ KR.Util = KR.Util || {};
         //create the map
         var map = L.map(div, {
             minZoom: options.minZoom || 3,
-            maxZoom: options.maxZoom || 21,
+            maxZoom: options.maxZoom || 18,
             maxBounds: L.geoJson(ns.WORLD).getBounds()
         });
 
@@ -542,6 +542,14 @@ KR.Util = KR.Util || {};
             });
         }
         return imageUrl;
+    };
+
+    ns.isInIframe = function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
     };
 
 }(KR.Util));
@@ -1780,6 +1788,9 @@ var KR = this.KR || {};
             }
 
             content = $(['<div>', content, '</div>'].join(' '));
+            if (KR.Util.isInIframe()) {
+                content.find('a').attr('target','_blank');
+            }
 
             positionDisplayer.selectFeature(feature, content);
 
@@ -3644,13 +3655,20 @@ KR.SplashScreen = function (map, title, description, image, creator, showSpinner
         map.addControl(sidebar);
         var template = _.template($('#splashscreen_template').html());
 
-        sidebar.setContent(template({
+
+        var content = $('<div>' + template({
             title: title,
             image: image,
             description: description,
             creator: creator,
             spinner: !!showSpinner
-        }));
+        }) + '</div>');
+
+        if (KR.Util.isInIframe()) {
+            content.find('a').attr('target','_blank');
+        }
+        sidebar.setContent(content.html());
+
         return sidebar;
     }
 
@@ -3956,9 +3974,10 @@ var KR = this.KR || {};
 
     function _checkLoadItemFromUrl(featurecollections) {
         var featureId = KR.UrlFunctions.getHashFeature();
+
         if (featureId) {
             var findLayer = function (l) {
-                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId));
+                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId) || l.feature.id === decodeURIComponent(featureId));
             };
 
             var datasetLayer = _.find(_.flatten(featurecollections), function (layer) {
@@ -4102,6 +4121,7 @@ var KR = this.KR || {};
         } else {
             alert('Missing parameters!');
         }
+
         return map;
     };
 

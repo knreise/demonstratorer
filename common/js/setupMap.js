@@ -178,9 +178,10 @@ var KR = this.KR || {};
 
     function _checkLoadItemFromUrl(featurecollections) {
         var featureId = KR.UrlFunctions.getHashFeature();
+
         if (featureId) {
             var findLayer = function (l) {
-                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId));
+                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId) || l.feature.id === decodeURIComponent(featureId));
             };
 
             var datasetLayer = _.find(_.flatten(featurecollections), function (layer) {
@@ -324,6 +325,7 @@ var KR = this.KR || {};
         } else {
             alert('Missing parameters!');
         }
+
         return map;
     };
 

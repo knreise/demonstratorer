@@ -427,7 +427,7 @@ KR.Util = KR.Util || {};
         //create the map
         var map = L.map(div, {
             minZoom: options.minZoom || 3,
-            maxZoom: options.maxZoom || 21,
+            maxZoom: options.maxZoom || 18,
             maxBounds: L.geoJson(ns.WORLD).getBounds()
         });
 
@@ -491,6 +491,14 @@ KR.Util = KR.Util || {};
             });
         }
         return imageUrl;
+    };
+
+    ns.isInIframe = function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
     };
 
 }(KR.Util));
