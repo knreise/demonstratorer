@@ -544,6 +544,14 @@ KR.Util = KR.Util || {};
         return imageUrl;
     };
 
+    ns.isInIframe = function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -1780,6 +1788,9 @@ var KR = this.KR || {};
             }
 
             content = $(['<div>', content, '</div>'].join(' '));
+            if (KR.Util.isInIframe()) {
+                content.find('a').attr('target','_blank');
+            }
 
             positionDisplayer.selectFeature(feature, content);
 
@@ -3641,13 +3652,20 @@ KR.SplashScreen = function (map, title, description, image, creator, showSpinner
         map.addControl(sidebar);
         var template = _.template($('#splashscreen_template').html());
 
-        sidebar.setContent(template({
+
+        var content = $('<div>' + template({
             title: title,
             image: image,
             description: description,
             creator: creator,
             spinner: !!showSpinner
-        }));
+        }) + '</div>');
+
+        if (KR.Util.isInIframe()) {
+            content.find('a').attr('target','_blank');
+        }
+        sidebar.setContent(content.html());
+
         return sidebar;
     }
 
@@ -4099,6 +4117,7 @@ var KR = this.KR || {};
         } else {
             alert('Missing parameters!');
         }
+
         return map;
     };
 
