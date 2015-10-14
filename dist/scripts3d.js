@@ -2852,9 +2852,9 @@ KR.Config = KR.Config || {};
                 dataset: {
                     api: 'kulturminnedata',
                     layer: 2,
-                    imageLayer: 6,
-                    matchId: 'KulturminnesokID',
-                    getImages: true
+                    getExtraData: true,
+                    extraDataLayer: 6,
+                    matchId: 'KulturminnesokID'
                 },
                 cluster: true,
                 isStatic: false,

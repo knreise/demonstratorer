@@ -229,10 +229,19 @@ KR.ArcgisAPI = function (apiName, options) {
             f: 'pjson',
         };
 
-        var url = BASE_URL + dataset.extraDataLayer + '/query?'  + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, null, function (response) {
-            callback(_mapExtraData(features, response, dataset));
-        }, errorCallback);
+        var url = BASE_URL + dataset.extraDataLayer + '/query';
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: KR.Util.createQueryParameterString(params),
+            success: function (response) {
+                callback(_mapExtraData(features, response, dataset));
+            },
+            error: function (response) {
+                callback(features);
+            }
+        });
     }
 
     function _parseArcGisResponse(response, callback, errorCallback, dataset) {
@@ -1795,7 +1804,7 @@ KR.API = function (options) {
         },
         kulturminnedata: {
             api: KR.ArcgisAPI,
-            params: {url: 'http://crossorigin.me/http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'}
+            params: {url: 'http://husmann.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'}
         },
         kulturminnedataSparql: {
             api: KR.SparqlAPI,
