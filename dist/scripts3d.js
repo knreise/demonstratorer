@@ -2849,7 +2849,13 @@ KR.Config = KR.Config || {};
                 name: 'Kulturminnesøk - brukerregistreringer',
                 hideFromGenerator: false,
                 provider: 'riksantikvaren',
-                dataset: {api: 'kulturminnedata', layer: 2},
+                dataset: {
+                    api: 'kulturminnedata',
+                    layer: 2,
+                    imageLayer: 6,
+                    matchId: 'KulturminnesokID',
+                    getImages: true
+                },
                 cluster: true,
                 isStatic: false,
                 style: {thumbnail: true},
