@@ -478,7 +478,7 @@ KR.Util = KR.Util || {};
         //create the map
         var map = L.map(div, {
             minZoom: options.minZoom || 3,
-            maxZoom: options.maxZoom || 21,
+            maxZoom: options.maxZoom || 18,
             maxBounds: L.geoJson(ns.WORLD).getBounds()
         });
 
@@ -3944,9 +3944,10 @@ var KR = this.KR || {};
 
     function _checkLoadItemFromUrl(featurecollections) {
         var featureId = KR.UrlFunctions.getHashFeature();
+
         if (featureId) {
             var findLayer = function (l) {
-                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId));
+                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId) || l.feature.id === decodeURIComponent(featureId));
             };
 
             var datasetLayer = _.find(_.flatten(featurecollections), function (layer) {
