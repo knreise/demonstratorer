@@ -218,6 +218,9 @@ var KR = this.KR || {};
             }
 
             content = $(['<div>', content, '</div>'].join(' '));
+            if (KR.Util.isInIframe()) {
+                content.find('a').attr('target','_blank');
+            }
 
             positionDisplayer.selectFeature(feature, content);
 

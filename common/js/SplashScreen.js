@@ -57,13 +57,20 @@ KR.SplashScreen = function (map, title, description, image, creator, showSpinner
         map.addControl(sidebar);
         var template = _.template($('#splashscreen_template').html());
 
-        sidebar.setContent(template({
+
+        var content = $('<div>' + template({
             title: title,
             image: image,
             description: description,
             creator: creator,
             spinner: !!showSpinner
-        }));
+        }) + '</div>');
+
+        if (KR.Util.isInIframe()) {
+            content.find('a').attr('target','_blank');
+        }
+        sidebar.setContent(content.html());
+
         return sidebar;
     }
 

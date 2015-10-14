@@ -544,6 +544,14 @@ KR.Util = KR.Util || {};
         return imageUrl;
     };
 
+    ns.isInIframe = function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -1807,6 +1815,9 @@ var KR = this.KR || {};
             }
 
             content = $(['<div>', content, '</div>'].join(' '));
+            if (KR.Util.isInIframe()) {
+                content.find('a').attr('target','_blank');
+            }
 
             positionDisplayer.selectFeature(feature, content);
 

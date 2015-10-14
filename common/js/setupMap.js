@@ -272,6 +272,7 @@ var KR = this.KR || {};
         } else {
             alert('Missing parameters!');
         }
+
         return map;
     };
 
