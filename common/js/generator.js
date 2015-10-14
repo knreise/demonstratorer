@@ -9,7 +9,7 @@ var KR = this.KR || {};
 (function () {
     'use strict';
 
-    var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= id %></option>');
+    var layerTemplate = _.template('<option value="<%= id %>" <% if(selected) {print("selected") } %>><%= name %></option>');
     var datasetTemplate = _.template($('#dataset_template').html());
 
     var api = new KR.API();
@@ -132,11 +132,32 @@ var KR = this.KR || {};
         var selected = 'norges_grunnkart_graatone';
 
         var layers = L.tileLayer.kartverket.getLayers();
-        layers = layers.concat(['nib', 'hist']);
+        layers = _.map(layers, function (layer) {
+            return {
+                id: layer,
+                name: L.tileLayer.kartverket.getLayerName(layer)
+            }
+        });
+
+
+        layers = layers.concat([
+            { 
+                id: 'nib',
+                name: 'Norge i bilder'
+            },
+            {
+                id: 'hist',
+                name: 'Historisk kart'
+            }
+        ]);
 
         var options = _.chain(layers)
             .map(function (layer) {
-                return {id: layer, selected: layer === selected};
+                return {
+                    id: layer.id,
+                    selected: layer.id === selected,
+                    name: layer.name
+                };
             })
             .map(layerTemplate)
             .value();
