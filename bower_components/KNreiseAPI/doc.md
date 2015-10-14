@@ -116,16 +116,16 @@ The datasets object passed to the api is a simple JavaScript object, but these d
 Other than the __api__ parameter, the parameters depend on the api, see the table below:
 
 
-| api                   | parameters                       |
-|-----------------------|----------------------------------|
-| norvegiana            | dataset, query                   |
-| wikipedia             | -                                |
-| kulturminnedata       | query, layer                     |
-| kulturminnedataSparql | limit, filter, fylke, geomType   |
-| cartodb               | table, columns, query            |
-| folketelling          | dataset, limit                   |
-| utno                  | type, id                         |
-| flickr                | user_id, tags, tag_mode, accuracy|
+| api                   | parameters                                           |
+|-----------------------|------------------------------------------------------|
+| norvegiana            | dataset, query                                       |
+| wikipedia             | -                                                    |
+| kulturminnedata       | query, layer, getExtraData, extraDataLayer, matchId  |
+| kulturminnedataSparql | limit, filter, fylke, geomType                       |
+| cartodb               | table, columns, query                                |
+| folketelling          | dataset, limit                                       |
+| utno                  | type, id                                             |
+| flickr                | user_id, tags, tag_mode, accuracy                    |
 
 
 
@@ -142,7 +142,10 @@ See the [norvegiana documentation][norvegiana-doc] for further info.
 
 #### kulturminnedata
 * **layer**:  ``<string>`` the Layer name to query
-*  **query**:  ``<string>`` the query to run (string, f.ex: "Navn='Fangstgrop'")
+* **query**:  ``<string>`` the query to run (string, f.ex: "Navn='Fangstgrop'")
+* **getExtraData**: ``<bool>`` If true, gets extra data for each feature from a table layer
+* **extraDataLayer**: ``<int>`` The id of the table layer to get extra data from
+* **matchId**: ``<string>`` The id to match layer and extraDataLayer on
 See [kulturminnedata.no][kulturminedata] for details on the api.
 
 

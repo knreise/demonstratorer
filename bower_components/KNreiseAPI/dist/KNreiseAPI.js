@@ -184,7 +184,58 @@ KR.ArcgisAPI = function (apiName, options) {
         });
     }
 
-    function _parseArcGisResponse(response, callback, errorCallback) {
+
+    function _mapExtraData(features, extraDataResponse, dataset) {
+        extraDataResponse = JSON.parse(extraDataResponse);
+        var extra = extraDataResponse.features;
+        var newFeatures = _.map(features.features, function (feature) {
+            var extraProperties = _.find(extra, function (item) {
+                return item.attributes[dataset.matchId] === feature.properties[dataset.matchId];
+            });
+
+            if (extraProperties) {
+                extraProperties = extraProperties.attributes;
+                feature.properties.thumbnail = extraProperties.UrlTilBilde;
+            }
+
+            var properties = _.extend(
+                feature.properties,
+                {extra: extraProperties}
+            );
+            return KR.Util.createGeoJSONFeatureFromGeom(
+                feature.geometry,
+                properties,
+                feature.id
+            );
+        });
+        return KR.Util.createFeatureCollection(newFeatures);
+    }
+
+
+    function _getExtraData(features, dataset, callback, errorCallback) {
+        var ids = _.map(features.features, function (feature) {
+            return feature.properties[dataset.matchId];
+        });
+
+        var params = {
+            where: dataset.matchId + ' IN (' + ids.join(',') + ')',
+            outFields: '*',
+            returnGeometry: false,
+            returnIdsOnly: false,
+            returnCountOnly: false,
+            returnZ: false,
+            returnM: false,
+            returnDistinctValues: false,
+            f: 'pjson',
+        };
+
+        var url = BASE_URL + dataset.extraDataLayer + '/query?'  + KR.Util.createQueryParameterString(params);
+        KR.Util.sendRequest(url, null, function (response) {
+            callback(_mapExtraData(features, response, dataset));
+        }, errorCallback);
+    }
+
+    function _parseArcGisResponse(response, callback, errorCallback, dataset) {
         try {
             response = JSON.parse(response);
         } catch (ignore) {}
@@ -201,7 +252,11 @@ KR.ArcgisAPI = function (apiName, options) {
                     }
                     feature.id = apiName + '_' + feature.properties.OBJECTID;
                 });
-                callback(data);
+                if (dataset.getExtraData) {
+                    _getExtraData(data, dataset, callback, errorCallback);
+                } else {
+                    callback(data);
+                }
             } else {
                 callback(KR.Util.createFeatureCollection([]));
             }
@@ -231,7 +286,7 @@ KR.ArcgisAPI = function (apiName, options) {
         var layer = dataset.layer;
         var url = BASE_URL + layer + '/query' +  '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, null, function (response) {
-            _parseArcGisResponse(response, callback, errorCallback);
+            _parseArcGisResponse(response, callback, errorCallback, dataset);
         }, errorCallback);
     }
 
@@ -991,7 +1046,7 @@ KR.WikipediaAPI = function (apiName, options) {
         };
         var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, function (res) {
-            return _parseWikimediaItem(res.query.pages[id]);
+            return _parseWikimediaItem(res.query.pages[dataset.id]);
         }, callback, errorCallback);
     }
 
@@ -1655,7 +1710,7 @@ KR.JernbanemuseetAPI = function (apiName, options) {
     }
 
     function getItem(dataset, callback, errorCallback) {
-        var url = BASE_URL + '/groups/' + _getGroup(dataset) + '/records/' + dataset.id;
+        var url = BASE_URL + '/groups/' + _getGroup(dataset) + '/records/' + dataset.id + '?strip_html=true';
         KR.Util.sendRequest(url, _parseItem, callback, errorCallback, _getHeaders());
     }
 
