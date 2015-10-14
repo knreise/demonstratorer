@@ -29,7 +29,7 @@
     "turf": "~2.0.2",
     "L.EasyButton": "*",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
-    "L.TileLayer.Kartverket": "~1.0.0",
+    "L.TileLayer.Kartverket": "1.0.2",
     "Leaflet-MiniMap": "https://github.com/Norkart/Leaflet-MiniMap.git#~2.2.0",
     "KNreiseAPI": "1.7.15",
     "html.sortable": "~0.2.9",
