@@ -72,13 +72,13 @@
     right: -10px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 770px) {
  .knreise-sidebar .prev {
     left: -5px;
  }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 770px) {
  .knreise-sidebar .next {
     right: 5px;
  }
@@ -267,18 +267,15 @@
     background: black;
 }
 
-@media (min-width: 770px) and (max-width:1000px){
+@media (min-width: 770px) and (max-width:1000px) {
 	#splashscreen h2 {
     font-size: 18px;
     font-weight: 600;
 		}
-	#splashscreen .close {
-    margin-top: 5px;
+	.center .close {
+    top:15px;
 		}
-	.leaflet-sidebar .close {
-    top: 17px;
-		}
-	}
+}
 
 
 /*the feedback form*/
