@@ -392,7 +392,7 @@ KR.Config = KR.Config || {};
                 isStatic: true,
                 init: kulturminneFunctions.initKulturminnePoly,
                 loadWhenLessThan: {
-                    count: 5,
+                    count: 10,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 },
                 description: 'Data fra Riksantikvarens kulturminnesøk'
