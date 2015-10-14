@@ -368,19 +368,25 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
                 //load according to strategy
                 if (dataset.bbox) {
+
+                    var loadBounds = newBounds;
+                    if (dataset.isStatic && dataset.fixedBbox) {
+                        loadBounds = dataset.fixedBbox;
+                    }
+
                     //hack for riksantikvaren
                     if (dataset.bboxFunc) {
                         dataset.bboxFunc(
                             api,
                             dataset.dataset,
-                            newBounds,
+                            loadBounds,
                             dataLoaded,
                             loadError
                         );
                     } else {
                         api.getBbox(
                             dataset.dataset,
-                            newBounds,
+                            loadBounds,
                             dataLoaded,
                             loadError
                         );
