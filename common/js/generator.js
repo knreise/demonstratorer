@@ -105,7 +105,7 @@ var KR = this.KR || {};
     function getCountyList(callback) {
         var dataset = {
             api: 'cartodb',
-            query: 'SELECT fylkesnr, navn FROM fylker ORDER BY navn',
+            query: 'SELECT DISTINCT fylkesnr, navn FROM fylker ORDER BY navn',
             mapper: function (data) {
                 return data.rows;
             }
@@ -117,7 +117,7 @@ var KR = this.KR || {};
     function getMunicipalityList(callback) {
         var dataset = {
             api: 'cartodb',
-            query: 'SELECT komm, navn FROM kommuner ORDER BY navn',
+            query: 'SELECT DISTINCT komm, navn FROM kommuner ORDER BY navn',
             mapper: function (data) {
                 return data.rows;
             }
