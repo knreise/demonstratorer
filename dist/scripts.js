@@ -791,7 +791,7 @@ KR.Style = {};
 
     function createAwesomeMarker(color) {
         return L.Knreise.icon({
-            markerColor: color
+            markerColor: hexToName(color)
         });
     }
 
@@ -2230,7 +2230,7 @@ var KR = this.KR || {};
 'use strict';
 
 L.Knreise = L.Knreise || {};
-L.Knreise.Icon = L.KNreiseMarkers.Icon.extend({
+L.Knreise.Icon = L.AwesomeMarkers.Icon.extend({
     options: {
         icon: null
     }

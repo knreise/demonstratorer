@@ -235,7 +235,7 @@ KR.Style = {};
 
     function createAwesomeMarker(color) {
         return L.Knreise.icon({
-            markerColor: color
+            markerColor: hexToName(color)
         });
     }
 
