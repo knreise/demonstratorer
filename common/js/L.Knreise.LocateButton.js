@@ -44,16 +44,19 @@ L.Knreise = L.Knreise || {};
 
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
-            _map.userPosition = p;
-            _map.fire('locationChange');
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(
                     'warning',
                     'Du befinner deg utenfor området til denne demonstratoren. Viser ikke din posisjon'
                 );
+                _map.fire('locationError');
+                stopLocation();
                 return;
             }
+
+            _map.userPosition = p;
+            _map.fire('locationChange');
             if (callback) {
                 callback(p);
             } else {
@@ -67,19 +70,29 @@ L.Knreise = L.Knreise || {};
             }
         }
 
-        function _getLocation() {
-            if (isLocating) {
-                if (watchId) {
-                    navigator.geolocation.clearWatch(watchId);
-                }
-                return;
+        function _positionError() {
+            _map.fire('locationError');
+            _btn.changeIcon(defaultIcon);
+            _btn.getContainer().className = _btn.getContainer().className.replace(' active', '');
+        }
+
+        function stopLocation() {
+            isLocating = false;
+            if (!_.isUndefined(watchId)) {
+                navigator.geolocation.clearWatch(watchId);
+                _btn.getContainer().className = _btn.getContainer().className.replace(' active', '');
+                _map.removeLayer(marker);
+                marker = undefined;
+                watchId = undefined;
             }
+        }
 
+        function getLocation() {
             isLocating = true;
-
             if (navigator.geolocation) {
                 _btn.changeIcon('fa-spinner fa-pulse');
-                watchId = navigator.geolocation.watchPosition(_showPosition);
+                _btn.getContainer().className += ' active';
+                watchId = navigator.geolocation.watchPosition(_showPosition, _positionError);
             } else {
                 if (error) {
                     error();
@@ -87,17 +100,26 @@ L.Knreise = L.Knreise || {};
             }
         }
 
+        function toggleLocation() {
+            if (isLocating) {
+                stopLocation();
+                return;
+            }
+            getLocation();
+        }
+
         function addTo(map) {
-            var title = options.title || 'Finn meg';
+            var title = options.title || 'Følg min posisjon';
 
             _map = map;
-            _btn = new L.Control.EasyButtons2(_getLocation, {icon: defaultIcon, title: title});
+            _btn = new L.Control.EasyButtons2(toggleLocation, {icon: defaultIcon, title: title});
             _map.addControl(_btn);
             return _btn;
         }
 
         return {
-            addTo: addTo
+            addTo: addTo,
+            getLocation: getLocation
         };
     };
 

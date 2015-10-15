@@ -2609,19 +2609,25 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
                 //load according to strategy
                 if (dataset.bbox) {
+
+                    var loadBounds = newBounds;
+                    if (dataset.isStatic && dataset.fixedBbox) {
+                        loadBounds = dataset.fixedBbox;
+                    }
+
                     //hack for riksantikvaren
                     if (dataset.bboxFunc) {
                         dataset.bboxFunc(
                             api,
                             dataset.dataset,
-                            newBounds,
+                            loadBounds,
                             dataLoaded,
                             loadError
                         );
                     } else {
                         api.getBbox(
                             dataset.dataset,
-                            newBounds,
+                            loadBounds,
                             dataLoaded,
                             loadError
                         );
@@ -2839,16 +2845,19 @@ L.Knreise = L.Knreise || {};
 
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
-            _map.userPosition = p;
-            _map.fire('locationChange');
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(
                     'warning',
                     'Du befinner deg utenfor området til denne demonstratoren. Viser ikke din posisjon'
                 );
+                _map.fire('locationError');
+                stopLocation();
                 return;
             }
+
+            _map.userPosition = p;
+            _map.fire('locationChange');
             if (callback) {
                 callback(p);
             } else {
@@ -2862,19 +2871,29 @@ L.Knreise = L.Knreise || {};
             }
         }
 
-        function _getLocation() {
-            if (isLocating) {
-                if (watchId) {
-                    navigator.geolocation.clearWatch(watchId);
-                }
-                return;
+        function _positionError() {
+            _map.fire('locationError');
+            _btn.changeIcon(defaultIcon);
+            _btn.getContainer().className = _btn.getContainer().className.replace(' active', '');
+        }
+
+        function stopLocation() {
+            isLocating = false;
+            if (!_.isUndefined(watchId)) {
+                navigator.geolocation.clearWatch(watchId);
+                _btn.getContainer().className = _btn.getContainer().className.replace(' active', '');
+                _map.removeLayer(marker);
+                marker = undefined;
+                watchId = undefined;
             }
+        }
 
+        function getLocation() {
             isLocating = true;
-
             if (navigator.geolocation) {
                 _btn.changeIcon('fa-spinner fa-pulse');
-                watchId = navigator.geolocation.watchPosition(_showPosition);
+                _btn.getContainer().className += ' active';
+                watchId = navigator.geolocation.watchPosition(_showPosition, _positionError);
             } else {
                 if (error) {
                     error();
@@ -2882,17 +2901,26 @@ L.Knreise = L.Knreise || {};
             }
         }
 
+        function toggleLocation() {
+            if (isLocating) {
+                stopLocation();
+                return;
+            }
+            getLocation();
+        }
+
         function addTo(map) {
-            var title = options.title || 'Finn meg';
+            var title = options.title || 'Følg min posisjon';
 
             _map = map;
-            _btn = new L.Control.EasyButtons2(_getLocation, {icon: defaultIcon, title: title});
+            _btn = new L.Control.EasyButtons2(toggleLocation, {icon: defaultIcon, title: title});
             _map.addControl(_btn);
             return _btn;
         }
 
         return {
-            addTo: addTo
+            addTo: addTo,
+            getLocation: getLocation
         };
     };
 
@@ -3824,7 +3852,7 @@ var KR = this.KR || {};
     }
 
 
-    function _getloader(options, api, datasets, boundsFunc, id, paramName, callback) {
+    function _getloader(options, api, datasets, boundsFunc, id, paramName, callback, initPos) {
         if (options.geomFilter) {
             var dataset = {
                 api: 'cartodb'
@@ -3837,19 +3865,19 @@ var KR = this.KR || {};
                 var layer = L.geoJson(geoJson);
 
                 var filter = _getFilter(geoJson);
-                callback(layer.getBounds(), datasets, filter);
+                callback(layer.getBounds(), datasets, filter, null, initPos);
             });
         } else {
             boundsFunc(id, function (bbox) {
                 var bounds = L.latLngBounds.fromBBoxString(bbox);
-                callback(bounds, datasets);
+                callback(bounds, datasets, null, null, initPos);
             });
         }
     }
 
 
 
-    function _municipalityHandler(options, api, datasets, fromUrl, callback) {
+    function _municipalityHandler(options, api, datasets, fromUrl, callback, initPos) {
         datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
 
         if (_.isString(options.komm)) {
@@ -3863,11 +3891,12 @@ var KR = this.KR || {};
             api.getMunicipalityBounds,
             options.komm,
             'municipality',
-            callback
+            callback,
+            initPos
         );
     }
 
-    function _countyHandler(options, api, datasets, fromUrl, callback) {
+    function _countyHandler(options, api, datasets, fromUrl, callback, initPos) {
         datasets = _loadDatasets(api, datasets, fromUrl, null, options.fylke);
 
         if (_.isString(options.fylke)) {
@@ -3881,14 +3910,15 @@ var KR = this.KR || {};
             api.getCountyBounds,
             options.fylke,
             'county',
-            callback
+            callback,
+            initPos
         );
     }
 
-    function _bboxHandler(options, api, datasets, fromUrl, callback) {
+    function _bboxHandler(options, api, datasets, fromUrl, callback, initPos) {
         datasets = _loadDatasets(api, datasets, fromUrl);
         var bounds = L.latLngBounds.fromBBoxString(options.bbox);
-        callback(bounds, datasets);
+        callback(bounds, datasets, null, null, initPos);
     }
 
     function _flattenCollections(featureCollection) {
@@ -3914,7 +3944,7 @@ var KR = this.KR || {};
         return KR.Util.createFeatureCollection(features);
     }
 
-    function _gotLine(line, api, options, datasets, fromUrl, callback) {
+    function _gotLine(line, api, options, datasets, fromUrl, callback, initPos) {
         var lineOptions = {};
         if (options.linecolor) {
             lineOptions.color = options.linecolor;
@@ -3932,13 +3962,13 @@ var KR = this.KR || {};
             var buffer = turf.buffer(line, options.buffer, 'kilometers');
             filter = _getFilter(buffer);
         }
-        callback(bounds, datasets, filter, lineLayer);
+        callback(bounds, datasets, filter, lineLayer, initPos);
     }
 
-    function _lineHandler(options, api, datasets, fromUrl, callback) {
+    function _lineHandler(options, api, datasets, fromUrl, callback, initPos) {
 
         KR.Util.getLine(api, options.line, function (line) {
-            _gotLine(line, api, options, datasets, fromUrl, callback);
+            _gotLine(line, api, options, datasets, fromUrl, callback, initPos);
         });
     }
 
@@ -3962,6 +3992,39 @@ var KR = this.KR || {};
         }
     }
 
+
+    function _addBBox(datasets, bbox) {
+        return _.map(datasets, function (dataset) {
+            if (dataset.isStatic) {
+                dataset.fixedBbox = bbox;
+            }
+            if (dataset.datasets) {
+                dataset.datasets = _.map(dataset.datasets, function (dataset) {
+                    if (dataset.isStatic) {
+                        dataset.fixedBbox = bbox;
+                    }
+                    return dataset;
+                });
+            }
+            return dataset;
+        });
+    }
+
+
+    function _setAllStatic(datasets) {
+        return _.map(datasets, function (dataset) {
+            dataset.isStatic = true;
+            if (dataset.datasets) {
+                dataset.datasets = _.map(dataset.datasets, function (dataset) {
+                    dataset.isStatic = true;
+                    return dataset;
+                });
+            }
+            return dataset;
+        });
+    }
+
+
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
         options = _.extend({}, DEFAULT_OPTIONS, options);
@@ -3975,69 +4038,86 @@ var KR = this.KR || {};
             splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, false);
         }
 
-        function showDatasets(bounds, datasets, filter, lineLayer) {
+        function showDatasets(bounds, datasets, filter, lineLayer, initPos) {
             if (options.allstatic) {
-                datasets = _.map(datasets, function (dataset) {
-                    dataset.isStatic = true;
-                    if (dataset.datasets) {
-                        dataset.datasets = _.map(dataset.datasets, function (dataset) {
-                            dataset.isStatic = true;
-                            return dataset;
-                        });
-                    }
-                    return dataset;
-                });
+                datasets = _setAllStatic(datasets);
             }
+            datasets = _addBBox(datasets, bounds.toBBoxString());
 
-            L.Knreise.LocateButton(null, null, {bounds: bounds}).addTo(map);
-            map.fitBounds(bounds);
-            var datasetsLoaded = function (featurecollections) {
-                var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
-                if (locationFromUrl) {
-                    map.setView([locationFromUrl.lat, locationFromUrl.lon], locationFromUrl.zoom);
+            var locateBtn = L.Knreise.LocateButton(null, null, {bounds: bounds});
+            locateBtn.addTo(map);
+
+            var initMapPos = function (initPos) {
+                if (initPos) {
+                    map.setView([initPos.lat, initPos.lon], initPos.zoom);
+                    bounds = map.getBounds();
+                } else {
+                    map.fitBounds(bounds);
                 }
-                _checkLoadItemFromUrl(featurecollections);
 
                 if (options.loactionHash) {
                     KR.UrlFunctions.setupLocationUrl(map);
                 }
 
-                if (splashScreen) {
-                    splashScreen.finishedLoading();
+                var datasetsLoaded = function (featurecollections) {
+                    _checkLoadItemFromUrl(featurecollections);
+
+                    if (splashScreen) {
+                        splashScreen.finishedLoading();
+                    }
+                };
+
+                var skipLoadOutside;
+                if (options.geomFilter && bounds) {
+                    skipLoadOutside = bounds.toBBoxString();
                 }
 
+                var layers = datasetLoader.loadDatasets(
+                    datasets,
+                    bounds.toBBoxString(),
+                    filter,
+                    datasetsLoaded,
+                    skipLoadOutside
+                );
+
+                if (lineLayer) {
+                    lineLayer.addTo(map);
+                }
+                if (datasets.length > 1) {
+                    L.control.datasets(layers).addTo(map);
+                }
             };
 
-            var skipLoadOutside;
-            if (options.geomFilter && bounds) {
-                skipLoadOutside = bounds.toBBoxString();
+            if (options.initUserPos) {
+                map.addOneTimeEventListener('locationChange', function () {
+                    var pos = {lat: map.userPosition.lat, lon: map.userPosition.lng, zoom: 16};
+                    initMapPos(pos);
+                });
+                map.addOneTimeEventListener('locationError', function () {
+                    initMapPos(initPos);
+                });
+                locateBtn.getLocation();
+            } else {
+                initMapPos(initPos);
             }
+        }
 
-            var layers = datasetLoader.loadDatasets(
-                datasets,
-                bounds.toBBoxString(),
-                filter,
-                datasetsLoaded,
-                skipLoadOutside
-            );
+        var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
 
-            if (lineLayer) {
-                lineLayer.addTo(map);
-            }
-            if (datasets.length > 1) {
-                L.control.datasets(layers).addTo(map);
-            }
+        var initPos;
+        if (!options.initUserPos) {
+            initPos = locationFromUrl;
         }
 
         options.map = map;
         if (options.komm) {
-            _municipalityHandler(options, api, datasetIds, fromUrl, showDatasets);
+            _municipalityHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
         } else if (options.fylke) {
-            _countyHandler(options, api, datasetIds, fromUrl, showDatasets);
+            _countyHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
         } else if (options.line) {
-            _lineHandler(options, api, datasetIds, fromUrl, showDatasets);
+            _lineHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
         } else if (options.bbox) {
-            _bboxHandler(options, api, datasetIds, fromUrl, showDatasets);
+            _bboxHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
         } else {
             alert('Missing parameters!');
         }
