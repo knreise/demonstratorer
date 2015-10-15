@@ -1,0 +1,23 @@
+{
+  "name": "leaflet.knreise-markers",
+  "homepage": "https://github.com/knreise/Leaflet.knreise-markers",
+  "description": "Svg-based markers for leaflet",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "2a6deedb37",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "2a6deedb378fb76d498269f7df229a1986a366f4"
+  },
+  "_source": "https://github.com/knreise/Leaflet.knreise-markers.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/knreise/Leaflet.knreise-markers.git",
+  "_direct": true
+}
