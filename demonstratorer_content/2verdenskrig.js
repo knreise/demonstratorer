@@ -1,5 +1,6 @@
 (function () {
     'use strict';
+    
 
     var diFoTopics = ['krig', 'andre-verdskrigen', 'krigsminne', 'andre-verdenskrig', 'ww2', 'krigsminneforteljingar', 'krigen', 'krigsminnelandskap-troms', 'krigsminner', 'ww2-nord', 'ww2-troms', 'krigshistorie', 'krigsminneprosjekt-sør-troms', 'verdenskrig', '2.-verdenskrig', '2.-verdenskrigen'];
 
@@ -25,6 +26,9 @@
     var api = new KR.API({
         jernbanemuseet: {
             apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
+        },
+        flickr: {
+            apikey: 'ab1f664476dabf83a289735f97a6d56c'
         }
     });
 
@@ -93,23 +97,65 @@
             template: KR.Util.getDatasetTemplate('brukerminne'),
         },
         {
+            grouped: true,
             name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia',
-                category: 'Kulturminner_i_Norge_fra_andre_verdenskrig'
-            },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
-            style: {template: true},
-            bbox: false,
-            isStatic: true,
-            getFeatureData: function (feature, callback) {
-                api.getItem(
-                    {api: 'wikipedia', id: feature.properties.id},
-                    callback
-                );
-            }
-        },
+            datasets: [
+	        {
+	            name: 'Wikipedia',
+	            provider: 'Wikipedia',
+	            dataset: {
+	                api: 'wikipedia',
+	                category: 'Kulturminner_i_Norge_fra_andre_verdenskrig'
+	            },
+	            template: KR.Util.getDatasetTemplate('wikipedia'),
+	            style: {template: true},
+	            bbox: false,
+	            isStatic: true,
+	            getFeatureData: function (feature, callback) {
+	                api.getItem(
+	                    {api: 'wikipedia', id: feature.properties.id},
+	                    callback
+	                );
+	            }
+	        },
+	        {
+	            name: 'Wikipedia',
+	            provider: 'Wikipedia',
+	            dataset: {
+	                api: 'wikipedia',
+	                category: 'Fort_i_Norge_fra_andre_verdenskrig'
+	            },
+	            template: KR.Util.getDatasetTemplate('wikipedia'),
+	            style: {template: true},
+	            bbox: false,
+	            isStatic: true,
+	            getFeatureData: function (feature, callback) {
+	                api.getItem(
+	                    {api: 'wikipedia', id: feature.properties.id},
+	                    callback
+	                );
+	            }
+	        },
+	        {
+	            name: 'Wikipedia',
+	            provider: 'Wikipedia',
+	            dataset: {
+	                api: 'wikipedia',
+	                category: 'Norge_under_andre_verdenskrig'
+	            },
+	            template: KR.Util.getDatasetTemplate('wikipedia'),
+	            style: {template: true},
+	            bbox: false,
+	            isStatic: true,
+	            getFeatureData: function (feature, callback) {
+	                api.getItem(
+	                    {api: 'wikipedia', id: feature.properties.id},
+	                    callback
+	                );
+	            }
+	        }
+	        ]
+	    },
         {
             name: 'Digitalt Museum',
             dataset: {
@@ -122,7 +168,7 @@
             thumbnails: true,
             bbox: true
         },
-        {
+           {
             name: 'Arkiv i Nordland',
             provider: 'Arkiv i Nordland',
             dataset: {
@@ -134,7 +180,7 @@
             style: {thumbnail: true},
             minZoom: 8,
         }
-    ];
+            ];
 
     var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');
 
