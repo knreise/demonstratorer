@@ -164,7 +164,7 @@
 
 <script type="text/template" id="user_position_template">
 <div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg); -webkit-transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
     <%= distanceBearing.dist %>
 </div>
 </script>
@@ -525,25 +525,11 @@
 
 <% if(!_.isUndefined(arguments[0].extra)) { %>
   <img class="fullwidth img-thumbnail" src="<%= extra.UrlTilBilde %>" />
-  <table class="sidebar-table">
-    <tr>
-      <td>Tittel</td>
-      <td><%= extra.Tittel %></td>
-    </tr>
-    <tr>
-      <td>Registrert Av</td>
-      <td><%= extra.RegistrertAv %></td>
-    </tr>
-    <tr>
-      <td>Fotograf</td>
-      <td><%= extra.OpphavspersonFotograf %></td>
-    </tr>
-    <tr>
-      <td>Copyright</td>
-      <td><%= extra.Copyright %></td>
-    </tr>
-  </table>
-
+  <p class="small sidebar-image-text grey">
+  	<b><%= extra.Tittel %></b> - Foto: <%= extra.OpphavspersonFotograf %><br>
+  	<%= extra.Copyright %>
+  </p>
+  
 <% } %>
 
 

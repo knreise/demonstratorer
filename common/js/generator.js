@@ -243,9 +243,6 @@ var KR = this.KR || {};
 
         $('#datasets')
             .html(datasets)
-            .sortable().bind('sortupdate', function () {
-                callback();
-            })
             .find('input[name="datasetsCheckbox"]')
             .change(function (e) {
                 var id = $(e.target).val();

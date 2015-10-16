@@ -2845,16 +2845,19 @@ L.Knreise = L.Knreise || {};
 
         function _showPosition(pos) {
             var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
-            _map.userPosition = p;
-            _map.fire('locationChange');
             _btn.changeIcon(defaultIcon);
             if (options.bounds && !options.bounds.contains(p)) {
                 messageDisplayer(
                     'warning',
                     'Du befinner deg utenfor området til denne demonstratoren. Viser ikke din posisjon'
                 );
+                _map.fire('locationError');
+                stopLocation();
                 return;
             }
+
+            _map.userPosition = p;
+            _map.fire('locationChange');
             if (callback) {
                 callback(p);
             } else {
