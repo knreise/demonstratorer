@@ -155,7 +155,7 @@
 
 <script type="text/template" id="user_position_template">
 <div class="distance">
-    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg); -webkit-transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
     <%= distanceBearing.dist %>
 </div>
 </script>
@@ -514,8 +514,18 @@
 <script type="text/template" id="brukerminne_template">
 <h3><%= title %></h3>
 
+<% if(!_.isUndefined(arguments[0].extra)) { %>
+  <img class="fullwidth img-thumbnail" src="<%= extra.UrlTilBilde %>" />
+  <p class="small sidebar-image-text grey">
+  	<b><%= extra.Tittel %></b> - Foto: <%= extra.OpphavspersonFotograf %><br>
+  	<%= extra.Copyright %>
+  </p>
+  
+<% } %>
+
+
 <% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
-<p><%= KortBeskrivelse %></p>
+  <p><%= KortBeskrivelse %></p>
 <% } %>
 
 <p><%= Beskrivelse %></p>
@@ -582,6 +592,20 @@
                     <strong><%= media.title %></strong><br/>
                     <em><%= media.description %></em>
                 </p>
+            <% }) %>
+        <% } else if (block.type === 'links') { %>
+            <ul>
+            <% _.each(block.links, function (link) { %> 
+                <li><a href="<%= link.url%>"><%= link.title %></a></li>
+            <% }) %>
+            </ul>
+        <% } else if (block.type === 'audio') { %>
+            <% _.each(block.media, function (media) { %>
+                <p>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
+                </p>
+                <audio src="<%= media.url %>" preload="auto"></audio>
             <% }) %>
         <% } %>
     <% }) %>

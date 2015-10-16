@@ -281,7 +281,14 @@
 .sidebar-table tr td:first-child {
     font-weight: bold;
     padding-right: 10px;
+    vertical-align: top;
 }
+
+.sidebar-image-text {
+    margin-bottom: 20px;
+    color: grey;
+}
+
 
 .leaflet-sidebar.center {
     right: -500px;
