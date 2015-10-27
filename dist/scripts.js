@@ -2991,22 +2991,28 @@ KR.Config = KR.Config || {};
 
     ns.getKulturminneFunctions = function (api) {
 
+        var loadedIds = [];
+
         var loadKulturminnePoly = function (map, dataset, features) {
-            if (!features) {
-                dataset.extraFeatures.clearLayers();
-            }
             if (features) {
                 var ids = _.map(features, function (feature) {
                     return feature.properties.id;
                 });
-                if (ids.length) {
+
+                var idsToLoad = _.filter(ids, function (id) {
+                    return loadedIds.indexOf(id) === -1;
+                });
+
+                loadedIds = loadedIds.concat(idsToLoad);
+
+                if (idsToLoad.length) {
                     var q = {
                         api: 'kulturminnedataSparql',
                         type: 'lokalitetpoly',
-                        lokalitet: ids
+                        lokalitet: idsToLoad
                     };
                     api.getData(q, function (geoJson) {
-                        dataset.extraFeatures.clearLayers().addData(geoJson);
+                        dataset.extraFeatures.addData(geoJson);
                     });
                 }
             }
@@ -3033,9 +3039,24 @@ KR.Config = KR.Config || {};
                 }
             }).addTo(map);
 
+
+            map.on('zoomend', function () {
+                var shouldShow = !(map.getZoom() < 13);
+                if (shouldShow) {
+                    if (!map.hasLayer(dataset.extraFeatures)) {
+                        map.addLayer(dataset.extraFeatures);
+                    }
+                } else {
+                    if (map.hasLayer(dataset.extraFeatures)) {
+                        map.removeLayer(dataset.extraFeatures);
+                    }
+                }
+            });
+
             vectorLayer.on('hide', function () {
                 map.removeLayer(dataset.extraFeatures);
             });
+
             vectorLayer.on('show', function () {
                 map.addLayer(dataset.extraFeatures);
             });
