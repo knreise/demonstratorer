@@ -252,6 +252,10 @@ KR.Util = KR.Util || {};
         L.latLngBounds.fromBBoxString = function (bbox) {
             return L.latLngBounds.fromBBoxArray(KR.Util.splitBbox(bbox));
         };
+
+        L.rectangle.fromBounds = function (bounds) {
+            return L.rectangle([bounds.getSouthWest(), bounds.getNorthEast()]);
+        }
     }
 
     /*
