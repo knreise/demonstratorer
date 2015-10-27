@@ -24,6 +24,29 @@ var KR = this.KR || {};
         }
     }
 
+    function _bboxSelect(map, bounds, callback) {
+        var rect;
+        callback(bounds.toBBoxString());
+
+        function reloadMap() {
+            map.fitBounds(bounds);
+            if (rect) {
+                map.removeLayer(rect);
+                rect.off('edit');
+            }
+            rect = L.rectangle.fromBounds(bounds);
+            rect.editing.enable();
+            rect.setStyle({fill: false, color: '#f00', weight: 3});
+            rect.addTo(map);
+            rect.on('edit', function() { 
+                bounds = rect.getBounds();
+                callback(bounds.toBBoxString());
+            });
+        }
+        map.on('invalidated', reloadMap);
+        reloadMap();
+    }
+
 
     function buildLimitSelections(ids, municipalities, counties) {
         var callback;
@@ -71,13 +94,13 @@ var KR = this.KR || {};
                     callback();
                 }
             });
-        });;
+        });
 
-      var map = L.map('bbox_map').setView([64.3, 8.7], 3);
+        var bounds = L.latLngBounds.fromBBoxString('2.4609375,56.9449741808516,33.3984375,71.85622888185527');
+        var map = L.map('bbox_map').fitBounds(bounds);
         L.tileLayer.kartverket('norges_grunnkart').addTo(map);
-        map.on('moveend', function () {
-            $('#bbox').val(map.getBounds().toBBoxString());
-            callback();
+        _bboxSelect(map, bounds,  function (bbox) {
+            $('#bbox').val(bbox);
         });
 
         return {
@@ -136,12 +159,12 @@ var KR = this.KR || {};
             return {
                 id: layer,
                 name: L.tileLayer.kartverket.getLayerName(layer)
-            }
+            };
         });
 
 
         layers = layers.concat([
-            { 
+            {
                 id: 'nib',
                 name: 'Norge i bilder'
             },
@@ -339,7 +362,7 @@ var KR = this.KR || {};
                 params = _.extend(params, filters.getValues());
             }
             return params;
-        }
+        };
 
         var generateUrl = function () {
             var params = getParams();
@@ -389,6 +412,7 @@ var KR = this.KR || {};
 
             $('#collapseOne').on('shown.bs.collapse', function () {
                 limits.map.invalidateSize();
+                limits.map.fire('invalidated');
             });
 
             $('#collapseThree').on('shown.bs.collapse', function () {
