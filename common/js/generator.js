@@ -45,6 +45,15 @@ var KR = this.KR || {};
         }
         map.on('invalidated', reloadMap);
         reloadMap();
+
+        return function (bboxString) {
+            try {
+                bounds = L.latLngBounds.fromBBoxString(bboxString);
+                reloadMap();
+            } catch (e) {
+                callback(bounds.toBBoxString());
+            }
+        };
     }
 
 
@@ -99,8 +108,14 @@ var KR = this.KR || {};
         var bounds = L.latLngBounds.fromBBoxString('2.4609375,56.9449741808516,33.3984375,71.85622888185527');
         var map = L.map('bbox_map').fitBounds(bounds);
         L.tileLayer.kartverket('norges_grunnkart').addTo(map);
-        _bboxSelect(map, bounds,  function (bbox) {
+        var bboxSelect = _bboxSelect(map, bounds,  function (bbox) {
             $('#bbox').val(bbox);
+            if (callback) {
+                callback();
+            }
+        });
+        $('#bbox').change(function (e) {
+            bboxSelect(e.currentTarget.value);
         });
 
         return {
