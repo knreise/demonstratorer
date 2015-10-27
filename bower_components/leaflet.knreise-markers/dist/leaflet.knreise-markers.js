@@ -75,7 +75,6 @@
             var div;
             div = document.createElement('div');
             this._setIconStyles(div, 'shadow');
-            console.log(div);
             return div;
         }
     });

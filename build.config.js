@@ -20,7 +20,7 @@ module.exports = {
     'bower_components/leaflet/dist/leaflet.js',
     'bower_components/esri2geo/esri2geo.js',
     'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
-    'bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.js',
+    'bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.min.js',
     'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js',
     'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
     'bower_components/turf/turf.min.js',
