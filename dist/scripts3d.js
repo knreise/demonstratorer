@@ -314,7 +314,9 @@ KR.Util = KR.Util || {};
         if (_.has(layers, layerName)) {
             layers[layerName](callback);
         } else {
-            callback(L.tileLayer.kartverket(layerName, {useCache: true}));
+            var isSafari = navigator.userAgent.indexOf("Safari") > -1;
+            var useCache = !isSafari;
+            callback(L.tileLayer.kartverket(layerName, {useCache: useCache}));
         }
     };
 
