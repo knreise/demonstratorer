@@ -314,7 +314,7 @@ KR.Util = KR.Util || {};
         if (_.has(layers, layerName)) {
             layers[layerName](callback);
         } else {
-            callback(L.tileLayer.kartverket(layerName));
+            callback(L.tileLayer.kartverket(layerName, {useCache: true}));
         }
     };
 
