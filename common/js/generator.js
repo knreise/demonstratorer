@@ -38,7 +38,7 @@ var KR = this.KR || {};
             rect.editing.enable();
             rect.setStyle({fill: false, color: '#f00', weight: 3});
             rect.addTo(map);
-            rect.on('edit', function() { 
+            rect.on('edit', function () {
                 bounds = rect.getBounds();
                 callback(bounds.toBBoxString());
             });
@@ -256,6 +256,38 @@ var KR = this.KR || {};
         };
     }
 
+    function getDescription(element) {
+        var callback;
+
+        var maxLength = 140;
+
+        element.on('keyup', function () {
+            var val = element.val();
+            if (val.length > maxLength) {
+                element.val(val.substring(0, maxLength));
+            }
+        });
+
+
+        element.on('change', function () {
+            callback();
+        });
+
+        return {
+            getValues: function () {
+                var description = element.val().substring(0, maxLength);
+                if (description !== '') {
+                    return {description: description};
+                }
+                return {};
+            },
+            callback: function (cb) {
+                callback = cb;
+                cb();
+            }
+        };
+    }
+
 
     function buildDatasetList() {
         var callback;
@@ -361,7 +393,7 @@ var KR = this.KR || {};
         };
     }
 
-    function setupClick(element, limits, layer, datasets, title, filters) {
+    function setupClick(element, limits, layer, datasets, title, description, filters) {
         var use3d = false;
 
         var getParams = function () {
@@ -370,7 +402,8 @@ var KR = this.KR || {};
                 datasets.getValues(),
                 limits.getValues(),
                 layer.getValues(),
-                title.getValues()
+                title.getValues(),
+                description.getValues()
             );
 
             if (_.has(params, 'komm') || _.has(params, 'fylke')) {
@@ -396,6 +429,7 @@ var KR = this.KR || {};
         layer.callback(generateUrl);
         datasets.callback(generateUrl);
         title.callback(generateUrl);
+        description.callback(generateUrl);
         filters.callback(generateUrl);
 
         element.on('click', generateUrl);
@@ -419,10 +453,13 @@ var KR = this.KR || {};
         var fetched = _.after(2, function () {
             var limits = buildLimitSelections(['municipality', 'county', 'line', 'bbox'], municipalities, counties);
             var title = getTitle($('#title'));
+
+            var description = getDescription($('#description'));
+
             var datasets = buildDatasetList($('#datasets'));
             var layer = buildLayerList($('#layers'));
             var filters = buildFilter();
-            setupClick($('#generate'), limits, layer, datasets, title, filters);
+            setupClick($('#generate'), limits, layer, datasets, title, description, filters);
 
 
             $('#collapseOne').on('shown.bs.collapse', function () {
