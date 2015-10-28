@@ -34,7 +34,8 @@
     "cesium-minimap": "0.0.2",
     "cilogi-marker": "https://github.com/cilogi/cilogi-marker.git",
     "leaflet.knreise-markers": "https://github.com/knreise/Leaflet.knreise-markers.git",
-    "leaflet-draw": "~0.2.4"
+    "leaflet-draw": "~0.2.4",
+    "Leaflet.TileLayer.PouchDBCached": "https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached.git#0.1.0"
   },
   "resolutions": {
     "KNreiseAPI": "1.7.15"

@@ -18,6 +18,8 @@ module.exports = {
     'bower_components/jquery/dist/jquery.min.js',
     'bower_components/underscore/underscore-min.js',
     'bower_components/leaflet/dist/leaflet.js',
+    'bower_components/pouchdb/dist/pouchdb.min.js',
+    'bower_components/Leaflet.TileLayer.PouchDBCached/L.TileLayer.PouchDBCached.js',
     'bower_components/esri2geo/esri2geo.js',
     'bower_components/KNreiseAPI/dist/KNreiseAPI.min.js',
     'bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.min.js',
