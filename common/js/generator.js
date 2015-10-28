@@ -180,10 +180,6 @@ var KR = this.KR || {};
 
         layers = layers.concat([
             {
-                id: 'nib',
-                name: 'Norge i bilder'
-            },
-            {
                 id: 'hist',
                 name: 'Historisk kart'
             }
