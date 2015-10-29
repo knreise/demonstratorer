@@ -187,25 +187,25 @@
 
 
 .knreise-sidebar .images-list img {
-    margin-bottom: 0 !important;    
+    margin-bottom: 0 !important;
 }
 
-.knreise-sidebar .image-navigation {
+.knreise-sidebar .media-navigation {
     position:relative;
     background: ; height:50px;
 }
 
-.knreise-sidebar .image-navigation .circle {
+.knreise-sidebar .media-navigation .circle {
     border-color: #8C8C8C;
 }
 
-.knreise-sidebar .image-navigation .prev {
+.knreise-sidebar .media-navigation .prev {
     position: absolute;
     color: #8C8C8C !important;
     left: 35%;
 }
 
-.knreise-sidebar .image-navigation .next {
+.knreise-sidebar .media-navigation .next {
     position: absolute;
     color: #8C8C8C !important;
     right: 35%;
