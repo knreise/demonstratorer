@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Dovre</title>
+        <title>KNReise - Bryggerier</title>
 
 
         <link href='../bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -31,9 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-<p>Kart over Dovre med fokus på arbeid som er
-gjort med produksjon og bearbeiding av innhold og på samarbeidet
-med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikvaren og Miljødirektoratet.
+
 </script>
 
 
@@ -675,135 +673,56 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Dovre';
-            var image = 'http://media31.dimu.no/media/image/H-DF/DF.5444/13948?width=800&height=580';
+            var title = 'Bryggerier';
+            var image = '';
 
-            (function () {
-    'use strict';
+                (function () {
+        'use strict';
 
-    //The datasets in use
-    var datasets = [
-        {
-            dataset: {
-                api: 'cartodb',
-                table: 'pilegrimsleden_dovre',
-                mapper: KR.API.mappers.pilegrimsleden_dovre
-            },
-            name: 'Pilegrimsleden',
-            style: function (feature) {
-                return {color: '#7570b3', clickable: false, opacity: 1, weight: 3};
-            },
-            bbox: false
-        },
-        {
-            name: 'Digitalt fortalt',
-            dataset: {dataset: 'difo', api: 'norvegiana'},
-            cluster: true,
-            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
-            noListThreshold: Infinity
-        },
-        {
-            name: 'Fangstlokaliteter',
-            dataset_name_override: 'fangstlokaliteter',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'Kulturminnesok',
-                query: 'delving_title:Fangstlokalitet'
-            },
-            template: KR.Util.getDatasetTemplate('kulturminne'),
-            style: {
-                fillcolor: '#436978',
-                circle: true
-            },
-            cluster: false,
-            visible: true
-        },
-        {
-            id: 'verneomraader',
-            dataset: {
-                api: 'cartodb',
-                table: 'naturvernomrader_utm33_2',
-                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
-            },
-            provider: 'Naturbase',
-            name: 'Verneområder',
-            template: KR.Util.getDatasetTemplate('verneomraader'),
-            getFeatureData: function (feature, callback) {
-                api.getItem(
-                    {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
-                    callback
-                );
-            },
-            toPoint: {
-                showAlways: true,
-                stopPolyClick: true,
-                minSize: 20
-            },
-            cluster: false
-        },
-        {
-            grouped: true,
-            name: 'Historie',
-            datasets: [
-                {
-                    name: 'MUSIT',
-                    dataset: {
-                        api: 'norvegiana',
-                        dataset: 'MUSIT'
-                    },
-                    template: KR.Util.getDatasetTemplate('musit')
+        var api = new KR.API({
+            cartodb: {
+                user: 'norkart'
+            }
+
+        });
+
+        var datasets = [
+            {
+                name: 'Bryggerier',
+                provider: 'Bryggerier',
+                dataset: {
+                    api: 'cartodb',
+                    table: 'breweries',
+                    columns: ['name as title', 'image as thumbnail', '*']
                 },
-                {
-                    name: 'DiMu',
-                    dataset: {
-                        api: 'norvegiana',
-                        dataset: 'DiMu'
-                    },
-                    template: KR.Util.getDatasetTemplate('digitalt_museum')
+                isStatic: true,
+                bbox: true,
+                style: {fillcolor: '#FF8000', thumbnail: true},
+                cluster: false,
+                template: KR.Util.getDatasetTemplate('breweries')
+            },
+            {
+                name: 'Wikipedia',
+                provider: 'Wikipedia',
+                dataset: {
+                    api: 'wikipedia'
                 },
-                {
-                    name: 'Kulturminner',
-                    id: 'Kulturminnesok',
-                    dataset: {
-                        api: 'norvegiana',
-                        dataset: 'Kulturminnesok',
-                        query: '-delving_title:Fangstlokalitet'
-                    },
-                    template: KR.Util.getDatasetTemplate('kulturminne')
-                }
-            ],
-            isStatic: false,
-            minZoom: 12
-        },
-        {
-            name: 'Artsobservasjoner',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'Artsdatabanken'
-            },
-            circle: {
-                radius: 7,
-                weight: 1,
-                opacity: 1,
-                fillcolor: KR.Util.colorForProvider('Artsdatabanken', 'hex'),
-                fillOpacity: 0.4
-            },
-            cluster: false,
-            minZoom: 14,
-            template: KR.Util.getDatasetTemplate('popup')
-        }
-    ];
+                template: KR.Util.getDatasetTemplate('wikipedia'),
+                style: {template: true},
+                minZoom: 13
+            }
+        ];
 
-    var api = new KR.API();
+        KR.setupMap(api, datasets, {
+            title: 'My title',
+            //bbox: '10.162354,59.664273,11.205368,59.959135',
+            komm: '0301',
+            image: 'http://baconmockup.com/300/200/',
+            description: 'Long description here',
+            layer: 'norges_grunnkart'
+        });
 
-    KR.setupMap(api, datasets, {
-        komm: 511,
-        title: title,
-        image: image,
-        layer: 'norges_grunnkart',
-        description: $('#description_template').html()
-    });
-}());
+    }());
 
         </script>
     </body>

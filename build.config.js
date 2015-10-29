@@ -138,7 +138,8 @@ module.exports = {
     'brukerminne',
     'popup',
     'jernbanemuseet',
-    'foto_sf'
+    'foto_sf',
+    'breweries'
   ],
   demoTemplates: [
     'list_item',
@@ -276,6 +277,11 @@ module.exports = {
       id: '2verdenskrig',
       name: '2. verdenskrig',
       description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
+    },
+    {
+      id: 'breweries',
+      name: 'Bryggerier',
+      description: 'TEST'
     }
   ],
   experiments: [
