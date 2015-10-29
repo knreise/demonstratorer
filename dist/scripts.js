@@ -1586,19 +1586,29 @@ KR.MediaCarousel = {};
     function Counter(num, current) {
         current = current || 0;
 
+        var hasNext = function () {
+            return (current < num - 1);
+        };
+
+        var hasPrev = function () {
+            return (current > 0);
+        };
+
         return {
             prev: function () {
-                if (current === 0) {
-                    current = num;
+                if (!hasPrev()) {
+                    return current;
                 }
                 return --current;
             },
             next: function () {
-                if (current >= num - 1) {
-                    current = -1;
+                if (!hasNext()) {
+                    return current;
                 }
                 return ++current;
-            }
+            },
+            hasNext: hasNext,
+            hasPrev: hasPrev
         };
     }
 
@@ -1644,7 +1654,6 @@ KR.MediaCarousel = {};
     ns.SetupMediaCarousel = function (mediaContainer) {
         var media = mediaContainer.find('.media-list').children();
         var counter = new Counter(media.length);
-        console.log(media);
         function showMedia(idx) {
             media = mediaContainer.find('.media-list').children();
             var mediaElement = $(media[idx]);
@@ -1662,15 +1671,32 @@ KR.MediaCarousel = {};
                     audiojs.create(element);
                 }
             }
+
+            if (counter.hasPrev()) {
+                mediaContainer.find('.prev').addClass('active');
+            } else {
+                mediaContainer.find('.prev').removeClass('active');
+            }
+
+            if (counter.hasNext()) {
+                mediaContainer.find('.next').addClass('active');
+            } else {
+                mediaContainer.find('.next').removeClass('active');
+            }
+
         }
 
         mediaContainer.find('.next').on('click', function () {
-            console.log("next")
-            showMedia(counter.next());
+            if (counter.hasNext()) {
+                showMedia(counter.next());
+            }
         });
 
         mediaContainer.find('.prev').on('click', function () {
-            showMedia(counter.prev());
+            console.log("prev");
+            if (counter.hasPrev()) {
+                showMedia(counter.prev());
+            }
         });
     };
 
@@ -1687,7 +1713,7 @@ KR.MediaCarousel = {};
         }));
         outer.append(list);
         if (media.length > 1) {
-            outer.append($('<div class="media-navigation"><a class="prev circle active"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a><a class="next circle active"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></div>'));
+            outer.append($('<div class="media-navigation"><a class="prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a><a class="next circle active"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></div>'));
         }
         return outer[0].outerHTML;
     };
