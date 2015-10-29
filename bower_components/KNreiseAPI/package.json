@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.7.15",
+  "version": "1.7.16",
   "description": "Api wrapper for KNreise",
   "main": "index.js",
   "scripts": {

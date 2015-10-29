@@ -157,6 +157,9 @@ KR.Util = {};
     };
 
 
+    /*
+        Add crossorigin proxy to an url
+    */
     ns.addCrossorigin = function (url) {
         if (url.indexOf('http://crossorigin.me/') !== 0) {
             return 'http://crossorigin.me/' + url;
@@ -580,13 +583,50 @@ KR.NorvegianaAPI = function (apiName) {
         return imageLink;
     }
 
+    function _joinArrays(props, keys) {
+        return _.chain(keys)
+            .reduce(function (acc, key) {
+
+                if (_.has(props, key)) {
+                    acc = acc.concat(props[key]);
+                }
+                return acc;
+            }, [])
+            .uniq()
+            .value();
+    }
+
+
+    function _createMediaList(media) {
+        return _.chain(media)
+            .map(function (list, type) {
+                return _.map(list, function (url) {
+                    return {
+                        type: type,
+                        url: url
+                    };
+                });
+            })
+            .flatten()
+            .value();
+    }
+
+
     function _createProperties(allProperties) {
 
         var thumbUrl = _firstOrNull(allProperties.delving_thumbnail);
 
+        var images = _joinArrays(allProperties, ['delving_thumbnail', 'abm_imageUri']);
+
+        var media  = {
+            video: _.map(allProperties.abm_videoUri, _parseVideo),
+            sound: allProperties.abm_soundUri,
+            image: images
+        };
+
         return {
             thumbnail: _fixThumbnail(thumbUrl),
-            images: allProperties.delving_thumbnail,
+            images: images,
             title: _firstOrNull(allProperties.dc_title),
             content: _.map(allProperties.dc_description, function (d) { return '<p>' + d + '</p>'; }).join('\n'),
             link: _firstOrNull(allProperties.europeana_isShownAt),
@@ -596,7 +636,8 @@ KR.NorvegianaAPI = function (apiName) {
             video: _firstOrNull(allProperties.abm_videoUri),
             videoEmbed: _parseVideo(_firstOrNull(allProperties.abm_videoUri)),
             sound: _firstOrNull(allProperties.abm_soundUri),
-            allProps: allProperties
+            allProps: allProperties,
+            media: _createMediaList(media)
         };
     }
 
