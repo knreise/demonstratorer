@@ -315,6 +315,12 @@
 <script type="text/template" id="digitalt_fortalt_template">
 <h3><%= title %></h3>
 
+
+<% if (media) { %>
+  <%= KR.CreateMediaListMarkup(media) %>
+<% } %>
+
+<!---
 <% if(contentType === 'VIDEO' && video) { %>
     <% if (video.indexOf('mp4') !== -1) { %>
         <video class="video-js vjs-default-skin fullwidth" controls
@@ -329,33 +335,9 @@
 <% } else if(contentType === 'SOUND' && sound) { %>
     <audio src="<%= sound %>" preload="auto"></audio>
 <% } else if(contentType === 'IMAGE' && images) { %>
-
     <%= KR.CreateImageListMarkup(images) %>
-<!--
-    <div class="images-container">
-        <div class="images-list">
-        <% _.each(images, function (image, index) { %> 
-          <% if (index === 0) { %>
-            <img class="fullwidth img-thumbnail" src="<%= image %>" />
-          <% } else { %>
-            <div class="hidden" data-src="<%= image %>"> </div>
-          <%} %>
-        <%})%>
-        </div>
-        <% if (images.length > 1) { %>
-        <div class="image-navigation">
-            <a class="prev circle active">
-            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-          </a>
-          <a class="next circle active">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-          </a>
-        </div>
-        <% } %>
-    </div>
-  -->
 <% } %>
-
+-->
 <p><%= allProps.abm_introduction %></p>
 
 <p><%= allProps.dc_description %></p>

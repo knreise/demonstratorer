@@ -1688,51 +1688,93 @@ var KR = this.KR || {};
 
 
     function _createImage(src) {
-        return $('<img class="fullwidth img-thumbnail" src="' + src + '" />');
+        return $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
     }
 
-    function setupImageCarousel(imagesContainer) {
-        var images = imagesContainer.find('.images-list').children();
-        var counter = new Counter(images.length);
+    function _createVideo(src) {
+        if (src.indexOf('mp4') !== -1) {
+            //  <% if(images) { %>poster="<%= images[0] %>" <% } %> 
+            return $('<video data-type="video" class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup="{}"><source src="' + src + '" type="video/mp4"></video>');
+        }
+        return $('<iframe data-type="video" class="fullwidth" height="315" src="' + src + '" frameborder="0" allowfullscreen></iframe>');
+    }
 
-        function showImage(idx) {
-            images = imagesContainer.find('.images-list').children();
-            var img = $(images[idx]);
-            images.addClass('hidden');
-            if (img.is('img')) {
-                img.removeClass('hidden');
+    function _createSound(src) {
+        return $('<audio data-type="sound" src="' + src + '" preload="auto"></audio>');
+    }
+
+    var generators = {
+        'image': _createImage,
+        'video': _createVideo,
+        'sound': _createSound
+    };
+
+    function _getMarkup(mediaObject) {
+        if (_.has(generators, mediaObject.type)) {
+            var element = generators[mediaObject.type](mediaObject.url);
+            element.attr('data-type', mediaObject.type);
+            element.attr('data-created', true);
+            return element;
+        }
+    }
+
+    function _setupMediaCarousel(imagesContainer) {
+        var media = imagesContainer.find('.images-list').children();
+        var counter = new Counter(media.length);
+
+        function showMedia(idx) {
+            media = imagesContainer.find('.images-list').children();
+            var mediaElement = $(media[idx]);
+            media.addClass('hidden');
+            if (mediaElement.attr('data-created') || mediaElement.hasClass('audiojs')) {
+                mediaElement.removeClass('hidden');
             } else {
-                var image = _createImage(img.attr('data-src'));
-                img.replaceWith(image);
+                var mediaObject = {
+                    type: mediaElement.attr('data-type'),
+                    url: mediaElement.attr('data-src')
+                };
+                var element = _getMarkup(mediaObject);
+                mediaElement.replaceWith(element);
+                if (element.is('audio')) {
+                    audiojs.create(element);
+                }
             }
         }
 
         imagesContainer.find('.next').on('click', function () {
-            showImage(counter.next());
+            showMedia(counter.next());
         });
 
         imagesContainer.find('.prev').on('click', function () {
-            showImage(counter.prev());
+            showMedia(counter.prev());
         });
     }
 
+    KR.CreateImageListMarkup = function () {return ''; };
 
-    //TODO: rewrite to template
-    KR.CreateImageListMarkup = function (images) {
+    function _createInactiveMarkup(url, type) {
+        return $('<div class="hidden"> </div>')
+            .attr('data-src', url)
+            .attr('data-type', type);
+    }
+
+    KR.CreateMediaListMarkup = function (media) {
         var outer = $('<div class="images-container"></div>');
         var list = $('<div class="images-list"></div>');
-        list.append(_.map(images, function (image, index) {
-            if (index === 0) {
-                return _createImage(image);
+        list.append(_.map(media, function (mediaObject, index) {
+            var active = index === 0;
+
+            if (active) {
+                return _getMarkup(mediaObject);
             }
-            return $('<div class="hidden" data-src="' + image + '"> </div>');
+            return _createInactiveMarkup(mediaObject.url, mediaObject.type);
         }));
         outer.append(list);
-        if (images.length > 1) {
+        if (media.length > 1) {
             outer.append($('<div class="image-navigation"><a class="prev circle active"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a><a class="next circle active"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></div>'));
         }
         return outer[0].outerHTML;
-    }
+    };
 
 
     /*
@@ -1919,14 +1961,14 @@ var KR = this.KR || {};
                 }
             }
 
+            var imagesContainer = element.find('.images-container');
+            if (imagesContainer.length) {
+                _setupMediaCarousel(imagesContainer);
+            }
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();
             }
 
-            var imagesContainer = element.find('.images-container');
-            if (imagesContainer.length) {
-                setupImageCarousel(imagesContainer);
-            }
             element.scrollTop(0);
         }
 
