@@ -316,21 +316,8 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="digitalt_fortalt_template">
 <h3><%= title %></h3>
 
-<% if(contentType === 'VIDEO' && video) { %>
-    <% if (video.indexOf('mp4') !== -1) { %>
-        <video class="video-js vjs-default-skin fullwidth" controls
-         preload="auto" height="315" <% if(images) { %>poster="<%= images[0] %>" <% } %>
-         data-setup='{}'>
-          <source src="<%= videoEmbed %>" type='video/mp4'>
-        </video>
-    <% } else { %>
-        <iframe class="fullwidth" height="315" src="<%= videoEmbed %>" frameborder="0" allowfullscreen></iframe>
-    <% } %>
-    
-<% } else if(contentType === 'SOUND' && sound) { %>
-    <audio src="<%= sound %>" preload="auto"></audio>
-<% } else if(contentType === 'IMAGE' && images) { %>
-    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% if (media) { %>
+  <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
 <% } %>
 
 <p><%= allProps.abm_introduction %></p>
