@@ -273,6 +273,32 @@
   font-weight: 500;
 }
 
+
+.knreise-sidebar .images-list img {
+    margin-bottom: 0 !important;    
+}
+
+.knreise-sidebar .image-navigation {
+    position:relative;
+    background: ; height:50px;
+}
+
+.knreise-sidebar .image-navigation .circle {
+    border-color: #8C8C8C;
+}
+
+.knreise-sidebar .image-navigation .prev {
+    position: absolute;
+    color: #8C8C8C !important;
+    left: 35%;
+}
+
+.knreise-sidebar .image-navigation .next {
+    position: absolute;
+    color: #8C8C8C !important;
+    right: 35%;
+}
+
 .sidebar-table {
     margin-top: 20px;
     margin-bottom: 20px;

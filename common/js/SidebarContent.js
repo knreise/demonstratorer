@@ -49,7 +49,7 @@ var KR = this.KR || {};
             }
         }
 
-        function selectFeature (_feature, _div) {
+        function selectFeature(_feature, _div) {
             div = _div;
             feature = _feature;
             _showPosition();
@@ -64,6 +64,73 @@ var KR = this.KR || {};
         };
     }
 
+    function Counter(num, current) {
+        current = current || 0;
+
+        return {
+            prev: function () {
+                if (current === 0) {
+                    current = num;
+                }
+                return --current;
+            },
+            next: function () {
+                if (current >= num - 1) {
+                    current = -1;
+                }
+                return ++current;
+            }
+        };
+    }
+
+
+    function _createImage(src) {
+        return $('<img class="fullwidth img-thumbnail" src="' + src + '" />');
+    }
+
+    function setupImageCarousel(imagesContainer) {
+        var images = imagesContainer.find('.images-list').children();
+        var counter = new Counter(images.length);
+
+        function showImage(idx) {
+            images = imagesContainer.find('.images-list').children();
+            var img = $(images[idx]);
+            images.addClass('hidden');
+            if (img.is('img')) {
+                img.removeClass('hidden');
+            } else {
+                var image = _createImage(img.attr('data-src'));
+                img.replaceWith(image);
+            }
+        }
+
+        imagesContainer.find('.next').on('click', function () {
+            showImage(counter.next());
+        });
+
+        imagesContainer.find('.prev').on('click', function () {
+            showImage(counter.prev());
+        });
+    }
+
+
+    //TODO: rewrite to template
+    KR.CreateImageListMarkup = function (images) {
+        var outer = $('<div class="images-container"></div>');
+        var list = $('<div class="images-list"></div>');
+        list.append(_.map(images, function (image, index) {
+            if (index === 0) {
+                return _createImage(image);
+            }
+            return $('<div class="hidden" data-src="' + image + '"> </div>');
+        }));
+        outer.append(list);
+        if (images.length > 1) {
+            outer.append($('<div class="image-navigation"><a class="prev circle active"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a><a class="next circle active"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></div>'));
+        }
+        return outer[0].outerHTML;
+    }
+
 
     /*
         Handles display of content in a sidebar
@@ -72,7 +139,7 @@ var KR = this.KR || {};
 
         var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
-        var positionDisplayer = PositionDisplayer();
+        var positionDisplayer = new PositionDisplayer();
 
         element = $(element);
         wrapper = $(wrapper);
@@ -176,7 +243,6 @@ var KR = this.KR || {};
 
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-            //var distBear = distanceAndBearing(feature);
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -219,7 +285,7 @@ var KR = this.KR || {};
 
             content = $(['<div>', content, '</div>'].join(' '));
             if (KR.Util.isInIframe()) {
-                content.find('a').attr('target','_blank');
+                content.find('a').attr('target', '_blank');
             }
 
             positionDisplayer.selectFeature(feature, content);
@@ -243,7 +309,6 @@ var KR = this.KR || {};
                     prev.click(callbacks.prev).addClass('active');
                 }
 
-
                 var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
                 wrapper.append(next);
                 if (callbacks.next) {
@@ -253,6 +318,11 @@ var KR = this.KR || {};
 
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();
+            }
+
+            var imagesContainer = element.find('.images-container');
+            if (imagesContainer.length) {
+                setupImageCarousel(imagesContainer);
             }
             element.scrollTop(0);
         }
@@ -299,7 +369,6 @@ var KR = this.KR || {};
             showFeature: showFeature,
             showFeatures: showFeatures,
             setMap: function (_map) {
-                //map = _map;
                 positionDisplayer.setMap(_map);
             }
         };

@@ -14,7 +14,31 @@
 <% } else if(contentType === 'SOUND' && sound) { %>
     <audio src="<%= sound %>" preload="auto"></audio>
 <% } else if(contentType === 'IMAGE' && images) { %>
-    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+
+    <%= KR.CreateImageListMarkup(images) %>
+<!--
+    <div class="images-container">
+        <div class="images-list">
+        <% _.each(images, function (image, index) { %> 
+          <% if (index === 0) { %>
+            <img class="fullwidth img-thumbnail" src="<%= image %>" />
+          <% } else { %>
+            <div class="hidden" data-src="<%= image %>"> </div>
+          <%} %>
+        <%})%>
+        </div>
+        <% if (images.length > 1) { %>
+        <div class="image-navigation">
+            <a class="prev circle active">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          </a>
+          <a class="next circle active">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          </a>
+        </div>
+        <% } %>
+    </div>
+  -->
 <% } %>
 
 <p><%= allProps.abm_introduction %></p>
