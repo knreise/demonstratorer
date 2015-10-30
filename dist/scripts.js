@@ -1608,7 +1608,7 @@ var KR = this.KR || {};
 
 
         function _showPosition() {
-            if (div && map.userPosition && feature) {
+            if (div && map && map.userPosition && feature) {
 
                 if (content) {
                     content.remove();
