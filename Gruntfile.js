@@ -74,7 +74,7 @@ module.exports = function (grunt) {
                                 image: demonstrator.image || null,
                                 params: JSON.stringify(demonstrator.params, null, 4),
                                 inline_js: fs.readFileSync('demonstratorer_content/config.js', 'utf8'),
-                                scriptLinks: userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']),
+                                scriptLinks: ['dist/scripts_external.js', 'dist/scripts.min.js'],
                                 cssLinks: userConfig.demoCssExternal.concat(['dist/style.css'])
                             };
 
@@ -105,7 +105,7 @@ module.exports = function (grunt) {
                             }
 
                             demonstrator.inline_js = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.js', 'utf8');
-                            demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
+                            demonstrator.scriptLinks = ['dist/scripts_external.js', 'dist/scripts.min.js'];
                             demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
@@ -127,7 +127,7 @@ module.exports = function (grunt) {
                         desc: null,
                         image: null,
                         inline_js: fs.readFileSync('demonstratorer_content/config.js', 'utf8'),
-                        scriptLinks: userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']),
+                        scriptLinks: ['dist/scripts_external.js', 'dist/scripts.min.js'],
                         cssLinks: userConfig.demoCssExternal.concat(['dist/style.css'])
                     };
 
@@ -233,6 +233,10 @@ module.exports = function (grunt) {
             script3d: {
                 src: userConfig.demoScripts3d,
                 dest: 'dist/scripts3d.js'
+            },
+            script_external: {
+                src: userConfig.demoScriptsExternal,
+                dest: 'dist/scripts_external.js'
             }/*,
             css: {
                 src: userConfig.demoCss,
