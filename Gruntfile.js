@@ -233,7 +233,7 @@ module.exports = function (grunt) {
             script3d: {
                 src: userConfig.demoScripts3d,
                 dest: 'dist/scripts3d.js'
-            },
+            }/*,
             css: {
                 src: userConfig.demoCss,
                 dest: 'dist/style.css'
@@ -241,7 +241,7 @@ module.exports = function (grunt) {
             css3d: {
                 src: userConfig.demoCss3d,
                 dest: 'dist/style3d.css'
-            }
+            }*/
         },
         uglify: {
             dist: {
@@ -283,7 +283,20 @@ module.exports = function (grunt) {
           prereleaseName: false,
           regExp: false
         }
-      }
+      },
+      cssmin: {
+          options: {
+            shorthandCompacting: false,
+            roundingPrecision: -1,
+            report: 'min'
+          },
+          target: {
+            files: {
+              'dist/style.css': [userConfig.demoCss],
+              'dist/style3d.css': [userConfig.demoCss3d]
+            }
+          }
+        }
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
@@ -294,10 +307,13 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-bump');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+
 
     grunt.registerTask('demos', [
         'concat',
         'uglify',
+        'cssmin',
         'file-creator:build-demos',
         'file-creator:build-generators',
         'file-creator:build-index'
