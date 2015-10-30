@@ -307,6 +307,13 @@ var KR = this.KR || {};
             .compact()
             .value();
 
+        _.each(datasetConfig, function (value, key) {
+            if (!value.hideFromGenerator && _.has(value, 'minZoom')) {
+                var name = value.name || key;
+                $('#no3d_warning').append('<li>' + name + '</li>');
+            }
+        });
+
         $('#datasets')
             .html(datasets)
             .find('input[name="datasetsCheckbox"]')
