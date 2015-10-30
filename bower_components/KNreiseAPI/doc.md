@@ -85,7 +85,7 @@ Note: For some apis the getBbox uses the getWithin function, as bbox is not supp
         );
       
 * **getItem**: Gets a single item from an api. Calls successCallback with a GeoJSON Feature.
-    
+
         getItem(
             <Dataset> dataset, // with 'api' and 'id'
             <function> successCallback,
@@ -93,6 +93,15 @@ Note: For some apis the getBbox uses the getWithin function, as bbox is not supp
         );
 
 * **getCollection**: Gets a norvegiana-Collection.
+
+
+* **addApi**: Lets you add another api at runtime.
+
+        addApi(
+            <string> name, // name of api
+            <function> api, // api-function
+            <dictionary> params // dictionary with properties
+        );
 
 ###Data types
 

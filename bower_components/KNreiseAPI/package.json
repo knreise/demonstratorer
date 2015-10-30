@@ -1,6 +1,10 @@
 {
   "name": "KNreiseAPI",
+<<<<<<< HEAD
   "version": "1.7.16",
+=======
+  "version": "1.7.18",
+>>>>>>> compress_assets
   "description": "Api wrapper for KNreise",
   "main": "index.js",
   "scripts": {
