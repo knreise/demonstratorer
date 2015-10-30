@@ -157,6 +157,9 @@ KR.Util = {};
     };
 
 
+    /*
+        Add crossorigin proxy to an url
+    */
     ns.addCrossorigin = function (url) {
         if (url.indexOf('http://crossorigin.me/') !== 0) {
             return 'http://crossorigin.me/' + url;
@@ -311,9 +314,11 @@ var KR = this.KR || {};
 KR.CartodbAPI = function (apiName, options) {
     'use strict';
 
-    var user = options.user;
-    var BASE_URL = 'http://' + user + '.cartodb.com/api/v2/sql';
+    var USER = options.user;
 
+    function _getURL(user) {
+        return 'http://' + user + '.cartodb.com/api/v2/sql';
+    }
 
     function _createMapper(propertyMap) {
 
@@ -383,11 +388,12 @@ KR.CartodbAPI = function (apiName, options) {
         });
     }
 
-    function _executeSQL(sql, mapper, callback, errorCallback) {
+    function _executeSQL(sql, mapper, callback, errorCallback, user) {
         var params = {
             q: sql
         };
-        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        var cdbuser = user || USER;
+        var url = _getURL(cdbuser) + '?' + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, mapper, callback, errorCallback);
     }
 
@@ -437,7 +443,7 @@ KR.CartodbAPI = function (apiName, options) {
             'komm in (' + _toArray(municipalities).join(', ') + ')'
         );
 
-        _executeSQL(sql, _parseExtent, callback, errorCallback);
+        _executeSQL(sql, _parseExtent, callback, errorCallback, 'knreise');
     }
 
     function getCountyBounds(counties, callback, errorCallback) {
@@ -447,7 +453,7 @@ KR.CartodbAPI = function (apiName, options) {
             'fylkesnr in (' + _toArray(counties).join(', ') + ')'
         );
 
-        _executeSQL(sql, _parseExtent, callback, errorCallback);
+        _executeSQL(sql, _parseExtent, callback, errorCallback, 'knreise');
     }
 
     function getData(dataset, callback, errorCallback) {
@@ -456,12 +462,15 @@ KR.CartodbAPI = function (apiName, options) {
         if (dataset.query) {
             sql = dataset.query;
         } else if (dataset.table) {
-            var select = ['*'];
-            if (_.has(columnList, dataset.table)) {
-                select = _.keys(columnList[dataset.table]);
+            var columns = dataset.columns;
+            if (!columns) {
+                columns = ['*'];
             }
-            select.push('ST_AsGeoJSON(the_geom) as geom');
-            sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
+            if (_.has(columnList, dataset.table)) {
+                columns = _.keys(columnList[dataset.table]);
+            }
+            columns.push('ST_AsGeoJSON(the_geom) as geom');
+            sql = 'SELECT ' + columns.join(', ') + ' FROM ' + dataset.table;
         } else if (dataset.county) {
             sql = _createSelect(
                 'ST_AsGeoJSON(the_geom) as geom',
@@ -580,13 +589,50 @@ KR.NorvegianaAPI = function (apiName) {
         return imageLink;
     }
 
+    function _joinArrays(props, keys) {
+        return _.chain(keys)
+            .reduce(function (acc, key) {
+
+                if (_.has(props, key)) {
+                    acc = acc.concat(props[key]);
+                }
+                return acc;
+            }, [])
+            .uniq()
+            .value();
+    }
+
+
+    function _createMediaList(media) {
+        return _.chain(media)
+            .map(function (list, type) {
+                return _.map(list, function (url) {
+                    return {
+                        type: type,
+                        url: url
+                    };
+                });
+            })
+            .flatten()
+            .value();
+    }
+
+
     function _createProperties(allProperties) {
 
         var thumbUrl = _firstOrNull(allProperties.delving_thumbnail);
 
+        var images = _joinArrays(allProperties, ['delving_thumbnail', 'abm_imageUri']);
+
+        var media  = {
+            video: _.map(allProperties.abm_videoUri, _parseVideo),
+            sound: allProperties.abm_soundUri,
+            image: images
+        };
+
         return {
             thumbnail: _fixThumbnail(thumbUrl),
-            images: allProperties.delving_thumbnail,
+            images: images,
             title: _firstOrNull(allProperties.dc_title),
             content: _.map(allProperties.dc_description, function (d) { return '<p>' + d + '</p>'; }).join('\n'),
             link: _firstOrNull(allProperties.europeana_isShownAt),
@@ -596,7 +642,8 @@ KR.NorvegianaAPI = function (apiName) {
             video: _firstOrNull(allProperties.abm_videoUri),
             videoEmbed: _parseVideo(_firstOrNull(allProperties.abm_videoUri)),
             sound: _firstOrNull(allProperties.abm_soundUri),
-            allProps: allProperties
+            allProps: allProperties,
+            media: _createMediaList(media)
         };
     }
 
@@ -1800,6 +1847,7 @@ KR.API = function (options) {
         },
         cartodb: {
             api: KR.CartodbAPI,
+            extend: true,
             params: {user: 'knreise'}
         },
         kulturminnedata: {
@@ -1850,15 +1898,19 @@ KR.API = function (options) {
         }
     };
 
+    function _createApis() {
+        return _.reduce(apiConfig, function (acc, params, key) {
+            var apiOptions = params.params;
+            if (params.extend) {
+                apiOptions = _.extend(apiOptions, options[key]);
+            }
+            acc[key] = new params.api(key, apiOptions);
+            return acc;
+        }, {});
+    }
 
-    var apis = _.reduce(apiConfig, function (acc, params, key) {
-        var apiOptions = params.params;
-        if (params.extend) {
-            apiOptions = _.extend(apiOptions, options[key]);
-        }
-        acc[key] = new params.api(key, apiOptions);
-        return acc;
-    }, {});
+
+    var apis = _createApis();
 
 
     function _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options) {
@@ -1987,6 +2039,17 @@ KR.API = function (options) {
         getCollection: function (collectionName, callback, errorCallback) {
             var norvegianaAPI = _getAPI('norvegiana');
             norvegianaAPI.getCollection(collectionName, callback, errorCallback);
+        },
+        addApi: function (name, api, params) {
+            if (_.has(apiConfig, name)) {
+                throw new Error('API with name ' + name + ' already exists');
+            }
+            params = params || {};
+            apiConfig[name] = {
+                api: api,
+                params: params
+            };
+            apis = _createApis();
         }
     };
 
