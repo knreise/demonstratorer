@@ -46,6 +46,7 @@ module.exports = {
     'common/js/L.Knreise.GeoJSON.js',
     'common/js/L.Knreise.Control.Sidebar.js',
     'common/js/urlInfo.js',
+    'common/js/mediaCarousel.js',
     'common/js/SidebarContent.js',
     'common/js/L.Knreise.Control.Datasets.js',
     'common/js/L.Knreise.Icon.js',

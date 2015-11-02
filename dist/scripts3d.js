@@ -1656,7 +1656,7 @@ var KR = this.KR || {};
             }
         }
 
-        function selectFeature (_feature, _div) {
+        function selectFeature(_feature, _div) {
             div = _div;
             feature = _feature;
             _showPosition();
@@ -1679,7 +1679,7 @@ var KR = this.KR || {};
 
         var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
-        var positionDisplayer = PositionDisplayer();
+        var positionDisplayer = new PositionDisplayer();
 
         element = $(element);
         wrapper = $(wrapper);
@@ -1783,7 +1783,6 @@ var KR = this.KR || {};
 
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-            //var distBear = distanceAndBearing(feature);
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -1826,7 +1825,7 @@ var KR = this.KR || {};
 
             content = $(['<div>', content, '</div>'].join(' '));
             if (KR.Util.isInIframe()) {
-                content.find('a').attr('target','_blank');
+                content.find('a').attr('target', '_blank');
             }
 
             positionDisplayer.selectFeature(feature, content);
@@ -1850,7 +1849,6 @@ var KR = this.KR || {};
                     prev.click(callbacks.prev).addClass('active');
                 }
 
-
                 var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
                 wrapper.append(next);
                 if (callbacks.next) {
@@ -1858,9 +1856,14 @@ var KR = this.KR || {};
                 }
             }
 
+            var mediaContainer = element.find('.media-container');
+            if (mediaContainer.length) {
+                KR.MediaCarousel.SetupMediaCarousel(mediaContainer);
+            }
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();
             }
+
             element.scrollTop(0);
         }
 
@@ -1906,7 +1909,6 @@ var KR = this.KR || {};
             showFeature: showFeature,
             showFeatures: showFeatures,
             setMap: function (_map) {
-                //map = _map;
                 positionDisplayer.setMap(_map);
             }
         };
