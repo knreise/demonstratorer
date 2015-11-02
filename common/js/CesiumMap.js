@@ -260,10 +260,12 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                 var dataSource = Cesium.GeoJsonDataSource.load(data);
                 callback(dataSource);
             });
+        }, function (err) {
+            callback();
         });
     }
 
-    function loadDataset2(dataset, bbox, api, extraProps, callback) {
+    function loadDataset2(dataset, bbox, api, extraProps) {
         api.getBbox(dataset, bbox, function (res) {
             _.each(res.features, function (feature) {
                 feature.properties = _.extend(feature.properties, extraProps);
@@ -284,6 +286,8 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
 
                 addMarkers(markers);
             });
+        }, function (err) {
+            console.warn('could not load dataset', dataset);
         });
     }
 

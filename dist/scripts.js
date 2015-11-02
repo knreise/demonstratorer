@@ -1693,7 +1693,6 @@ KR.MediaCarousel = {};
         });
 
         mediaContainer.find('.prev').on('click', function () {
-            console.log("prev");
             if (counter.hasPrev()) {
                 showMedia(counter.prev());
             }
@@ -1753,7 +1752,7 @@ var KR = this.KR || {};
 
 
         function _showPosition() {
-            if (div && map.userPosition && feature) {
+            if (div && map && map.userPosition && feature) {
 
                 if (content) {
                     content.remove();
