@@ -314,9 +314,11 @@ var KR = this.KR || {};
 KR.CartodbAPI = function (apiName, options) {
     'use strict';
 
-    var user = options.user;
-    var BASE_URL = 'http://' + user + '.cartodb.com/api/v2/sql';
+    var USER = options.user;
 
+    function _getURL(user) {
+        return 'http://' + user + '.cartodb.com/api/v2/sql';
+    }
 
     function _createMapper(propertyMap) {
 
@@ -386,11 +388,12 @@ KR.CartodbAPI = function (apiName, options) {
         });
     }
 
-    function _executeSQL(sql, mapper, callback, errorCallback) {
+    function _executeSQL(sql, mapper, callback, errorCallback, user) {
         var params = {
             q: sql
         };
-        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+        var cdbuser = user || USER;
+        var url = _getURL(cdbuser) + '?' + KR.Util.createQueryParameterString(params);
         KR.Util.sendRequest(url, mapper, callback, errorCallback);
     }
 
@@ -440,7 +443,7 @@ KR.CartodbAPI = function (apiName, options) {
             'komm in (' + _toArray(municipalities).join(', ') + ')'
         );
 
-        _executeSQL(sql, _parseExtent, callback, errorCallback);
+        _executeSQL(sql, _parseExtent, callback, errorCallback, 'knreise');
     }
 
     function getCountyBounds(counties, callback, errorCallback) {
@@ -450,7 +453,7 @@ KR.CartodbAPI = function (apiName, options) {
             'fylkesnr in (' + _toArray(counties).join(', ') + ')'
         );
 
-        _executeSQL(sql, _parseExtent, callback, errorCallback);
+        _executeSQL(sql, _parseExtent, callback, errorCallback, 'knreise');
     }
 
     function getData(dataset, callback, errorCallback) {
@@ -459,12 +462,15 @@ KR.CartodbAPI = function (apiName, options) {
         if (dataset.query) {
             sql = dataset.query;
         } else if (dataset.table) {
-            var select = ['*'];
-            if (_.has(columnList, dataset.table)) {
-                select = _.keys(columnList[dataset.table]);
+            var columns = dataset.columns;
+            if (!columns) {
+                columns = ['*'];
             }
-            select.push('ST_AsGeoJSON(the_geom) as geom');
-            sql = 'SELECT ' + select.join(', ') + ' FROM ' + dataset.table;
+            if (_.has(columnList, dataset.table)) {
+                columns = _.keys(columnList[dataset.table]);
+            }
+            columns.push('ST_AsGeoJSON(the_geom) as geom');
+            sql = 'SELECT ' + columns.join(', ') + ' FROM ' + dataset.table;
         } else if (dataset.county) {
             sql = _createSelect(
                 'ST_AsGeoJSON(the_geom) as geom',
@@ -1503,36 +1509,88 @@ KR.FlickrAPI = function (apiName, options) {
         return imageTemplate(_.extend({size: size}, photo));
     }
 
-    function _parser(response) {
-        var features = _.map(response.photos.photo, function (item) {
-            var properties = KR.Util.dictWithout(item, 'latitude', 'longitude');
+    function _parser(response, errorCallback) {
+        if (response.stat && response.stat === 'fail') {
+            KR.Util.handleError(errorCallback, response.message, response);
+            return;
+        }
+        var features = _.chain(response.photos.photo)
+            .filter(function (item) {
+                var lat = parseFloat(item.latitude);
+                var lng = parseFloat(item.longitude);
+                return (lat != 0 || lng != 0);
+            })
+            .map(function (item) {
+                var properties = KR.Util.dictWithout(item, 'latitude', 'longitude');
 
-            //see https://www.flickr.com/services/api/misc.urls.html for sizes
-            properties.thumbnail = getImageUrl(item, 's');
-            properties.image = getImageUrl(item, 'z');
-            return KR.Util.createGeoJSONFeature(
-                {
-                    lat: parseFloat(item.latitude),
-                    lng: parseFloat(item.longitude)
-                },
-                properties,
-                apiName + '_' + item.id
-            );
-        });
+                //see https://www.flickr.com/services/api/misc.urls.html for sizes
+                properties.thumbnail = getImageUrl(item, 's');
+                properties.image = getImageUrl(item, 'z');
+                return KR.Util.createGeoJSONFeature(
+                    {
+                        lat: parseFloat(item.latitude),
+                        lng: parseFloat(item.longitude)
+                    },
+                    properties,
+                    apiName + '_' + item.id
+                );
+            })
+            .value();
         return KR.Util.createFeatureCollection(features);
     }
 
+
+    function _queryForAllPages(params, callback, errorCallback) {
+
+        var result = [];
+
+        function _gotResponse(response) {
+            var fc = _parser(response, errorCallback);
+            if (fc && fc.features) {
+                result = result.concat(fc.features);
+            }
+
+            if (response.photos && response.photos.page < response.photos.pages) {
+                params.page = response.photos.page + 1;
+                _sendRequest(params)
+            } else {
+                var fc = KR.Util.createFeatureCollection(result);
+                callback(fc);
+            }
+        }
+
+        function _sendRequest(params) {
+            var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
+            KR.Util.sendRequest(url, _gotResponse);
+        }
+        _sendRequest(params);
+    }
+
+
     function _queryFlickr(dataset, params, callback, errorCallback, options) {
-        if (!_.has(dataset, 'user_id')) {
-            KR.Util.handleError(errorCallback, 'must specify user_id');
+        if (!_.has(dataset, 'user_id') && !_.has(dataset, 'group_id')) {
+            KR.Util.handleError(errorCallback, 'must specify user_id or group_id');
             return;
         }
 
+        if (_.has(dataset, 'user_id')) {
+            params = _.extend(params, {
+                method: 'flickr.photos.search',
+                user_id: dataset.user_id
+            });
+        }
+
+        if (_.has(dataset, 'group_id')) {
+            params = _.extend(params, {
+                method: 'flickr.groups.pools.getPhotos',
+                group_id: dataset.group_id
+            });
+        }
+
         params = _.extend(params, {
-            method: 'flickr.photos.search',
-            user_id: dataset.user_id,
             api_key: apikey,
             has_geo: true,
+            per_page: 500,
             extras: 'geo,tags',
             format: 'json',
             nojsoncallback: 1,
@@ -1543,9 +1601,7 @@ KR.FlickrAPI = function (apiName, options) {
             params.tags = dataset.tags.join(',');
             params.tag_mode = dataset.tag_mode || 'all';
         }
-
-        var url = BASE_URL + '?' + KR.Util.createQueryParameterString(params);
-        KR.Util.sendRequest(url, _parser, callback, errorCallback);
+        _queryForAllPages(params, callback, errorCallback);
     }
 
 
@@ -1565,7 +1621,12 @@ KR.FlickrAPI = function (apiName, options) {
         _queryFlickr(dataset, params, callback, errorCallback, options);
     }
 
+    function getData(dataset, callback, errorCallback) {
+        _queryFlickr(dataset, {}, callback, errorCallback, options);
+    }
+
     return {
+        getData: getData,
         getWithin: getWithin,
         getBbox: getBbox
     };
@@ -1841,6 +1902,7 @@ KR.API = function (options) {
         },
         cartodb: {
             api: KR.CartodbAPI,
+            extend: true,
             params: {user: 'knreise'}
         },
         kulturminnedata: {
@@ -1891,15 +1953,19 @@ KR.API = function (options) {
         }
     };
 
+    function _createApis() {
+        return _.reduce(apiConfig, function (acc, params, key) {
+            var apiOptions = params.params;
+            if (params.extend) {
+                apiOptions = _.extend(apiOptions, options[key]);
+            }
+            acc[key] = new params.api(key, apiOptions);
+            return acc;
+        }, {});
+    }
 
-    var apis = _.reduce(apiConfig, function (acc, params, key) {
-        var apiOptions = params.params;
-        if (params.extend) {
-            apiOptions = _.extend(apiOptions, options[key]);
-        }
-        acc[key] = new params.api(key, apiOptions);
-        return acc;
-    }, {});
+
+    var apis = _createApis();
 
 
     function _distanceFromBbox(api, dataset, bbox, callback, errorCallback, options) {
@@ -2028,6 +2094,17 @@ KR.API = function (options) {
         getCollection: function (collectionName, callback, errorCallback) {
             var norvegianaAPI = _getAPI('norvegiana');
             norvegianaAPI.getCollection(collectionName, callback, errorCallback);
+        },
+        addApi: function (name, api, params) {
+            if (_.has(apiConfig, name)) {
+                throw new Error('API with name ' + name + ' already exists');
+            }
+            params = params || {};
+            apiConfig[name] = {
+                api: api,
+                params: params
+            };
+            apis = _createApis();
         }
     };
 

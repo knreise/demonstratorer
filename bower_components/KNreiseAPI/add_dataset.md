@@ -59,6 +59,8 @@ In addition the GeoJSON Feature ID is set throughout this API, and is on the for
 
     NAME-OF-API_UNIQUE-ID-IN-API
 
+where the UNIQUE-ID-IN-API is the first parameter passed to your api (```apiName```)
+
 
 Supporting within bbox-query
 ----------------------------
@@ -81,12 +83,40 @@ Code style
 Use a linter and common sense, try to follow the general style of the library.
 
 
+Passing Options to an api
+-------------------------
+
+The secound parameter to your api is ```options```, this is a dictionary with 
+properties. These can be set in two ways. If the options are static (like for 
+instance for wikipedia.js that is used for the datasets wikipedia and 
+wikipediaNN) they are set in the params - dictionary in apiConfig in api.js
+
+Dynamic options are set by the user when creating a new api, like the api key 
+for flickr:
+
+        var api = new KR.API({
+            flickr: {
+                apikey: 'key'
+            }
+        });
+
+To enable dynamic options, set ```extend: true``` in apiConfig in api.js. 
+The dynamic options extends the static ones, so a combination can be used.
+
+
+Adding an api at run-time
+-------------------------
+Instead of adding an api to the codebase and release it, it's also possible to 
+add an API at runtime. This is done using the ```api.addApi``` function. See 
+examples/api_extend.html for an example.
+
+
 API-code-template
 -----------------
 
     var KR = this.KR || {};
 
-    KR.MyApiNameAPI = function (apiName) {
+    KR.MyApiNameAPI = function (apiName, options) {
         'use strict';
 
         function getData(dataset, callback, errorCallback) {
