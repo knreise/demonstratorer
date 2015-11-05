@@ -481,14 +481,22 @@ var KR = this.KR || {};
             });
         });
 
+
+        function _localeSort(res, key) {
+            function sortComparer(a, b) {
+                return a[key].localeCompare(b[key], 'nb');
+            }
+            return res.sort(sortComparer);
+        }
+
+
         getCountyList(function (res) {
-            counties = res;
+            counties = _localeSort(res, 'navn');
             fetched();
         });
 
-
         getMunicipalityList(function (res) {
-            municipalities = res;
+            municipalities = _localeSort(res, 'navn');
             fetched();
         });
 
