@@ -425,6 +425,12 @@ var KR = this.KR || {};
 
             var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') + page + '?' + KR.Util.createQueryParameterString(params);
             $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
+
+            if (use3d) {
+                $('#3d_warning_box').removeClass('hidden');
+            } else {
+                $('#3d_warning_box').addClass('hidden');
+            }
         };
 
 
