@@ -3639,6 +3639,20 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 noListThreshold: Infinity
             },
+            'kulturminnesok_flickr': {
+                name: 'Kulturminnesøk',
+                dataset_name_override: 'Kulturminnesøk',
+                provider: 'Kulturminnesøk Flickr',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    group_id: '1426230@N24'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: true,
+                style: {thumbnail: true},
+                description: 'Bilder fra Kulturminnesøks Flickr-gruppe',
+            },
             'riksarkivet': {
                 name: 'Riksarkivet',
                 dataset_name_override: 'Riksarkivet',

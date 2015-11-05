@@ -183,9 +183,12 @@ To use this api you must provide a config-object when initializing the api.
 
 #### flickr
 * ***user_id***: ``<string>`` The Flickr user id to get photos from
+* ***group_id***: ``<string>`` The Flickr group id to get photos from (use either user_id or group_id)
 * ***tags***: ``<string[]>`` A list of tags to query by
 * ***tag_mode***: ``<string>`` Tag mode, as pr the [flickr documentation][flickrdoc] (default: ``all``)
 * ***accuracy****: ``<int>`` accuracy parameter from [flickr documentation][flickrdoc] (default: ``11``)
+
+NOTE: when using group_id GetWithin and GetBbox is not supported!
 
 #### kml
 * ***url***: ``<string>`` Url to the KML file to fetch
