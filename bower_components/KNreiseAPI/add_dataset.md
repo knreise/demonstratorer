@@ -59,16 +59,8 @@ In addition the GeoJSON Feature ID is set throughout this API, and is on the for
 
     NAME-OF-API_UNIQUE-ID-IN-API
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 where the UNIQUE-ID-IN-API is the first parameter passed to your api (```apiName```)
 
->>>>>>> compress_assets
-=======
-where the UNIQUE-ID-IN-API is the first parameter passed to your api (```apiName```)
-
->>>>>>> master
 
 Supporting within bbox-query
 ----------------------------
@@ -91,11 +83,6 @@ Code style
 Use a linter and common sense, try to follow the general style of the library.
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
 Passing Options to an api
 -------------------------
 
@@ -124,24 +111,12 @@ add an API at runtime. This is done using the ```api.addApi``` function. See
 examples/api_extend.html for an example.
 
 
-<<<<<<< HEAD
->>>>>>> compress_assets
-=======
->>>>>>> master
 API-code-template
 -----------------
 
     var KR = this.KR || {};
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    KR.MyApiNameAPI = function (apiName) {
-=======
     KR.MyApiNameAPI = function (apiName, options) {
->>>>>>> compress_assets
-=======
-    KR.MyApiNameAPI = function (apiName, options) {
->>>>>>> master
         'use strict';
 
         function getData(dataset, callback, errorCallback) {

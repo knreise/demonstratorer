@@ -1,14 +1,6 @@
 {
   "name": "KNreiseAPI",
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "version": "1.7.16",
-=======
-  "version": "1.7.18",
->>>>>>> compress_assets
-=======
   "version": "1.7.19",
->>>>>>> master
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
