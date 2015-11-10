@@ -39,9 +39,11 @@ Mye av dokumentasjonen er inline-kode-kommentarer.
 
 - [howto.md][howto] for noen beskrivelser av oppsett
 - [api_doc.md][api_doc] for beskrivelse av datasett-konseptet
+- [codepen_atlefren] for Live-demoer ved bruk av CodePen
 
 [howto]: https://github.com/knreise/demonstratorer/blob/master/howto.md
 [api_doc]: https://github.com/knreise/demonstratorer/blob/master/api_doc.md
+[codepen_atlefren]: http://codepen.io/collection/DYyBrx/
 
 
 Development - getting started
