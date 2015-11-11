@@ -56,7 +56,7 @@ KR.Config = KR.Config || {};
                     color: '#fff',
                     weight: 1,
                     fillColor: '#B942D0'
-                }
+                };
 
                 enkeltMinneLayer = L.geoJson(null, {
                     onEachFeature: function (feature, layer) {

@@ -3189,7 +3189,7 @@ KR.Config = KR.Config || {};
                     color: '#fff',
                     weight: 1,
                     fillColor: '#B942D0'
-                }
+                };
 
                 enkeltMinneLayer = L.geoJson(null, {
                     onEachFeature: function (feature, layer) {
@@ -3609,7 +3609,8 @@ KR.Config = KR.Config || {};
                     count: 10,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 },
-                description: 'Data fra Riksantikvarens kulturminnesøk'
+                description: 'Data fra Riksantikvarens kulturminnesøk',
+                showEnkeltminner: false
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',
