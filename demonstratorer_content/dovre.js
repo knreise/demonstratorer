@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+
     //The datasets in use
     var datasets = [
         {
@@ -23,20 +25,22 @@
             noListThreshold: Infinity
         },
         {
-            name: 'Fangstlokaliteter',
+            provider: 'kulturminnedata',
+            name: 'Fangstgroper',
             dataset_name_override: 'fangstlokaliteter',
             dataset: {
-                api: 'norvegiana',
-                dataset: 'Kulturminnesok',
-                query: 'delving_title:Fangstlokalitet'
+                query: "Navn='Fangstgrop'",
+                layer: 0,
+                api: 'kulturminnedata'
             },
-            template: KR.Util.getDatasetTemplate('kulturminne'),
-            style: {
-                fillcolor: '#436978',
-                circle: true
-            },
+            template: KR.Util.getDatasetTemplate('fangstgrop'),
+            smallMarker: true,
             cluster: false,
-            visible: true
+            style: {
+                fillcolor: '#000',
+                circle: true,
+                radius: 1.5
+            }
         },
         {
             id: 'verneomraader',
@@ -63,10 +67,11 @@
         },
         {
             grouped: true,
-            name: 'Historie',
+            name: 'Arkeologi og historie',
             datasets: [
                 {
                     name: 'MUSIT',
+                    provider: 'Universitetsmuseene',
                     dataset: {
                         api: 'norvegiana',
                         dataset: 'MUSIT'
@@ -79,21 +84,28 @@
                         api: 'norvegiana',
                         dataset: 'DiMu'
                     },
-                    template: KR.Util.getDatasetTemplate('digitalt_museum')
+                    template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                    isStatic: false
                 },
                 {
-                    name: 'Kulturminner',
-                    id: 'Kulturminnesok',
+                    id: 'riksantikvaren',
+                    name: 'Riksantikvaren',
+                    provider: 'Riksantikvaren',
                     dataset: {
-                        api: 'norvegiana',
-                        dataset: 'Kulturminnesok',
-                        query: '-delving_title:Fangstlokalitet'
+                        api: 'kulturminnedataSparql',
+                        kommune: '0511'
                     },
-                    template: KR.Util.getDatasetTemplate('kulturminne')
+                    template: KR.Util.getDatasetTemplate('ra_sparql'),
+                    bbox: false,
+                    isStatic: true,
+                    init: kulturminneFunctions.initKulturminnePoly,
+                    loadWhenLessThan: {
+                        count: 5,
+                        callback: kulturminneFunctions.loadKulturminnePoly
+                    }
                 }
             ],
-            isStatic: false,
-            minZoom: 12
+            description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
         },
         {
             name: 'Artsobservasjoner',
