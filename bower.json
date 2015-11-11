@@ -36,6 +36,9 @@
     "leaflet.knreise-markers": "https://github.com/knreise/Leaflet.knreise-markers.git",
     "leaflet-draw": "~0.2.4",
     "Leaflet.TileLayer.PouchDBCached": "https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached.git#0.1.0",
-    "fontawesome": "4.3.0"
+    "fontawesome": "4.4.0"
+  },
+  "resolutions": {
+    "fontawesome": "4.4.0"
   }
 }
