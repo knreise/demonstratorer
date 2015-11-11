@@ -3,6 +3,8 @@
 
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
+    var kommune = '0511';
+
     //The datasets in use
     var datasets = [
         {
@@ -68,6 +70,77 @@
         {
             grouped: true,
             name: 'Historie',
+            style: {
+                fillcolor: '#D252B9',
+                circle: false,
+                thumbnail: true
+            },
+            datasets: [
+                {
+                    id: 'riksantikvaren',
+                    name: 'Riksantikvaren',
+                    provider: 'Riksantikvaren',
+                    dataset: {
+                        filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
+                        api: 'kulturminnedataSparql',
+                        kommune: kommune
+                    },
+                    template: KR.Util.getDatasetTemplate('ra_sparql'),
+                    bbox: false,
+                    isStatic: true,
+                    init: kulturminneFunctions.initKulturminnePoly,
+                    loadWhenLessThan: {
+                        count: 5,
+                        callback: kulturminneFunctions.loadKulturminnePoly
+                    }
+                },
+                {
+                    name: 'DiMu',
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'DiMu',
+                        query: '-dc_subject_facet:Kunst'
+                    },
+                    template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                    isStatic: false,
+                    bbox: true
+                },
+                {
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'Industrimuseum'
+                    },
+                    isStatic: false,
+                    bbox: true
+                },
+                {
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'Foto-SF'
+                    },
+                    isStatic: false,
+                    bbox: false,
+                    template: KR.Util.getDatasetTemplate('foto_sf')
+                },
+                {
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'Kystreise'
+                    },
+                    isStatic: true,
+                    bbox: false
+                }
+            ],
+            description: 'Historie og kulturminner fra Riksantikvaren og Digitalt museum '
+        },
+        {
+            grouped: true,
+            name: 'Arkeologi',
+            style: {
+                fillcolor: '#436978',
+                circle: false,
+                thumbnail: true
+            },
             datasets: [
                 {
                     name: 'MUSIT',
@@ -79,33 +152,25 @@
                     template: KR.Util.getDatasetTemplate('musit')
                 },
                 {
-                    name: 'DiMu',
+                    id: 'riksantikvaren',
+                    name: 'Riksantikvaren',
+                    provider: 'Riksantikvaren',
                     dataset: {
-                        api: 'norvegiana',
-                        dataset: 'DiMu'
+                        filter: 'FILTER regex(?loccatlabel, "^Arkeologisk", "i") .',
+                        api: 'kulturminnedataSparql',
+                        kommune: kommune
                     },
-                    template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                    isStatic: false
+                    template: KR.Util.getDatasetTemplate('ra_sparql'),
+                    bbox: false,
+                    isStatic: true,
+                    init: kulturminneFunctions.initKulturminnePoly,
+                    loadWhenLessThan: {
+                        count: 5,
+                        callback: kulturminneFunctions.loadKulturminnePoly
+                    }
                 }
             ],
-            description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
-        },
-        {
-            id: 'riksantikvaren',
-            name: 'Arkeologi',
-            provider: 'Riksantikvaren',
-            dataset: {
-                api: 'kulturminnedataSparql',
-                kommune: '0511'
-            },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            bbox: false,
-            isStatic: true,
-            init: kulturminneFunctions.initKulturminnePoly,
-            loadWhenLessThan: {
-                count: 5,
-                callback: kulturminneFunctions.loadKulturminnePoly
-            }
+            description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
         },
         {
             name: 'Artsobservasjoner',
@@ -129,7 +194,7 @@
     var api = new KR.API();
 
     KR.setupMap(api, datasets, {
-        komm: 511,
+        komm: kommune,
         title: title,
         image: image,
         layer: 'norges_grunnkart',
