@@ -7,7 +7,7 @@
         <title>KNReise - Telemark</title>
 
 
-        <link href='../bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
+        <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
@@ -462,6 +462,10 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
     </tr>
 </table>
 
+<a class="sidebar-link" href="<%= url %>" target="_blank">
+  <i class="fa fa-external-link-square"></i> Vis hos Kulturminnesøk
+</a>
+
 </script>
 
 
@@ -616,6 +620,44 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
 </script>
 
 
+<script type="text/template" id="nasjonalbiblioteket_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+
+
+<ul class="list-unstyled distance">
+    <li>
+	    <a href="<%= url %>"  target="_blank" class="sidebar-link" >
+			<i class="fa fa-external-link-square"></i> Vis bok i bokhylla.no
+		</a>
+    </li>
+</ul>
+
+
+	
+
+
+</script>
+
+
+<script type="text/template" id="byantikvaren_oslo_template">
+<h3><%= title %></h3>
+
+<img class="fullwidth img-thumbnail" src="<%= images %>" width="400"/>
+
+<p><%= image_caption %></p>
+
+<p><%= content %></p>
+
+<p class="small"><%= kulturminne_tekst %></p>
+	
+
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>
@@ -713,7 +755,27 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
             },
             style: {thumbnail: true},
             minZoom: 13,
+        },
+        {
+            name: 'Nasjonalbiblioteket',
+            hideFromGenerator: true,
+            provider: 'Nasjonalbiblioteket',
+            dataset: {
+                api: 'cartodb',
+                table: 'bygdebok_telemark'
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
+            style: {
+	            thumbnail: false,
+	            fillcolor: '#744700',
+				circle: true,
+				opacity: 0.8,
+				radius: 20},
+            description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
         }
+
 
     ];
 

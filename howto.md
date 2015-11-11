@@ -42,3 +42,7 @@ To add a new dataset-template, add a new file to ``/templates/datasets``, name i
 
 The template can then be loaded in javascript, using ``KR.Util.getDatasetTemplate({{templatename}})``.
 
+
+Add new dataset from cartodb
+----------------------------
+See https://github.com/knreise/demonstratorer/wiki/add-new-dataset-from-cartodb

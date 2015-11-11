@@ -435,17 +435,32 @@ KR.Config = KR.Config || {};
                 description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
                 template: KR.Util.getDatasetTemplate('brukerminne')
             },
-            'grorud': {
+            'groruddalen': {
                 name: 'Byantikvaren Oslo - Groruddalen',
                 hideFromGenerator: true,
-                provider: 'grorud',
+                provider: 'Byantikvaren i Oslo',
                 dataset: {
                     api: 'cartodb',
-                    table: 'byantikvaren_groruddalen'
+                    table: 'byantikvaren_oslo_groruddalen'
                 },
                 bbox: false,
-                isStatic: true,
+                isStatic: false,
+                style: {thumbnail: true},
+                template: KR.Util.getDatasetTemplate('byantikvaren_oslo'),
                 description: 'Byantikvarens Groruddalsatlas'
+            },
+            'norgerundt': {
+                name: 'Norge Rundt',
+                hideFromGenerator: true,
+                provider: 'NRK',
+                dataset: {
+                    api: 'cartodb',
+                    table: 'nrk_norge_rundt'
+                },
+                bbox: false,
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Stedfestede innslag fra Norge Rundt'
             },
             'dimu': {
                 name: 'Digitalt Museum',
@@ -606,7 +621,23 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Bilder fra Vestfoldmuseene sin Flickr-konto',
+            },
+            'perspektivet': {
+                name: 'Perspektivet Museum',
+                dataset_name_override: 'Perspektivet Museum',
+                provider: 'Perspektivet Museum',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    user_id: 'perspektivetmuseum',
+                    accuracy: '1'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: false,
+                style: {thumbnail: true},
+                description: 'Bilder fra Perspektivet Museum sin Flickr-konto',
             }
+
 
 
         };

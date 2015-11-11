@@ -7,7 +7,7 @@
         <title>KNReise - Dovre</title>
 
 
-        <link href='../bower_components/components-font-awesome/css/font-awesome.min.css' rel='stylesheet' />
+        <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
         <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
         <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
         <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
@@ -464,6 +464,10 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
     </tr>
 </table>
 
+<a class="sidebar-link" href="<%= url %>" target="_blank">
+  <i class="fa fa-external-link-square"></i> Vis hos Kulturminnesøk
+</a>
+
 </script>
 
 
@@ -618,6 +622,44 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 </script>
 
 
+<script type="text/template" id="nasjonalbiblioteket_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+
+
+<ul class="list-unstyled distance">
+    <li>
+	    <a href="<%= url %>"  target="_blank" class="sidebar-link" >
+			<i class="fa fa-external-link-square"></i> Vis bok i bokhylla.no
+		</a>
+    </li>
+</ul>
+
+
+	
+
+
+</script>
+
+
+<script type="text/template" id="byantikvaren_oslo_template">
+<h3><%= title %></h3>
+
+<img class="fullwidth img-thumbnail" src="<%= images %>" width="400"/>
+
+<p><%= image_caption %></p>
+
+<p><%= content %></p>
+
+<p class="small"><%= kulturminne_tekst %></p>
+	
+
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>
@@ -629,6 +671,8 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
             (function () {
     'use strict';
+
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
     //The datasets in use
     var datasets = [
@@ -652,20 +696,22 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
             noListThreshold: Infinity
         },
         {
-            name: 'Fangstlokaliteter',
+            provider: 'kulturminnedata',
+            name: 'Fangstgroper',
             dataset_name_override: 'fangstlokaliteter',
             dataset: {
-                api: 'norvegiana',
-                dataset: 'Kulturminnesok',
-                query: 'delving_title:Fangstlokalitet'
+                query: "Navn='Fangstgrop'",
+                layer: 0,
+                api: 'kulturminnedata'
             },
-            template: KR.Util.getDatasetTemplate('kulturminne'),
-            style: {
-                fillcolor: '#436978',
-                circle: true
-            },
+            template: KR.Util.getDatasetTemplate('fangstgrop'),
+            smallMarker: true,
             cluster: false,
-            visible: true
+            style: {
+                fillcolor: '#000',
+                circle: true,
+                radius: 1.5
+            }
         },
         {
             id: 'verneomraader',
@@ -692,10 +738,11 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
         },
         {
             grouped: true,
-            name: 'Historie',
+            name: 'Arkeologi og historie',
             datasets: [
                 {
                     name: 'MUSIT',
+                    provider: 'Universitetsmuseene',
                     dataset: {
                         api: 'norvegiana',
                         dataset: 'MUSIT'
@@ -708,21 +755,28 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
                         api: 'norvegiana',
                         dataset: 'DiMu'
                     },
-                    template: KR.Util.getDatasetTemplate('digitalt_museum')
+                    template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                    isStatic: false
                 },
                 {
-                    name: 'Kulturminner',
-                    id: 'Kulturminnesok',
+                    id: 'riksantikvaren',
+                    name: 'Riksantikvaren',
+                    provider: 'Riksantikvaren',
                     dataset: {
-                        api: 'norvegiana',
-                        dataset: 'Kulturminnesok',
-                        query: '-delving_title:Fangstlokalitet'
+                        api: 'kulturminnedataSparql',
+                        kommune: '0511'
                     },
-                    template: KR.Util.getDatasetTemplate('kulturminne')
+                    template: KR.Util.getDatasetTemplate('ra_sparql'),
+                    bbox: false,
+                    isStatic: true,
+                    init: kulturminneFunctions.initKulturminnePoly,
+                    loadWhenLessThan: {
+                        count: 5,
+                        callback: kulturminneFunctions.loadKulturminnePoly
+                    }
                 }
             ],
-            isStatic: false,
-            minZoom: 12
+            description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
         },
         {
             name: 'Artsobservasjoner',

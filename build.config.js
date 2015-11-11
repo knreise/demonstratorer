@@ -10,7 +10,7 @@ module.exports = {
     'common/js/style.js'
   ],
   commonCss: [
-    'bower_components/components-font-awesome/css/font-awesome.min.css',
+    'bower_components/fontawesome/css/font-awesome.min.css',
     'bower_components/leaflet/dist/leaflet.css',
     'bower_components/bootstrap/dist/css/bootstrap.min.css'
   ],
@@ -91,7 +91,7 @@ module.exports = {
         'common/js/setup3dMap.js'
   ],
   demoCssExternal: [
-    'bower_components/components-font-awesome/css/font-awesome.min.css',
+    'bower_components/fontawesome/css/font-awesome.min.css',
     'bower_components/leaflet/dist/leaflet.css',
     'bower_components/bootstrap/dist/css/bootstrap.min.css',
     'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css',
@@ -111,7 +111,7 @@ module.exports = {
   ],
   demoCssExternal3d: [
         'bower_components/Cesium-1.11/Build/Cesium/Widgets/widgets.css',
-        'bower_components/components-font-awesome/css/font-awesome.min.css',
+        'bower_components/fontawesome/css/font-awesome.min.css',
         'bower_components/leaflet/dist/leaflet.css',
         'bower_components/bootstrap/dist/css/bootstrap.min.css',
         'bower_components/cesium-minimap/cesium-minimap.css',
@@ -139,7 +139,9 @@ module.exports = {
     'brukerminne',
     'popup',
     'jernbanemuseet',
-    'foto_sf'
+    'foto_sf',
+    'nasjonalbiblioteket',
+    'byantikvaren_oslo'
   ],
   demoTemplates: [
     'list_item',
