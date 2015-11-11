@@ -136,7 +136,9 @@ module.exports = {
     'brukerminne',
     'popup',
     'jernbanemuseet',
-    'foto_sf'
+    'foto_sf',
+    'nasjonalbiblioteket',
+    'byantikvaren_oslo'
   ],
   demoTemplates: [
     'list_item',
