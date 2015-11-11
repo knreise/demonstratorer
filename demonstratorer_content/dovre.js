@@ -67,7 +67,7 @@
         },
         {
             grouped: true,
-            name: 'Arkeologi og historie',
+            name: 'Historie',
             datasets: [
                 {
                     name: 'MUSIT',
@@ -86,26 +86,26 @@
                     },
                     template: KR.Util.getDatasetTemplate('digitalt_museum'),
                     isStatic: false
-                },
-                {
-                    id: 'riksantikvaren',
-                    name: 'Riksantikvaren',
-                    provider: 'Riksantikvaren',
-                    dataset: {
-                        api: 'kulturminnedataSparql',
-                        kommune: '0511'
-                    },
-                    template: KR.Util.getDatasetTemplate('ra_sparql'),
-                    bbox: false,
-                    isStatic: true,
-                    init: kulturminneFunctions.initKulturminnePoly,
-                    loadWhenLessThan: {
-                        count: 5,
-                        callback: kulturminneFunctions.loadKulturminnePoly
-                    }
                 }
             ],
             description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
+        },
+        {
+            id: 'riksantikvaren',
+            name: 'Arkeologi',
+            provider: 'Riksantikvaren',
+            dataset: {
+                api: 'kulturminnedataSparql',
+                kommune: '0511'
+            },
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
+            bbox: false,
+            isStatic: true,
+            init: kulturminneFunctions.initKulturminnePoly,
+            loadWhenLessThan: {
+                count: 5,
+                callback: kulturminneFunctions.loadKulturminnePoly
+            }
         },
         {
             name: 'Artsobservasjoner',
