@@ -39,6 +39,7 @@
     "fontawesome": "4.4.0"
   },
   "resolutions": {
-    "fontawesome": "4.4.0"
+    "fontawesome": "4.4.0",
+    "KNreiseAPI": "1.7.20"
   }
 }

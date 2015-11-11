@@ -1353,6 +1353,14 @@ KR.SparqlAPI = function (apiName, options) {
         return KR.Util.createGeoJSONFeatureFromGeom(collection, {});
     }
 
+
+    function _parseEnkeltminnePoly(response, errorCallback) {
+        var bindings = response.results.bindings;
+        console.log(bindings);
+        return bindings;
+    }
+
+
     function _sendQuery(query, parse, callback, errorCallback) {
         var params = {
             'default-graph-uri': '',
@@ -1410,7 +1418,7 @@ KR.SparqlAPI = function (apiName, options) {
             fylke = '0' + fylke;
         }
 
-        var query = 'select  ?id ?name ?description ?loccatlabel (SAMPLE(?point) as ?point) ?img ?thumbnail ?url  as ?link {' +
+        var query = 'select ?id ?name ?description ?loccatlabel (SAMPLE(?point) as ?point) ?img ?thumbnail ?url  as ?link {' +
             ' ?id a ?type .' +
             ' ?id rdfs:label ?name .' +
             ' ?id <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune .' +
@@ -1447,6 +1455,19 @@ KR.SparqlAPI = function (apiName, options) {
             '}';
     }
 
+    function _enkeltminneForLokalitetQuery(lokalitet) {
+        return 'SELECT ?enk as ?id ?name ?desc as ?content ?area as ?omraade ?enkcatlabel ' +
+            'where { ' +
+            '?enk a <https://data.kulturminne.no/askeladden/schema/Enkeltminne> . ' +
+            '?enk rdfs:label ?name . ' +
+            '?enk <https://data.kulturminne.no/askeladden/schema/i-lokalitet> <' + lokalitet.trim() +  '> . ' +
+            '?enk <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?desc . ' +
+            '?enk <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?area . ' +
+            '?enk <https://data.kulturminne.no/askeladden/schema/enkeltminnekategori> ?enkcat . ' +
+            '?enkcat rdfs:label ?enkcatlabel . ' +
+            '} ';
+    }
+
     function _polyForLokalitet(dataset, callback, errorCallback) {
 
         var lokalitet = [];
@@ -1471,6 +1492,33 @@ KR.SparqlAPI = function (apiName, options) {
         });
     }
 
+    function _enkeltminnerForLokalitet(dataset, callback, errorCallback) {
+
+        var lokalitet = [];
+        if (_.isArray(dataset.lokalitet)) {
+            lokalitet = dataset.lokalitet;
+        } else {
+            lokalitet.push(dataset.lokalitet);
+        }
+
+
+        var features = [];
+        var finished = _.after(lokalitet.length, function () {
+            callback(KR.Util.createFeatureCollection(features));
+        });
+
+        _.each(lokalitet, function (lok) {
+            _sendQuery(_enkeltminneForLokalitetQuery(lok), _parseResponse, function (geoJson) {
+                var featuresForLok = _.map(geoJson.features, function (f) {
+                    f.properties.lokalitet = lok;
+                    return f;
+                })
+                features = features.concat(featuresForLok);
+                finished();
+            }, errorCallback);
+        });
+    }
+
     function getData(dataset, callback, errorCallback, options) {
         dataset = _.extend({}, {geomType: 'point'}, dataset);
         if (dataset.kommune) {
@@ -1481,6 +1529,8 @@ KR.SparqlAPI = function (apiName, options) {
             _sendQuery(query, _parseResponse, callback, errorCallback);
         } else if (dataset.lokalitet && dataset.type === 'lokalitetpoly') {
             _polyForLokalitet(dataset, callback, errorCallback);
+        } else if (dataset.lokalitet && dataset.type === 'enkeltminner') {
+            _enkeltminnerForLokalitet(dataset, callback, errorCallback);
         } else if (dataset.sparqlQuery) {
             _sendQuery(dataset.sparqlQuery, _parseResponse, callback, errorCallback);
         } else {
