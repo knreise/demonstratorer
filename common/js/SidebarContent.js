@@ -207,7 +207,8 @@ var KR = this.KR || {};
                 feature.properties.license = null;
             }
 
-            var color = KR.Style.colorForFeature(feature, true, true);
+
+            var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
             content += template(_.extend({image: null}, feature.properties));

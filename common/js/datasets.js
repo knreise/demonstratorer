@@ -39,6 +39,55 @@ KR.Config = KR.Config || {};
         };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
+
+            var showEnkeltminner = true;
+            if (_.has(dataset, 'showEnkeltminner')) {
+                showEnkeltminner = dataset.showEnkeltminner;
+            }
+            var enkeltMinneLayer;
+            var loadEnkeltminner;
+            if (showEnkeltminner) {
+
+                if (!_.has(dataset, 'enkeltminner')) {
+                    dataset.enkeltminner = {};
+                }
+
+                var enkeltminneStyle = dataset.enkeltminner.style || {
+                    color: '#fff',
+                    weight: 1,
+                    fillColor: '#B942D0'
+                }
+
+                enkeltMinneLayer = L.geoJson(null, {
+                    onEachFeature: function (feature, layer) {
+                        feature.properties.provider = dataset.enkeltminner.provider || 'Enkeltminne';
+                        feature.properties.color = dataset.enkeltminner.sidebarColor || '#B942D0';
+                        layer.on('click', function () {
+                            if (map.sidebar) {
+                                map.sidebar.showFeature(
+                                    feature,
+                                    dataset.enkeltminner.template || KR.Util.getDatasetTemplate('ra_enkeltminne')
+                                );
+                            }
+                        });
+                    },
+                    style: function (feature) {
+                        return enkeltminneStyle;
+                    }
+                }).addTo(map);
+                loadEnkeltminner = function (feature) {
+                    var q = {
+                        api: 'kulturminnedataSparql',
+                        type: 'enkeltminner',
+                        lokalitet: feature.properties.lok
+                    };
+                    api.getData(q, function (geoJson) {
+                        enkeltMinneLayer.clearLayers();
+                        enkeltMinneLayer.addData(geoJson);
+                    });
+                }
+            }
+
             dataset.extraFeatures = L.geoJson(null, {
                 onEachFeature: function (feature, layer) {
                     if (dataset.extras && dataset.extras.groupId) {
@@ -49,6 +98,11 @@ KR.Config = KR.Config || {};
                     }
 
                     layer.on('click', function () {
+
+                        if (loadEnkeltminner) {
+                            loadEnkeltminner(feature);
+                        }
+
                         var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
                             return (parentLayer.feature.properties.id === feature.properties.lok);
                         });
@@ -75,10 +129,16 @@ KR.Config = KR.Config || {};
 
             vectorLayer.on('hide', function () {
                 map.removeLayer(dataset.extraFeatures);
+                if (enkeltMinneLayer) {
+                    map.removeLayer(enkeltMinneLayer)
+                }
             });
 
             vectorLayer.on('show', function () {
                 map.addLayer(dataset.extraFeatures);
+                if (enkeltMinneLayer) {
+                    map.addLayer(enkeltMinneLayer)
+                }
             });
         };
 
