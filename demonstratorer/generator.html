@@ -13,22 +13,27 @@
     </head>
     <body>
 
-            <div class="well">
-                <img src="../common/img/knreise_logo.png"/>
-                <h2>Sett opp ditt eget kart</h2>
+        <div class="well">
+            <img src="../common/img/knreise_logo.png"/>
+            <h2>Sett opp ditt eget kart</h2>
 
-                <div>
-                   Dette er et grensesnitt for å sette opp egendefinerte kart med utvalgt informasjon fra ulike datasett med stedfestet kulturhistorie, naturinformasjon, historiske kilder og leksikalsk informasjon. Tjenesten er utviklet med bistand fra <a href="http://norkart.no">Norkart</a> i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a> - koden som er brukt ligger på <a href="https://github.com/knreise/demonstratorer/">GitHub</a> og det finnes også flere eksempler på <a href="../">ferdig definerte kart</a>.
-                </div>
+            <div>
+               Dette er et grensesnitt for å sette opp egendefinerte kart med utvalgt informasjon fra ulike datasett med stedfestet kulturhistorie, naturinformasjon, historiske kilder og leksikalsk informasjon. Tjenesten er utviklet med bistand fra <a href="http://norkart.no">Norkart</a> i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a> - koden som er brukt ligger på <a href="https://github.com/knreise/demonstratorer/">GitHub</a> og det finnes også flere eksempler på <a href="../">ferdig definerte kart</a>.
             </div>
-            
-            <div class="panel panel-default"  style="border: 0px">
-              <div class="panel-body">
+        </div>
+
+        <div class="panel panel-default"  style="border: 0px">
+          <div class="panel-body">
+              <div class="form-group">
                 <input id="title" type="text" class="form-control" placeholder="Navn på kart"/>
               </div>
-            </div>
+              <div class="form-group">
+                <textarea id="description" class="form-control" rows="3" placeholder="Beskrivelse av demonstrator (maks 140 tegn)..." maxlength="140"></textarea>
+              </div>
+          </div>
+        </div>
 
-            <form autocomplete="off"> 
+        <form autocomplete="off"> 
 
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
               <div class="panel panel-default">
@@ -44,10 +49,10 @@
                 </div>
                 <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                   <div class="panel-body">
-	                  <div class="container-fluid">
+                    <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">  
-                             Velg område du vil vise innhold fra - velge enten kommune, fylke, linje/rute eller definer ditt eget område i kartet                         
+                             Velg område du vil vise innhold fra - velge enten kommune, fylke, linje/rute eller definer ditt eget område i kartet.
                             </div>
                         </div>
                       </div>
@@ -106,25 +111,27 @@
                     <select id="layers" class="form-control"></select>
                     <div class="map" id="layers_map"></div>
                     <input id="3d" type="checkbox" name="3d"/> Bruk 3d-kart
+                    <div id="3d_warning_box" class="alert alert-warning hidden" role="alert">
+                        <strong>NB</strong> 3D-kart er litt eksperimentelt, og noen bakgrunnskart fungerer ikke:
+                        <ul>
+                          <li>Norges grunnkart gråtone</li>
+                        </ul>
+
+                        I tillegg er det noen dataset som ikke vil fungere hvis man velger et for stort område.
+                        <ul id="no3d_warning"></ul>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            
-            
             <div class="well">
                 <i class="fa fa-external-link-square"></i> <b>VIS KART:</b>
                 <div class="map-link"></div>
             </div>
-
-            
-            <!-- <button id="show-params" class="btn btn-default" type="button">hent parametere</button>
-            <pre id="params" class="pre-scrollable"></pre>
-            -->
-        
         </form>
-        
 
+
+        <!-- START templates -->
         <script type="text/template" id="dataset_template">
             <div class="list-group-item" style="float: left;height:135px;width: 360px;">
                 <div class="checkbox">
@@ -176,14 +183,16 @@
             <input id="bbox" type="text" class="form-control" value=""/>
             <div class="map" id="bbox_map"></div>
         </script>
+        <!-- END templates -->
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="../bower_components/underscore/underscore-min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet/dist/leaflet.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet-draw/dist/leaflet.draw.js" type="text/javascript"></script>
         <script src="../bower_components/esri2geo/esri2geo.js" type="text/javascript"></script>
         <script src="../bower_components/KNreiseAPI/dist/KNreiseAPI.min.js" type="text/javascript"></script>
-        <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js" type="text/javascript"></script>
+        <script src="../bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.min.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js" type="text/javascript"></script>
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js" type="text/javascript"></script>
         <script src="../bower_components/turf/turf.min.js" type="text/javascript"></script>
@@ -206,9 +215,12 @@
                 KR.initGenerator();
             }());
         </script>
-        
+
         <footer class="generatorfooter">
-          <p class="small container" align="center">All koden er fritt tilgjengelig på <a href="https://github.com/knreise">GitHub</a> under Apache Software License, Version 1.1, se spesifikt <a href="https://github.com/knreise/demonstratorer">github.com/knreise/demonstratorer</a> og <a href="https://github.com/knreise/KNReiseAPI">github.com/knreise/KNReiseAPI</a>
+          <p class="small container" align="center">
+            All koden er fritt tilgjengelig på <a href="https://github.com/knreise">GitHub</a> under Apache Software License, Version 1.1, 
+            se spesifikt <a href="https://github.com/knreise/demonstratorer">github.com/knreise/demonstratorer</a> og 
+            <a href="https://github.com/knreise/KNReiseAPI">github.com/knreise/KNReiseAPI</a>
           </p>
             <div class="generatorfooter">
                 <img src="../common/img/samarbeidspartnere_ra1.png"/>

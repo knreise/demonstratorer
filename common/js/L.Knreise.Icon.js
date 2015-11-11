@@ -2,7 +2,7 @@
 'use strict';
 
 L.Knreise = L.Knreise || {};
-L.Knreise.Icon = L.AwesomeMarkers.Icon.extend({
+L.Knreise.Icon = L.KNreiseMarkers.Icon.extend({
     options: {
         icon: null
     }

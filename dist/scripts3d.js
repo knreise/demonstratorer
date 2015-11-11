@@ -252,6 +252,10 @@ KR.Util = KR.Util || {};
         L.latLngBounds.fromBBoxString = function (bbox) {
             return L.latLngBounds.fromBBoxArray(KR.Util.splitBbox(bbox));
         };
+
+        L.rectangle.fromBounds = function (bounds) {
+            return L.rectangle([bounds.getSouthWest(), bounds.getNorthEast()]);
+        }
     }
 
     /*
@@ -310,7 +314,9 @@ KR.Util = KR.Util || {};
         if (_.has(layers, layerName)) {
             layers[layerName](callback);
         } else {
-            callback(L.tileLayer.kartverket(layerName));
+            var isSafari = navigator.userAgent.indexOf("Safari") > -1;
+            var useCache = !isSafari;
+            callback(L.tileLayer.kartverket(layerName, {useCache: useCache}));
         }
     };
 
@@ -791,7 +797,7 @@ KR.Style = {};
 
     function createAwesomeMarker(color) {
         return L.Knreise.icon({
-            markerColor: hexToName(color)
+            markerColor: color
         });
     }
 
@@ -1450,10 +1456,12 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
                 var dataSource = Cesium.GeoJsonDataSource.load(data);
                 callback(dataSource);
             });
+        }, function (err) {
+            callback();
         });
     }
 
-    function loadDataset2(dataset, bbox, api, extraProps, callback) {
+    function loadDataset2(dataset, bbox, api, extraProps) {
         api.getBbox(dataset, bbox, function (res) {
             _.each(res.features, function (feature) {
                 feature.properties = _.extend(feature.properties, extraProps);
@@ -1474,6 +1482,8 @@ KR.CesiumMap = function (div, cesiumOptions, bounds) {
 
                 addMarkers(markers);
             });
+        }, function (err) {
+            console.warn('could not load dataset', dataset);
         });
     }
 
@@ -1629,7 +1639,7 @@ var KR = this.KR || {};
 
 
         function _showPosition() {
-            if (div && map.userPosition && feature) {
+            if (div && map && map.userPosition && feature) {
 
                 if (content) {
                     content.remove();
@@ -1646,7 +1656,7 @@ var KR = this.KR || {};
             }
         }
 
-        function selectFeature (_feature, _div) {
+        function selectFeature(_feature, _div) {
             div = _div;
             feature = _feature;
             _showPosition();
@@ -1669,7 +1679,7 @@ var KR = this.KR || {};
 
         var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
-        var positionDisplayer = PositionDisplayer();
+        var positionDisplayer = new PositionDisplayer();
 
         element = $(element);
         wrapper = $(wrapper);
@@ -1773,7 +1783,6 @@ var KR = this.KR || {};
 
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-            //var distBear = distanceAndBearing(feature);
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -1816,7 +1825,7 @@ var KR = this.KR || {};
 
             content = $(['<div>', content, '</div>'].join(' '));
             if (KR.Util.isInIframe()) {
-                content.find('a').attr('target','_blank');
+                content.find('a').attr('target', '_blank');
             }
 
             positionDisplayer.selectFeature(feature, content);
@@ -1840,7 +1849,6 @@ var KR = this.KR || {};
                     prev.click(callbacks.prev).addClass('active');
                 }
 
-
                 var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
                 wrapper.append(next);
                 if (callbacks.next) {
@@ -1848,9 +1856,14 @@ var KR = this.KR || {};
                 }
             }
 
+            var mediaContainer = element.find('.media-container');
+            if (mediaContainer.length) {
+                KR.MediaCarousel.SetupMediaCarousel(mediaContainer);
+            }
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();
             }
+
             element.scrollTop(0);
         }
 
@@ -1896,7 +1909,6 @@ var KR = this.KR || {};
             showFeature: showFeature,
             showFeatures: showFeatures,
             setMap: function (_map) {
-                //map = _map;
                 positionDisplayer.setMap(_map);
             }
         };
@@ -2476,22 +2488,28 @@ KR.Config = KR.Config || {};
 
     ns.getKulturminneFunctions = function (api) {
 
+        var loadedIds = [];
+
         var loadKulturminnePoly = function (map, dataset, features) {
-            if (!features) {
-                dataset.extraFeatures.clearLayers();
-            }
             if (features) {
                 var ids = _.map(features, function (feature) {
                     return feature.properties.id;
                 });
-                if (ids.length) {
+
+                var idsToLoad = _.filter(ids, function (id) {
+                    return loadedIds.indexOf(id) === -1;
+                });
+
+                loadedIds = loadedIds.concat(idsToLoad);
+
+                if (idsToLoad.length) {
                     var q = {
                         api: 'kulturminnedataSparql',
                         type: 'lokalitetpoly',
-                        lokalitet: ids
+                        lokalitet: idsToLoad
                     };
                     api.getData(q, function (geoJson) {
-                        dataset.extraFeatures.clearLayers().addData(geoJson);
+                        dataset.extraFeatures.addData(geoJson);
                     });
                 }
             }
@@ -2518,9 +2536,24 @@ KR.Config = KR.Config || {};
                 }
             }).addTo(map);
 
+
+            map.on('zoomend', function () {
+                var shouldShow = !(map.getZoom() < 13);
+                if (shouldShow) {
+                    if (!map.hasLayer(dataset.extraFeatures)) {
+                        map.addLayer(dataset.extraFeatures);
+                    }
+                } else {
+                    if (map.hasLayer(dataset.extraFeatures)) {
+                        map.removeLayer(dataset.extraFeatures);
+                    }
+                }
+            });
+
             vectorLayer.on('hide', function () {
                 map.removeLayer(dataset.extraFeatures);
             });
+
             vectorLayer.on('show', function () {
                 map.addLayer(dataset.extraFeatures);
             });
@@ -2950,6 +2983,20 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 noListThreshold: Infinity
+            },
+            'kulturminnesok_flickr': {
+                name: 'Kulturminnesøk',
+                dataset_name_override: 'Kulturminnesøk',
+                provider: 'Kulturminnesøk Flickr',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    group_id: '1426230@N24'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: true,
+                style: {thumbnail: true},
+                description: 'Bilder fra Kulturminnesøks Flickr-gruppe',
             },
             'riksarkivet': {
                 name: 'Riksarkivet',

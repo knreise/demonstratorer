@@ -74,7 +74,7 @@ module.exports = function (grunt) {
                                 image: demonstrator.image || null,
                                 params: JSON.stringify(demonstrator.params, null, 4),
                                 inline_js: fs.readFileSync('demonstratorer_content/config.js', 'utf8'),
-                                scriptLinks: userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']),
+                                scriptLinks: ['dist/scripts_external.js', 'dist/scripts.min.js'],
                                 cssLinks: userConfig.demoCssExternal.concat(['dist/style.css'])
                             };
 
@@ -105,7 +105,7 @@ module.exports = function (grunt) {
                             }
 
                             demonstrator.inline_js = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.js', 'utf8');
-                            demonstrator.scriptLinks = userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']);
+                            demonstrator.scriptLinks = ['dist/scripts_external.js', 'dist/scripts.min.js'];
                             demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
@@ -127,7 +127,7 @@ module.exports = function (grunt) {
                         desc: null,
                         image: null,
                         inline_js: fs.readFileSync('demonstratorer_content/config.js', 'utf8'),
-                        scriptLinks: userConfig.demoScriptsExternal.concat(['dist/scripts.min.js']),
+                        scriptLinks: ['dist/scripts_external.js', 'dist/scripts.min.js'],
                         cssLinks: userConfig.demoCssExternal.concat(['dist/style.css'])
                     };
 
@@ -234,6 +234,10 @@ module.exports = function (grunt) {
                 src: userConfig.demoScripts3d,
                 dest: 'dist/scripts3d.js'
             },
+            script_external: {
+                src: userConfig.demoScriptsExternal,
+                dest: 'dist/scripts_external.js'
+            }/*,
             css: {
                 src: userConfig.demoCss,
                 dest: 'dist/style.css'
@@ -241,7 +245,7 @@ module.exports = function (grunt) {
             css3d: {
                 src: userConfig.demoCss3d,
                 dest: 'dist/style3d.css'
-            }
+            }*/
         },
         uglify: {
             dist: {
@@ -283,7 +287,20 @@ module.exports = function (grunt) {
           prereleaseName: false,
           regExp: false
         }
-      }
+      },
+      cssmin: {
+          options: {
+            shorthandCompacting: false,
+            roundingPrecision: -1,
+            report: 'min'
+          },
+          target: {
+            files: {
+              'dist/style.css': [userConfig.demoCss],
+              'dist/style3d.css': [userConfig.demoCss3d]
+            }
+          }
+        }
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
@@ -294,10 +311,13 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-bump');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+
 
     grunt.registerTask('demos', [
         'concat',
         'uglify',
+        'cssmin',
         'file-creator:build-demos',
         'file-creator:build-generators',
         'file-creator:build-index'

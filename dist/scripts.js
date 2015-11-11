@@ -252,6 +252,10 @@ KR.Util = KR.Util || {};
         L.latLngBounds.fromBBoxString = function (bbox) {
             return L.latLngBounds.fromBBoxArray(KR.Util.splitBbox(bbox));
         };
+
+        L.rectangle.fromBounds = function (bounds) {
+            return L.rectangle([bounds.getSouthWest(), bounds.getNorthEast()]);
+        }
     }
 
     /*
@@ -310,7 +314,9 @@ KR.Util = KR.Util || {};
         if (_.has(layers, layerName)) {
             layers[layerName](callback);
         } else {
-            callback(L.tileLayer.kartverket(layerName));
+            var isSafari = navigator.userAgent.indexOf("Safari") > -1;
+            var useCache = !isSafari;
+            callback(L.tileLayer.kartverket(layerName, {useCache: useCache}));
         }
     };
 
@@ -791,7 +797,7 @@ KR.Style = {};
 
     function createAwesomeMarker(color) {
         return L.Knreise.icon({
-            markerColor: hexToName(color)
+            markerColor: color
         });
     }
 
@@ -1568,6 +1574,150 @@ KR.UrlFunctions = {};
 
 }(KR.UrlFunctions));
 
+/*global audiojs: false*/
+
+var KR = this.KR || {};
+
+KR.MediaCarousel = {};
+
+(function (ns) {
+    'use strict';
+
+    function Counter(num, current) {
+        current = current || 0;
+
+        var hasNext = function () {
+            return (current < num - 1);
+        };
+
+        var hasPrev = function () {
+            return (current > 0);
+        };
+
+        return {
+            prev: function () {
+                if (!hasPrev()) {
+                    return current;
+                }
+                return --current;
+            },
+            next: function () {
+                if (!hasNext()) {
+                    return current;
+                }
+                return ++current;
+            },
+            hasNext: hasNext,
+            hasPrev: hasPrev
+        };
+    }
+
+
+    function _createImage(src) {
+        return $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
+    }
+
+    function _createVideo(src) {
+        if (src.indexOf('mp4') !== -1) {
+            //  <% if(images) { %>poster="<%= images[0] %>" <% } %> 
+            return $('<video data-type="video" class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup="{}"><source src="' + src + '" type="video/mp4"></video>');
+        }
+        return $('<iframe data-type="video" class="fullwidth" height="315" src="' + src + '" frameborder="0" allowfullscreen></iframe>');
+    }
+
+    function _createSound(src) {
+        return $('<audio data-type="sound" src="' + src + '" preload="auto"></audio>');
+    }
+
+    var generators = {
+        'image': _createImage,
+        'video': _createVideo,
+        'sound': _createSound
+    };
+
+    function _getMarkup(mediaObject) {
+        if (_.has(generators, mediaObject.type)) {
+            var element = generators[mediaObject.type](mediaObject.url);
+            element.attr('data-type', mediaObject.type);
+            element.attr('data-created', true);
+            return element;
+        }
+    }
+
+
+    function _createInactiveMarkup(url, type) {
+        return $('<div class="hidden"> </div>')
+            .attr('data-src', url)
+            .attr('data-type', type);
+    }
+
+    ns.SetupMediaCarousel = function (mediaContainer) {
+        var media = mediaContainer.find('.media-list').children();
+        var counter = new Counter(media.length);
+        function showMedia(idx) {
+            media = mediaContainer.find('.media-list').children();
+            var mediaElement = $(media[idx]);
+            media.addClass('hidden');
+            if (mediaElement.attr('data-created') || mediaElement.hasClass('audiojs')) {
+                mediaElement.removeClass('hidden');
+            } else {
+                var mediaObject = {
+                    type: mediaElement.attr('data-type'),
+                    url: mediaElement.attr('data-src')
+                };
+                var element = _getMarkup(mediaObject);
+                mediaElement.replaceWith(element);
+                if (element.is('audio')) {
+                    audiojs.create(element);
+                }
+            }
+
+            if (counter.hasPrev()) {
+                mediaContainer.find('.prev').addClass('active');
+            } else {
+                mediaContainer.find('.prev').removeClass('active');
+            }
+
+            if (counter.hasNext()) {
+                mediaContainer.find('.next').addClass('active');
+            } else {
+                mediaContainer.find('.next').removeClass('active');
+            }
+
+        }
+
+        mediaContainer.find('.next').on('click', function () {
+            if (counter.hasNext()) {
+                showMedia(counter.next());
+            }
+        });
+
+        mediaContainer.find('.prev').on('click', function () {
+            if (counter.hasPrev()) {
+                showMedia(counter.prev());
+            }
+        });
+    };
+
+    ns.CreateMediaListMarkup = function (media) {
+        var outer = $('<div class="media-container"></div>');
+        var list = $('<div class="media-list"></div>');
+        list.append(_.map(media, function (mediaObject, index) {
+            var active = index === 0;
+
+            if (active) {
+                return _getMarkup(mediaObject);
+            }
+            return _createInactiveMarkup(mediaObject.url, mediaObject.type);
+        }));
+        outer.append(list);
+        if (media.length > 1) {
+            outer.append($('<div class="media-navigation"><a class="prev circle"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a><a class="next circle active"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></div>'));
+        }
+        return outer[0].outerHTML;
+    };
+}(KR.MediaCarousel));
+
 /*global audiojs:false, turf:false*/
 
 var KR = this.KR || {};
@@ -1602,7 +1752,7 @@ var KR = this.KR || {};
 
 
         function _showPosition() {
-            if (div && map.userPosition && feature) {
+            if (div && map && map.userPosition && feature) {
 
                 if (content) {
                     content.remove();
@@ -1619,7 +1769,7 @@ var KR = this.KR || {};
             }
         }
 
-        function selectFeature (_feature, _div) {
+        function selectFeature(_feature, _div) {
             div = _div;
             feature = _feature;
             _showPosition();
@@ -1642,7 +1792,7 @@ var KR = this.KR || {};
 
         var defaultTemplate = KR.Util.getDatasetTemplate('popup');
 
-        var positionDisplayer = PositionDisplayer();
+        var positionDisplayer = new PositionDisplayer();
 
         element = $(element);
         wrapper = $(wrapper);
@@ -1746,7 +1896,6 @@ var KR = this.KR || {};
 
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-            //var distBear = distanceAndBearing(feature);
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -1789,7 +1938,7 @@ var KR = this.KR || {};
 
             content = $(['<div>', content, '</div>'].join(' '));
             if (KR.Util.isInIframe()) {
-                content.find('a').attr('target','_blank');
+                content.find('a').attr('target', '_blank');
             }
 
             positionDisplayer.selectFeature(feature, content);
@@ -1813,7 +1962,6 @@ var KR = this.KR || {};
                     prev.click(callbacks.prev).addClass('active');
                 }
 
-
                 var next = $('<a class="prev-next-arrows next circle"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>');
                 wrapper.append(next);
                 if (callbacks.next) {
@@ -1821,9 +1969,14 @@ var KR = this.KR || {};
                 }
             }
 
+            var mediaContainer = element.find('.media-container');
+            if (mediaContainer.length) {
+                KR.MediaCarousel.SetupMediaCarousel(mediaContainer);
+            }
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();
             }
+
             element.scrollTop(0);
         }
 
@@ -1869,7 +2022,6 @@ var KR = this.KR || {};
             showFeature: showFeature,
             showFeatures: showFeatures,
             setMap: function (_map) {
-                //map = _map;
                 positionDisplayer.setMap(_map);
             }
         };
@@ -2230,7 +2382,7 @@ var KR = this.KR || {};
 'use strict';
 
 L.Knreise = L.Knreise || {};
-L.Knreise.Icon = L.AwesomeMarkers.Icon.extend({
+L.Knreise.Icon = L.KNreiseMarkers.Icon.extend({
     options: {
         icon: null
     }
@@ -2991,22 +3143,28 @@ KR.Config = KR.Config || {};
 
     ns.getKulturminneFunctions = function (api) {
 
+        var loadedIds = [];
+
         var loadKulturminnePoly = function (map, dataset, features) {
-            if (!features) {
-                dataset.extraFeatures.clearLayers();
-            }
             if (features) {
                 var ids = _.map(features, function (feature) {
                     return feature.properties.id;
                 });
-                if (ids.length) {
+
+                var idsToLoad = _.filter(ids, function (id) {
+                    return loadedIds.indexOf(id) === -1;
+                });
+
+                loadedIds = loadedIds.concat(idsToLoad);
+
+                if (idsToLoad.length) {
                     var q = {
                         api: 'kulturminnedataSparql',
                         type: 'lokalitetpoly',
-                        lokalitet: ids
+                        lokalitet: idsToLoad
                     };
                     api.getData(q, function (geoJson) {
-                        dataset.extraFeatures.clearLayers().addData(geoJson);
+                        dataset.extraFeatures.addData(geoJson);
                     });
                 }
             }
@@ -3033,9 +3191,24 @@ KR.Config = KR.Config || {};
                 }
             }).addTo(map);
 
+
+            map.on('zoomend', function () {
+                var shouldShow = !(map.getZoom() < 13);
+                if (shouldShow) {
+                    if (!map.hasLayer(dataset.extraFeatures)) {
+                        map.addLayer(dataset.extraFeatures);
+                    }
+                } else {
+                    if (map.hasLayer(dataset.extraFeatures)) {
+                        map.removeLayer(dataset.extraFeatures);
+                    }
+                }
+            });
+
             vectorLayer.on('hide', function () {
                 map.removeLayer(dataset.extraFeatures);
             });
+
             vectorLayer.on('show', function () {
                 map.addLayer(dataset.extraFeatures);
             });
@@ -3465,6 +3638,20 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 noListThreshold: Infinity
+            },
+            'kulturminnesok_flickr': {
+                name: 'Kulturminnesøk',
+                dataset_name_override: 'Kulturminnesøk',
+                provider: 'Kulturminnesøk Flickr',
+                hideFromGenerator: true,
+                dataset: {
+                    api: 'flickr',
+                    group_id: '1426230@N24'
+                },
+                template: KR.Util.getDatasetTemplate('flickr'),
+                isStatic: true,
+                style: {thumbnail: true},
+                description: 'Bilder fra Kulturminnesøks Flickr-gruppe',
             },
             'riksarkivet': {
                 name: 'Riksarkivet',

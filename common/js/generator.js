@@ -24,6 +24,38 @@ var KR = this.KR || {};
         }
     }
 
+    function _bboxSelect(map, bounds, callback) {
+        var rect;
+        callback(bounds.toBBoxString());
+
+        function reloadMap() {
+            map.fitBounds(bounds);
+            if (rect) {
+                map.removeLayer(rect);
+                rect.off('edit');
+            }
+            rect = L.rectangle.fromBounds(bounds);
+            rect.editing.enable();
+            rect.setStyle({fill: false, color: '#f00', weight: 3});
+            rect.addTo(map);
+            rect.on('edit', function () {
+                bounds = rect.getBounds();
+                callback(bounds.toBBoxString());
+            });
+        }
+        map.on('invalidated', reloadMap);
+        reloadMap();
+
+        return function (bboxString) {
+            try {
+                bounds = L.latLngBounds.fromBBoxString(bboxString);
+                reloadMap();
+            } catch (e) {
+                callback(bounds.toBBoxString());
+            }
+        };
+    }
+
 
     function buildLimitSelections(ids, municipalities, counties) {
         var callback;
@@ -71,13 +103,19 @@ var KR = this.KR || {};
                     callback();
                 }
             });
-        });;
+        });
 
-      var map = L.map('bbox_map').setView([64.3, 8.7], 3);
+        var bounds = L.latLngBounds.fromBBoxString('2.4609375,56.9449741808516,33.3984375,71.85622888185527');
+        var map = L.map('bbox_map').fitBounds(bounds);
         L.tileLayer.kartverket('norges_grunnkart').addTo(map);
-        map.on('moveend', function () {
-            $('#bbox').val(map.getBounds().toBBoxString());
-            callback();
+        var bboxSelect = _bboxSelect(map, bounds,  function (bbox) {
+            $('#bbox').val(bbox);
+            if (callback) {
+                callback();
+            }
+        });
+        $('#bbox').change(function (e) {
+            bboxSelect(e.currentTarget.value);
         });
 
         return {
@@ -136,15 +174,11 @@ var KR = this.KR || {};
             return {
                 id: layer,
                 name: L.tileLayer.kartverket.getLayerName(layer)
-            }
+            };
         });
 
 
         layers = layers.concat([
-            { 
-                id: 'nib',
-                name: 'Norge i bilder'
-            },
             {
                 id: 'hist',
                 name: 'Historisk kart'
@@ -218,6 +252,38 @@ var KR = this.KR || {};
         };
     }
 
+    function getDescription(element) {
+        var callback;
+
+        var maxLength = 140;
+
+        element.on('keyup', function () {
+            var val = element.val();
+            if (val.length > maxLength) {
+                element.val(val.substring(0, maxLength));
+            }
+        });
+
+
+        element.on('change', function () {
+            callback();
+        });
+
+        return {
+            getValues: function () {
+                var description = element.val().substring(0, maxLength);
+                if (description !== '') {
+                    return {description: description};
+                }
+                return {};
+            },
+            callback: function (cb) {
+                callback = cb;
+                cb();
+            }
+        };
+    }
+
 
     function buildDatasetList() {
         var callback;
@@ -240,6 +306,13 @@ var KR = this.KR || {};
             })
             .compact()
             .value();
+
+        _.each(datasetConfig, function (value, key) {
+            if (!value.hideFromGenerator && _.has(value, 'minZoom')) {
+                var name = value.name || key;
+                $('#no3d_warning').append('<li>' + name + '</li>');
+            }
+        });
 
         $('#datasets')
             .html(datasets)
@@ -323,7 +396,7 @@ var KR = this.KR || {};
         };
     }
 
-    function setupClick(element, limits, layer, datasets, title, filters) {
+    function setupClick(element, limits, layer, datasets, title, description, filters) {
         var use3d = false;
 
         var getParams = function () {
@@ -332,14 +405,15 @@ var KR = this.KR || {};
                 datasets.getValues(),
                 limits.getValues(),
                 layer.getValues(),
-                title.getValues()
+                title.getValues(),
+                description.getValues()
             );
 
             if (_.has(params, 'komm') || _.has(params, 'fylke')) {
                 params = _.extend(params, filters.getValues());
             }
             return params;
-        }
+        };
 
         var generateUrl = function () {
             var params = getParams();
@@ -351,6 +425,12 @@ var KR = this.KR || {};
 
             var url = location.protocol + '//' + location.host + path.replace('/generator.html', '') + page + '?' + KR.Util.createQueryParameterString(params);
             $('.map-link').html('<a href="' + url + '" target="_blank">' + url + '</a>');
+
+            if (use3d) {
+                $('#3d_warning_box').removeClass('hidden');
+            } else {
+                $('#3d_warning_box').addClass('hidden');
+            }
         };
 
 
@@ -358,6 +438,7 @@ var KR = this.KR || {};
         layer.callback(generateUrl);
         datasets.callback(generateUrl);
         title.callback(generateUrl);
+        description.callback(generateUrl);
         filters.callback(generateUrl);
 
         element.on('click', generateUrl);
@@ -381,14 +462,18 @@ var KR = this.KR || {};
         var fetched = _.after(2, function () {
             var limits = buildLimitSelections(['municipality', 'county', 'line', 'bbox'], municipalities, counties);
             var title = getTitle($('#title'));
+
+            var description = getDescription($('#description'));
+
             var datasets = buildDatasetList($('#datasets'));
             var layer = buildLayerList($('#layers'));
             var filters = buildFilter();
-            setupClick($('#generate'), limits, layer, datasets, title, filters);
+            setupClick($('#generate'), limits, layer, datasets, title, description, filters);
 
 
             $('#collapseOne').on('shown.bs.collapse', function () {
                 limits.map.invalidateSize();
+                limits.map.fire('invalidated');
             });
 
             $('#collapseThree').on('shown.bs.collapse', function () {
@@ -396,14 +481,22 @@ var KR = this.KR || {};
             });
         });
 
+
+        function _localeSort(res, key) {
+            function sortComparer(a, b) {
+                return a[key].localeCompare(b[key], 'nb');
+            }
+            return res.sort(sortComparer);
+        }
+
+
         getCountyList(function (res) {
-            counties = res;
+            counties = _localeSort(res, 'navn');
             fetched();
         });
 
-
         getMunicipalityList(function (res) {
-            municipalities = res;
+            municipalities = _localeSort(res, 'navn');
             fetched();
         });
 

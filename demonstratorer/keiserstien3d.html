@@ -51,6 +51,12 @@
 </a>
 </script>
 
+<script type="text/template" id="user_position_template">
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg); -webkit-transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+</script>
 
 <script type="text/template" id="marker_template">
 <div class="awesome-marker awesome-marker-icon-<%= color %>" style="width: 35px; height: 45px;">
@@ -474,7 +480,7 @@
 
                 var config = {
                     line: 'utno/2.8158',
-                    layer: 'nib',
+                    layer: 'norges_grunnkart',
                     terrainUrl: 'http://knreise.no/terrain/terrain.php?tile=',
                     enableLighting: false
                 };
