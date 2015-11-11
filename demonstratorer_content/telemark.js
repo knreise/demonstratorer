@@ -86,7 +86,27 @@
             },
             style: {thumbnail: true},
             minZoom: 13,
+        },
+        {
+            name: 'Nasjonalbiblioteket',
+            hideFromGenerator: true,
+            provider: 'Nasjonalbiblioteket',
+            dataset: {
+                api: 'cartodb',
+                table: 'bygdebok_telemark'
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
+            style: {
+	            thumbnail: false,
+	            fillcolor: '#744700',
+				circle: true,
+				opacity: 0.8,
+				radius: 20},
+            description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
         }
+
 
     ];
 
