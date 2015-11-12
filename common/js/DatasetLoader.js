@@ -275,6 +275,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
+            vectorLayer.shouldLoad = shouldLoad;
 
             if (!shouldLoad) {
                 vectorLayer.clearLayers();

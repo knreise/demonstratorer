@@ -1287,9 +1287,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _zoomend: function () {
-        if (!this.options.dataset.toPoint) {
+        if (!this.options.dataset.toPoint || !this.shouldLoad) {
             return;
         }
+
         var removedTemp = [],
             feature,
             i;
@@ -2668,6 +2669,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
+            vectorLayer.shouldLoad = shouldLoad;
 
             if (!shouldLoad) {
                 vectorLayer.clearLayers();

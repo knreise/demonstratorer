@@ -164,9 +164,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _zoomend: function () {
-        if (!this.options.dataset.toPoint) {
+        if (!this.options.dataset.toPoint || !this.shouldLoad) {
             return;
         }
+
         var removedTemp = [],
             feature,
             i;
