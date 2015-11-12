@@ -1141,6 +1141,7 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
             this.addData(geojson);
         }
         this.on('click', this._featureClicked, this);
+        this.on('dblclick', this._featureDblClicked, this);
         this._selectedLayer = null;
     },
 
@@ -1246,6 +1247,17 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
         this.setLayerSelected(layer);
     },
 
+    _featureDblClicked: function (e) {
+        //zom map on double click on stopped polygon
+        if (this.options.dataset && this.options.dataset.toPoint && this.options.dataset.toPoint.stopPolyClick) {
+            if (e.layer.toGeoJSON().geometry.type !== 'Point') {
+                if (e.layer._map) {
+                    e.layer._map.zoomIn();
+                }
+            }
+        }
+    },
+
     getParentLayer: function (id) {
         var l = this._layers[id];
         if (l) {
@@ -1287,9 +1299,10 @@ L.Knreise.GeoJSON = L.GeoJSON.extend({
     },
 
     _zoomend: function () {
-        if (!this.options.dataset.toPoint) {
+        if (!this.options.dataset.toPoint || !this.shouldLoad) {
             return;
         }
+
         var removedTemp = [],
             feature,
             i;
@@ -2668,6 +2681,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
             vectorLayer.enabled = _checkEnabled(dataset);
             vectorLayer.fire('changeEnabled');
+            vectorLayer.shouldLoad = shouldLoad;
 
             if (!shouldLoad) {
                 vectorLayer.clearLayers();
