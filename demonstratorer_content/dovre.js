@@ -197,6 +197,7 @@
         komm: kommune,
         title: title,
         image: image,
+        geomFilter: true,
         layer: 'norges_grunnkart',
         description: $('#description_template').html()
     });
