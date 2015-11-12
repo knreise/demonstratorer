@@ -2954,8 +2954,7 @@ KR.Config = KR.Config || {};
                     count: 10,
                     callback: kulturminneFunctions.loadKulturminnePoly
                 },
-                description: 'Data fra Riksantikvarens kulturminnesøk',
-                showEnkeltminner: false
+                description: 'Data fra Riksantikvarens kulturminnesøk'
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',
