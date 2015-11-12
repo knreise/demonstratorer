@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    var api = new KR.API();
+
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
     var kommune = '0511';
@@ -191,12 +193,11 @@
         }
     ];
 
-    var api = new KR.API();
-
     KR.setupMap(api, datasets, {
         komm: kommune,
         title: title,
         image: image,
+        geomFilter: true,
         layer: 'norges_grunnkart',
         description: $('#description_template').html()
     });
