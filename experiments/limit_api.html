@@ -457,7 +457,7 @@
     </tr>
 </table>
 
-<a class="sidebar-link" href="<%= url %>" target="_blank">
+<a class="sidebar-link" href="<%= link %>" target="_blank">
   <i class="fa fa-external-link-square"></i> Vis hos Kulturminnesøk
 </a>
 
@@ -507,11 +507,33 @@
 
 <% if(!_.isUndefined(arguments[0].extra)) { %>
   <img class="fullwidth img-thumbnail" src="<%= extra.UrlTilBilde %>" />
+<<<<<<< HEAD
+  <table class="sidebar-table">
+    <tr>
+      <td>Tittel</td>
+      <td><%= extra.Tittel %></td>
+    </tr>
+    <tr>
+      <td>Registrert Av</td>
+      <td><%= extra.RegistrertAv %></td>
+    </tr>
+    <tr>
+      <td>Fotograf</td>
+      <td><%= extra.OpphavspersonFotograf %></td>
+    </tr>
+    <tr>
+      <td>Copyright</td>
+      <td><%= extra.Copyright %></td>
+    </tr>
+  </table>
+
+=======
   <p class="small sidebar-image-text grey">
   	<b><%= extra.Tittel %></b> - Foto: <%= extra.OpphavspersonFotograf %><br>
   	<%= extra.Copyright %>
   </p>
   
+>>>>>>> master
 <% } %>
 
 

@@ -2606,7 +2606,6 @@ KR.Config = KR.Config || {};
                 fillOpacity: 0.4
             });
             if (_loadEnkeltminner) {
-                console.log("loadEnkeltminner")
                 _loadEnkeltminner(e.layer.feature);
             }
         }
@@ -2824,6 +2823,7 @@ KR.Config = KR.Config || {};
             'ark_hist': {
                 grouped: true,
                 name: 'Arkeologi og historie',
+                minZoom: 14,
                 datasets: [
                     {
                         name: 'MUSIT',
@@ -2886,6 +2886,7 @@ KR.Config = KR.Config || {};
             'arkeologi': {
                 grouped: true,
                 name: 'Arkeologi',
+                minZoom: 14,
                 style: {
                     fillcolor: '#436978',
                     circle: false,
@@ -2926,6 +2927,7 @@ KR.Config = KR.Config || {};
             'historie': {
                 grouped: true,
                 name: 'Historie',
+                minZoom: 14,
                 style: {
                     fillcolor: '#D252B9',
                     circle: false,

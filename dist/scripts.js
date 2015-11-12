@@ -3274,7 +3274,6 @@ KR.Config = KR.Config || {};
                 fillOpacity: 0.4
             });
             if (_loadEnkeltminner) {
-                console.log("loadEnkeltminner")
                 _loadEnkeltminner(e.layer.feature);
             }
         }
@@ -3492,6 +3491,7 @@ KR.Config = KR.Config || {};
             'ark_hist': {
                 grouped: true,
                 name: 'Arkeologi og historie',
+                minZoom: 14,
                 datasets: [
                     {
                         name: 'MUSIT',
@@ -3554,6 +3554,7 @@ KR.Config = KR.Config || {};
             'arkeologi': {
                 grouped: true,
                 name: 'Arkeologi',
+                minZoom: 14,
                 style: {
                     fillcolor: '#436978',
                     circle: false,
@@ -3594,6 +3595,7 @@ KR.Config = KR.Config || {};
             'historie': {
                 grouped: true,
                 name: 'Historie',
+                minZoom: 14,
                 style: {
                     fillcolor: '#D252B9',
                     circle: false,
@@ -4216,21 +4218,35 @@ var KR = this.KR || {};
 
     function _getFilter(buffer) {
         return function (featureCollection) {
+
             if (!featureCollection || !featureCollection.features.length) {
                 return featureCollection;
             }
-            if (featureCollection.features[0].geometry.type.indexOf('Polygon') === -1) {
-                return turf.within(featureCollection, buffer);
+
+            var type = featureCollection.features[0].geometry.type;
+
+            if (type.indexOf('Polygon') > -1) {
+                var intersects =  _.filter(featureCollection.features, function (feature) {
+                    var bbox = turf.extent(feature);
+                    var bboxPolygon = turf.bboxPolygon(bbox);
+                    return !!turf.intersect(bboxPolygon, buffer.features[0]);
+                });
+                return KR.Util.createFeatureCollection(intersects);
             }
-            var intersects =  _.filter(featureCollection.features, function (feature) {
-                var bbox = turf.extent(feature);
-                var bboxPolygon = turf.bboxPolygon(bbox);
-                return !!turf.intersect(bboxPolygon, buffer.features[0]);
-            });
-            return KR.Util.createFeatureCollection(intersects);
+
+            if (type.indexOf('MultiLineString') > -1) {
+                var intersects =  _.filter(featureCollection.features, function (feature) {
+                    var bbox = turf.extent(feature);
+                    var bboxPolygon = turf.bboxPolygon(bbox);
+                    return !!turf.intersect(bboxPolygon, buffer.features[0]);
+                });
+                return KR.Util.createFeatureCollection(intersects);
+            }
+
+            return turf.within(featureCollection, buffer);
+
         };
     }
-
 
     function _loadDatasets(api, datasets, fromUrl, komm, fylke) {
         if (fromUrl) {
@@ -4267,6 +4283,7 @@ var KR = this.KR || {};
                 var layer = L.geoJson(geoJson);
 
                 var filter = _getFilter(geoJson);
+
                 callback(layer.getBounds(), datasets, filter, null, initPos);
             });
         } else {
