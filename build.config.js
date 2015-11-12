@@ -247,7 +247,7 @@ module.exports = {
       id: 'oslo',
       name: 'Oslo',
       description: 'Stedsbegrenset demonstrator med spesiell fokus på kunst og arkitektur, men også innhold fra pilotarbeidet knyttet til Akerselva og integrasjon med andre lokale kilder.',
-      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Clokalwiki%2Chistorie%2Ckunst%2Criksantikvaren&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true',
+      url: 'demonstratorer/config.html?datasets=difo%2Cwikipedia%2Clokalwiki%2Chistorie%2Ckunst%2Criksantikvaren%2Cgroruddalen%2Coslobyarkiv&komm=301&layer=norges_grunnkart_graatone&geomFilter=true&showGeom=true#13/59.9174/10.7649',
       appicon:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Akrobaten_gang_og_sykkelbro.jpg/320px-Akrobaten_gang_og_sykkelbro.jpg',
     },
     {
