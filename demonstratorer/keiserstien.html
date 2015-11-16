@@ -391,14 +391,6 @@
 
     <h3><%= property.bostedets_navn %></h3>
 
-    
-    <% if (distanceBearing) { %>
-    <div class="distance">
-        <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
-        <%= distanceBearing.dist %>
-    </div>
-    <% } %>
-
     <% _.each(residents, function (resident) { %>
       <table class="sidebar-table">
           <tr colspan="2">
