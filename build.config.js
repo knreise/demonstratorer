@@ -279,6 +279,11 @@ module.exports = {
       id: '2verdenskrig',
       name: '2. verdenskrig',
       description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
+    },
+    {
+      id: 'jul',
+      name: 'God jul',
+      description: 'Julehistorie fra hele landet'
     }
   ],
   experiments: [
