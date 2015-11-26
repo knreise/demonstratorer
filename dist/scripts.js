@@ -4280,6 +4280,13 @@ var KR = this.KR || {};
         options = _.extend({}, DEFAULT_OPTIONS, options);
 
         var map = KR.Util.createMap('map', options);
+
+        if (_.has(options, 'extraLayers') && _.isArray(options.extraLayers)) {
+            _.each(options.extraLayers, function (extraLayer) {
+                map.addLayer(extraLayer);
+            });
+        }
+
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 

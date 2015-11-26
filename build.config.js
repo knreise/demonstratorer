@@ -283,7 +283,8 @@ module.exports = {
     {
       id: 'jul',
       name: 'God jul',
-      description: 'Julehistorie fra hele landet'
+      description: 'Julehistorie fra hele landet',
+      extraScripts: ['bower_components/L.SnowLayer.js']
     }
   ],
   experiments: [

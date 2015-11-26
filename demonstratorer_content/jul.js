@@ -55,6 +55,8 @@
 
     var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png');
 
+    var snowLayer = L.snowLayer('rgba(255, 255, 255, 1.0)');
+
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
@@ -62,6 +64,7 @@
         description: $('#description_template').html(),
         geomFilter: false,
         showGeom: true,
-        layer: layer
+        layer: layer,
+        extraLayers: [snowLayer]
     });
 }());
