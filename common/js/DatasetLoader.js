@@ -127,7 +127,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
             if (dataset.cluster) {
                 vectorLayer = new L.Knreise.MarkerClusterGroup({
                     dataset: dataset,
-                    maxClusterRadius: maxClusterRadius
+                    maxClusterRadius: maxClusterRadius,
+                    unclusterThreshold: dataset.unclusterThreshold
                 }).addTo(map);
                 if (_addClusterClick) {
                     _addClusterClick(vectorLayer, dataset);
@@ -296,8 +297,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
             var featurecollections = [];
             var finished = _.after(toLoad.length, function () {
-                vectorLayer.isLoading = false;
-                vectorLayer.fire('dataloadend');
 
                 if (useCommonCluster) {
                     _resetDataGeoJson(vectorLayer, featurecollections);
@@ -308,6 +307,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
                         _resetDataGeoJson(vectorLayer, featurecollections);
                     }
                 }
+                vectorLayer.isLoading = false;
+                vectorLayer.fire('dataloadend');
                 if (callback) {
                     callback(featurecollections);
                 }

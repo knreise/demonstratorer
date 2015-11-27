@@ -126,11 +126,11 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
-                        init: kulturminneFunctions.initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly/*,
                         loadWhenLessThan: {
                             count: 5,
                             callback: kulturminneFunctions.loadKulturminnePoly
-                        }
+                        }*/
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
@@ -186,11 +186,11 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
-                        init: kulturminneFunctions.initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly/*,
                         loadWhenLessThan: {
                             count: 5,
                             callback: kulturminneFunctions.loadKulturminnePoly
-                        }
+                        }*/
                     }
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
@@ -218,11 +218,11 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
-                        init: kulturminneFunctions.initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly/*,
                         loadWhenLessThan: {
                             count: 5,
                             callback: kulturminneFunctions.loadKulturminnePoly
-                        }
+                        }*/
                     },
                     {
                         name: 'DiMu',
@@ -335,11 +335,12 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
-                init: kulturminneFunctions.initKulturminnePoly,
+                unclusterThreshold: 13,
+                init: kulturminneFunctions.initKulturminnePoly, /*
                 loadWhenLessThan: {
                     count: 10,
                     callback: kulturminneFunctions.loadKulturminnePoly
-                },
+                },*/
                 description: 'Data fra Riksantikvarens kulturminnesøk'
             },
             'brukerminner': {

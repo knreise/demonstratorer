@@ -6,6 +6,8 @@ KR.Config = KR.Config || {};
     'use strict';
 
     ns.getKulturminneFunctions = function (api) {
+        var _selectedPoly;
+        var _polyVisible = false;
 
         var _vectorLayer;
         var _map;
@@ -14,7 +16,7 @@ KR.Config = KR.Config || {};
         var _enkeltMinneLayer;
         var _loadedIds = [];
         var _hideMarker = false;
-        var _showEnkeltminner = true;
+        var _showEnkeltminner = false;
 
         var _hidePolygonLayer = function () {
             map.removeLayer(_polygonLayer);
@@ -38,22 +40,6 @@ KR.Config = KR.Config || {};
                 }
             }
         };
-
-        var _checkThresholdPassed = function (map, threshold, callback) {
-            var prevZoom;
-            map.on('zoomstart', function (e) {
-                prevZoom = map.getZoom();
-            });
-            map.on('zoomend', function (e) {
-                var currentZoom = map.getZoom();
-                if (prevZoom > threshold && currentZoom <= threshold) {
-                    callback('up');
-                }
-                if (prevZoom <= threshold && currentZoom > threshold) {
-                    callback('down');
-                }
-            });
-        }
 
         var _getMarkerForId = function (id) {
             return _.find(_vectorLayer.getLayers(), function (layer) {
@@ -110,14 +96,7 @@ KR.Config = KR.Config || {};
             });
         };
 
-
-        var _markerClicked = function (e) {
-            _deselectPolygons();
-            var id = e.layer.feature.properties.id;
-            var poly = _getPolygonForId(id);
-            if (!poly) {
-                return;
-            }
+        var _highlightPolygon = function (poly) {
             poly.setStyle({
                 weight: 1,
                 color: '#436978',
@@ -126,6 +105,20 @@ KR.Config = KR.Config || {};
                 opacity: 0.8,
                 fillOpacity: 0.4
             });
+        }
+
+        var _markerClicked = function (e) {
+
+            _deselectPolygons();
+            var id = e.layer.feature.properties.id;
+
+            _selectedPoly = id;
+
+            var poly = _getPolygonForId(id);
+            if (!poly) {
+                return;
+            }
+            _highlightPolygon(poly);
             if (_loadEnkeltminner) {
                 _loadEnkeltminner(e.layer.feature);
             }
@@ -175,6 +168,69 @@ KR.Config = KR.Config || {};
             };
         }
 
+        var _highlightPolygonById = function (id) {
+            var poly = _getPolygonForId(id);
+            if (!poly) {
+                return;
+            }
+            _highlightPolygon(poly);
+        };
+
+        var _highlightMarkerById = function (id) {
+            var parent = _getMarkerForId(id);
+            if (parent) {
+                parent.fire('click');
+            }
+        };
+
+
+        var _polygonsLoaded = function (geoJson) {
+            _polygonLayer.clearLayers().addData(geoJson);
+            if (_selectedPoly) {
+                _highlightPolygonById(_selectedPoly);
+                _highlightMarkerById(_selectedPoly);
+            }
+        };
+
+        var _reloadPoly = function () {
+            if (!_polyVisible) {
+                return;
+            }
+            var bounds = _map.getBounds();
+
+            var ids = _.chain(_vectorLayer.getLayers())
+                .filter(function (layer) {
+                    return bounds.contains(layer.getLatLng());
+                })
+                .map(function (layer) {
+                    return layer.feature.properties.id;
+                })
+                .value();
+
+            if (ids.length) {
+                var q = {
+                    api: 'kulturminnedataSparql',
+                    type: 'lokalitetpoly',
+                    lokalitet: ids
+                };
+                api.getData(q, _polygonsLoaded);
+            } else {
+                _polygonLayer.clearLayers();
+            }
+
+        };
+
+        var _togglePoly = function (direction) {
+
+            var shouldShow = (direction === 'down');
+
+            if (shouldShow) {
+                _polyVisible = true;
+            } else {
+                _polyVisible = false;
+                _polygonLayer.clearLayers();
+            }
+        };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
             _vectorLayer = vectorLayer;
@@ -182,10 +238,22 @@ KR.Config = KR.Config || {};
             _vectorLayer.on('hide', _hidePolygonLayer);
             _vectorLayer.on('show', _showPolygonLayer);
             _polygonLayer = _createPolygonLayer(dataset)
+            
+            var showThreshold = 13;
+
+            if (map.getZoom() > showThreshold) {
+               _togglePoly('down');
+            }
+            _vectorLayer.on('dataloadend', _reloadPoly);
+            KR.Util.checkThresholdPassed(_map, showThreshold, _togglePoly);
+            _vectorLayer.on('click', _markerClicked);
+            _map.on('layerDeselect', _deselectPolygons);
+
+            /*
             _checkThresholdPassed(_map, 13, _checkRemove);
             _map.on('zoomend', _checkCluster);
             _map.on('layerDeselect', _deselectPolygons);
-            _vectorLayer.on('click', _markerClicked);
+            
 
             if (_.has(dataset, 'showEnkeltminner')) {
                 _showEnkeltminner = dataset.showEnkeltminner;
@@ -194,8 +262,10 @@ KR.Config = KR.Config || {};
             if (_showEnkeltminner) {
                 _setupEnkeltminner(dataset);
             }
+            */
         };
 
+/*
         var _dataLoaded = function (geoJson) {
             _polygonLayer.addData(geoJson);
             var newIds = _.chain(geoJson.features)
@@ -215,7 +285,8 @@ KR.Config = KR.Config || {};
             }
             _loadedIds = _loadedIds.concat(newIds);
         }
-
+*/
+/*
         var loadKulturminnePoly = function (map, dataset, features) {
             if (!features) {
                 return;
@@ -240,9 +311,9 @@ KR.Config = KR.Config || {};
             };
             api.getData(q, _dataLoaded);
         };
-
+*/
         return {
-            loadKulturminnePoly: loadKulturminnePoly,
+            //loadKulturminnePoly: loadKulturminnePoly,
             initKulturminnePoly: initKulturminnePoly
         };
     };
