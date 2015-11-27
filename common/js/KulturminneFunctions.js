@@ -16,7 +16,7 @@ KR.Config = KR.Config || {};
         var _enkeltMinneLayer;
         var _loadedIds = [];
         var _hideMarker = false;
-        var _showEnkeltminner = false;
+        var _showEnkeltminner = true;
 
         var _hidePolygonLayer = function () {
             map.removeLayer(_polygonLayer);
@@ -253,7 +253,7 @@ KR.Config = KR.Config || {};
             _checkThresholdPassed(_map, 13, _checkRemove);
             _map.on('zoomend', _checkCluster);
             _map.on('layerDeselect', _deselectPolygons);
-            
+            */
 
             if (_.has(dataset, 'showEnkeltminner')) {
                 _showEnkeltminner = dataset.showEnkeltminner;
@@ -262,7 +262,7 @@ KR.Config = KR.Config || {};
             if (_showEnkeltminner) {
                 _setupEnkeltminner(dataset);
             }
-            */
+
         };
 
 /*
