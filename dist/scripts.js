@@ -1937,7 +1937,7 @@ var KR = this.KR || {};
             if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
                 feature.properties.license = feature.properties.allProps.europeana_rights[0];
             } else {
-                feature.properties.license = null;
+                feature.properties.license = feature.properties.license;
             }
 
             var color = KR.Style.colorForFeature(feature, true, true);
