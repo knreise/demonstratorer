@@ -1254,6 +1254,8 @@ var KR = this.KR || {};
 KR.SparqlAPI = function (apiName, options) {
     'use strict';
 
+    var license = options.licenseText || 'http://data.norge.no/nlod/no';
+
     var BASE_URL = options.url;
 
     if (typeof proj4 !== 'undefined') {
@@ -1307,6 +1309,10 @@ KR.SparqlAPI = function (apiName, options) {
                 attrs.img = false;
             }
             attrs.title = attrs.name;
+
+            if (!attrs.license) {
+                attrs.license = license;
+            }
 
             if (_.has(item, 'point')) {
                 return KR.Util.createGeoJSONFeatureFromGeom(
@@ -1399,9 +1405,9 @@ KR.SparqlAPI = function (apiName, options) {
         '  ?picture rdfs:label ?picturelabel . ' +
         '  ?picture dc:description ?picturedescription . ' +
         '  ?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence . ' +
-        '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
-        '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img) ' +
-        '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail)' +
+        '  BIND(REPLACE(STR(?link), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid) ' +
+        '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img) ' +
+        '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail) ' +
         '} ';
 
         if (dataset.filter) {
