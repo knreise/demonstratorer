@@ -1882,7 +1882,7 @@ var KR = this.KR || {};
             if (feature.properties.thumbnail) {
                 marker = options.thumbnailTemplate({
                     thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
-                    thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 60, 120),
+                    thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 120, 90),
                     color: KR.Style.colorForFeature(feature, true)
                 });
             } else {
@@ -1937,7 +1937,7 @@ var KR = this.KR || {};
             if (feature.properties.allProps && feature.properties.allProps.europeana_rights) {
                 feature.properties.license = feature.properties.allProps.europeana_rights[0];
             } else {
-                feature.properties.license = null;
+                feature.properties.license = feature.properties.license;
             }
 
 
@@ -4449,6 +4449,13 @@ var KR = this.KR || {};
         options = _.extend({}, DEFAULT_OPTIONS, options);
 
         var map = KR.Util.createMap('map', options);
+
+        if (_.has(options, 'extraLayers') && _.isArray(options.extraLayers)) {
+            _.each(options.extraLayers, function (extraLayer) {
+                map.addLayer(extraLayer);
+            });
+        }
+
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 

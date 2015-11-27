@@ -58,8 +58,8 @@ module.exports = function (grunt) {
 
             'build-demos': {
                 files: grunt.util._.map(getNonUrlDemos(), function (demonstrator) {
-
-                    if (grunt.util._.has(demonstrator, 'params')) {
+                    var _ = grunt.util._;
+                    if (_.has(demonstrator, 'params')) {
                         return {
                         file: 'demonstratorer/' + demonstrator.id + '.html',
                         method: function (fs, fd, done) {
@@ -104,8 +104,13 @@ module.exports = function (grunt) {
                                 demonstrator.desc = '';
                             }
 
+                            var scripts = ['dist/scripts_external.js', 'dist/scripts.min.js'];
+                            if (_.has(demonstrator, 'extraScripts') && _.isArray(demonstrator.extraScripts)) {
+                                scripts = scripts.concat(demonstrator.extraScripts);
+                            }
+
                             demonstrator.inline_js = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.js', 'utf8');
-                            demonstrator.scriptLinks = ['dist/scripts_external.js', 'dist/scripts.min.js'];
+                            demonstrator.scriptLinks = scripts;
                             demonstrator.cssLinks = userConfig.demoCssExternal.concat(['dist/style.css']);
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
