@@ -1882,7 +1882,7 @@ var KR = this.KR || {};
             if (feature.properties.thumbnail) {
                 marker = options.thumbnailTemplate({
                     thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
-                    thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 60, 120),
+                    thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 120, 90),
                     color: KR.Style.colorForFeature(feature, true)
                 });
             } else {
