@@ -442,8 +442,13 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
 <h3><%= name %></h3>
 
 <% if (img) { %>
-<img class="fullwidth img-thumbnail" src="<%= img %>" />
+<div class="image with-caption">
+
+    <img class="thumbnail fullwidth" src="<%= img %>" />
+    <p><%= picturelabel %> - <%= picturedescription %> (<a href="<%= picturelicence%>" target="_blank">Lisens</a>)</p>
+</div>
 <% } %>
+
 
 <p><%= description %></p>
 
