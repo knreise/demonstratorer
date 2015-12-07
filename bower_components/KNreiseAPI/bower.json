@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.7.22",
+  "version": "1.7.23",
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
