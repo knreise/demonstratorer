@@ -446,8 +446,13 @@
 <h3><%= name %></h3>
 
 <% if (img) { %>
-<img class="fullwidth img-thumbnail" src="<%= img %>" />
+<div class="image with-caption">
+
+    <img class="thumbnail fullwidth" src="<%= img %>" />
+    <p><%= picturelabel %> - <%= picturedescription %> (<a href="<%= picturelicence%>" target="_blank">Lisens</a>)</p>
+</div>
 <% } %>
+
 
 <p><%= description %></p>
 
@@ -456,11 +461,19 @@
       <td>Type</td>
       <td><%= loccatlabel %></td>
     </tr>
+    <% if(!_.isUndefined(arguments[0].locartlabel)) { %>
+    <tr>
+      <td>Lokalitetsart</td>
+      <td><%= locartlabel  %></td>
+    </tr>
+    <% } %>
+    <% if(!_.isUndefined(arguments[0].orglabel)) { %>
+    <tr>
+      <td>Ansvarlig organisasjon</td>
+      <td><%= orglabel  %></td>
+    </tr>
+    <% } %>
 </table>
-
-<a class="sidebar-link" href="<%= link %>" target="_blank">
-  <i class="fa fa-external-link-square"></i> Vis hos Kulturminnesøk
-</a>
 
 </script>
 

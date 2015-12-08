@@ -8,6 +8,7 @@
         initialize: function (userDrawFunc, options) {
             this._userDrawFunc = userDrawFunc;
             L.setOptions(this, options);
+            this.isStatic = true;
         },
 
         drawing: function (userDrawFunc) {
@@ -52,11 +53,14 @@
             }
 
             this._reset();
+            if (this.isStatic) {
+                this._redrawCanvas();
+            }
         },
 
         onRemove: function (map) {
             map.getPanes().overlayPane.removeChild(this._canvas);
-     
+
             map.off('moveend', this._reset, this);
             map.off('resize', this._resize, this);
 
@@ -84,6 +88,12 @@
         },
 
         _redraw: function () {
+            if (!this.isStatic) {
+                this._redrawCanvas();
+            }
+        },
+
+        _redrawCanvas: function () {
             var size = this._map.getSize();
             var bounds   = this._map.getBounds();
             var zoomScale = (size.x * 180) / (20037508.34  * (bounds.getEast() - bounds.getWest())); // resolution = 1/zoomScale
@@ -114,11 +124,13 @@
         return new L.CanvasOverlay(userDrawFunc, options);
     };
 
-    function getDrawSnow(color) {
-        color = color || 'rgba(255, 255, 255, 0.8)';
+    function getDrawSnow(color, mp) {
 
+        color = color || 'rgba(255, 255, 255, 0.8)';
+        mp = mp || 25; //max particles
         //snow drawing function from http://thecodeplayer.com/walkthrough/html5-canvas-snow-effect
         return function drawSnow(canvasOverlay, params) {
+            console.log("draw")
             var ctx = params.canvas.getContext('2d');
 
             //canvas dimensions
@@ -126,7 +138,7 @@
             var H = window.innerHeight;
 
             //snowflake particles
-            var mp = 25; //max particles
+            
             var particles = [];
             for(var i = 0; i < mp; i++) {
                 particles.push({
@@ -190,8 +202,8 @@
         };
     }
 
-    L.snowLayer = function (color) {
-        return new L.CanvasOverlay(getDrawSnow(color));
+    L.snowLayer = function (options) {
+        return new L.CanvasOverlay(getDrawSnow(options.color, options.maxFlakes));
     };
 
 }());

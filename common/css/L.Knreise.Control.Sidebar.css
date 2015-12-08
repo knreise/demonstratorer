@@ -333,3 +333,21 @@
 .wikipedia-content h2 {
     font-size: 18px;
 }
+
+.image.with-caption {
+    display: inline-block;
+    background: #f5f5f5;
+    margin-bottom: 15px;
+}
+.image.with-caption p {
+    margin: 0;
+    padding-bottom: 0.5em;
+    color: #999;
+    font-size: 90%;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.image.with-caption .thumbnail {
+    margin-bottom: 5px;
+}
