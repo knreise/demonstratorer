@@ -7,21 +7,27 @@ KR.Config = KR.Config || {};
 
     ns.getKulturminneFunctions = function (api) {
         var _selectedPoly;
-        var _polyVisible = false;
-
+        var _dataset;
         var _vectorLayer;
         var _map;
         var _polygonLayer;
         var _loadEnkeltminner;
         var _enkeltMinneLayer;
+        var _prevLayers;
         var _showEnkeltminner = true;
 
         var _hidePolygonLayer = function () {
             _map.removeLayer(_polygonLayer);
+            if (_enkeltMinneLayer) {
+                _map.removeLayer(_enkeltMinneLayer);
+            }
         };
 
         var _showPolygonLayer = function () {
             _map.addLayer(_polygonLayer);
+            if (_enkeltMinneLayer) {
+                _map.addLayer(_enkeltMinneLayer);
+            }
         };
 
         var _getMarkerForId = function (id) {
@@ -40,6 +46,18 @@ KR.Config = KR.Config || {};
             var parent = _getMarkerForId(feature.properties.lok);
             if (parent) {
                 parent.fire('click');
+            } else {
+                if (_map.sidebar) {
+                    var layer = _.find(_prevLayers, function (prev) {
+                        return prev.feature.properties.id === feature.properties.lok;
+                    });
+                    _highlightPolygon(_getPolygonForId(feature.properties.lok));
+                    _map.sidebar.showFeature(
+                        layer.feature,
+                        _dataset.template,
+                        _dataset.getFeatureData
+                    );
+                }
             }
         };
 
@@ -157,6 +175,7 @@ KR.Config = KR.Config || {};
 
 
         var _polygonsLoaded = function (geoJson) {
+
             _polygonLayer.clearLayers().addData(geoJson);
             if (_selectedPoly) {
                 _highlightPolygonById(_selectedPoly);
@@ -164,20 +183,26 @@ KR.Config = KR.Config || {};
             }
         };
 
-        var _reloadPoly = function () {
-            if (!_polyVisible) {
-                return;
+        var _reloadPoly = function (e) {
+            if (e.prevLayers && e.prevLayers.length) {
+                _prevLayers = e.prevLayers;
             }
-            var bounds = _map.getBounds().pad(20);
+            var unclustred = _vectorLayer.getUnclustredLayers();
+            var ids = _.map(unclustred, function (layer) {
+                return layer.feature.properties.id;
+            });
 
-            var ids = _.chain(_vectorLayer.getLayers())
-                .filter(function (layer) {
-                    return bounds.contains(layer.getLatLng());
-                })
-                .map(function (layer) {
-                    return layer.feature.properties.id;
-                })
-                .value();
+            var idsToKeep = [];
+            if (_vectorLayer.isUnclustred) {
+                idsToKeep = _.chain(_polygonLayer.getLayers())
+                    .map(function (layer) {
+                        return layer.feature.properties.lok;
+                    })
+                    .difference(ids)
+                    .value();
+            }
+
+            ids = ids.concat(idsToKeep);
 
             if (ids.length) {
                 var q = {
@@ -188,36 +213,21 @@ KR.Config = KR.Config || {};
                 api.getData(q, _polygonsLoaded);
             } else {
                 _polygonLayer.clearLayers();
-            }
-
-        };
-
-        var _togglePoly = function (direction) {
-
-            var shouldShow = (direction === 'down');
-
-            if (shouldShow) {
-                _polyVisible = true;
-            } else {
-                _polyVisible = false;
-                _polygonLayer.clearLayers();
+                if (_enkeltMinneLayer) {
+                    _enkeltMinneLayer.clearLayers();
+                }
             }
         };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
+            _dataset = dataset;
             _vectorLayer = vectorLayer;
             _map = map;
             _vectorLayer.on('hide', _hidePolygonLayer);
             _vectorLayer.on('show', _showPolygonLayer);
             _polygonLayer = _createPolygonLayer(dataset);
 
-            var showThreshold = 13;
-
-            if (map.getZoom() > showThreshold) {
-                _togglePoly('down');
-            }
-            _vectorLayer.on('dataloadend', _reloadPoly);
-            KR.Util.checkThresholdPassed(_map, showThreshold, _togglePoly);
+            _vectorLayer.on('dataloaded', _reloadPoly);
             _vectorLayer.on('click', _markerClicked);
             _map.on('layerDeselect', _deselectPolygons);
 

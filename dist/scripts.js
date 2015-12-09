@@ -1085,57 +1085,69 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
         this._queue = [];
         this.on('clusterclick', this._clusterClicked, this);
-        this.shouldUncluster = false;
+        this.isUnclustred = false;
     },
 
     onAdd: function (map) {
         L.MarkerClusterGroup.prototype.onAdd.apply(this, arguments);
         map.on('layerSelected', this._deselectAll, this);
         this._map = map;
-        if (_.has(this.options, 'unclusterThreshold')) {
+        if (_.has(this.options, 'unclusterCount')) {
             this._unclustred = L.featureGroup().addTo(map);
              this._unclustred.on('click', _.bind(function (e) {
                 this.fire('click', e);
              }, this));
-            var showThreshold = this.options.unclusterThreshold;
-            if (map.getZoom() > showThreshold) {
-               this._toggleCluster('down');
-            }
-            KR.Util.checkThresholdPassed(map, showThreshold, _.bind(this._toggleCluster, this));
+
+             this.on('hide', function () {
+                map.removeLayer(this._unclustred);
+             });
+             this.on('show', function () {
+                map.addLayer(this._unclustred);
+             });
         }
     },
 
-    addLayers: function (layers) {
-        if (this._unclustred) {
-            this._unclustred.clearLayers();
-        }
-        
-        if (this.shouldUncluster) {
-            var bounds = this._map.getBounds().pad(20);
-            _.chain(layers)
-                .filter(function (layer) {
-                    return bounds.contains(layer.getLatLng());
-                })
-                .each(function (layer) {
-                    this._unclustred.addLayer(layer);
-                }, this)
-                .value()
-
-        } else {
-            L.MarkerClusterGroup.prototype.addLayers.apply(this, arguments);
-        }
+    getVisibleLayers: function (layers) {
+        var bounds = this._map.getBounds();
+        return _.chain(layers)
+            .filter(function (layer) {
+                return bounds.contains(layer.getLatLng());
+            })
+            .value()
     },
 
     getLayers: function () {
-        if (this.shouldUncluster) {
-            return this._unclustred.getLayers();
-        } else {
-            L.MarkerClusterGroup.prototype.getLayers.apply(this, arguments);
+        if (this.isUnclustred) {
+            return this.getUnclustredLayers();
         }
+        return L.MarkerClusterGroup.prototype.getLayers.apply(this, arguments);
     },
 
-    _toggleCluster: function (direction) {
-        this.shouldUncluster = (direction === 'down');
+    getUnclustredLayers: function () {
+        return this._unclustred.getLayers();
+    },
+
+    addLayers: function (layers) {
+
+        var prevLayers = this.getLayers();
+
+        var showThreshold = this.options.unclusterCount;
+        var visible = this.getVisibleLayers(layers);
+
+        if (this._unclustred) {
+            this._unclustred.clearLayers();
+        }
+
+        if (visible.length <= showThreshold) {
+            this.isUnclustred = true;
+            _.each(visible, function (layer) {
+                this._unclustred.addLayer(layer);
+            }, this);
+        } else {
+            this.isUnclustred = false;
+            L.MarkerClusterGroup.prototype.addLayers.apply(this, arguments);
+        }
+        this.fire('dataloaded', {prevLayers: prevLayers});
     },
 
     _deselectAll: function () {
@@ -1984,9 +1996,7 @@ var KR = this.KR || {};
                 });
                 return;
             }
-
             template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
-
             var img = feature.properties.images;
             if (_.isArray(img)) {
                 img = img[0];
@@ -2001,7 +2011,6 @@ var KR = this.KR || {};
             } else {
                 feature.properties.license = feature.properties.license;
             }
-
 
             var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
@@ -2597,7 +2606,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
                 vectorLayer = new L.Knreise.MarkerClusterGroup({
                     dataset: dataset,
                     maxClusterRadius: maxClusterRadius,
-                    unclusterThreshold: dataset.unclusterThreshold
+                    unclusterCount: dataset.unclusterCount
                 }).addTo(map);
                 if (_addClusterClick) {
                     _addClusterClick(vectorLayer, dataset);
@@ -3217,21 +3226,27 @@ KR.Config = KR.Config || {};
 
     ns.getKulturminneFunctions = function (api) {
         var _selectedPoly;
-        var _polyVisible = false;
-
+        var _dataset;
         var _vectorLayer;
         var _map;
         var _polygonLayer;
         var _loadEnkeltminner;
         var _enkeltMinneLayer;
+        var _prevLayers;
         var _showEnkeltminner = true;
 
         var _hidePolygonLayer = function () {
             _map.removeLayer(_polygonLayer);
+            if (_enkeltMinneLayer) {
+                _map.removeLayer(_enkeltMinneLayer);
+            }
         };
 
         var _showPolygonLayer = function () {
             _map.addLayer(_polygonLayer);
+            if (_enkeltMinneLayer) {
+                _map.addLayer(_enkeltMinneLayer);
+            }
         };
 
         var _getMarkerForId = function (id) {
@@ -3250,6 +3265,18 @@ KR.Config = KR.Config || {};
             var parent = _getMarkerForId(feature.properties.lok);
             if (parent) {
                 parent.fire('click');
+            } else {
+                if (_map.sidebar) {
+                    var layer = _.find(_prevLayers, function (prev) {
+                        return prev.feature.properties.id === feature.properties.lok;
+                    });
+                    _highlightPolygon(_getPolygonForId(feature.properties.lok));
+                    _map.sidebar.showFeature(
+                        layer.feature,
+                        _dataset.template,
+                        _dataset.getFeatureData
+                    );
+                }
             }
         };
 
@@ -3367,6 +3394,7 @@ KR.Config = KR.Config || {};
 
 
         var _polygonsLoaded = function (geoJson) {
+
             _polygonLayer.clearLayers().addData(geoJson);
             if (_selectedPoly) {
                 _highlightPolygonById(_selectedPoly);
@@ -3374,20 +3402,26 @@ KR.Config = KR.Config || {};
             }
         };
 
-        var _reloadPoly = function () {
-            if (!_polyVisible) {
-                return;
+        var _reloadPoly = function (e) {
+            if (e.prevLayers && e.prevLayers.length) {
+                _prevLayers = e.prevLayers;
             }
-            var bounds = _map.getBounds().pad(20);
+            var unclustred = _vectorLayer.getUnclustredLayers();
+            var ids = _.map(unclustred, function (layer) {
+                return layer.feature.properties.id;
+            });
 
-            var ids = _.chain(_vectorLayer.getLayers())
-                .filter(function (layer) {
-                    return bounds.contains(layer.getLatLng());
-                })
-                .map(function (layer) {
-                    return layer.feature.properties.id;
-                })
-                .value();
+            var idsToKeep = [];
+            if (_vectorLayer.isUnclustred) {
+                idsToKeep = _.chain(_polygonLayer.getLayers())
+                    .map(function (layer) {
+                        return layer.feature.properties.lok;
+                    })
+                    .difference(ids)
+                    .value();
+            }
+
+            ids = ids.concat(idsToKeep);
 
             if (ids.length) {
                 var q = {
@@ -3398,36 +3432,21 @@ KR.Config = KR.Config || {};
                 api.getData(q, _polygonsLoaded);
             } else {
                 _polygonLayer.clearLayers();
-            }
-
-        };
-
-        var _togglePoly = function (direction) {
-
-            var shouldShow = (direction === 'down');
-
-            if (shouldShow) {
-                _polyVisible = true;
-            } else {
-                _polyVisible = false;
-                _polygonLayer.clearLayers();
+                if (_enkeltMinneLayer) {
+                    _enkeltMinneLayer.clearLayers();
+                }
             }
         };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
+            _dataset = dataset;
             _vectorLayer = vectorLayer;
             _map = map;
             _vectorLayer.on('hide', _hidePolygonLayer);
             _vectorLayer.on('show', _showPolygonLayer);
             _polygonLayer = _createPolygonLayer(dataset);
 
-            var showThreshold = 13;
-
-            if (map.getZoom() > showThreshold) {
-                _togglePoly('down');
-            }
-            _vectorLayer.on('dataloadend', _reloadPoly);
-            KR.Util.checkThresholdPassed(_map, showThreshold, _togglePoly);
+            _vectorLayer.on('dataloaded', _reloadPoly);
             _vectorLayer.on('click', _markerClicked);
             _map.on('layerDeselect', _deselectPolygons);
 
@@ -3575,11 +3594,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
-                        init: kulturminneFunctions.initKulturminnePoly/*,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }*/
+                        unclusterCount: 20,
+                        init: kulturminneFunctions.initKulturminnePoly,
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
@@ -3635,11 +3651,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
-                        init: kulturminneFunctions.initKulturminnePoly/*,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }*/
+                        unclusterCount: 20,
+                        init: kulturminneFunctions.initKulturminnePoly,
                     }
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
@@ -3667,11 +3680,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
-                        init: kulturminneFunctions.initKulturminnePoly/*,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }*/
+                        unclusterCount: 20,
+                        init: kulturminneFunctions.initKulturminnePoly,
                     },
                     {
                         name: 'DiMu',
@@ -3784,13 +3794,9 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
-                unclusterThreshold: 13,
-                init: kulturminneFunctions.initKulturminnePoly, /*
-                loadWhenLessThan: {
-                    count: 10,
-                    callback: kulturminneFunctions.loadKulturminnePoly
-                },*/
-                description: 'Data fra Riksantikvarens kulturminnesøk'
+                description: 'Data fra Riksantikvarens kulturminnesøk',
+                unclusterCount: 20,
+                init: kulturminneFunctions.initKulturminnePoly,
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',

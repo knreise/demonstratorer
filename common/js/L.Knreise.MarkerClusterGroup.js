@@ -35,57 +35,69 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
         this._queue = [];
         this.on('clusterclick', this._clusterClicked, this);
-        this.shouldUncluster = false;
+        this.isUnclustred = false;
     },
 
     onAdd: function (map) {
         L.MarkerClusterGroup.prototype.onAdd.apply(this, arguments);
         map.on('layerSelected', this._deselectAll, this);
         this._map = map;
-        if (_.has(this.options, 'unclusterThreshold')) {
+        if (_.has(this.options, 'unclusterCount')) {
             this._unclustred = L.featureGroup().addTo(map);
              this._unclustred.on('click', _.bind(function (e) {
                 this.fire('click', e);
              }, this));
-            var showThreshold = this.options.unclusterThreshold;
-            if (map.getZoom() > showThreshold) {
-               this._toggleCluster('down');
-            }
-            KR.Util.checkThresholdPassed(map, showThreshold, _.bind(this._toggleCluster, this));
+
+             this.on('hide', function () {
+                map.removeLayer(this._unclustred);
+             });
+             this.on('show', function () {
+                map.addLayer(this._unclustred);
+             });
         }
     },
 
-    addLayers: function (layers) {
-        if (this._unclustred) {
-            this._unclustred.clearLayers();
-        }
-        
-        if (this.shouldUncluster) {
-            var bounds = this._map.getBounds().pad(20);
-            _.chain(layers)
-                .filter(function (layer) {
-                    return bounds.contains(layer.getLatLng());
-                })
-                .each(function (layer) {
-                    this._unclustred.addLayer(layer);
-                }, this)
-                .value()
-
-        } else {
-            L.MarkerClusterGroup.prototype.addLayers.apply(this, arguments);
-        }
+    getVisibleLayers: function (layers) {
+        var bounds = this._map.getBounds();
+        return _.chain(layers)
+            .filter(function (layer) {
+                return bounds.contains(layer.getLatLng());
+            })
+            .value()
     },
 
     getLayers: function () {
-        if (this.shouldUncluster) {
-            return this._unclustred.getLayers();
-        } else {
-            L.MarkerClusterGroup.prototype.getLayers.apply(this, arguments);
+        if (this.isUnclustred) {
+            return this.getUnclustredLayers();
         }
+        return L.MarkerClusterGroup.prototype.getLayers.apply(this, arguments);
     },
 
-    _toggleCluster: function (direction) {
-        this.shouldUncluster = (direction === 'down');
+    getUnclustredLayers: function () {
+        return this._unclustred.getLayers();
+    },
+
+    addLayers: function (layers) {
+
+        var prevLayers = this.getLayers();
+
+        var showThreshold = this.options.unclusterCount;
+        var visible = this.getVisibleLayers(layers);
+
+        if (this._unclustred) {
+            this._unclustred.clearLayers();
+        }
+
+        if (visible.length <= showThreshold) {
+            this.isUnclustred = true;
+            _.each(visible, function (layer) {
+                this._unclustred.addLayer(layer);
+            }, this);
+        } else {
+            this.isUnclustred = false;
+            L.MarkerClusterGroup.prototype.addLayers.apply(this, arguments);
+        }
+        this.fire('dataloaded', {prevLayers: prevLayers});
     },
 
     _deselectAll: function () {

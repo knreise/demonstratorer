@@ -128,7 +128,7 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
                 vectorLayer = new L.Knreise.MarkerClusterGroup({
                     dataset: dataset,
                     maxClusterRadius: maxClusterRadius,
-                    unclusterThreshold: dataset.unclusterThreshold
+                    unclusterCount: dataset.unclusterCount
                 }).addTo(map);
                 if (_addClusterClick) {
                     _addClusterClick(vectorLayer, dataset);
