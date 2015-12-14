@@ -146,7 +146,7 @@
     position: absolute;
     top: 0;
     width: 100%;
-    z-index: 5000;
+    z-index: 2000;
 }
 
 .knreise-sidebar .close {
@@ -350,4 +350,35 @@
 
 .image.with-caption .thumbnail {
     margin-bottom: 5px;
+}
+
+
+#overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #000;
+    /*opacity: 0.7;
+    filter: alpha(opacity = 70) !important;*/
+    z-index: 8000;
+}
+
+
+.image-fullscreen-link:before {
+    content: "\f0b2";
+    font-family: FontAwesome;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    left: 5px;
+    padding-right: 0.5em;
+    position: absolute;
+    text-decoration: inherit;
+}
+
+.image-fullscreen-link { 
+    position: relative;
+    cursor: pointer;
 }

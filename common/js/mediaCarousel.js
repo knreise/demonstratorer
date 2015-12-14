@@ -37,9 +37,18 @@ KR.MediaCarousel = {};
     }
 
 
+    function _createFullsize(mediaObject, img) {
+         if (!_.isUndefined(mediaObject.fullsize)) {
+            img.attr('data-fullsize-url', mediaObject.fullsize);
+            img.parent().addClass('image-fullscreen-link');
+        }
+    }
+
     function _createImage(mediaObject) {
         var src = mediaObject.url;
-        return $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
+        var img = $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
+        _createFullsize(mediaObject, img);
+        return img;
     }
 
     function _createVideo(mediaObject) {
@@ -58,7 +67,9 @@ KR.MediaCarousel = {};
 
     function _createCaptionedImage(mediaObject) {
         var container = $('<div class="image with-caption"></div>');
-        container.append('<img class="thumbnail fullwidth" src="' + mediaObject.url + '" />');
+        var img = $('<img class="thumbnail fullwidth" src="' + mediaObject.url + '" />');
+        container.append(img);
+        _createFullsize(mediaObject, img);
         container.append('<p>' + mediaObject.caption + ' (<a href="' + mediaObject.license + '" target="_blank">Lisens</a>)</p>');
         return container;
     }
@@ -105,7 +116,7 @@ KR.MediaCarousel = {};
         return d;
     }
 
-    ns.SetupMediaCarousel = function (mediaContainer) {
+    ns.SetupMediaCarousel = function (mediaContainer, mediaAdded) {
         var media = mediaContainer.find('.media-list').children();
         var counter = new Counter(media.length);
         function showMedia(idx) {
@@ -124,6 +135,11 @@ KR.MediaCarousel = {};
 
                 var element = _getMarkup(mediaObject);
                 mediaElement.replaceWith(element);
+
+                if (mediaAdded) {
+                    mediaAdded(element);
+                }
+
                 if (element.is('audio')) {
                     audiojs.create(element);
                 }

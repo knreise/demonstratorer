@@ -1537,7 +1537,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         // Style and attach content container
         L.DomUtil.addClass(content, l + 'control');
         container.appendChild(content);
-
         this.on('hide', function () {
             if (this._map) {
                 this._map.fire('layerSelected');
@@ -1700,9 +1699,18 @@ KR.MediaCarousel = {};
     }
 
 
+    function _createFullsize(mediaObject, img) {
+         if (!_.isUndefined(mediaObject.fullsize)) {
+            img.attr('data-fullsize-url', mediaObject.fullsize);
+            img.parent().addClass('image-fullscreen-link');
+        }
+    }
+
     function _createImage(mediaObject) {
         var src = mediaObject.url;
-        return $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
+        var img = $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
+        _createFullsize(mediaObject, img);
+        return img;
     }
 
     function _createVideo(mediaObject) {
@@ -1721,7 +1729,9 @@ KR.MediaCarousel = {};
 
     function _createCaptionedImage(mediaObject) {
         var container = $('<div class="image with-caption"></div>');
-        container.append('<img class="thumbnail fullwidth" src="' + mediaObject.url + '" />');
+        var img = $('<img class="thumbnail fullwidth" src="' + mediaObject.url + '" />');
+        container.append(img);
+        _createFullsize(mediaObject, img);
         container.append('<p>' + mediaObject.caption + ' (<a href="' + mediaObject.license + '" target="_blank">Lisens</a>)</p>');
         return container;
     }
@@ -1768,7 +1778,7 @@ KR.MediaCarousel = {};
         return d;
     }
 
-    ns.SetupMediaCarousel = function (mediaContainer) {
+    ns.SetupMediaCarousel = function (mediaContainer, mediaAdded) {
         var media = mediaContainer.find('.media-list').children();
         var counter = new Counter(media.length);
         function showMedia(idx) {
@@ -1787,6 +1797,11 @@ KR.MediaCarousel = {};
 
                 var element = _getMarkup(mediaObject);
                 mediaElement.replaceWith(element);
+
+                if (mediaAdded) {
+                    mediaAdded(element);
+                }
+
                 if (element.is('audio')) {
                     audiojs.create(element);
                 }
@@ -2014,6 +2029,16 @@ var KR = this.KR || {};
         }
 
 
+        function setupFullscreenClick(element) {
+            element.find('img[data-fullsize-url!=""]').click(function () {
+                console.log();
+                var url = $(this).attr('data-fullsize-url');
+                $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
+                    $('#overlay').addClass('hidden').html('');
+                });
+            });
+        }
+
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
             if (getData) {
@@ -2053,6 +2078,8 @@ var KR = this.KR || {};
 
             content += template(_.extend({image: null}, feature.properties));
 
+
+
             if (options.footerTemplate && feature.properties.link) {
                 content += options.footerTemplate(feature.properties);
             }
@@ -2063,7 +2090,6 @@ var KR = this.KR || {};
             }
 
             positionDisplayer.selectFeature(feature, content);
-
             _setContent(content);
             _setupSwipe(callbacks);
 
@@ -2088,11 +2114,14 @@ var KR = this.KR || {};
                 if (callbacks.next) {
                     next.click(callbacks.next).addClass('active');
                 }
+                wrapper.append($('<div id="overlay" class="hidden"></div>'));
             }
+
+            setupFullscreenClick(wrapper);
 
             var mediaContainer = element.find('.media-container');
             if (mediaContainer.length) {
-                KR.MediaCarousel.SetupMediaCarousel(mediaContainer);
+                KR.MediaCarousel.SetupMediaCarousel(mediaContainer, setupFullscreenClick);
             }
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();
@@ -3532,7 +3561,8 @@ KR.Config = KR.Config || {};
                         type: 'captioned_image',
                         url: image.img,
                         caption: image.picturelabel + ' - ' + image.picturedescription,
-                        license: image.picturelicence
+                        license: image.picturelicence,
+                        fullsize: image.img_fullsize
                     };
                 });
                 feature.properties.media = images;

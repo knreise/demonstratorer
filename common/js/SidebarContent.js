@@ -174,6 +174,15 @@ var KR = this.KR || {};
         }
 
 
+        function setupFullscreenClick(element) {
+            element.find('img[data-fullsize-url!=""]').click(function () {
+                var url = $(this).attr('data-fullsize-url');
+                $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
+                    $('#overlay').addClass('hidden').html('');
+                });
+            });
+        }
+
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
             if (getData) {
@@ -213,6 +222,8 @@ var KR = this.KR || {};
 
             content += template(_.extend({image: null}, feature.properties));
 
+
+
             if (options.footerTemplate && feature.properties.link) {
                 content += options.footerTemplate(feature.properties);
             }
@@ -223,7 +234,6 @@ var KR = this.KR || {};
             }
 
             positionDisplayer.selectFeature(feature, content);
-
             _setContent(content);
             _setupSwipe(callbacks);
 
@@ -248,11 +258,14 @@ var KR = this.KR || {};
                 if (callbacks.next) {
                     next.click(callbacks.next).addClass('active');
                 }
+                wrapper.append($('<div id="overlay" class="hidden"></div>'));
             }
+
+            setupFullscreenClick(wrapper);
 
             var mediaContainer = element.find('.media-container');
             if (mediaContainer.length) {
-                KR.MediaCarousel.SetupMediaCarousel(mediaContainer);
+                KR.MediaCarousel.SetupMediaCarousel(mediaContainer, setupFullscreenClick);
             }
             if (typeof audiojs !== 'undefined') {
                 audiojs.createAll();

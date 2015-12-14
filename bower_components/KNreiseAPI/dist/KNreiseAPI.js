@@ -1347,7 +1347,6 @@ KR.SparqlAPI = function (apiName, options) {
             debug: 'off'
         };
 
-        var headers = {'Content-Type': 'form-data'};
         var url = BASE_URL;
 
         var fd = new FormData();
@@ -1386,6 +1385,7 @@ KR.SparqlAPI = function (apiName, options) {
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
+                ' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id}} ' +
                 '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id . ' +
                 '  ?picture <https://data.kulturminne.no/schema/source-link> ?link . ' +
                 '  ?picture rdfs:label ?picturelabel . ' +
@@ -1432,6 +1432,7 @@ KR.SparqlAPI = function (apiName, options) {
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
+                ' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id}} ' +
                 '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id . ' +
                 '  ?picture <https://data.kulturminne.no/schema/source-link> ?link . ' +
                 '  ?picture rdfs:label ?picturelabel . ' +
@@ -1561,6 +1562,39 @@ KR.SparqlAPI = function (apiName, options) {
         });
     }
 
+
+    function _parseImagesResponse(response) {
+        return _.map(response.results.bindings, function (binding) {
+            return _.reduce(binding, function (acc, value, key) {
+                acc[key] = value.value;
+                return acc;
+            });
+            return binding;
+        });
+    }
+
+    function _imagesForLokalitet(dataset, callback, errorCallback) {
+
+        var lokalitet = lokalitet = dataset.lokalitet;
+
+        var query = 'select distinct ?id ?img ?img_fullsize ?url ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
+        '?id a ?type . ' +
+        'BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
+        'BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
+        '?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id . ' +
+        '?picture <https://data.kulturminne.no/schema/source-link> ?link . ' +
+        '?picture rdfs:label ?picturelabel . ' +
+        '?picture dc:description ?picturedescription . ' +
+        '?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence . ' +
+        'BIND(REPLACE(STR(?link), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid) . ' +
+        'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img) . ' +
+        'BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=1000&rs=0&pg=0&sr=", ?linkid) AS ?img_fullsize) . ' +
+        'filter(?id=' + _addBrackets(lokalitet) + ') ' +
+        '} ';
+        _sendQuery(query, _parseImagesResponse, callback, errorCallback);
+    }
+
+
     function getData(dataset, callback, errorCallback, options) {
         dataset = _.extend({}, {geomType: 'point'}, dataset);
         if (dataset.kommune) {
@@ -1573,6 +1607,8 @@ KR.SparqlAPI = function (apiName, options) {
             _polyForLokalitet(dataset, callback, errorCallback);
         } else if (dataset.lokalitet && dataset.type === 'enkeltminner') {
             _enkeltminnerForLokalitet(dataset, callback, errorCallback);
+        } else if (dataset.lokalitet && dataset.type === 'images') {
+            _imagesForLokalitet(dataset, callback, errorCallback);
         } else if (dataset.sparqlQuery) {
             _sendQuery(dataset.sparqlQuery, _parseResponse, callback, errorCallback);
         } else {

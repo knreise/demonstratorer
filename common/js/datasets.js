@@ -28,7 +28,8 @@ KR.Config = KR.Config || {};
                         type: 'captioned_image',
                         url: image.img,
                         caption: image.picturelabel + ' - ' + image.picturedescription,
-                        license: image.picturelicence
+                        license: image.picturelicence,
+                        fullsize: image.img_fullsize
                     };
                 });
                 feature.properties.media = images;

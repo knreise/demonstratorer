@@ -43,7 +43,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         // Style and attach content container
         L.DomUtil.addClass(content, l + 'control');
         container.appendChild(content);
-
         this.on('hide', function () {
             if (this._map) {
                 this._map.fire('layerSelected');
