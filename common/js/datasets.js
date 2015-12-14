@@ -9,85 +9,6 @@ KR.Config = KR.Config || {};
 (function (ns) {
     'use strict';
 
-    ns.getKulturminneFunctions = function (api) {
-
-        var loadedIds = [];
-
-        var loadKulturminnePoly = function (map, dataset, features) {
-            if (features) {
-                var ids = _.map(features, function (feature) {
-                    return feature.properties.id;
-                });
-
-                var idsToLoad = _.filter(ids, function (id) {
-                    return loadedIds.indexOf(id) === -1;
-                });
-
-                loadedIds = loadedIds.concat(idsToLoad);
-
-                if (idsToLoad.length) {
-                    var q = {
-                        api: 'kulturminnedataSparql',
-                        type: 'lokalitetpoly',
-                        lokalitet: idsToLoad
-                    };
-                    api.getData(q, function (geoJson) {
-                        dataset.extraFeatures.addData(geoJson);
-                    });
-                }
-            }
-        };
-
-        var initKulturminnePoly = function (map, dataset, vectorLayer) {
-            dataset.extraFeatures = L.geoJson(null, {
-                onEachFeature: function (feature, layer) {
-                    if (dataset.extras && dataset.extras.groupId) {
-                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
-                    } else {
-                        feature.properties.datasetId = dataset.id;
-                        layer.setStyle(KR.Style.getPathStyle(feature, true));
-                    }
-
-                    layer.on('click', function () {
-                        var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
-                            return (parentLayer.feature.properties.id === feature.properties.lok);
-                        });
-                        if (parent) {
-                            parent.fire('click');
-                        }
-                    });
-                }
-            }).addTo(map);
-
-
-            map.on('zoomend', function () {
-                var shouldShow = !(map.getZoom() < 13);
-                if (shouldShow) {
-                    if (!map.hasLayer(dataset.extraFeatures)) {
-                        map.addLayer(dataset.extraFeatures);
-                    }
-                } else {
-                    if (map.hasLayer(dataset.extraFeatures)) {
-                        map.removeLayer(dataset.extraFeatures);
-                    }
-                }
-            });
-
-            vectorLayer.on('hide', function () {
-                map.removeLayer(dataset.extraFeatures);
-            });
-
-            vectorLayer.on('show', function () {
-                map.addLayer(dataset.extraFeatures);
-            });
-        };
-
-        return {
-            loadKulturminnePoly: loadKulturminnePoly,
-            initKulturminnePoly: initKulturminnePoly
-        };
-    };
-
     ns.getDatasetList = function (api, komm, fylke) {
 
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
@@ -205,11 +126,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
+                        unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
@@ -265,11 +183,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
+                        unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }
                     }
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
@@ -297,11 +212,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
+                        unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }
                     },
                     {
                         name: 'DiMu',
@@ -414,12 +326,9 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
+                description: 'Data fra Riksantikvarens kulturminnesøk',
+                unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
-                loadWhenLessThan: {
-                    count: 10,
-                    callback: kulturminneFunctions.loadKulturminnePoly
-                },
-                description: 'Data fra Riksantikvarens kulturminnesøk'
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',
@@ -640,9 +549,6 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 description: 'Bilder fra Perspektivet Museum sin Flickr-konto',
             }
-
-
-
         };
 
         if (!komm && !fylke) {

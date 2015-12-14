@@ -62,6 +62,8 @@ The DatasetWrapper passed to the DatasetLoader is a wrapper around the Dataset o
 | loadWhenLessThan  | dict           | null          | no        | If set, with params ``count`` (int) and ``callback`` (function) will call callback when there are less than count features on the map, callback is called with ``map``, ``dataset`` and ``features`` |
 | allowTopic        | bool           | false         | no        | For Norvegiana-datasets: should the user be able to set a "topic" in the generator                                                        |
 | feedbackForm      | bool           | false         | no        | Should the dataset display a feedback-form when viewing an item in the sidebar?                                                           |
+| showEnkeltminner  | bool           | true          | no        | Applies to ra sparql, and requires loadWhenLessThan to be set. Queries for enkeltminner when clicking on polygon                              |
+| enkeltminner      | enkeltMinneOpts| defaults      | no        | See, sets style for enkeltminne                                                        |
 
 ***toPointOptions***
 
@@ -86,6 +88,15 @@ This is a dict, with style properties:
 | circle         | bool           | false         | no        | Show marker as thumbnail (if false displays circle)                                       |
 
 fillcolor and bordercolor may also be a function that takes a feature and returns a hex string (in the form #RRGGBB)
+
+
+***enkeltMinneOpts***
+Options for enkeltminne
+
+* style: a leaflet style dict (default: {color: '#fff', weight: 1, fillColor: '#B942D0'};)
+* sidebarColor: color used in sidebar (default: #B942D0)
+* provider: providertext for sidebar (default: "Enkeltminer")
+* template: template used for sidebar render (default: /templates/datasets/ra_enkeltminne.tmpl)
 
 
 ***KR.setupMap***

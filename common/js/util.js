@@ -507,4 +507,20 @@ KR.Util = KR.Util || {};
         }
     };
 
+    ns.checkThresholdPassed = function (map, threshold, callback) {
+        var prevZoom;
+        map.on('zoomstart', function (e) {
+            prevZoom = map.getZoom();
+        });
+        map.on('zoomend', function (e) {
+            var currentZoom = map.getZoom();
+            if (prevZoom > threshold && currentZoom <= threshold) {
+                callback('up');
+            }
+            if (prevZoom <= threshold && currentZoom > threshold) {
+                callback('down');
+            }
+        });
+    };
+
 }(KR.Util));

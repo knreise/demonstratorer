@@ -558,6 +558,22 @@ KR.Util = KR.Util || {};
         }
     };
 
+    ns.checkThresholdPassed = function (map, threshold, callback) {
+        var prevZoom;
+        map.on('zoomstart', function (e) {
+            prevZoom = map.getZoom();
+        });
+        map.on('zoomend', function (e) {
+            var currentZoom = map.getZoom();
+            if (prevZoom > threshold && currentZoom <= threshold) {
+                callback('up');
+            }
+            if (prevZoom <= threshold && currentZoom > threshold) {
+                callback('down');
+            }
+        });
+    };
+
 }(KR.Util));
 
 /*global L:false */
@@ -1069,11 +1085,69 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
         this._queue = [];
         this.on('clusterclick', this._clusterClicked, this);
+        this.isUnclustred = false;
     },
 
     onAdd: function (map) {
         L.MarkerClusterGroup.prototype.onAdd.apply(this, arguments);
         map.on('layerSelected', this._deselectAll, this);
+        this._map = map;
+        if (_.has(this.options, 'unclusterCount')) {
+            this._unclustred = L.featureGroup().addTo(map);
+             this._unclustred.on('click', _.bind(function (e) {
+                this.fire('click', e);
+             }, this));
+
+             this.on('hide', function () {
+                map.removeLayer(this._unclustred);
+             });
+             this.on('show', function () {
+                map.addLayer(this._unclustred);
+             });
+        }
+    },
+
+    getVisibleLayers: function (layers) {
+        var bounds = this._map.getBounds();
+        return _.chain(layers)
+            .filter(function (layer) {
+                return bounds.contains(layer.getLatLng());
+            })
+            .value()
+    },
+
+    getLayers: function () {
+        if (this.isUnclustred) {
+            return this.getUnclustredLayers();
+        }
+        return L.MarkerClusterGroup.prototype.getLayers.apply(this, arguments);
+    },
+
+    getUnclustredLayers: function () {
+        return this._unclustred.getLayers();
+    },
+
+    addLayers: function (layers) {
+
+        var prevLayers = this.getLayers();
+
+        var showThreshold = this.options.unclusterCount;
+        var visible = this.getVisibleLayers(layers);
+
+        if (this._unclustred) {
+            this._unclustred.clearLayers();
+        }
+
+        if (visible.length <= showThreshold) {
+            this.isUnclustred = true;
+            _.each(visible, function (layer) {
+                this._unclustred.addLayer(layer);
+            }, this);
+        } else {
+            this.isUnclustred = false;
+            L.MarkerClusterGroup.prototype.addLayers.apply(this, arguments);
+        }
+        this.fire('dataloaded', {prevLayers: prevLayers});
     },
 
     _deselectAll: function () {
@@ -1922,9 +1996,7 @@ var KR = this.KR || {};
                 });
                 return;
             }
-
             template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
-
             var img = feature.properties.images;
             if (_.isArray(img)) {
                 img = img[0];
@@ -1940,7 +2012,7 @@ var KR = this.KR || {};
                 feature.properties.license = feature.properties.license;
             }
 
-            var color = KR.Style.colorForFeature(feature, true, true);
+            var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
             content += template(_.extend({image: null}, feature.properties));
@@ -2533,7 +2605,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
             if (dataset.cluster) {
                 vectorLayer = new L.Knreise.MarkerClusterGroup({
                     dataset: dataset,
-                    maxClusterRadius: maxClusterRadius
+                    maxClusterRadius: maxClusterRadius,
+                    unclusterCount: dataset.unclusterCount
                 }).addTo(map);
                 if (_addClusterClick) {
                     _addClusterClick(vectorLayer, dataset);
@@ -2702,8 +2775,6 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
 
             var featurecollections = [];
             var finished = _.after(toLoad.length, function () {
-                vectorLayer.isLoading = false;
-                vectorLayer.fire('dataloadend');
 
                 if (useCommonCluster) {
                     _resetDataGeoJson(vectorLayer, featurecollections);
@@ -2714,6 +2785,8 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
                         _resetDataGeoJson(vectorLayer, featurecollections);
                     }
                 }
+                vectorLayer.isLoading = false;
+                vectorLayer.fire('dataloadend');
                 if (callback) {
                     callback(featurecollections);
                 }
@@ -3144,6 +3217,255 @@ L.TileLayer.WMTS = L.TileLayer.extend({defaultWmtsParams: {service: "WMTS",reque
 
 }(KR));
 
+/*global L:false, _:false*/
+var KR = this.KR || {};
+KR.Config = KR.Config || {};
+
+(function (ns) {
+    'use strict';
+
+    ns.getKulturminneFunctions = function (api) {
+        var _selectedPoly;
+        var _dataset;
+        var _vectorLayer;
+        var _map;
+        var _polygonLayer;
+        var _loadEnkeltminner;
+        var _enkeltMinneLayer;
+        var _prevLayers;
+        var _showEnkeltminner = true;
+
+        var _hidePolygonLayer = function () {
+            _map.removeLayer(_polygonLayer);
+            if (_enkeltMinneLayer) {
+                _map.removeLayer(_enkeltMinneLayer);
+            }
+        };
+
+        var _showPolygonLayer = function () {
+            _map.addLayer(_polygonLayer);
+            if (_enkeltMinneLayer) {
+                _map.addLayer(_enkeltMinneLayer);
+            }
+        };
+
+        var _getMarkerForId = function (id) {
+            return _.find(_vectorLayer.getLayers(), function (layer) {
+                return (layer.feature.properties.id === id);
+            });
+        };
+
+        var _getPolygonForId = function (id) {
+            return _.find(_polygonLayer.getLayers(), function (layer) {
+                return (layer.feature.properties.lok === id);
+            });
+        };
+
+        var _polygonClicked = function (feature) {
+            var parent = _getMarkerForId(feature.properties.lok);
+            if (parent) {
+                parent.fire('click');
+            } else {
+                if (_map.sidebar) {
+                    var layer = _.find(_prevLayers, function (prev) {
+                        return prev.feature.properties.id === feature.properties.lok;
+                    });
+                    _highlightPolygon(_getPolygonForId(feature.properties.lok));
+                    _map.sidebar.showFeature(
+                        layer.feature,
+                        _dataset.template,
+                        _dataset.getFeatureData
+                    );
+                }
+            }
+        };
+
+        var _createPolygonLayer = function (dataset) {
+            return L.geoJson(null, {
+                onEachFeature: function (feature, layer) {
+                    if (dataset.extras && dataset.extras.groupId) {
+                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
+                    } else {
+                        feature.properties.datasetId = dataset.id;
+                        layer.setStyle(KR.Style.getPathStyle(feature, true));
+                    }
+                    layer.on('click', function () {
+                        _polygonClicked(feature);
+                    });
+                }
+            }).addTo(_map);
+        };
+
+        var _deselectPolygons = function () {
+            _selectedPoly = null;
+            _.each(_polygonLayer.getLayers(), function (l) {
+                l.setStyle(KR.Style.getPathStyle(l.feature, true));
+            });
+        };
+
+        var _highlightPolygon = function (poly) {
+            poly.setStyle({
+                weight: 1,
+                color: '#436978',
+                fillColor: '#72B026',
+                clickable: true,
+                opacity: 0.8,
+                fillOpacity: 0.4
+            });
+        };
+
+        var _markerClicked = function (e) {
+
+            _deselectPolygons();
+            var id = e.layer.feature.properties.id;
+
+            _selectedPoly = id;
+
+            var poly = _getPolygonForId(id);
+            if (!poly) {
+                return;
+            }
+            _highlightPolygon(poly);
+            if (_loadEnkeltminner) {
+                _loadEnkeltminner(e.layer.feature);
+            }
+        };
+
+        var _enkeltminneClick = function (feature, dataset) {
+            if (_map.sidebar) {
+                _map.sidebar.showFeature(
+                    feature,
+                    dataset.enkeltminner.template || KR.Util.getDatasetTemplate('ra_enkeltminne')
+                );
+            }
+        };
+
+        var _setupEnkeltminner = function (dataset) {
+            if (!_.has(dataset, 'enkeltminner')) {
+                dataset.enkeltminner = {};
+            }
+
+            var enkeltminneStyle = dataset.enkeltminner.style || {
+                color: '#fff',
+                weight: 1,
+                fillColor: '#B942D0'
+            };
+
+            _enkeltMinneLayer = L.geoJson(null, {
+                onEachFeature: function (feature, layer) {
+                    feature.properties.provider = dataset.enkeltminner.provider || 'Enkeltminne';
+                    feature.properties.color = dataset.enkeltminner.sidebarColor || '#B942D0';
+                    layer.on('click', function () {
+                        _enkeltminneClick(feature, dataset);
+                    });
+                },
+                style: function () {
+                    return enkeltminneStyle;
+                }
+            }).addTo(_map);
+
+            _loadEnkeltminner = function (feature) {
+                var q = {
+                    api: 'kulturminnedataSparql',
+                    type: 'enkeltminner',
+                    lokalitet: feature.properties.id
+                };
+                api.getData(q, function (geoJson) {
+                    _enkeltMinneLayer.clearLayers();
+                    _enkeltMinneLayer.addData(geoJson);
+                });
+            };
+        };
+
+        var _highlightPolygonById = function (id) {
+            var poly = _getPolygonForId(id);
+            if (!poly) {
+                return;
+            }
+            _highlightPolygon(poly);
+        };
+
+        var _highlightMarkerById = function (id) {
+            var parent = _getMarkerForId(id);
+            if (parent) {
+                parent.fire('click');
+            }
+        };
+
+
+        var _polygonsLoaded = function (geoJson) {
+
+            _polygonLayer.clearLayers().addData(geoJson);
+            if (_selectedPoly) {
+                _highlightPolygonById(_selectedPoly);
+                _highlightMarkerById(_selectedPoly);
+            }
+        };
+
+        var _reloadPoly = function (e) {
+            if (e.prevLayers && e.prevLayers.length) {
+                _prevLayers = e.prevLayers;
+            }
+            var unclustred = _vectorLayer.getUnclustredLayers();
+            var ids = _.map(unclustred, function (layer) {
+                return layer.feature.properties.id;
+            });
+
+            var idsToKeep = [];
+            if (_vectorLayer.isUnclustred) {
+                idsToKeep = _.chain(_polygonLayer.getLayers())
+                    .map(function (layer) {
+                        return layer.feature.properties.lok;
+                    })
+                    .difference(ids)
+                    .value();
+            }
+
+            ids = ids.concat(idsToKeep);
+
+            if (ids.length) {
+                var q = {
+                    api: 'kulturminnedataSparql',
+                    type: 'lokalitetpoly',
+                    lokalitet: ids
+                };
+                api.getData(q, _polygonsLoaded);
+            } else {
+                _polygonLayer.clearLayers();
+                if (_enkeltMinneLayer) {
+                    _enkeltMinneLayer.clearLayers();
+                }
+            }
+        };
+
+        var initKulturminnePoly = function (map, dataset, vectorLayer) {
+            _dataset = dataset;
+            _vectorLayer = vectorLayer;
+            _map = map;
+            _vectorLayer.on('hide', _hidePolygonLayer);
+            _vectorLayer.on('show', _showPolygonLayer);
+            _polygonLayer = _createPolygonLayer(dataset);
+
+            _vectorLayer.on('dataloaded', _reloadPoly);
+            _vectorLayer.on('click', _markerClicked);
+            _map.on('layerDeselect', _deselectPolygons);
+
+            if (_.has(dataset, 'showEnkeltminner')) {
+                _showEnkeltminner = dataset.showEnkeltminner;
+            }
+
+            if (_showEnkeltminner) {
+                _setupEnkeltminner(dataset);
+            }
+
+        };
+
+        return {
+            initKulturminnePoly: initKulturminnePoly
+        };
+    };
+}(KR.Config));
+
 /*global L:false*/
 var KR = this.KR || {};
 KR.Config = KR.Config || {};
@@ -3154,85 +3476,6 @@ KR.Config = KR.Config || {};
 
 (function (ns) {
     'use strict';
-
-    ns.getKulturminneFunctions = function (api) {
-
-        var loadedIds = [];
-
-        var loadKulturminnePoly = function (map, dataset, features) {
-            if (features) {
-                var ids = _.map(features, function (feature) {
-                    return feature.properties.id;
-                });
-
-                var idsToLoad = _.filter(ids, function (id) {
-                    return loadedIds.indexOf(id) === -1;
-                });
-
-                loadedIds = loadedIds.concat(idsToLoad);
-
-                if (idsToLoad.length) {
-                    var q = {
-                        api: 'kulturminnedataSparql',
-                        type: 'lokalitetpoly',
-                        lokalitet: idsToLoad
-                    };
-                    api.getData(q, function (geoJson) {
-                        dataset.extraFeatures.addData(geoJson);
-                    });
-                }
-            }
-        };
-
-        var initKulturminnePoly = function (map, dataset, vectorLayer) {
-            dataset.extraFeatures = L.geoJson(null, {
-                onEachFeature: function (feature, layer) {
-                    if (dataset.extras && dataset.extras.groupId) {
-                        layer.setStyle(KR.Style.getPathStyleForGroup(dataset.extras.groupId));
-                    } else {
-                        feature.properties.datasetId = dataset.id;
-                        layer.setStyle(KR.Style.getPathStyle(feature, true));
-                    }
-
-                    layer.on('click', function () {
-                        var parent = _.find(dataset.geoJSONLayer.getLayers(), function (parentLayer) {
-                            return (parentLayer.feature.properties.id === feature.properties.lok);
-                        });
-                        if (parent) {
-                            parent.fire('click');
-                        }
-                    });
-                }
-            }).addTo(map);
-
-
-            map.on('zoomend', function () {
-                var shouldShow = !(map.getZoom() < 13);
-                if (shouldShow) {
-                    if (!map.hasLayer(dataset.extraFeatures)) {
-                        map.addLayer(dataset.extraFeatures);
-                    }
-                } else {
-                    if (map.hasLayer(dataset.extraFeatures)) {
-                        map.removeLayer(dataset.extraFeatures);
-                    }
-                }
-            });
-
-            vectorLayer.on('hide', function () {
-                map.removeLayer(dataset.extraFeatures);
-            });
-
-            vectorLayer.on('show', function () {
-                map.addLayer(dataset.extraFeatures);
-            });
-        };
-
-        return {
-            loadKulturminnePoly: loadKulturminnePoly,
-            initKulturminnePoly: initKulturminnePoly
-        };
-    };
 
     ns.getDatasetList = function (api, komm, fylke) {
 
@@ -3351,11 +3594,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
+                        unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
@@ -3411,11 +3651,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
+                        unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }
                     }
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
@@ -3443,11 +3680,8 @@ KR.Config = KR.Config || {};
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
+                        unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly,
-                        loadWhenLessThan: {
-                            count: 5,
-                            callback: kulturminneFunctions.loadKulturminnePoly
-                        }
                     },
                     {
                         name: 'DiMu',
@@ -3560,12 +3794,9 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
+                description: 'Data fra Riksantikvarens kulturminnesøk',
+                unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
-                loadWhenLessThan: {
-                    count: 10,
-                    callback: kulturminneFunctions.loadKulturminnePoly
-                },
-                description: 'Data fra Riksantikvarens kulturminnesøk'
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',
@@ -3786,9 +4017,6 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 description: 'Bilder fra Perspektivet Museum sin Flickr-konto',
             }
-
-
-
         };
 
         if (!komm && !fylke) {
@@ -4289,6 +4517,9 @@ var KR = this.KR || {};
 
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
+
+        //HACK: in order for enkeltminner to trigger sidebar I have to expose this here.. 
+        map.sidebar = sidebar;
 
         var splashScreen;
         if (options.title) {

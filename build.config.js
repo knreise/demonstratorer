@@ -53,6 +53,7 @@ module.exports = {
     'common/js/DatasetLoader.js',
     'common/js/L.Knreise.LocateButton.js',
     'common/js/norgeibilder.js',
+    'common/js/KulturminneFunctions.js',
     'common/js/datasets.js',
     'common/js/SplashScreen.js',
     'common/js/ResponseForm.js',
@@ -87,6 +88,7 @@ module.exports = {
         'common/js/CesiumSidebar.js',
         'common/js/SidebarContent.js',
         'common/js/DatasetLoader.js',
+        'common/js/KulturminneFunctions.js',
         'common/js/datasets.js',
         'common/js/setup3dMap.js'
   ],
@@ -515,6 +517,7 @@ module.exports = {
           'common/js/CesiumSidebar.js',
           'common/js/SidebarContent.js',
           'common/js/DatasetLoader.js',
+          'common/js/KulturminneFunctions.js',
           'common/js/datasets.js',
           'common/js/setup3dMap.js'
         ],

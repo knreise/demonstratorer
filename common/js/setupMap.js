@@ -259,6 +259,9 @@ var KR = this.KR || {};
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
         var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
 
+        //HACK: in order for enkeltminner to trigger sidebar I have to expose this here.. 
+        map.sidebar = sidebar;
+
         var splashScreen;
         if (options.title) {
             splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, false);

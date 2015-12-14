@@ -35,11 +35,69 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
 
         this._queue = [];
         this.on('clusterclick', this._clusterClicked, this);
+        this.isUnclustred = false;
     },
 
     onAdd: function (map) {
         L.MarkerClusterGroup.prototype.onAdd.apply(this, arguments);
         map.on('layerSelected', this._deselectAll, this);
+        this._map = map;
+        if (_.has(this.options, 'unclusterCount')) {
+            this._unclustred = L.featureGroup().addTo(map);
+             this._unclustred.on('click', _.bind(function (e) {
+                this.fire('click', e);
+             }, this));
+
+             this.on('hide', function () {
+                map.removeLayer(this._unclustred);
+             });
+             this.on('show', function () {
+                map.addLayer(this._unclustred);
+             });
+        }
+    },
+
+    getVisibleLayers: function (layers) {
+        var bounds = this._map.getBounds();
+        return _.chain(layers)
+            .filter(function (layer) {
+                return bounds.contains(layer.getLatLng());
+            })
+            .value()
+    },
+
+    getLayers: function () {
+        if (this.isUnclustred) {
+            return this.getUnclustredLayers();
+        }
+        return L.MarkerClusterGroup.prototype.getLayers.apply(this, arguments);
+    },
+
+    getUnclustredLayers: function () {
+        return this._unclustred.getLayers();
+    },
+
+    addLayers: function (layers) {
+
+        var prevLayers = this.getLayers();
+
+        var showThreshold = this.options.unclusterCount;
+        var visible = this.getVisibleLayers(layers);
+
+        if (this._unclustred) {
+            this._unclustred.clearLayers();
+        }
+
+        if (visible.length <= showThreshold) {
+            this.isUnclustred = true;
+            _.each(visible, function (layer) {
+                this._unclustred.addLayer(layer);
+            }, this);
+        } else {
+            this.isUnclustred = false;
+            L.MarkerClusterGroup.prototype.addLayers.apply(this, arguments);
+        }
+        this.fire('dataloaded', {prevLayers: prevLayers});
     },
 
     _deselectAll: function () {
