@@ -241,8 +241,38 @@ KR.Config = KR.Config || {};
 
         };
 
+
+
+        var getRaFeatureData = function (feature, callback) {
+            var query_images = {
+                api: 'kulturminnedataSparql',
+                type: 'images',
+                lokalitet: feature.properties.id
+            };
+            api.getData(query_images, function (images) {
+                images = _.map(images, function (image) {
+                    return {
+                        type: 'captioned_image',
+                        url: image.img,
+                        caption: image.picturelabel + ' - ' + image.picturedescription,
+                        license: image.picturelicence,
+                        fullsize: image.img_fullsize
+                    };
+                });
+                feature.properties.media = images;
+                callback(feature);
+            });
+        };
+
+
+
+
+
+
+
         return {
-            initKulturminnePoly: initKulturminnePoly
+            initKulturminnePoly: initKulturminnePoly,
+            getRaFeatureData: getRaFeatureData
         };
     };
 }(KR.Config));

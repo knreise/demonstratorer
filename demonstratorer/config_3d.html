@@ -445,15 +445,6 @@
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
 
-<!--
-<% if (img) { %>
-<div class="image with-caption">
-
-    <img class="thumbnail fullwidth" src="<%= img %>" />
-    <p><%= picturelabel %> - <%= picturedescription %> (<a href="<%= picturelicence%>" target="_blank">Lisens</a>)</p>
-</div>
-<% } %>
--->
 <% if (media) { %>
   <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
 <% } %>

@@ -1,6 +1,15 @@
 (function () {
     'use strict';
 
+    //set up an instance of the Norvegiana API
+    var api = new KR.API({
+        flickr: {
+            apikey: 'ab1f664476dabf83a289735f97a6d56c'
+        }
+    });
+
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+
     //The datasets in use
     var datasets = [
         {
@@ -50,6 +59,9 @@
                 kommune: '1601'
             },
             template: KR.Util.getDatasetTemplate('ra_sparql'),
+            getFeatureData: kulturminneFunctions.getRaFeatureData,
+            unclusterCount: 20,
+            init: kulturminneFunctions.initKulturminnePoly,
             bbox: false,
             style: {fillcolor: '#728224'}
         },
@@ -74,13 +86,6 @@
             style: {thumbnail: true}
         }
     ];
-
-    //set up an instance of the Norvegiana API
-    var api = new KR.API({
-        flickr: {
-            apikey: 'ab1f664476dabf83a289735f97a6d56c'
-        }
-    });
 
 
     var bbox = '10.338650,63.408816,10.555458,63.462016';

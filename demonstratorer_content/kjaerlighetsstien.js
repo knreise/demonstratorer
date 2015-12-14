@@ -23,6 +23,7 @@
             bbox: false,
             isStatic: true,
             unclusterCount: 20,
+            getFeatureData: kulturminneFunctions.getRaFeatureData,
             init: kulturminneFunctions.initKulturminnePoly,
         }
     ];

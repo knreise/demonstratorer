@@ -2031,7 +2031,6 @@ var KR = this.KR || {};
 
         function setupFullscreenClick(element) {
             element.find('img[data-fullsize-url!=""]').click(function () {
-                console.log();
                 var url = $(this).attr('data-fullsize-url');
                 $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
                     $('#overlay').addClass('hidden').html('');
@@ -3525,8 +3524,38 @@ KR.Config = KR.Config || {};
 
         };
 
+
+
+        var getRaFeatureData = function (feature, callback) {
+            var query_images = {
+                api: 'kulturminnedataSparql',
+                type: 'images',
+                lokalitet: feature.properties.id
+            };
+            api.getData(query_images, function (images) {
+                images = _.map(images, function (image) {
+                    return {
+                        type: 'captioned_image',
+                        url: image.img,
+                        caption: image.picturelabel + ' - ' + image.picturedescription,
+                        license: image.picturelicence,
+                        fullsize: image.img_fullsize
+                    };
+                });
+                feature.properties.media = images;
+                callback(feature);
+            });
+        };
+
+
+
+
+
+
+
         return {
-            initKulturminnePoly: initKulturminnePoly
+            initKulturminnePoly: initKulturminnePoly,
+            getRaFeatureData: getRaFeatureData
         };
     };
 }(KR.Config));
@@ -3549,26 +3578,7 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
-        var getRaFeatureData = function (feature, callback) {
-            var query_images = {
-                api: 'kulturminnedataSparql',
-                type: 'images',
-                lokalitet: feature.properties.id
-            };
-            api.getData(query_images, function (images) {
-                images = _.map(images, function (image) {
-                    return {
-                        type: 'captioned_image',
-                        url: image.img,
-                        caption: image.picturelabel + ' - ' + image.picturedescription,
-                        license: image.picturelicence,
-                        fullsize: image.img_fullsize
-                    };
-                });
-                feature.properties.media = images;
-                callback(feature);
-            });
-        };
+
 
 
         var list = {
@@ -3678,6 +3688,7 @@ KR.Config = KR.Config || {};
                             kommune: komm,
                             fylke: fylke
                         },
+                        getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
@@ -3735,6 +3746,7 @@ KR.Config = KR.Config || {};
                             kommune: komm,
                             fylke: fylke
                         },
+                        getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
@@ -3764,6 +3776,7 @@ KR.Config = KR.Config || {};
                             kommune: komm,
                             fylke: fylke
                         },
+                        getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
@@ -3878,7 +3891,7 @@ KR.Config = KR.Config || {};
                     kommune: komm,
                     fylke: fylke
                 },
-                getFeatureData: getRaFeatureData,
+                getFeatureData: kulturminneFunctions.getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,

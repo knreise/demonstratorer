@@ -28,6 +28,7 @@
                 fylke: fylke
             },
             template: KR.Util.getDatasetTemplate('ra_sparql'),
+            getFeatureData: kulturminneFunctions.getRaFeatureData,
             bbox: false,
             isStatic: true,
             unclusterCount: 20,

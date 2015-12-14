@@ -62,6 +62,9 @@
 		                kommune: '1601'
 		            },
 		            template: KR.Util.getDatasetTemplate('ra_sparql'),
+                    getFeatureData: kulturminneFunctions.getRaFeatureData,
+                    unclusterCount: 20,
+                    init: kulturminneFunctions.initKulturminnePoly,
 		            bbox: false,
 		            style: {fillcolor: '#728224'}
 		        },	

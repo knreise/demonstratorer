@@ -16,26 +16,7 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
-        var getRaFeatureData = function (feature, callback) {
-            var query_images = {
-                api: 'kulturminnedataSparql',
-                type: 'images',
-                lokalitet: feature.properties.id
-            };
-            api.getData(query_images, function (images) {
-                images = _.map(images, function (image) {
-                    return {
-                        type: 'captioned_image',
-                        url: image.img,
-                        caption: image.picturelabel + ' - ' + image.picturedescription,
-                        license: image.picturelicence,
-                        fullsize: image.img_fullsize
-                    };
-                });
-                feature.properties.media = images;
-                callback(feature);
-            });
-        };
+
 
 
         var list = {
@@ -145,6 +126,7 @@ KR.Config = KR.Config || {};
                             kommune: komm,
                             fylke: fylke
                         },
+                        getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
@@ -202,6 +184,7 @@ KR.Config = KR.Config || {};
                             kommune: komm,
                             fylke: fylke
                         },
+                        getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
@@ -231,6 +214,7 @@ KR.Config = KR.Config || {};
                             kommune: komm,
                             fylke: fylke
                         },
+                        getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
                         isStatic: true,
@@ -345,7 +329,7 @@ KR.Config = KR.Config || {};
                     kommune: komm,
                     fylke: fylke
                 },
-                getFeatureData: getRaFeatureData,
+                getFeatureData: kulturminneFunctions.getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,

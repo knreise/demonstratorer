@@ -38,6 +38,7 @@
 		                api: 'kulturminnedataSparql',
 		                kommune: '1601'
 		            },
+                    getFeatureData: kulturminneFunctions.getRaFeatureData,
 		            template: KR.Util.getDatasetTemplate('ra_sparql'),
 		            bbox: false,
 		            style: {fillcolor: '#728224'}

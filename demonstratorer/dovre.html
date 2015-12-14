@@ -443,15 +443,6 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
 
-<!--
-<% if (img) { %>
-<div class="image with-caption">
-
-    <img class="thumbnail fullwidth" src="<%= img %>" />
-    <p><%= picturelabel %> - <%= picturedescription %> (<a href="<%= picturelicence%>" target="_blank">Lisens</a>)</p>
-</div>
-<% } %>
--->
 <% if (media) { %>
   <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
 <% } %>
@@ -772,6 +763,7 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
                     bbox: false,
                     isStatic: true,
                     unclusterCount: 20,
+                    getFeatureData: kulturminneFunctions.getRaFeatureData,
                     init: kulturminneFunctions.initKulturminnePoly
                 },
                 {
