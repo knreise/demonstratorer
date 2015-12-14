@@ -443,6 +443,7 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
 
+<!--
 <% if (img) { %>
 <div class="image with-caption">
 
@@ -450,6 +451,10 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
     <p><%= picturelabel %> - <%= picturedescription %> (<a href="<%= picturelicence%>" target="_blank">Lisens</a>)</p>
 </div>
 <% } %>
+-->
+<% if (media) { %>
+  <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
+<% } %>
 
 
 <p><%= description %></p>
@@ -766,11 +771,8 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
                     template: KR.Util.getDatasetTemplate('ra_sparql'),
                     bbox: false,
                     isStatic: true,
-                    init: kulturminneFunctions.initKulturminnePoly,
-                    loadWhenLessThan: {
-                        count: 5,
-                        callback: kulturminneFunctions.loadKulturminnePoly
-                    }
+                    unclusterCount: 20,
+                    init: kulturminneFunctions.initKulturminnePoly
                 },
                 {
                     name: 'DiMu',
@@ -841,11 +843,8 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
                     template: KR.Util.getDatasetTemplate('ra_sparql'),
                     bbox: false,
                     isStatic: true,
-                    init: kulturminneFunctions.initKulturminnePoly,
-                    loadWhenLessThan: {
-                        count: 5,
-                        callback: kulturminneFunctions.loadKulturminnePoly
-                    }
+                    unclusterCount: 20,
+                    init: kulturminneFunctions.initKulturminnePoly
                 }
             ],
             description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'

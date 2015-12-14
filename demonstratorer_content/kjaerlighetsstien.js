@@ -22,11 +22,8 @@
             template: KR.Util.getDatasetTemplate('ra_sparql'),
             bbox: false,
             isStatic: true,
+            unclusterCount: 20,
             init: kulturminneFunctions.initKulturminnePoly,
-            loadWhenLessThan: {
-                count: 5,
-                callback: kulturminneFunctions.loadKulturminnePoly
-            }
         }
     ];
 

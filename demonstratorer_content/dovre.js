@@ -90,11 +90,8 @@
                     template: KR.Util.getDatasetTemplate('ra_sparql'),
                     bbox: false,
                     isStatic: true,
-                    init: kulturminneFunctions.initKulturminnePoly,
-                    loadWhenLessThan: {
-                        count: 5,
-                        callback: kulturminneFunctions.loadKulturminnePoly
-                    }
+                    unclusterCount: 20,
+                    init: kulturminneFunctions.initKulturminnePoly
                 },
                 {
                     name: 'DiMu',
@@ -165,11 +162,8 @@
                     template: KR.Util.getDatasetTemplate('ra_sparql'),
                     bbox: false,
                     isStatic: true,
-                    init: kulturminneFunctions.initKulturminnePoly,
-                    loadWhenLessThan: {
-                        count: 5,
-                        callback: kulturminneFunctions.loadKulturminnePoly
-                    }
+                    unclusterCount: 20,
+                    init: kulturminneFunctions.initKulturminnePoly
                 }
             ],
             description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'

@@ -37,11 +37,13 @@ KR.MediaCarousel = {};
     }
 
 
-    function _createImage(src) {
+    function _createImage(mediaObject) {
+        var src = mediaObject.url;
         return $('<img data-type="image" class="fullwidth img-thumbnail" src="' + src + '" />');
     }
 
-    function _createVideo(src) {
+    function _createVideo(mediaObject) {
+        var src = mediaObject.url;
         if (src.indexOf('mp4') !== -1) {
             //  <% if(images) { %>poster="<%= images[0] %>" <% } %> 
             return $('<video data-type="video" class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup="{}"><source src="' + src + '" type="video/mp4"></video>');
@@ -49,19 +51,28 @@ KR.MediaCarousel = {};
         return $('<iframe data-type="video" class="fullwidth" height="315" src="' + src + '" frameborder="0" allowfullscreen></iframe>');
     }
 
-    function _createSound(src) {
+    function _createSound(mediaObject) {
+        var src = mediaObject.url;
         return $('<audio data-type="sound" src="' + src + '" preload="auto"></audio>');
+    }
+
+    function _createCaptionedImage(mediaObject) {
+        var container = $('<div class="image with-caption"></div>');
+        container.append('<img class="thumbnail fullwidth" src="' + mediaObject.url + '" />');
+        container.append('<p>' + mediaObject.caption + ' (<a href="' + mediaObject.license + '" target="_blank">Lisens</a>)</p>');
+        return container;
     }
 
     var generators = {
         'image': _createImage,
         'video': _createVideo,
-        'sound': _createSound
+        'sound': _createSound,
+        'captioned_image': _createCaptionedImage,
     };
 
     function _getMarkup(mediaObject) {
         if (_.has(generators, mediaObject.type)) {
-            var element = generators[mediaObject.type](mediaObject.url);
+            var element = generators[mediaObject.type](mediaObject);
             element.attr('data-type', mediaObject.type);
             element.attr('data-created', true);
             return element;
@@ -69,10 +80,29 @@ KR.MediaCarousel = {};
     }
 
 
-    function _createInactiveMarkup(url, type) {
-        return $('<div class="hidden"> </div>')
-            .attr('data-src', url)
-            .attr('data-type', type);
+    function _createInactiveMarkup(mediaObject) {
+        var element = $('<div class="hidden"> </div>')
+            .attr('data-src', mediaObject.url)
+            .attr('data-type', mediaObject.type);
+
+        _.each(mediaObject, function (value, key) {
+            element.attr('data-own-' + key, value);
+        });
+        return element;
+    }
+
+    function getDataAttributes(node) {
+        var d = {}, 
+            re_dataAttr = /^data-own\-(.+)$/;
+
+        $.each(node.get(0).attributes, function(index, attr) {
+            if (re_dataAttr.test(attr.nodeName)) {
+                var key = attr.nodeName.match(re_dataAttr)[1];
+                d[key] = attr.nodeValue;
+            }
+        });
+
+        return d;
     }
 
     ns.SetupMediaCarousel = function (mediaContainer) {
@@ -89,6 +119,9 @@ KR.MediaCarousel = {};
                     type: mediaElement.attr('data-type'),
                     url: mediaElement.attr('data-src')
                 };
+                mediaObject = _.extend(mediaObject, getDataAttributes(mediaElement));
+
+
                 var element = _getMarkup(mediaObject);
                 mediaElement.replaceWith(element);
                 if (element.is('audio')) {
@@ -132,7 +165,7 @@ KR.MediaCarousel = {};
             if (active) {
                 return _getMarkup(mediaObject);
             }
-            return _createInactiveMarkup(mediaObject.url, mediaObject.type);
+            return _createInactiveMarkup(mediaObject);
         }));
         outer.append(list);
         if (media.length > 1) {

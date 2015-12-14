@@ -441,6 +441,7 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
 
+<!--
 <% if (img) { %>
 <div class="image with-caption">
 
@@ -448,6 +449,10 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
     <p><%= picturelabel %> - <%= picturedescription %> (<a href="<%= picturelicence%>" target="_blank">Lisens</a>)</p>
 </div>
 <% } %>
+-->
+<% if (media) { %>
+  <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
+<% } %>
 
 
 <p><%= description %></p>
@@ -704,11 +709,8 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
             template: KR.Util.getDatasetTemplate('ra_sparql'),
             bbox: false,
             isStatic: true,
+            unclusterCount: 20,
             init: kulturminneFunctions.initKulturminnePoly,
-            loadWhenLessThan: {
-                count: 5,
-                callback: kulturminneFunctions.loadKulturminnePoly
-            }
         },
         {
             provider: 'Riksantikvaren',

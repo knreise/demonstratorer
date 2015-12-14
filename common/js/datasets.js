@@ -16,6 +16,27 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
+        var getRaFeatureData = function (feature, callback) {
+            var query_images = {
+                api: 'kulturminnedataSparql',
+                type: 'images',
+                lokalitet: feature.properties.id
+            };
+            api.getData(query_images, function (images) {
+                images = _.map(images, function (image) {
+                    return {
+                        type: 'captioned_image',
+                        url: image.img,
+                        caption: image.picturelabel + ' - ' + image.picturedescription,
+                        license: image.picturelicence
+                    };
+                });
+                feature.properties.media = images;
+                callback(feature);
+            });
+        };
+
+
         var list = {
             'difo': {
                 name: 'Digitalt fortalt',
@@ -33,7 +54,7 @@ KR.Config = KR.Config || {};
                 dataset: {
                     api: 'cartodb',
                     table: 'naturvernomrader_utm33_2',
-                    columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+                    columns: ['iid', 'omradenavn', 'vernef_id', 'verneform']
                 },
                 provider: 'Naturbase',
                 name: 'Verneområder',
@@ -69,7 +90,7 @@ KR.Config = KR.Config || {};
                 provider: 'Folketelling 1910',
                 dataset: {
                     api: 'folketelling',
-                    dataset: 'property',
+                    dataset: 'property'
                 },
                 isStatic: false,
                 minZoom: 14,
@@ -127,7 +148,7 @@ KR.Config = KR.Config || {};
                         bbox: false,
                         isStatic: true,
                         unclusterCount: 20,
-                        init: kulturminneFunctions.initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly
                     }
                 ],
                 description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
@@ -184,7 +205,7 @@ KR.Config = KR.Config || {};
                         bbox: false,
                         isStatic: true,
                         unclusterCount: 20,
-                        init: kulturminneFunctions.initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly
                     }
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
@@ -213,7 +234,7 @@ KR.Config = KR.Config || {};
                         bbox: false,
                         isStatic: true,
                         unclusterCount: 20,
-                        init: kulturminneFunctions.initKulturminnePoly,
+                        init: kulturminneFunctions.initKulturminnePoly
                     },
                     {
                         name: 'DiMu',
@@ -272,7 +293,7 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
                         isStatic: false
-                    },
+                    }
                 ],
                 description: 'Kunstdata fra Digitalt museum '
             },
@@ -323,6 +344,7 @@ KR.Config = KR.Config || {};
                     kommune: komm,
                     fylke: fylke
                 },
+                getFeatureData: getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
                 isStatic: true,
