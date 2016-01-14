@@ -193,22 +193,35 @@
 .knreise-sidebar .media-navigation {
     position:relative;
     background: ; height:50px;
+    margin-bottom: 20px;
 }
 
 .knreise-sidebar .media-navigation .circle {
-    border-color: #8C8C8C;
+    border-color: #dedede;
+    box-shadow: none;
+    background-color: #fff;
 }
 
 .knreise-sidebar .media-navigation .prev {
     position: absolute;
-    color: #8C8C8C !important;
+    color: #e0e0e0 !important;
     left: 35%;
 }
 
 .knreise-sidebar .media-navigation .next {
     position: absolute;
-    color: #8C8C8C !important;
+    color: #e0e0e0 !important;
     right: 35%;
+}
+
+.knreise-sidebar .media-navigation .next.active {
+    color: #898989 !important;
+    cursor: pointer;
+}
+
+.knreise-sidebar .media-navigation .prev.active {
+    color: #898989 !important;
+    cursor: pointer;
 }
 
 .sidebar-table {
@@ -360,23 +373,39 @@
     bottom: 0;
     right: 0;
     background-color: #000;
-    /*opacity: 0.7;
-    filter: alpha(opacity = 70) !important;*/
+    background: rgb(0, 0, 0); /* Fall-back for browsers that don't support rgba */
+    background: rgba(0, 0, 0, .9);
     z-index: 8000;
+    text-align: center
 }
 
+#overlay::after { 
+    content: "\f057";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #fff;
+    font-family: FontAwesome;
+    font-size: 20px;
+}
 
 .image-fullscreen-link:before {
     content: "\f0b2";
     font-family: FontAwesome;
     font-size: 20px;
     font-style: normal;
-    font-weight: 400;
-    left: 5px;
+    font-weight: 100;
+    right: 5px;
     padding-right: 0.5em;
+    padding-top: 0.5em;
     position: absolute;
     text-decoration: inherit;
-}
+    color: #fff;
+    }
 
 .image-fullscreen-link { 
     position: relative;
