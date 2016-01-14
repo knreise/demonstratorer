@@ -4603,13 +4603,155 @@ var KR = this.KR || {};
         });
     }
 
+    function freezeMap(map) {
+        // Disable drag and zoom handlers.
+        map.dragging.disable();
+        map.touchZoom.disable();
+        map.doubleClickZoom.disable();
+        map.scrollWheelZoom.disable();
+        map.keyboard.disable();
+
+        // Disable tap handler, if present.
+        if (map.tap) {
+            map.tap.disable();
+        }
+    }
+
+    function unFreezeMap(map) {
+        // Disable drag and zoom handlers.
+        map.dragging.enable();
+        map.touchZoom.enable();
+        map.doubleClickZoom.enable();
+        map.scrollWheelZoom.enable();
+        map.keyboard.enable();
+
+        // Disable tap handler, if present.
+        if (map.tap) {
+            map.tap.enable();
+        }
+    }
+
+    var datasetLoader = function (api, map, datasets) {
+
+        var _loaders;
+        var _layers = {};
+
+        var _createLayers = function (datasets) {
+            return _.reduce(datasets, function (acc, dataset) {
+                acc[KR.Util.stamp(dataset)] = L.featureGroup([]).addTo(map);
+                return acc;
+            }, {});
+        };
+
+        var _shouldLoad = function (dataset, zoom, bounds) {
+            if (dataset.minZoom && zoom <= dataset.minZoom) {
+                return false;
+            }
+            if (dataset.isStatic) {
+                return false;
+            }
+            return true;
+        };
+
+        var _datasetLoaded = function (dataset, data) {
+            var layer = _layers[KR.Util.stamp(dataset)];
+            console.log(layer);
+            if (layer) {
+                layer.clearLayers()
+                _.chain(data.features)
+                    .map(function (f) {
+                        return L.GeoJSON.geometryToLayer(f);
+                    })
+                    .each(function (feature) {
+                        console.log(feature)
+                        layer.addLayer(feature);
+                    });
+            }
+        };
+
+        var _loadDataset = function (dataset, bounds, zoom, callback) {
+            var dataLoaded = function (data) {
+                _datasetLoaded(dataset, data);
+            };
+            var loadError = function (err) {
+                console.error(err);
+            };
+
+            if (dataset.isStatic) {
+                api.getData(
+                    dataset.dataset,
+                    dataLoaded,
+                    loadError
+                );
+            } else {
+                api.getBbox(
+                    dataset.dataset,
+                    bounds.toBBoxString(),
+                    dataLoaded,
+                    loadError
+                );
+            }
+        };
+
+        var _reload = function () {
+            var bounds = map.getBounds();
+            var zoom = map.getZoom();
+            _.chain(_loaders)
+                .filter(function (ds) {
+                    return _shouldLoad(ds, zoom, bounds);
+                })
+                .each(function (ds) {
+                    _loadDataset(ds, bounds, zoom, _datasetLoaded);
+                });
+        };
+
+        var _flatten = function (datasets) {
+            return _.chain(datasets)
+                .map(function (dataset) {
+                    if (dataset.grouped) {
+                        return dataset.datasets
+                    }
+                    return dataset;
+                })
+                .flatten()
+                .map(function (dataset) {
+                    KR.Util.stamp(dataset);
+                    return dataset;
+                })
+                .value();
+        };
+
+        var _loadStatic = function () {
+            var bounds = map.getBounds();
+            var zoom = map.getZoom();
+            _.chain(_loaders)
+                .filter(function (ds) {
+                    return ds.isStatic;
+                })
+                .each(function (ds) {
+                    _loadDataset(ds, bounds, zoom, _datasetLoaded);
+                });
+        };
+
+        var init = function () {
+            _loaders = _flatten(datasets);
+            _layers = _createLayers(_loaders);
+            map.on('moveend', _reload);
+            _loadStatic();
+            _reload();
+        };
+
+        return {
+            init: init
+        };
+    }
 
     ns.setupMap = function (api, datasetIds, options, fromUrl) {
         options = options || {};
         options = _.extend({}, DEFAULT_OPTIONS, options);
 
         var map = KR.Util.createMap('map', options);
-
+        freezeMap(map);
         if (_.has(options, 'extraLayers') && _.isArray(options.extraLayers)) {
             _.each(options.extraLayers, function (extraLayer) {
                 map.addLayer(extraLayer);
@@ -4636,7 +4778,10 @@ var KR = this.KR || {};
             var locateBtn = L.Knreise.LocateButton(null, null, {bounds: bounds});
             locateBtn.addTo(map);
 
+            var dl = datasetLoader(api, map, datasets);
+
             var initMapPos = function (initPos) {
+                unFreezeMap(map);
                 if (initPos) {
                     map.setView([initPos.lat, initPos.lon], initPos.zoom);
                     bounds = map.getBounds();
@@ -4661,6 +4806,7 @@ var KR = this.KR || {};
                     skipLoadOutside = bounds.toBBoxString();
                 }
 
+
                 var layers = datasetLoader.loadDatasets(
                     datasets,
                     bounds.toBBoxString(),
@@ -4678,17 +4824,27 @@ var KR = this.KR || {};
             };
 
             if (options.initUserPos) {
-                map.addOneTimeEventListener('locationChange', function () {
-                    var pos = {lat: map.userPosition.lat, lon: map.userPosition.lng, zoom: 16};
-                    initMapPos(pos);
-                });
-                map.addOneTimeEventListener('locationError', function () {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            var pos = {
+                                lat: position.coords.latitude,
+                                lon: position.coords.longitude,
+                                zoom: 16
+                            };
+                            initMapPos(pos);
+                        },
+                        function () {
+                            initMapPos(initPos);
+                        }
+                    );
+                } else {
                     initMapPos(initPos);
-                });
-                locateBtn.getLocation();
+                }
             } else {
                 initMapPos(initPos);
             }
+
         }
 
         var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
