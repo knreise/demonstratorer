@@ -142,7 +142,133 @@ var KR = this.KR || {};
     };
 
 
-    ns.newDatasetLoader = function (api, map, datasets) {
+    var SidebarHandler = function (sidebar) {
+
+        var _getClusterFeatures = function (cluster, dataset) {
+            return _.map(cluster.getAllChildMarkers(), function (marker) {
+                var feature = marker.feature;
+                if (dataset && !feature.template) {
+                    feature.template = KR.Util.getTemplateForFeature(feature, dataset);
+                }
+                return feature;
+            });
+        };
+
+        var showCluster = function (cluster, dataset) {
+            var props = _.extend(
+                {},
+                {template: null, getFeatureData: null, noListThreshold: null},
+                dataset
+            );
+            sidebar.showFeatures(
+                _getClusterFeatures(cluster, dataset),
+                dataset,
+                props.getFeatureData,
+                props.noListThreshold
+            );
+        };
+
+        var showLayer = function (layer, dataset) {
+            sidebar.showFeature(
+                layer.feature,
+                dataset,
+                dataset.getFeatureData
+            );
+        };
+
+        return {
+            showCluster: showCluster,
+            showLayer: showLayer
+        };
+    };
+
+    var FeatureSelector = function (layerGroups, datasets, sidebar) {
+
+        var _sidebarHandler = SidebarHandler(sidebar);
+
+        var _selectFeature = function (dataset, layer) {
+            _sidebarHandler.showLayer(layer, dataset);
+            if (layer.setIcon) {
+                layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, true));
+                layer.setZIndexOffset(1000);
+            }
+        };
+
+        var _selectCluster = function (dataset, layer) {
+            _sidebarHandler.showCluster(layer, dataset);
+            layer.createIcon = function () {
+                return KR.Style2.getClusterIcon(dataset, layer, true).createIcon();;
+            };
+            layer.selected = true;
+            layer._updateIcon();
+        };
+
+        var _deselectClusters = function (layer) {
+            _.each(layer._gridClusters, function (g) {
+                _.each(g._grid, function (h) {
+                    _.each(h, function (i) {
+                        _.each(i, function (cluster) {
+                            if (cluster.selected) {
+                                cluster.createIcon = _.bind(
+                                    L.MarkerCluster.prototype.createIcon,
+                                    cluster
+                                );
+                                cluster._updateIcon();
+                                cluster.selected = false;
+                            }
+                        });
+                    });
+                });
+            });
+        };
+
+        var _deselectFeature = function (dataset, layer) {
+            if (layer.setIcon) {
+                layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
+                layer.setZIndexOffset(0);
+            }
+        };
+
+        var deselectAll = function () {
+            _.each(datasets, function (dataset) {
+                var datasetId = KR.Util.stamp(dataset);
+                var layerGroup = layerGroups[datasetId];
+                if (layerGroup) {
+                    _.each(layerGroup.getLayers(), function (layer) {
+                        _deselectFeature(dataset, layer);
+                    });
+                    if (_.has(layerGroup, '_gridClusters')) {
+                        _deselectClusters(layerGroup);
+                    }
+                }
+            });
+        };
+
+        var featureClicked = function (dataset, layer) {
+            deselectAll();
+            var datasetId = KR.Util.stamp(dataset);
+            var layerGroup = layerGroups[datasetId];
+            _selectFeature(dataset, layer);
+        };
+
+        var clusterClicked = function (dataset, layer) {
+            deselectAll();
+            var datasetId = KR.Util.stamp(dataset);
+            var layerGroup = layerGroups[datasetId];
+            _selectCluster(dataset, layer);
+        };
+
+        sidebar.on('hide', deselectAll);
+
+        return {
+            featureClicked: featureClicked,
+            clusterClicked: clusterClicked,
+            deselectAll: deselectAll
+        };
+    };
+
+
+    ns.newDatasetLoader = function (api, map, datasets, sidebar) {
 
         var DEFAULTS = {
             isStatic: true,
@@ -155,26 +281,41 @@ var KR = this.KR || {};
         var _layers = {};
 
         var tiledLoader = TiledGeoJsonLoader();
+        var featureSelector;
 
+        var _createClusterLayer = function (dataset) {
+            return L.markerClusterGroup({
+                iconCreateFunction: function (cluster) {
+                    return KR.Style2.getClusterIcon(dataset, cluster, false);
+                },
+                zoomToBoundsOnClick: false,
+                spiderfyOnMaxZoom: false,
+                polygonOptions: {
+                    fillColor: '#ddd',
+                    weight: 2,
+                    color: '#999',
+                    fillOpacity: 0.6
+                }
+            }).on('clusterclick', function (e) {
+                featureSelector.clusterClicked(dataset, e.layer);
+            }).on('click', function (e) {
+                featureSelector.featureClicked(dataset, e.layer);
+            });
+        };
+
+        var _createLayer = function (dataset) {
+            return L.featureGroup([])
+                .on('click', function (e) {
+                    featureSelector.featureClicked(dataset, e.layer);
+                });
+        };
 
         var _createLayers = function (datasets) {
             return _.reduce(datasets, function (acc, dataset) {
-                if (dataset.cluster) {
-                    acc[KR.Util.stamp(dataset)] = L.markerClusterGroup({
-                        iconCreateFunction: function (cluster, selected) {
-                            return KR.Style.getClusterIcon(cluster, selected);
-                        },
-                        zoomToBoundsOnClick: false,
-                        spiderfyOnMaxZoom: false,
-                        polygonOptions: {
-                            fillColor: '#ddd',
-                            weight: 2,
-                            color: '#999',
-                            fillOpacity: 0.6
-                        }
-                    }).addTo(map);
+              if (dataset.cluster) {
+                    acc[KR.Util.stamp(dataset)] = _createClusterLayer(dataset);
                 } else {
-                    acc[KR.Util.stamp(dataset)] = L.featureGroup([]).addTo(map);
+                    acc[KR.Util.stamp(dataset)] = _createLayer(dataset);
                 }
                 return acc;
             }, {});
@@ -191,16 +332,36 @@ var KR = this.KR || {};
         };
 
         var _datasetLoaded = function (dataset, data) {
-            var layer = _layers[KR.Util.stamp(dataset)];
-            if (layer) {
-                layer.clearLayers();
+            var layerGroup = _layers[KR.Util.stamp(dataset)];
+            if (layerGroup) {
+
+                //get the ids of the new features after load
+                var newIds = _.pluck(data.features, 'id');
+
+                //remove layers not on map anymore
+                _.each(layerGroup.getLayers(), function (layer) {
+                    if (newIds.indexOf(layer.feature.id) === -1) {
+                        layerGroup.removeLayer(layer);
+                    } 
+                });
+
+                //get ids of existing layers
+                var existingIds = _.map(layerGroup.getLayers(), function (layer) {
+                    return layer.feature.id;
+                });
+
+
+                //only add new layers
                 _.chain(data.features)
-                    .map(function (f) {
-                        return L.geoJson(f).getLayers()[0];
+                    .filter(function (feature) {
+                        return (existingIds.indexOf(feature.id) === -1);
                     })
-                    .each(function (feature) {
-                        feature.setIcon(KR.Style2.getIcon(dataset, feature.feature, false));
-                        layer.addLayer(feature);
+                    .map(function (feature) {
+                        return L.geoJson(feature).getLayers()[0];
+                    })
+                    .each(function (layer) {
+                        layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
+                        layerGroup.addLayer(layer);
                     });
             }
         };
@@ -321,6 +482,10 @@ var KR = this.KR || {};
             var flattened  = _prepareDatasets(datasets);
             _loaders = _createLoaders(flattened);
             _layers = _createLayers(flattened);
+            featureSelector = FeatureSelector(_layers, flattened, sidebar);
+            _.each(_layers, function (layer) {
+                layer.addTo(map);
+            });
             map.on('moveend', _reload);
             _loadStatic(flattened);
             _reload();

@@ -105,7 +105,7 @@ var KR = this.KR || {};
                 });
         }
 
-        function _createListCallbacks(feature, index, template, getData, features, close) {
+        function _createListCallbacks(feature, index, dataset, getData, features, close) {
             var prev;
             if (index > 0) {
                 prev = function (e) {
@@ -114,8 +114,8 @@ var KR = this.KR || {};
                     }
                     index = index - 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
             var next;
@@ -126,14 +126,14 @@ var KR = this.KR || {};
                     }
                     index = index + 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
 
             if (!close) {
                 close = function () {
-                    showFeatures(features, template, getData, options.noListThreshold, true);
+                    showFeatures(features, dataset, getData, options.noListThreshold, true);
                 };
             }
 
@@ -144,18 +144,18 @@ var KR = this.KR || {};
             };
         }
 
-        function _createListElement(feature, index, template, getData, features) {
+        function _createListElement(feature, index, dataset, getData, features) {
             var marker;
             if (feature.properties.thumbnail) {
                 marker = options.thumbnailTemplate({
                     thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
                     thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 120, 90),
-                    color: KR.Style.colorForFeature(feature, true)
+                    color: KR.Style2.colorForDataset(dataset, true, true)
                 });
             } else {
                 marker = options.markerTemplate({
                     icon: '',
-                    color: KR.Style.colorForFeature(feature)
+                    color: KR.Style2.colorForDataset(dataset, true, true)
                 });
             }
 
@@ -166,8 +166,8 @@ var KR = this.KR || {};
 
             li.on('click', function (e) {
                 e.preventDefault();
-                var callbacks = _createListCallbacks(feature, index, template, getData, features);
-                showFeature(feature, template, getData, callbacks, index, features.length);
+                var callbacks = _createListCallbacks(feature, index, dataset, getData, features);
+                showFeature(feature, dataset, getData, callbacks, index, features.length);
                 return false;
             });
             return li;
@@ -177,14 +177,14 @@ var KR = this.KR || {};
         function setupFullscreenClick(element) {
             element.find('img[data-fullsize-url!=""]').click(function () {
                 var url = $(this).attr('data-fullsize-url');
-                $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
+                $('#overlay').removeClass('hidden').html($('<img src="' + url + '" />')).click(function () {
                     $('#overlay').addClass('hidden').html('');
                 });
             });
         }
 
 
-        function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+        function showFeature(feature, dataset, getData, callbacks, index, numFeatures) {
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -194,12 +194,11 @@ var KR = this.KR || {};
                 _setContent(content);
                 getData(feature, function (newFeature) {
                     newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                    showFeature(newFeature, template, null, callbacks, index, numFeatures);
+                    showFeature(newFeature, dataset, null, callbacks, index, numFeatures);
                 });
                 return;
             }
-
-            template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
+            var template = dataset.template || defaultTemplate;
 
             var img = feature.properties.images;
             if (_.isArray(img)) {
@@ -217,8 +216,8 @@ var KR = this.KR || {};
             }
 
 
-            var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
-            var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
+            var color = KR.Style2.colorForDataset(dataset, true, true);
+            var content = '<span class="providertext" style="color:' + color + ';">' + dataset.name + '</span>';
 
             content += template(_.extend({image: null}, feature.properties));
 
@@ -274,14 +273,14 @@ var KR = this.KR || {};
             element.scrollTop(0);
         }
 
-        function showFeatures(features, template, getData, noListThreshold, forceList) {
+        function showFeatures(features, dataset, getData, noListThreshold, forceList) {
             noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
             var shouldSkipList = (features.length <= noListThreshold);
             if (shouldSkipList && forceList !== true) {
                 var feature = features[0];
                 element.html('');
-                var callbacks = _createListCallbacks(feature, 0, template, getData, features);
-                this.showFeature(feature, template, getData, callbacks, 0, features.length);
+                var callbacks = _createListCallbacks(feature, 0, dataset, getData, features);
+                this.showFeature(feature, dataset, getData, callbacks, 0, features.length);
                 return;
             }
 
@@ -299,11 +298,11 @@ var KR = this.KR || {};
                         var index = _.findIndex(features, function (a) {
                             return a === feature;
                         });
-                        return _createListElement(feature, index, template, getData, features);
+                        return _createListElement(feature, index, dataset, getData, features);
                     }, this);
 
                     list.append(elements);
-                    wrap.append('<h5 class="providertext">' + key + '</h5>');
+                    wrap.append('<h5 class="providertext">' + dataset.name + '</h5>');
                     wrap.append(list);
                     return wrap;
                 }).value();

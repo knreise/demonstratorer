@@ -1145,6 +1145,71 @@ KR.Style2 = {};
         });
     }
 
+    function getClusterThumbnailIcon(features, color, selected) {
+        var photos = _.filter(features, function (marker) {
+            return marker.feature.properties.thumbnail;
+        });
+        if (!photos.length) {
+            return;
+        }
+        var rest;
+        if (_.isArray(color)) {
+            rest = _.rest(color);
+            color = color[0];
+        }
+
+        var thumbnail = KR.Util.getImageCache(photos[0].feature.properties.thumbnail, 50, 50);
+
+        var styleDict = {
+            'border-color': color,
+            'background-image': 'url(' + thumbnail + ');'
+        };
+        if (rest) {
+            styleDict['box-shadow'] = _.map(rest, function (c, index) {
+                var width = (index + 1) * 2;
+                return '0 0 0 ' + width + 'px ' + c;
+            }).join(',') + ';';
+        }
+
+        if (selected) {
+            styleDict['border-width'] = '3px';
+        }
+
+        var html = '<div class="outer">' +
+            '<div class="circle" style="' + KR.Util.createStyleString(styleDict) + '"></div>' +
+            '</div>' +
+            '<b>' + features.length + '</b>';
+
+        return new L.DivIcon({
+            className: 'leaflet-marker-photo',
+            html: html,
+            iconSize: [60, 60],
+            iconAnchor: [30, 30]
+        });
+
+    }
+
+    function getClusterIcon(features, color) {
+        var rgbaColor = KR.Util.hexToRgba(color, 0.4);
+        return new L.DivIcon({
+            className: 'leaflet-marker-circle',
+            html: '<div class="outer"><div class="circle" style="background-color: ' + rgbaColor + ';border-color:' + color + ';"></div></div><b>' + features.length + '</b>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+    }
+
+    ns.colorForDataset = function (dataset, hex, useBaseColor) {
+        var config = _getConfig(dataset);
+        if (config) {
+            if (hex) {
+                return getFillColor(config, null, useBaseColor);
+            }
+            return hexToName(getFillColor(config, null));
+        }
+    };
+
+
     ns.getIcon = function (dataset, feature, selected) {
 
         var config = _getConfig(dataset);
@@ -1160,6 +1225,38 @@ KR.Style2 = {};
             return getCircleOptions(bordercolor, fillcolor, config.radius);
         }
         return createAwesomeMarker(fillcolor);
+    };
+
+    ns.getClusterIcon = function (dataset, cluster, selected) {
+
+        var features = cluster.getAllChildMarkers();
+
+        var groups = _.uniq(_.map(features, function (feature) {
+            return feature.feature.properties.groupId;
+        }));
+
+
+        var config = _getConfig(dataset);
+        var colors;
+        /*if (_.compact(groups).length > 1) {
+            var groupIds = _.compact(groups);
+            if (groupIds.length > 1) {
+                colors = _.map(groupIds, _.compose(getFillColor, getGroupConfig));
+            }
+        } else {*/
+            colors = getFillColor(config, features[0].feature);
+        /*}*/
+        if (selected) {
+            colors = SELECTED_COLOR;
+        }
+
+        if (config.thumbnail) {
+            var thumbnail = getClusterThumbnailIcon(features, colors, selected);
+            if (thumbnail) {
+                return thumbnail;
+            }
+        }
+        return getClusterIcon(features, colors);
     };
 
 }(KR.Style2));
@@ -2075,7 +2172,7 @@ var KR = this.KR || {};
                 });
         }
 
-        function _createListCallbacks(feature, index, template, getData, features, close) {
+        function _createListCallbacks(feature, index, dataset, getData, features, close) {
             var prev;
             if (index > 0) {
                 prev = function (e) {
@@ -2084,8 +2181,8 @@ var KR = this.KR || {};
                     }
                     index = index - 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
             var next;
@@ -2096,14 +2193,14 @@ var KR = this.KR || {};
                     }
                     index = index + 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
 
             if (!close) {
                 close = function () {
-                    showFeatures(features, template, getData, options.noListThreshold, true);
+                    showFeatures(features, dataset, getData, options.noListThreshold, true);
                 };
             }
 
@@ -2114,18 +2211,18 @@ var KR = this.KR || {};
             };
         }
 
-        function _createListElement(feature, index, template, getData, features) {
+        function _createListElement(feature, index, dataset, getData, features) {
             var marker;
             if (feature.properties.thumbnail) {
                 marker = options.thumbnailTemplate({
                     thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
                     thumbnail2x: KR.Util.getImageCache(feature.properties.thumbnail, 120, 90),
-                    color: KR.Style.colorForFeature(feature, true)
+                    color: KR.Style2.colorForDataset(dataset, true, true)
                 });
             } else {
                 marker = options.markerTemplate({
                     icon: '',
-                    color: KR.Style.colorForFeature(feature)
+                    color: KR.Style2.colorForDataset(dataset, true, true)
                 });
             }
 
@@ -2136,8 +2233,8 @@ var KR = this.KR || {};
 
             li.on('click', function (e) {
                 e.preventDefault();
-                var callbacks = _createListCallbacks(feature, index, template, getData, features);
-                showFeature(feature, template, getData, callbacks, index, features.length);
+                var callbacks = _createListCallbacks(feature, index, dataset, getData, features);
+                showFeature(feature, dataset, getData, callbacks, index, features.length);
                 return false;
             });
             return li;
@@ -2147,14 +2244,14 @@ var KR = this.KR || {};
         function setupFullscreenClick(element) {
             element.find('img[data-fullsize-url!=""]').click(function () {
                 var url = $(this).attr('data-fullsize-url');
-                $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
+                $('#overlay').removeClass('hidden').html($('<img src="' + url + '" />')).click(function () {
                     $('#overlay').addClass('hidden').html('');
                 });
             });
         }
 
 
-        function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+        function showFeature(feature, dataset, getData, callbacks, index, numFeatures) {
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -2164,12 +2261,11 @@ var KR = this.KR || {};
                 _setContent(content);
                 getData(feature, function (newFeature) {
                     newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                    showFeature(newFeature, template, null, callbacks, index, numFeatures);
+                    showFeature(newFeature, dataset, null, callbacks, index, numFeatures);
                 });
                 return;
             }
-
-            template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
+            var template = dataset.template || defaultTemplate;
 
             var img = feature.properties.images;
             if (_.isArray(img)) {
@@ -2187,8 +2283,8 @@ var KR = this.KR || {};
             }
 
 
-            var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
-            var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
+            var color = KR.Style2.colorForDataset(dataset, true, true);
+            var content = '<span class="providertext" style="color:' + color + ';">' + dataset.name + '</span>';
 
             content += template(_.extend({image: null}, feature.properties));
 
@@ -2244,14 +2340,14 @@ var KR = this.KR || {};
             element.scrollTop(0);
         }
 
-        function showFeatures(features, template, getData, noListThreshold, forceList) {
+        function showFeatures(features, dataset, getData, noListThreshold, forceList) {
             noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
             var shouldSkipList = (features.length <= noListThreshold);
             if (shouldSkipList && forceList !== true) {
                 var feature = features[0];
                 element.html('');
-                var callbacks = _createListCallbacks(feature, 0, template, getData, features);
-                this.showFeature(feature, template, getData, callbacks, 0, features.length);
+                var callbacks = _createListCallbacks(feature, 0, dataset, getData, features);
+                this.showFeature(feature, dataset, getData, callbacks, 0, features.length);
                 return;
             }
 
@@ -2269,11 +2365,11 @@ var KR = this.KR || {};
                         var index = _.findIndex(features, function (a) {
                             return a === feature;
                         });
-                        return _createListElement(feature, index, template, getData, features);
+                        return _createListElement(feature, index, dataset, getData, features);
                     }, this);
 
                     list.append(elements);
-                    wrap.append('<h5 class="providertext">' + key + '</h5>');
+                    wrap.append('<h5 class="providertext">' + dataset.name + '</h5>');
                     wrap.append(list);
                     return wrap;
                 }).value();
@@ -4617,7 +4713,133 @@ var KR = this.KR || {};
     };
 
 
-    ns.newDatasetLoader = function (api, map, datasets) {
+    var SidebarHandler = function (sidebar) {
+
+        var _getClusterFeatures = function (cluster, dataset) {
+            return _.map(cluster.getAllChildMarkers(), function (marker) {
+                var feature = marker.feature;
+                if (dataset && !feature.template) {
+                    feature.template = KR.Util.getTemplateForFeature(feature, dataset);
+                }
+                return feature;
+            });
+        };
+
+        var showCluster = function (cluster, dataset) {
+            var props = _.extend(
+                {},
+                {template: null, getFeatureData: null, noListThreshold: null},
+                dataset
+            );
+            sidebar.showFeatures(
+                _getClusterFeatures(cluster, dataset),
+                dataset,
+                props.getFeatureData,
+                props.noListThreshold
+            );
+        };
+
+        var showLayer = function (layer, dataset) {
+            sidebar.showFeature(
+                layer.feature,
+                dataset,
+                dataset.getFeatureData
+            );
+        };
+
+        return {
+            showCluster: showCluster,
+            showLayer: showLayer
+        };
+    };
+
+    var FeatureSelector = function (layerGroups, datasets, sidebar) {
+
+        var _sidebarHandler = SidebarHandler(sidebar);
+
+        var _selectFeature = function (dataset, layer) {
+            _sidebarHandler.showLayer(layer, dataset);
+            if (layer.setIcon) {
+                layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, true));
+                layer.setZIndexOffset(1000);
+            }
+        };
+
+        var _selectCluster = function (dataset, layer) {
+            _sidebarHandler.showCluster(layer, dataset);
+            layer.createIcon = function () {
+                return KR.Style2.getClusterIcon(dataset, layer, true).createIcon();;
+            };
+            layer.selected = true;
+            layer._updateIcon();
+        };
+
+        var _deselectClusters = function (layer) {
+            _.each(layer._gridClusters, function (g) {
+                _.each(g._grid, function (h) {
+                    _.each(h, function (i) {
+                        _.each(i, function (cluster) {
+                            if (cluster.selected) {
+                                cluster.createIcon = _.bind(
+                                    L.MarkerCluster.prototype.createIcon,
+                                    cluster
+                                );
+                                cluster._updateIcon();
+                                cluster.selected = false;
+                            }
+                        });
+                    });
+                });
+            });
+        };
+
+        var _deselectFeature = function (dataset, layer) {
+            if (layer.setIcon) {
+                layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
+                layer.setZIndexOffset(0);
+            }
+        };
+
+        var deselectAll = function () {
+            _.each(datasets, function (dataset) {
+                var datasetId = KR.Util.stamp(dataset);
+                var layerGroup = layerGroups[datasetId];
+                if (layerGroup) {
+                    _.each(layerGroup.getLayers(), function (layer) {
+                        _deselectFeature(dataset, layer);
+                    });
+                    if (_.has(layerGroup, '_gridClusters')) {
+                        _deselectClusters(layerGroup);
+                    }
+                }
+            });
+        };
+
+        var featureClicked = function (dataset, layer) {
+            deselectAll();
+            var datasetId = KR.Util.stamp(dataset);
+            var layerGroup = layerGroups[datasetId];
+            _selectFeature(dataset, layer);
+        };
+
+        var clusterClicked = function (dataset, layer) {
+            deselectAll();
+            var datasetId = KR.Util.stamp(dataset);
+            var layerGroup = layerGroups[datasetId];
+            _selectCluster(dataset, layer);
+        };
+
+        sidebar.on('hide', deselectAll);
+
+        return {
+            featureClicked: featureClicked,
+            clusterClicked: clusterClicked,
+            deselectAll: deselectAll
+        };
+    };
+
+
+    ns.newDatasetLoader = function (api, map, datasets, sidebar) {
 
         var DEFAULTS = {
             isStatic: true,
@@ -4630,27 +4852,44 @@ var KR = this.KR || {};
         var _layers = {};
 
         var tiledLoader = TiledGeoJsonLoader();
+        var featureSelector;
 
+        var _createClusterLayer = function (dataset) {
+            return L.markerClusterGroup({
+                iconCreateFunction: function (cluster) {
+                    return KR.Style2.getClusterIcon(dataset, cluster, false);
+                },
+                zoomToBoundsOnClick: false,
+                spiderfyOnMaxZoom: false,
+                polygonOptions: {
+                    fillColor: '#ddd',
+                    weight: 2,
+                    color: '#999',
+                    fillOpacity: 0.6
+                }
+            }).on('clusterclick', function (e) {
+                featureSelector.clusterClicked(dataset, e.layer);
+            }).on('click', function (e) {
+                featureSelector.featureClicked(dataset, e.layer);
+            });
+        };
+
+        var _createLayer = function (dataset) {
+            return L.featureGroup([])
+                .on('click', function (e) {
+                    featureSelector.featureClicked(dataset, e.layer);
+                });
+        };
 
         var _createLayers = function (datasets) {
             return _.reduce(datasets, function (acc, dataset) {
-                if (dataset.cluster) {
-                    acc[KR.Util.stamp(dataset)] = L.markerClusterGroup({
-                        iconCreateFunction: function (cluster, selected) {
-                            return KR.Style.getClusterIcon(cluster, selected);
-                        },
-                        zoomToBoundsOnClick: false,
-                        spiderfyOnMaxZoom: false,
-                        polygonOptions: {
-                            fillColor: '#ddd',
-                            weight: 2,
-                            color: '#999',
-                            fillOpacity: 0.6
-                        }
-                    }).addTo(map);
+              if (dataset.cluster) {
+                    acc[KR.Util.stamp(dataset)] = _createClusterLayer(dataset);
                 } else {
-                    acc[KR.Util.stamp(dataset)] = L.featureGroup([]).addTo(map);
+                    acc[KR.Util.stamp(dataset)] = _createLayer(dataset);
                 }
+              
+              //  acc[KR.Util.stamp(dataset)] = _createLayer(dataset);
                 return acc;
             }, {});
         };
@@ -4666,16 +4905,36 @@ var KR = this.KR || {};
         };
 
         var _datasetLoaded = function (dataset, data) {
-            var layer = _layers[KR.Util.stamp(dataset)];
-            if (layer) {
-                layer.clearLayers();
+            var layerGroup = _layers[KR.Util.stamp(dataset)];
+            if (layerGroup) {
+
+                //get the ids of the new features after load
+                var newIds = _.pluck(data.features, 'id');
+
+                //remove layers not on map anymore
+                _.each(layerGroup.getLayers(), function (layer) {
+                    if (newIds.indexOf(layer.feature.id) === -1) {
+                        layerGroup.removeLayer(layer);
+                    } 
+                });
+
+                //get ids of existing layers
+                var existingIds = _.map(layerGroup.getLayers(), function (layer) {
+                    return layer.feature.id;
+                });
+
+
+                //only add new layers
                 _.chain(data.features)
-                    .map(function (f) {
-                        return L.geoJson(f).getLayers()[0];
+                    .filter(function (feature) {
+                        return (existingIds.indexOf(feature.id) === -1)
                     })
-                    .each(function (feature) {
-                        feature.setIcon(KR.Style2.getIcon(dataset, feature.feature, false));
-                        layer.addLayer(feature);
+                    .map(function (feature) {
+                        return L.geoJson(feature).getLayers()[0];
+                    })
+                    .each(function (layer) {
+                        layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
+                        layerGroup.addLayer(layer);
                     });
             }
         };
@@ -4796,6 +5055,10 @@ var KR = this.KR || {};
             var flattened  = _prepareDatasets(datasets);
             _loaders = _createLoaders(flattened);
             _layers = _createLayers(flattened);
+            featureSelector = FeatureSelector(_layers, flattened, sidebar);
+            _.each(_layers, function (layer) {
+                layer.addTo(map);
+            });
             map.on('moveend', _reload);
             _loadStatic(flattened);
             _reload();
@@ -5116,7 +5379,7 @@ var KR = this.KR || {};
             var locateBtn = L.Knreise.LocateButton(null, null, {bounds: bounds});
             locateBtn.addTo(map);
 
-            var dl = ns.newDatasetLoader(api, map, datasets);
+            var dl = ns.newDatasetLoader(api, map, datasets, sidebar);
 
             var initMapPos = function (initPos) {
                 unFreezeMap(map);

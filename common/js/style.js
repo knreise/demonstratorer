@@ -567,6 +567,71 @@ KR.Style2 = {};
         });
     }
 
+    function getClusterThumbnailIcon(features, color, selected) {
+        var photos = _.filter(features, function (marker) {
+            return marker.feature.properties.thumbnail;
+        });
+        if (!photos.length) {
+            return;
+        }
+        var rest;
+        if (_.isArray(color)) {
+            rest = _.rest(color);
+            color = color[0];
+        }
+
+        var thumbnail = KR.Util.getImageCache(photos[0].feature.properties.thumbnail, 50, 50);
+
+        var styleDict = {
+            'border-color': color,
+            'background-image': 'url(' + thumbnail + ');'
+        };
+        if (rest) {
+            styleDict['box-shadow'] = _.map(rest, function (c, index) {
+                var width = (index + 1) * 2;
+                return '0 0 0 ' + width + 'px ' + c;
+            }).join(',') + ';';
+        }
+
+        if (selected) {
+            styleDict['border-width'] = '3px';
+        }
+
+        var html = '<div class="outer">' +
+            '<div class="circle" style="' + KR.Util.createStyleString(styleDict) + '"></div>' +
+            '</div>' +
+            '<b>' + features.length + '</b>';
+
+        return new L.DivIcon({
+            className: 'leaflet-marker-photo',
+            html: html,
+            iconSize: [60, 60],
+            iconAnchor: [30, 30]
+        });
+
+    }
+
+    function getClusterIcon(features, color) {
+        var rgbaColor = KR.Util.hexToRgba(color, 0.4);
+        return new L.DivIcon({
+            className: 'leaflet-marker-circle',
+            html: '<div class="outer"><div class="circle" style="background-color: ' + rgbaColor + ';border-color:' + color + ';"></div></div><b>' + features.length + '</b>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+    }
+
+    ns.colorForDataset = function (dataset, hex, useBaseColor) {
+        var config = _getConfig(dataset);
+        if (config) {
+            if (hex) {
+                return getFillColor(config, null, useBaseColor);
+            }
+            return hexToName(getFillColor(config, null));
+        }
+    };
+
+
     ns.getIcon = function (dataset, feature, selected) {
 
         var config = _getConfig(dataset);
@@ -582,6 +647,38 @@ KR.Style2 = {};
             return getCircleOptions(bordercolor, fillcolor, config.radius);
         }
         return createAwesomeMarker(fillcolor);
+    };
+
+    ns.getClusterIcon = function (dataset, cluster, selected) {
+
+        var features = cluster.getAllChildMarkers();
+
+        var groups = _.uniq(_.map(features, function (feature) {
+            return feature.feature.properties.groupId;
+        }));
+
+
+        var config = _getConfig(dataset);
+        var colors;
+        /*if (_.compact(groups).length > 1) {
+            var groupIds = _.compact(groups);
+            if (groupIds.length > 1) {
+                colors = _.map(groupIds, _.compose(getFillColor, getGroupConfig));
+            }
+        } else {*/
+            colors = getFillColor(config, features[0].feature);
+        /*}*/
+        if (selected) {
+            colors = SELECTED_COLOR;
+        }
+
+        if (config.thumbnail) {
+            var thumbnail = getClusterThumbnailIcon(features, colors, selected);
+            if (thumbnail) {
+                return thumbnail;
+            }
+        }
+        return getClusterIcon(features, colors);
     };
 
 }(KR.Style2));
