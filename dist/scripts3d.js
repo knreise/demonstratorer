@@ -1048,6 +1048,121 @@ KR.Style = {};
 
 }(KR.Style));
 
+
+KR.Style2 = {};
+(function (ns) {
+    'use strict';
+
+    var SELECTED_COLOR = '#72B026';
+    var DEFAULT_COLOR = '#38A9DC';
+
+    var DEFAULT_STYLE = {
+        fillcolor: DEFAULT_COLOR,
+        circle: false,
+        thumbnail: true
+    };
+
+    function _getConfig(dataset) {
+        var config;
+        var datasetId = KR.Util.getDatasetId(dataset);
+
+        var style = KR.Style.getDatasetStyle(datasetId) || {};
+
+        if (dataset.style) {
+            return _.extend({}, DEFAULT_STYLE, style, dataset.style);
+        }
+
+        return _.extend({}, DEFAULT_STYLE, style);
+    }
+
+    function valueOrfunc(dict, key, feature, dropFeature) {
+        if (_.isFunction(dict[key])) {
+            if (dropFeature) {
+                return dict[key]();
+            }
+            return dict[key](feature);
+        }
+        return dict[key];
+    }
+
+    function getFillColor(config, feature, useBaseColor) {
+        if (useBaseColor) {
+            return valueOrfunc(config, 'fillcolor', feature, true);
+        }
+        return valueOrfunc(config, 'fillcolor', feature);
+    }
+
+    function getBorderColor(config, feature) {
+        if (!config.bordercolor) {
+            return getFillColor(config, feature);
+        }
+        return valueOrfunc(config, 'bordercolor', feature);
+    }
+
+    function getThumbnail(feature, color, selected) {
+        if (!feature.properties || !feature.properties.thumbnail) {
+            return;
+        }
+
+        var styleDict = {
+            'border-color': color,
+            'background-image': 'url(' + feature.properties.thumbnail + ')'
+        };
+
+        if (selected) {
+            styleDict['border-width'] = '3px';
+        }
+
+        var thumbnail = KR.Util.getImageCache(feature.properties.thumbnail, 50, 50);
+
+        var html = '<div class="outer">' +
+            '<div class="circle" style="background-image: url(' + thumbnail + ');border-color:' + color + ';"></div>' +
+            '</div>';
+
+        return new L.DivIcon({
+            className: 'leaflet-marker-circle',
+            html: html,
+            iconSize: [50, 50],
+            iconAnchor: [25, 25]
+        });
+    }
+
+    function getCircleOptions(bordercolor, fillcolor, radius) {
+        radius = radius || 9;
+        return {
+            radius: radius,
+            weight: 1,
+            opacity: 1,
+            color: bordercolor,
+            fillColor: fillcolor,
+            fillOpacity: 0.4
+        };
+    }
+
+    function createAwesomeMarker(color) {
+        return L.Knreise.icon({
+            markerColor: color
+        });
+    }
+
+    ns.getIcon = function (dataset, feature, selected) {
+
+        var config = _getConfig(dataset);
+        var fillcolor = selected ? SELECTED_COLOR : getFillColor(config, feature);
+        var bordercolor = selected ? SELECTED_COLOR : getBorderColor(config, feature);
+        if (config.thumbnail) {
+            var thumbnail = getThumbnail(feature, bordercolor, selected);
+            if (thumbnail) {
+                return thumbnail;
+            }
+        }
+        if (config.circle) {
+            return getCircleOptions(bordercolor, fillcolor, config.radius);
+        }
+        return createAwesomeMarker(fillcolor);
+    };
+
+}(KR.Style2));
 /*global Cesium:false, turf:false */
 var KR = this.KR || {};
 
