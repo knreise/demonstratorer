@@ -279,7 +279,9 @@ var KR = this.KR || {};
 
         var _loaders;
         var _layers = {};
+        var _flattened = [];
 
+        var _datasetToggle;
         var tiledLoader = TiledGeoJsonLoader();
         var featureSelector;
 
@@ -321,14 +323,10 @@ var KR = this.KR || {};
             }, {});
         };
 
-        var _shouldLoad = function (dataset, zoom, bounds) {
-            if (dataset.minZoom && zoom <= dataset.minZoom) {
-                return false;
-            }
-            if (dataset.isStatic) {
-                return false;
-            }
-            return true;
+        var _getDataset = function (datasetId) {
+            return _.find(_flattened, function (dataset) {
+                return (KR.Util.stamp(dataset) === parseInt(datasetId, 10));
+            });
         };
 
         var _datasetLoaded = function (dataset, data) {
@@ -407,13 +405,44 @@ var KR = this.KR || {};
             }
         };
 
+        var _shouldLoad = function (datasetId, zoom, bounds) {
+            var dataset = _getDataset(datasetId);
+            if (dataset.minZoom && zoom <= dataset.minZoom) {
+                return false;
+            }
+            if (!dataset.visible) {
+                return false;
+            }
+            return true;
+        };
+
+        var _toggleEnabledBasedOnScale = function () {
+            var zoom = map.getZoom();
+            var shouldHide = function (dataset) {
+                if (!dataset.minZoom) {
+                    return false;
+                }
+                return (zoom <= dataset.minZoom);
+            };
+            _.chain(_flattened)
+                .filter(shouldHide)
+                .each(function (dataset) {
+                    _hideDataset(KR.Util.stamp(dataset));
+                });
+
+            _.each(_flattened, function (dataset) {
+                var datasetId = KR.Util.stamp(dataset);
+                _datasetToggle.toggleDatasetEnabled(datasetId, !shouldHide(dataset));
+            });
+        };
+
         var _reload = function () {
             var bounds = map.getBounds();
             var zoom = map.getZoom();
-
+            _toggleEnabledBasedOnScale();
             _.chain(_loaders)
-                .filter(function (ds) {
-                    return _shouldLoad(ds, zoom, bounds);
+                .filter(function (loader, datasetId) {
+                    return _shouldLoad(datasetId, zoom, bounds);
                 })
                 .each(function (loader) {
                     loader(bounds, _datasetLoaded, _loadError);
@@ -428,7 +457,12 @@ var KR = this.KR || {};
             };
         };
 
-
+        /*
+            Prepare datasets for usage: 
+                - flatten them
+                - stamp them
+                - set defaults
+        */
         var _prepareDatasets = function (datasets) {
             return _.chain(datasets)
                 .map(function (dataset) {
@@ -449,20 +483,23 @@ var KR = this.KR || {};
                 .value();
         };
 
+        /*
+            Create tile loader functions for all 
+            non-static datasets
+        */
         var _createLoaders = function (datasets) {
             return _.chain(datasets)
                 .filter(function (dataset) {
                     return !dataset.isStatic;
                 })
-                .map(function (dataset) {
-                    return _getTileLoader(dataset);
-                })
+                .reduce(function (acc, dataset) {
+                    acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
+                    return acc;
+                }, {})
                 .value();
         };
 
         var _loadStatic = function (datasets) {
-            var bounds = map.getBounds();
-            var zoom = map.getZoom();
             _.chain(datasets)
                 .filter(function (dataset) {
                     return dataset.isStatic;
@@ -478,17 +515,62 @@ var KR = this.KR || {};
                 });
         };
 
+        var _showDataset = function (datasetId) {
+            var bounds = map.getBounds();
+            var zoom = map.getZoom();
+            if (_shouldLoad(datasetId, zoom, bounds)) {
+                var loader = _loaders[datasetId];
+                loader(bounds, _datasetLoaded, _loadError);
+            }
+        };
+
+        var _hideDataset = function (datasetId) {
+            _layers[datasetId].clearLayers();
+        };
+
+        var toggleDataset = function (datasetId, callback) {
+            var dataset = _getDataset(datasetId);
+            dataset.visible = !dataset.visible;
+            if (dataset.visible) {
+                _showDataset(datasetId);
+            } else {
+                _hideDataset(datasetId);
+            }
+            callback(dataset.visible);
+
+        };
+
         var init = function () {
-            var flattened  = _prepareDatasets(datasets);
-            _loaders = _createLoaders(flattened);
-            _layers = _createLayers(flattened);
-            featureSelector = FeatureSelector(_layers, flattened, sidebar);
+
+            _datasetToggle = L.control.datasets(datasets, {toggleDataset: toggleDataset}).addTo(map);
+
+            //flatten the list of datasets in order to send requests for the sub-datasets
+            _flattened  = _prepareDatasets(datasets);
+
+            //create loader functions for the non-static
+            _loaders = _createLoaders(_flattened);
+
+            //create leaflet layers for all datasets
+            _layers = _createLayers(_flattened);
+
+            //set up a feature selector and tie it to the sidebar
+            featureSelector = FeatureSelector(_layers, _flattened, sidebar);
+
+            //add the layers to the map
             _.each(_layers, function (layer) {
                 layer.addTo(map);
             });
+
+            //register for moveend to reload non-static
             map.on('moveend', _reload);
-            _loadStatic(flattened);
+
+            //load the static datasets once
+            _loadStatic(_flattened);
+
+            //reload the non-static datasets
             _reload();
+
+            
         };
 
         return {

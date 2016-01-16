@@ -14,15 +14,17 @@
     L.Knreise = L.Knreise || {};
     L.Knreise.Control = L.Knreise.Control || {};
 
-    var Label = function (dataset, layer) {
-        var enabled = layer.enabled;
+    var Label = function (dataset, toggleDataset) {
+        var _enabled = true;
+        var _visible = true;
+        var _loading = false;
         var _error = null;
         var label, _icon;
 
         function _getIcon(iconAppend) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa';
-            if (dataset.visible) {
+            if (_visible) {
                 icon.className += ' fa-check-square-o';
             } else {
                 icon.className += ' fa-square-o';
@@ -30,13 +32,11 @@
             if (iconAppend) {
                 icon.className += ' ' + iconAppend;
             }
-
-            if (layer.isLoading) {
+            if (_loading) {
                 icon.className = 'layericon fa fa-spinner fa-pulse';
             }
-
-            if (layer.enabled) {
-                icon.style.color = KR.Style.colorForDataset(dataset, true, true);
+            if (_enabled) {
+                icon.style.color = KR.Style2.colorForDataset(dataset, true, true);
             } else {
                 icon.style.color = '#ddd';
             }
@@ -49,16 +49,26 @@
             _icon = newIcon;
         }
 
-        function _toggle() {
-            dataset.visible = !dataset.visible;
-            _redrawIcon();
-            if (dataset.visible) {
-                layer.fire('show');
-            } else {
-                layer.fire('hide');
+        function _toggleVisible() {
+            if (!_enabled) {
+                return;
             }
+            toggleDataset(KR.Util.stamp(dataset), function (visible) {
+                _visible = visible;
+                _redrawIcon();
+            });
         }
 
+        function toggleEnabled(enabled) {
+            _enabled = enabled;
+            _redrawIcon();
+        }
+
+        function toggleLoading(loading) {
+            _loading = loading;
+            _redrawIcon();
+        }
+        /*
         function _showError(error) {
             if (!_error) {
                 _error = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
@@ -68,6 +78,7 @@
                 _error.setAttribute('title', _error.getAttribute('title') + ', ' + KR.parseError(error));
             }
         }
+        */
 
         function _createLabel() {
             label = document.createElement('label');
@@ -78,10 +89,11 @@
             var name = document.createElement('span');
             name.innerHTML = ' ' + dataset.name;
 
-            _icon = _getIcon();
+            _icon = _getIcon(null, dataset.visible);
             label.appendChild(_icon);
             label.appendChild(name);
 
+            /*
             if (layer.error) {
                 _showError(layer.error);
             }
@@ -89,31 +101,12 @@
             if (!layer.enabled) {
                 label.className = 'disabled';
             }
-
-            L.DomEvent.on(label, 'click', function () {
-                var canToggle = layer.enabled && !layer.isLoading;
-                if (canToggle) {
-                    _toggle();
-                }
-            });
-        }
-
-        function _enabledChanged() {
-            if (layer.enabled === enabled) {
-                return;
-            }
-
-            enabled = layer.enabled;
-
-            _redrawIcon();
-            if (enabled) {
-                label.className = label.className.replace('disabled', '');
-            } else {
-                label.className += 'disabled';
-            }
+            */
+            L.DomEvent.on(label, 'click', _toggleVisible);
         }
 
         _createLabel();
+        /*
         layer.on('changeEnabled', _enabledChanged);
         layer.on('dataloadstart', function () {
             if (_error) {
@@ -124,14 +117,17 @@
         });
         layer.on('dataloadend', _redrawIcon);
         layer.on('error', _showError);
+        */
         function getLabel() {
             return label;
         }
 
         return {
             getLabel: getLabel,
+            toggleEnabled: toggleEnabled,
+            toggleLoading: toggleLoading,
             hasError: function () {
-                return !!layer.error;
+                return false;
             }
         };
     };
@@ -139,21 +135,23 @@
 
     L.Control.Datasets = L.Control.extend({
 
-        initialize: function (layers, options) {
+        initialize: function (datasets, options) {
             L.setOptions(this, options);
-            this._labels = [];
+            this._labels = {};
             this._handlingClick = false;
             this.expanded = false;
             this.numLoading = 0;
+            this._toggleDataset = options.toggleDataset;
             var i;
-            for (i in layers) {
-                if (layers.hasOwnProperty(i)) {
-                    this._addLayer(layers[i]);
+            for (i in datasets) {
+                if (datasets.hasOwnProperty(i)) {
+                    this._addDataset(datasets[i]);
                 }
             }
         },
 
-        _addLayer: function (layer) {
+        _addDataset: function (dataset) {
+            /*
             var i;
             var dataset = layer.options.dataset;
 
@@ -168,8 +166,17 @@
             } else {
                 this._addDataset(dataset, layer);
             }
+            */
+            var label = new Label(dataset, this._toggleDataset);
+            //this._labels.push(label);
+            this._labels[KR.Util.stamp(dataset)] = label;
         },
 
+        toggleDatasetEnabled: function (datasetId, enabled) {
+            this._labels[datasetId].toggleEnabled(enabled);
+        },
+
+        /*
         _addDataset: function (dataset, layer) {
             if (layer.isLoading) {
                 this.numLoading += 1;
@@ -182,7 +189,8 @@
             layer.on('dataloadstart', function () {this._loadStart(); }, this);
             layer.on('dataloadend', function () {this._loadEnd(); }, this);
         },
-
+        */
+        /*
         _loadStart: function () {
             this.numLoading += 1;
             this._checkSpinner();
@@ -232,7 +240,7 @@
                 );
             }
         },
-
+        */
         onAdd: function (map) {
             this._map = map;
             this._initLayout();
@@ -244,15 +252,13 @@
             if (!this._container) {
                 return;
             }
-
             this._overlaysList.innerHTML = '';
-            var i, label;
-            //for (i in this._labels) {
-            for (i = 0; i < this._labels.length; i++) {
-                label = this._labels[i];
+            var id, label;
+            for (id in this._labels) {
+                label = this._labels[id];
                 this._overlaysList.appendChild(label.getLabel());
             }
-            this._checkError();
+            //this._checkError();
         },
 
         _initLayout: function () {
@@ -343,7 +349,7 @@
         }
     });
 
-    L.control.datasets = function (layers, options) {
-        return new L.Control.Datasets(layers, options);
+    L.control.datasets = function (datasets, options) {
+        return new L.Control.Datasets(datasets, options);
     };
 }());

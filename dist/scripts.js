@@ -2404,15 +2404,17 @@ var KR = this.KR || {};
     L.Knreise = L.Knreise || {};
     L.Knreise.Control = L.Knreise.Control || {};
 
-    var Label = function (dataset, layer) {
-        var enabled = layer.enabled;
+    var Label = function (dataset, toggleDataset) {
+        var _enabled = true;
+        var _visible = true;
+        var _loading = false;
         var _error = null;
         var label, _icon;
 
         function _getIcon(iconAppend) {
             var icon = document.createElement('i');
             icon.className = 'layericon fa';
-            if (dataset.visible) {
+            if (_visible) {
                 icon.className += ' fa-check-square-o';
             } else {
                 icon.className += ' fa-square-o';
@@ -2420,13 +2422,11 @@ var KR = this.KR || {};
             if (iconAppend) {
                 icon.className += ' ' + iconAppend;
             }
-
-            if (layer.isLoading) {
+            if (_loading) {
                 icon.className = 'layericon fa fa-spinner fa-pulse';
             }
-
-            if (layer.enabled) {
-                icon.style.color = KR.Style.colorForDataset(dataset, true, true);
+            if (_enabled) {
+                icon.style.color = KR.Style2.colorForDataset(dataset, true, true);
             } else {
                 icon.style.color = '#ddd';
             }
@@ -2439,16 +2439,26 @@ var KR = this.KR || {};
             _icon = newIcon;
         }
 
-        function _toggle() {
-            dataset.visible = !dataset.visible;
-            _redrawIcon();
-            if (dataset.visible) {
-                layer.fire('show');
-            } else {
-                layer.fire('hide');
+        function _toggleVisible() {
+            if (!_enabled) {
+                return;
             }
+            toggleDataset(KR.Util.stamp(dataset), function (visible) {
+                _visible = visible;
+                _redrawIcon();
+            });
         }
 
+        function toggleEnabled(enabled) {
+            _enabled = enabled;
+            _redrawIcon();
+        }
+
+        function toggleLoading(loading) {
+            _loading = loading;
+            _redrawIcon();
+        }
+        /*
         function _showError(error) {
             if (!_error) {
                 _error = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
@@ -2458,6 +2468,7 @@ var KR = this.KR || {};
                 _error.setAttribute('title', _error.getAttribute('title') + ', ' + KR.parseError(error));
             }
         }
+        */
 
         function _createLabel() {
             label = document.createElement('label');
@@ -2468,10 +2479,11 @@ var KR = this.KR || {};
             var name = document.createElement('span');
             name.innerHTML = ' ' + dataset.name;
 
-            _icon = _getIcon();
+            _icon = _getIcon(null, dataset.visible);
             label.appendChild(_icon);
             label.appendChild(name);
 
+            /*
             if (layer.error) {
                 _showError(layer.error);
             }
@@ -2479,31 +2491,12 @@ var KR = this.KR || {};
             if (!layer.enabled) {
                 label.className = 'disabled';
             }
-
-            L.DomEvent.on(label, 'click', function () {
-                var canToggle = layer.enabled && !layer.isLoading;
-                if (canToggle) {
-                    _toggle();
-                }
-            });
-        }
-
-        function _enabledChanged() {
-            if (layer.enabled === enabled) {
-                return;
-            }
-
-            enabled = layer.enabled;
-
-            _redrawIcon();
-            if (enabled) {
-                label.className = label.className.replace('disabled', '');
-            } else {
-                label.className += 'disabled';
-            }
+            */
+            L.DomEvent.on(label, 'click', _toggleVisible);
         }
 
         _createLabel();
+        /*
         layer.on('changeEnabled', _enabledChanged);
         layer.on('dataloadstart', function () {
             if (_error) {
@@ -2514,14 +2507,17 @@ var KR = this.KR || {};
         });
         layer.on('dataloadend', _redrawIcon);
         layer.on('error', _showError);
+        */
         function getLabel() {
             return label;
         }
 
         return {
             getLabel: getLabel,
+            toggleEnabled: toggleEnabled,
+            toggleLoading: toggleLoading,
             hasError: function () {
-                return !!layer.error;
+                return false;
             }
         };
     };
@@ -2529,21 +2525,23 @@ var KR = this.KR || {};
 
     L.Control.Datasets = L.Control.extend({
 
-        initialize: function (layers, options) {
+        initialize: function (datasets, options) {
             L.setOptions(this, options);
-            this._labels = [];
+            this._labels = {};
             this._handlingClick = false;
             this.expanded = false;
             this.numLoading = 0;
+            this._toggleDataset = options.toggleDataset;
             var i;
-            for (i in layers) {
-                if (layers.hasOwnProperty(i)) {
-                    this._addLayer(layers[i]);
+            for (i in datasets) {
+                if (datasets.hasOwnProperty(i)) {
+                    this._addDataset(datasets[i]);
                 }
             }
         },
 
-        _addLayer: function (layer) {
+        _addDataset: function (dataset) {
+            /*
             var i;
             var dataset = layer.options.dataset;
 
@@ -2558,8 +2556,17 @@ var KR = this.KR || {};
             } else {
                 this._addDataset(dataset, layer);
             }
+            */
+            var label = new Label(dataset, this._toggleDataset);
+            //this._labels.push(label);
+            this._labels[KR.Util.stamp(dataset)] = label;
         },
 
+        toggleDatasetEnabled: function (datasetId, enabled) {
+            this._labels[datasetId].toggleEnabled(enabled);
+        },
+
+        /*
         _addDataset: function (dataset, layer) {
             if (layer.isLoading) {
                 this.numLoading += 1;
@@ -2572,7 +2579,8 @@ var KR = this.KR || {};
             layer.on('dataloadstart', function () {this._loadStart(); }, this);
             layer.on('dataloadend', function () {this._loadEnd(); }, this);
         },
-
+        */
+        /*
         _loadStart: function () {
             this.numLoading += 1;
             this._checkSpinner();
@@ -2622,7 +2630,7 @@ var KR = this.KR || {};
                 );
             }
         },
-
+        */
         onAdd: function (map) {
             this._map = map;
             this._initLayout();
@@ -2634,15 +2642,13 @@ var KR = this.KR || {};
             if (!this._container) {
                 return;
             }
-
             this._overlaysList.innerHTML = '';
-            var i, label;
-            //for (i in this._labels) {
-            for (i = 0; i < this._labels.length; i++) {
-                label = this._labels[i];
+            var id, label;
+            for (id in this._labels) {
+                label = this._labels[id];
                 this._overlaysList.appendChild(label.getLabel());
             }
-            this._checkError();
+            //this._checkError();
         },
 
         _initLayout: function () {
@@ -2733,8 +2739,8 @@ var KR = this.KR || {};
         }
     });
 
-    L.control.datasets = function (layers, options) {
-        return new L.Control.Datasets(layers, options);
+    L.control.datasets = function (datasets, options) {
+        return new L.Control.Datasets(datasets, options);
     };
 }());
 
@@ -4850,7 +4856,9 @@ var KR = this.KR || {};
 
         var _loaders;
         var _layers = {};
+        var _flattened = [];
 
+        var _datasetToggle;
         var tiledLoader = TiledGeoJsonLoader();
         var featureSelector;
 
@@ -4888,20 +4896,14 @@ var KR = this.KR || {};
                 } else {
                     acc[KR.Util.stamp(dataset)] = _createLayer(dataset);
                 }
-              
-              //  acc[KR.Util.stamp(dataset)] = _createLayer(dataset);
                 return acc;
             }, {});
         };
 
-        var _shouldLoad = function (dataset, zoom, bounds) {
-            if (dataset.minZoom && zoom <= dataset.minZoom) {
-                return false;
-            }
-            if (dataset.isStatic) {
-                return false;
-            }
-            return true;
+        var _getDataset = function (datasetId) {
+            return _.find(_flattened, function (dataset) {
+                return (KR.Util.stamp(dataset) === parseInt(datasetId, 10));
+            });
         };
 
         var _datasetLoaded = function (dataset, data) {
@@ -4927,7 +4929,7 @@ var KR = this.KR || {};
                 //only add new layers
                 _.chain(data.features)
                     .filter(function (feature) {
-                        return (existingIds.indexOf(feature.id) === -1)
+                        return (existingIds.indexOf(feature.id) === -1);
                     })
                     .map(function (feature) {
                         return L.geoJson(feature).getLayers()[0];
@@ -4980,13 +4982,44 @@ var KR = this.KR || {};
             }
         };
 
+        var _shouldLoad = function (datasetId, zoom, bounds) {
+            var dataset = _getDataset(datasetId);
+            if (dataset.minZoom && zoom <= dataset.minZoom) {
+                return false;
+            }
+            if (!dataset.visible) {
+                return false;
+            }
+            return true;
+        };
+
+        var _toggleEnabledBasedOnScale = function () {
+            var zoom = map.getZoom();
+            var shouldHide = function (dataset) {
+                if (!dataset.minZoom) {
+                    return false;
+                }
+                return (zoom <= dataset.minZoom);
+            };
+            _.chain(_flattened)
+                .filter(shouldHide)
+                .each(function (dataset) {
+                    _hideDataset(KR.Util.stamp(dataset));
+                });
+
+            _.each(_flattened, function (dataset) {
+                var datasetId = KR.Util.stamp(dataset);
+                _datasetToggle.toggleDatasetEnabled(datasetId, !shouldHide(dataset));
+            });
+        };
+
         var _reload = function () {
             var bounds = map.getBounds();
             var zoom = map.getZoom();
-
+            _toggleEnabledBasedOnScale();
             _.chain(_loaders)
-                .filter(function (ds) {
-                    return _shouldLoad(ds, zoom, bounds);
+                .filter(function (loader, datasetId) {
+                    return _shouldLoad(datasetId, zoom, bounds);
                 })
                 .each(function (loader) {
                     loader(bounds, _datasetLoaded, _loadError);
@@ -5001,7 +5034,12 @@ var KR = this.KR || {};
             };
         };
 
-
+        /*
+            Prepare datasets for usage: 
+                - flatten them
+                - stamp them
+                - set defaults
+        */
         var _prepareDatasets = function (datasets) {
             return _.chain(datasets)
                 .map(function (dataset) {
@@ -5022,20 +5060,23 @@ var KR = this.KR || {};
                 .value();
         };
 
+        /*
+            Create tile loader functions for all 
+            non-static datasets
+        */
         var _createLoaders = function (datasets) {
             return _.chain(datasets)
                 .filter(function (dataset) {
                     return !dataset.isStatic;
                 })
-                .map(function (dataset) {
-                    return _getTileLoader(dataset);
-                })
+                .reduce(function (acc, dataset) {
+                    acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
+                    return acc;
+                }, {})
                 .value();
         };
 
         var _loadStatic = function (datasets) {
-            var bounds = map.getBounds();
-            var zoom = map.getZoom();
             _.chain(datasets)
                 .filter(function (dataset) {
                     return dataset.isStatic;
@@ -5051,17 +5092,62 @@ var KR = this.KR || {};
                 });
         };
 
+        var _showDataset = function (datasetId) {
+            var bounds = map.getBounds();
+            var zoom = map.getZoom();
+            if (_shouldLoad(datasetId, zoom, bounds)) {
+                var loader = _loaders[datasetId];
+                loader(bounds, _datasetLoaded, _loadError);
+            }
+        };
+
+        var _hideDataset = function (datasetId) {
+            _layers[datasetId].clearLayers();
+        };
+
+        var toggleDataset = function (datasetId, callback) {
+            var dataset = _getDataset(datasetId);
+            dataset.visible = !dataset.visible;
+            if (dataset.visible) {
+                _showDataset(datasetId);
+            } else {
+                _hideDataset(datasetId);
+            }
+            callback(dataset.visible);
+
+        };
+
         var init = function () {
-            var flattened  = _prepareDatasets(datasets);
-            _loaders = _createLoaders(flattened);
-            _layers = _createLayers(flattened);
-            featureSelector = FeatureSelector(_layers, flattened, sidebar);
+
+            _datasetToggle = L.control.datasets(datasets, {toggleDataset: toggleDataset}).addTo(map);
+
+            //flatten the list of datasets in order to send requests for the sub-datasets
+            _flattened  = _prepareDatasets(datasets);
+
+            //create loader functions for the non-static
+            _loaders = _createLoaders(_flattened);
+
+            //create leaflet layers for all datasets
+            _layers = _createLayers(_flattened);
+
+            //set up a feature selector and tie it to the sidebar
+            featureSelector = FeatureSelector(_layers, _flattened, sidebar);
+
+            //add the layers to the map
             _.each(_layers, function (layer) {
                 layer.addTo(map);
             });
+
+            //register for moveend to reload non-static
             map.on('moveend', _reload);
-            _loadStatic(flattened);
+
+            //load the static datasets once
+            _loadStatic(_flattened);
+
+            //reload the non-static datasets
             _reload();
+
+            
         };
 
         return {
