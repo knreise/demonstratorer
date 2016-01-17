@@ -318,8 +318,10 @@ var KR = this.KR || {};
             if (dataset && dataset.parentId) {
                 datasetId = dataset.parentId;
             }
-            _loadCounter(datasetId, true);
-            _datasetToggle.toggleDatasetLoading(datasetId, true);
+            var numLoading = _loadCounter(datasetId, true);
+            if (numLoading === 1) {
+                _datasetToggle.toggleDatasetLoading(datasetId, true);
+            }
         };
 
         var _loadend = function (datasetId) {
@@ -637,7 +639,7 @@ var KR = this.KR || {};
             map.on('moveend', _reload);
 
             //load the static datasets once
-            _loadStatic(_flattened);
+            //_loadStatic(_flattened);
 
             //reload the non-static datasets
             _reload();

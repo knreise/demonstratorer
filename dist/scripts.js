@@ -2472,7 +2472,10 @@ var KR = this.KR || {};
                 _error.setAttribute('title', KR.parseError(error));
                 label.insertBefore(_error, label.childNodes[0]);
             } else {
-                _error.setAttribute('title', _error.getAttribute('title') + ', ' + KR.parseError(error));
+                _error.setAttribute(
+                    'title',
+                    _error.getAttribute('title') + ', ' + KR.parseError(error)
+                );
             }
         }
         */
@@ -2504,15 +2507,6 @@ var KR = this.KR || {};
 
         _createLabel();
         /*
-        layer.on('changeEnabled', _enabledChanged);
-        layer.on('dataloadstart', function () {
-            if (_error) {
-                label.removeChild(_error);
-                _error = null;
-            }
-            _redrawIcon();
-        });
-        layer.on('dataloadend', _redrawIcon);
         layer.on('error', _showError);
         */
         function getLabel() {
@@ -2548,26 +2542,8 @@ var KR = this.KR || {};
         },
 
         _addDataset: function (dataset) {
-            /*
-            var i;
-            var dataset = layer.options.dataset;
-
-            if (dataset.datasets) {
-                if (dataset.grouped) {
-                    this._addDataset(dataset, layer);
-                } else {
-                    for (i = 0; i < dataset.datasets.length; i++) {
-                        this._addDataset(dataset.datasets[i]);
-                    }
-                }
-            } else {
-                this._addDataset(dataset, layer);
-            }
-            */
-
             var label = new Label(dataset, this._toggleDataset);
             this._labels[KR.Util.stamp(dataset)] = label;
-
         },
 
         toggleDatasetEnabled: function (datasetId, enabled) {
@@ -2589,32 +2565,7 @@ var KR = this.KR || {};
             this._checkSpinner();
             this._labels[datasetId].toggleLoading(loading);
         },
-
         /*
-        _addDataset: function (dataset, layer) {
-            if (layer.isLoading) {
-                this.numLoading += 1;
-                this._checkSpinner();
-            }
-            var label = new Label(dataset, layer);
-
-            this._labels.push(label);
-
-            layer.on('dataloadstart', function () {this._loadStart(); }, this);
-            layer.on('dataloadend', function () {this._loadEnd(); }, this);
-        },
-        */
-        /*
-        _loadStart: function () {
-            this.numLoading += 1;
-            this._checkSpinner();
-        },
-
-        _loadEnd: function () {
-            this.numLoading -= 1;
-            this._checkSpinner();
-        },
-
         _hasErrors: function () {
             return !!_.find(this._labels, function (label) {
                 return label.hasError();
@@ -2638,6 +2589,7 @@ var KR = this.KR || {};
             if (!this._btnIcon) {
                 return;
             }
+            console.log("this.numLoading", this.numLoading)
             if (this.numLoading === 0) {
                 this._btnIcon.className = this._btnIcon.className.replace(
                     ' fa-spinner fa-pulse',
@@ -2715,7 +2667,11 @@ var KR = this.KR || {};
                 this._toggle();
             }, this);
 
-            this._errorIcon = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle hidden', closeBtn);
+            this._errorIcon = L.DomUtil.create(
+                'i',
+                'error-icon fa fa-exclamation-triangle hidden',
+                closeBtn
+            );
             closeBtn.appendChild(document.createTextNode(' '));
             if (this.numLoading > 0) {
                 this._btnIcon = L.DomUtil.create('i', 'fa fa-spinner fa-pulse', closeBtn);
@@ -4948,9 +4904,11 @@ var KR = this.KR || {};
             if (dataset && dataset.parentId) {
                 datasetId = dataset.parentId;
             }
-            console.log('loadstart', datasetId);
-            _loadCounter(datasetId, true);
-            _datasetToggle.toggleDatasetLoading(datasetId, true);
+            console.log('start', datasetId);
+            var numLoading = _loadCounter(datasetId, true);
+            if (numLoading === 1) {
+                _datasetToggle.toggleDatasetLoading(datasetId, true);
+            }
         };
 
         var _loadend = function (datasetId) {
@@ -4958,15 +4916,12 @@ var KR = this.KR || {};
             if (dataset && dataset.parentId) {
                 datasetId = dataset.parentId;
             }
-            console.log('loadend', datasetId);
+            console.log('end', datasetId);
             var numLoading = _loadCounter(datasetId, false);
-            console.log('numLoading=', numLoading);
             if (numLoading === 0) {
                 _datasetToggle.toggleDatasetLoading(datasetId, false);
             }
         };
-
-
 
         var _createClusterLayer = function (dataset) {
             return L.markerClusterGroup({
@@ -5043,6 +4998,7 @@ var KR = this.KR || {};
         };
 
         var _loadError = function (err, dataset) {
+            console.log(err)
             _loadend(KR.Util.stamp(dataset));
         };
 
@@ -5254,6 +5210,8 @@ var KR = this.KR || {};
             //flatten the list of datasets in order to send requests for the sub-datasets
             _flattened  = _prepareDatasets(datasets);
 
+            console.log(_flattened);
+
             //create loader functions for the non-static
             _loaders = _createLoaders(_flattened);
 
@@ -5272,7 +5230,7 @@ var KR = this.KR || {};
             map.on('moveend', _reload);
 
             //load the static datasets once
-            _loadStatic(_flattened);
+            //_loadStatic(_flattened);
 
             //reload the non-static datasets
             _reload();
