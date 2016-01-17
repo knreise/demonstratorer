@@ -282,6 +282,35 @@ KR.Config = KR.Config || {};
                 ],
                 description: 'Kunstdata fra Digitalt museum '
             },
+            'test': {
+                grouped: true,
+                name: 'TestGruppe',
+                style: {
+                    fillcolor: '#ff0000',
+                    circle: false,
+                    thumbnail: true
+                },
+                datasets: [
+                {
+                    name: 'Kulturminnesøk - brukerregistreringer',
+                    hideFromGenerator: false,
+                    provider: 'riksantikvaren',
+                    dataset: {
+                        api: 'kulturminnedata',
+                        layer: 2,
+                        getExtraData: true,
+                        extraDataLayer: 6,
+                        matchId: 'KulturminnesokID'
+                    },
+                    cluster: true,
+                    isStatic: false,
+                    style: {thumbnail: true},
+                    description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
+                    template: KR.Util.getDatasetTemplate('brukerminne')
+                }
+                ],
+                description: 'Testgruppe'
+            },
             'wikipedia': {
                 name: 'Wikipedia',
                 provider: 'Wikipedia',

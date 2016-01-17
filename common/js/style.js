@@ -485,15 +485,22 @@ KR.Style2 = {};
     };
 
     function _getConfig(dataset) {
-        var config;
-        var datasetId = KR.Util.getDatasetId(dataset);
+        var style;
+        if (dataset.grouped) {
+            if (dataset.style) {
+                return _.extend({}, DEFAULT_STYLE, style, dataset.style);
+            } else {
+                return _getConfig(dataset.datasets[0]);
+            }
+        }
 
-        var style = KR.Style.getDatasetStyle(datasetId) || {};
+        var config;
 
         if (dataset.style) {
             return _.extend({}, DEFAULT_STYLE, style, dataset.style);
         }
-
+        var style = KR.Style.getDatasetStyle(datasetId) || {};
+        var datasetId = KR.Util.getDatasetId(dataset);
         return _.extend({}, DEFAULT_STYLE, style);
     }
 

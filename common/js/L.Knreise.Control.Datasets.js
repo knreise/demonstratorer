@@ -75,7 +75,10 @@
                 _error.setAttribute('title', KR.parseError(error));
                 label.insertBefore(_error, label.childNodes[0]);
             } else {
-                _error.setAttribute('title', _error.getAttribute('title') + ', ' + KR.parseError(error));
+                _error.setAttribute(
+                    'title',
+                    _error.getAttribute('title') + ', ' + KR.parseError(error)
+                );
             }
         }
         */
@@ -107,15 +110,6 @@
 
         _createLabel();
         /*
-        layer.on('changeEnabled', _enabledChanged);
-        layer.on('dataloadstart', function () {
-            if (_error) {
-                label.removeChild(_error);
-                _error = null;
-            }
-            _redrawIcon();
-        });
-        layer.on('dataloadend', _redrawIcon);
         layer.on('error', _showError);
         */
         function getLabel() {
@@ -151,56 +145,30 @@
         },
 
         _addDataset: function (dataset) {
-            /*
-            var i;
-            var dataset = layer.options.dataset;
-
-            if (dataset.datasets) {
-                if (dataset.grouped) {
-                    this._addDataset(dataset, layer);
-                } else {
-                    for (i = 0; i < dataset.datasets.length; i++) {
-                        this._addDataset(dataset.datasets[i]);
-                    }
-                }
-            } else {
-                this._addDataset(dataset, layer);
-            }
-            */
             var label = new Label(dataset, this._toggleDataset);
-            //this._labels.push(label);
             this._labels[KR.Util.stamp(dataset)] = label;
         },
 
         toggleDatasetEnabled: function (datasetId, enabled) {
+            if (!this._labels[datasetId]) {
+                return;
+            }
             this._labels[datasetId].toggleEnabled(enabled);
         },
 
-        /*
-        _addDataset: function (dataset, layer) {
-            if (layer.isLoading) {
-                this.numLoading += 1;
-                this._checkSpinner();
+        toggleDatasetLoading: function (datasetId, loading) {
+            if (!this._labels[datasetId]) {
+                return;
             }
-            var label = new Label(dataset, layer);
-
-            this._labels.push(label);
-
-            layer.on('dataloadstart', function () {this._loadStart(); }, this);
-            layer.on('dataloadend', function () {this._loadEnd(); }, this);
+            if (loading) {
+                this.numLoading += 1;
+            } else {
+                this.numLoading -= 1;
+            }
+            this._checkSpinner();
+            this._labels[datasetId].toggleLoading(loading);
         },
-        */
         /*
-        _loadStart: function () {
-            this.numLoading += 1;
-            this._checkSpinner();
-        },
-
-        _loadEnd: function () {
-            this.numLoading -= 1;
-            this._checkSpinner();
-        },
-
         _hasErrors: function () {
             return !!_.find(this._labels, function (label) {
                 return label.hasError();
@@ -219,7 +187,7 @@
                 }
             }
         },
-
+        */
         _checkSpinner: function () {
             if (!this._btnIcon) {
                 return;
@@ -229,7 +197,7 @@
                     ' fa-spinner fa-pulse',
                     ' fa-bars'
                 );
-                this._checkError();
+               // this._checkError();
             } else {
                 if (this._errorIcon.className.indexOf('hidden') < 0) {
                     this._errorIcon.className += ' hidden';
@@ -240,7 +208,7 @@
                 );
             }
         },
-        */
+        
         onAdd: function (map) {
             this._map = map;
             this._initLayout();
@@ -301,7 +269,11 @@
                 this._toggle();
             }, this);
 
-            this._errorIcon = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle hidden', closeBtn);
+            this._errorIcon = L.DomUtil.create(
+                'i',
+                'error-icon fa fa-exclamation-triangle hidden',
+                closeBtn
+            );
             closeBtn.appendChild(document.createTextNode(' '));
             if (this.numLoading > 0) {
                 this._btnIcon = L.DomUtil.create('i', 'fa fa-spinner fa-pulse', closeBtn);

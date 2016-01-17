@@ -132,7 +132,7 @@ module.exports = function (grunt) {
                         desc: null,
                         image: null,
                         inline_js: fs.readFileSync('demonstratorer_content/config.js', 'utf8'),
-                        scriptLinks: ['dist/scripts_external.js', 'dist/scripts.min.js'],
+                        scriptLinks: ['dist/scripts_external.js', 'dist/scripts.js'],
                         cssLinks: userConfig.demoCssExternal.concat(['dist/style.css'])
                     };
 

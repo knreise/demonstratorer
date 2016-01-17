@@ -285,6 +285,54 @@ var KR = this.KR || {};
         var tiledLoader = TiledGeoJsonLoader();
         var featureSelector;
 
+        var _loadCounter = (function () {
+            var loading = {};
+            return function (datasetId, increase) {
+                if (!loading[datasetId]) {
+                    loading[datasetId] = 0;
+                }
+                if (increase) {
+                    loading[datasetId] += 1;
+                } else {
+                    loading[datasetId] -= 1;
+                }
+                return loading[datasetId];
+            };
+        }());
+
+        var _getDataset = function (datasetId) {
+            return _.find(_flattened, function (dataset) {
+                return (KR.Util.stamp(dataset) === parseInt(datasetId, 10));
+            });
+        };
+
+        var _getDatasetTopLevel = function (datasetId) {
+            return _.find(datasets, function (dataset) {
+                return (KR.Util.stamp(dataset) === parseInt(datasetId, 10));
+            });
+        };
+
+
+        var _loadstart = function (datasetId) {
+            var dataset = _getDataset(datasetId);
+            if (dataset && dataset.parentId) {
+                datasetId = dataset.parentId;
+            }
+            _loadCounter(datasetId, true);
+            _datasetToggle.toggleDatasetLoading(datasetId, true);
+        };
+
+        var _loadend = function (datasetId) {
+            var dataset = _getDataset(datasetId);
+            if (dataset && dataset.parentId) {
+                datasetId = dataset.parentId;
+            }
+            var numLoading = _loadCounter(datasetId, false);
+            if (numLoading === 0) {
+                _datasetToggle.toggleDatasetLoading(datasetId, false);
+            }
+        };
+
         var _createClusterLayer = function (dataset) {
             return L.markerClusterGroup({
                 iconCreateFunction: function (cluster) {
@@ -323,12 +371,6 @@ var KR = this.KR || {};
             }, {});
         };
 
-        var _getDataset = function (datasetId) {
-            return _.find(_flattened, function (dataset) {
-                return (KR.Util.stamp(dataset) === parseInt(datasetId, 10));
-            });
-        };
-
         var _datasetLoaded = function (dataset, data) {
             var layerGroup = _layers[KR.Util.stamp(dataset)];
             if (layerGroup) {
@@ -361,11 +403,12 @@ var KR = this.KR || {};
                         layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
                         layerGroup.addLayer(layer);
                     });
+                _loadend(KR.Util.stamp(dataset));
             }
         };
 
-        var _loadError = function (err) {
-
+        var _loadError = function (err, dataset) {
+            _loadend(KR.Util.stamp(dataset));
         };
 
 
@@ -390,7 +433,9 @@ var KR = this.KR || {};
                         tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
                         callback(dataset, data);
                     },
-                    error
+                    function (e) {
+                        error(e, dataset);
+                    }
                 );
             } else {
                 api.getBbox(
@@ -400,7 +445,9 @@ var KR = this.KR || {};
                         tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
                         callback(dataset, data);
                     },
-                    error
+                    function (e) {
+                        error(e, dataset);
+                    }
                 );
             }
         };
@@ -453,6 +500,7 @@ var KR = this.KR || {};
 
         var _getTileLoader = function (dataset) {
             return function (bounds, success, error) {
+                _loadstart(KR.Util.stamp(dataset));
                 _loadTiledDataset(dataset, bounds, success, error);
             };
         };
@@ -467,7 +515,11 @@ var KR = this.KR || {};
             return _.chain(datasets)
                 .map(function (dataset) {
                     if (dataset.grouped) {
-                        return dataset.datasets;
+                        var parentId = KR.Util.stamp(dataset);
+                        return _.map(dataset.datasets, function (ds) {
+                            ds.parentId = parentId;
+                            return ds;
+                        });
                     }
                     return dataset;
                 })
@@ -528,8 +580,25 @@ var KR = this.KR || {};
             _layers[datasetId].clearLayers();
         };
 
+
+        var _toggleDatasetGroup = function (datasets, callback) {
+
+            var finished = _.after(datasets.length, function (visible) {
+                callback(visible);
+            });
+            _.each(datasets, function (dataset) {
+                toggleDataset(KR.Util.stamp(dataset), finished);
+            });
+        };
+
         var toggleDataset = function (datasetId, callback) {
-            var dataset = _getDataset(datasetId);
+
+            var dataset = _getDatasetTopLevel(datasetId);
+            if (dataset && dataset.grouped) {
+                _toggleDatasetGroup(dataset.datasets, callback);
+                return;
+            }
+            dataset = _getDataset(datasetId);
             dataset.visible = !dataset.visible;
             if (dataset.visible) {
                 _showDataset(datasetId);
@@ -541,9 +610,12 @@ var KR = this.KR || {};
         };
 
         var init = function () {
+            _.each(datasets, KR.Util.stamp);
 
-            _datasetToggle = L.control.datasets(datasets, {toggleDataset: toggleDataset}).addTo(map);
-
+            _datasetToggle = L.control.datasets(
+                datasets,
+                {toggleDataset: toggleDataset}
+            ).addTo(map);
             //flatten the list of datasets in order to send requests for the sub-datasets
             _flattened  = _prepareDatasets(datasets);
 
@@ -570,7 +642,6 @@ var KR = this.KR || {};
             //reload the non-static datasets
             _reload();
 
-            
         };
 
         return {
