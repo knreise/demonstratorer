@@ -426,7 +426,6 @@ var KR = this.KR || {};
 
 
         var _loadDataset = function (dataset, tile, doRequest, callback, error) {
-
             var cached = tiledLoader.getTileData(KR.Util.stamp(dataset), tile.x, tile.y);
             if (cached) {
                 callback(dataset, cached);
@@ -438,18 +437,20 @@ var KR = this.KR || {};
             }
             if (dataset.bboxFunc) {
                 //TODO: check what kommune this returns, possibly reduce to fewer requests
+                /*
                 dataset.bboxFunc(
                     api,
                     dataset.dataset,
                     tile.bounds.toBBoxString(),
                     function (data) {
-                        tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
+                        //tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
                         callback(dataset, data);
                     },
                     function (e) {
                         error(e, dataset);
                     }
                 );
+                */
             } else {
                 api.getBbox(
                     dataset.dataset,
@@ -520,6 +521,25 @@ var KR = this.KR || {};
             };
         };
 
+        var _getBboxFuncLoader = function (dataset) {
+            return function (bounds, success, error) {
+                _loadstart(KR.Util.stamp(dataset));
+                _loadTiledDataset(dataset, bounds, success, error, function () {
+                    dataset.bboxFunc(
+                        api,
+                        dataset.dataset,
+                        bounds.toBBoxString(),
+                        function (data) {
+                            success(dataset, data);
+                        },
+                        function (e) {
+                            error(e, dataset);
+                        }
+                    );
+                });
+            };
+        };
+
         /*
             Prepare datasets for usage: 
                 - flatten them
@@ -560,7 +580,12 @@ var KR = this.KR || {};
                     return !dataset.isStatic;
                 })
                 .reduce(function (acc, dataset) {
-                    acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
+                    if (dataset.bboxFunc) {
+                        acc[KR.Util.stamp(dataset)] = _getBboxFuncLoader(dataset);
+                    } else {
+                        acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
+                    }
+                    
                     return acc;
                 }, {})
                 .value();

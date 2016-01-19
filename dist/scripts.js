@@ -418,6 +418,24 @@ KR.Util = KR.Util || {};
         });
     };
 
+    ns.getSparqlBboxFunction = function () {
+        var cache = {};
+        return function (api, dataset, bounds, dataLoaded, loadError) {
+            KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                kommune = fixKommuneNr(kommune);
+                dataset.kommune = fixKommuneNr(kommune);
+                if (cache[kommune]) {
+                    dataLoaded(cache[kommune]);
+                    return;
+                }
+                api.getData(dataset, function (data) {
+                    cache[kommune] = data;
+                    dataLoaded(data);
+                }, loadError);
+            });
+        };
+    };
+
 
     /*
         Mearure the distance from each feature in a featurecollection to a given
@@ -4119,7 +4137,7 @@ KR.Config = KR.Config || {};
                 getFeatureData: kulturminneFunctions.getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
-                isStatic: false,
+                isStatic: true,
                 description: 'Data fra Riksantikvarens kulturminnesøk',
                 unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
@@ -4350,12 +4368,12 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: KR.Util.sparqlBbox
+                bboxFunc: KR.Util.getSparqlBboxFunction()
             };
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
             _.extend(list.arkeologi.datasets[1], raParams);
-            //_.extend(list.historie.datasets[0], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;
@@ -5011,7 +5029,6 @@ var KR = this.KR || {};
 
 
         var _loadDataset = function (dataset, tile, doRequest, callback, error) {
-
             var cached = tiledLoader.getTileData(KR.Util.stamp(dataset), tile.x, tile.y);
             if (cached) {
                 callback(dataset, cached);
@@ -5023,18 +5040,20 @@ var KR = this.KR || {};
             }
             if (dataset.bboxFunc) {
                 //TODO: check what kommune this returns, possibly reduce to fewer requests
+                /*
                 dataset.bboxFunc(
                     api,
                     dataset.dataset,
                     tile.bounds.toBBoxString(),
                     function (data) {
-                        tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
+                        //tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
                         callback(dataset, data);
                     },
                     function (e) {
                         error(e, dataset);
                     }
                 );
+                */
             } else {
                 api.getBbox(
                     dataset.dataset,
@@ -5105,6 +5124,25 @@ var KR = this.KR || {};
             };
         };
 
+        var _getBboxFuncLoader = function (dataset) {
+            return function (bounds, success, error) {
+                _loadstart(KR.Util.stamp(dataset));
+                _loadTiledDataset(dataset, bounds, success, error, function () {
+                    dataset.bboxFunc(
+                        api,
+                        dataset.dataset,
+                        bounds.toBBoxString(),
+                        function (data) {
+                            success(dataset, data);
+                        },
+                        function (e) {
+                            error(e, dataset);
+                        }
+                    );
+                });
+            };
+        };
+
         /*
             Prepare datasets for usage: 
                 - flatten them
@@ -5145,7 +5183,12 @@ var KR = this.KR || {};
                     return !dataset.isStatic;
                 })
                 .reduce(function (acc, dataset) {
-                    acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
+                    if (dataset.bboxFunc) {
+                        acc[KR.Util.stamp(dataset)] = _getBboxFuncLoader(dataset);
+                    } else {
+                        acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
+                    }
+                    
                     return acc;
                 }, {})
                 .value();
@@ -5566,7 +5609,6 @@ var KR = this.KR || {};
         }
 
         function showDatasets(bounds, datasets, filter, lineLayer, initPos) {
-            console.log(filter, bounds);
             if (options.allstatic) {
                 datasets = _setAllStatic(datasets);
             }

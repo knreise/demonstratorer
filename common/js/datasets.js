@@ -361,7 +361,7 @@ KR.Config = KR.Config || {};
                 getFeatureData: kulturminneFunctions.getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
-                isStatic: false,
+                isStatic: true,
                 description: 'Data fra Riksantikvarens kulturminnesøk',
                 unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
@@ -592,12 +592,12 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: KR.Util.sparqlBbox
+                bboxFunc: KR.Util.getSparqlBboxFunction()
             };
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
             _.extend(list.arkeologi.datasets[1], raParams);
-            //_.extend(list.historie.datasets[0], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;

@@ -367,6 +367,24 @@ KR.Util = KR.Util || {};
         });
     };
 
+    ns.getSparqlBboxFunction = function () {
+        var cache = {};
+        return function (api, dataset, bounds, dataLoaded, loadError) {
+            KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                kommune = fixKommuneNr(kommune);
+                dataset.kommune = fixKommuneNr(kommune);
+                if (cache[kommune]) {
+                    dataLoaded(cache[kommune]);
+                    return;
+                }
+                api.getData(dataset, function (data) {
+                    cache[kommune] = data;
+                    dataLoaded(data);
+                }, loadError);
+            });
+        };
+    };
+
 
     /*
         Mearure the distance from each feature in a featurecollection to a given

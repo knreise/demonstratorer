@@ -418,6 +418,24 @@ KR.Util = KR.Util || {};
         });
     };
 
+    ns.getSparqlBboxFunction = function () {
+        var cache = {};
+        return function (api, dataset, bounds, dataLoaded, loadError) {
+            KR.Util.mostlyCoveringMunicipality(api, bounds, function (kommune) {
+                kommune = fixKommuneNr(kommune);
+                dataset.kommune = fixKommuneNr(kommune);
+                if (cache[kommune]) {
+                    dataLoaded(cache[kommune]);
+                    return;
+                }
+                api.getData(dataset, function (data) {
+                    cache[kommune] = data;
+                    dataLoaded(data);
+                }, loadError);
+            });
+        };
+    };
+
 
     /*
         Mearure the distance from each feature in a featurecollection to a given
@@ -3367,7 +3385,7 @@ KR.Config = KR.Config || {};
                 getFeatureData: kulturminneFunctions.getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
-                isStatic: false,
+                isStatic: true,
                 description: 'Data fra Riksantikvarens kulturminnesøk',
                 unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
@@ -3598,12 +3616,12 @@ KR.Config = KR.Config || {};
                 bbox: true,
                 minZoom: 12,
                 isStatic: false,
-                bboxFunc: KR.Util.sparqlBbox
+                bboxFunc: KR.Util.getSparqlBboxFunction()
             };
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
             _.extend(list.arkeologi.datasets[1], raParams);
-            //_.extend(list.historie.datasets[0], raParams);
+            _.extend(list.historie.datasets[0], raParams);
         }
 
         return list;
