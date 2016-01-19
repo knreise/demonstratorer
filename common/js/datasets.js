@@ -204,7 +204,7 @@ KR.Config = KR.Config || {};
                     thumbnail: true
                 },
                 datasets: [
-                    {
+                    /*{
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -248,7 +248,7 @@ KR.Config = KR.Config || {};
                         isStatic: false,
                         bbox: false,
                         template: KR.Util.getDatasetTemplate('foto_sf')
-                    },
+                    },*/
                     {
                         dataset: {
                             api: 'norvegiana',
@@ -597,7 +597,7 @@ KR.Config = KR.Config || {};
             _.extend(list.riksantikvaren, raParams);
             _.extend(list.ark_hist.datasets[2], raParams);
             _.extend(list.arkeologi.datasets[1], raParams);
-            _.extend(list.historie.datasets[0], raParams);
+            //_.extend(list.historie.datasets[0], raParams);
         }
 
         return list;

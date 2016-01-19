@@ -3,7 +3,7 @@ var KR = this.KR || {};
     'use strict';
 
 
-    var TiledGeoJsonLoader = function () {
+    var TiledGeoJsonLoader = function (maxBounds) {
 
         //the tile functions are lifted from 
         //http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Implementations
@@ -13,6 +13,8 @@ var KR = this.KR || {};
         var MAX_BOUNDS = L.latLngBounds.fromBBoxString(
             '2.4609375,56.9449741808516,33.3984375,71.85622888185527'
         );
+
+        maxBounds = maxBounds || MAX_BOUNDS;
 
         function lon2tile(lon, zoom) { //x
             return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom)));
@@ -57,7 +59,7 @@ var KR = this.KR || {};
                 })
                 .flatten()
                 .filter(function (tile) {
-                    return MAX_BOUNDS.contains(tile.bounds);
+                    return maxBounds.contains(tile.bounds) || maxBounds.intersects(tile.bounds);
                 })
                 .value();
         };
@@ -104,8 +106,13 @@ var KR = this.KR || {};
         };
 
         var getTiledLoader = function (singleTileLoader) {
-            return function (ds, bounds, callback, error) {
+            return function (ds, bounds, callback, error, loadstart) {
                 var tiles = getTiles(bounds, ds.minZoom || 7);
+
+                if (tiles.length === 0) {
+                    return;
+                }
+                loadstart();
                 var features = [];
                 var numUncahed = _getNumUnched(tiles, KR.Util.stamp(ds));
                 var doRequest = numUncahed <= 8;
@@ -268,7 +275,7 @@ var KR = this.KR || {};
     };
 
 
-    ns.newDatasetLoader = function (api, map, datasets, sidebar) {
+    ns.newDatasetLoader = function (api, map, datasets, sidebar, bounds, filter) {
 
         var DEFAULTS = {
             isStatic: true,
@@ -282,7 +289,7 @@ var KR = this.KR || {};
         var _flattened = [];
 
         var _datasetToggle;
-        var tiledLoader = TiledGeoJsonLoader();
+        var tiledLoader = TiledGeoJsonLoader(bounds);
         var featureSelector;
 
         var _loadCounter = (function () {
@@ -377,6 +384,10 @@ var KR = this.KR || {};
             var layerGroup = _layers[KR.Util.stamp(dataset)];
             if (layerGroup) {
 
+                if (filter) {
+                    data = filter(data);
+                }
+
                 //get the ids of the new features after load
                 var newIds = _.pluck(data.features, 'id');
 
@@ -449,7 +460,8 @@ var KR = this.KR || {};
                     },
                     function (e) {
                         error(e, dataset);
-                    }
+                    },
+                    {checkCancel: false}
                 );
             }
         };
@@ -502,8 +514,9 @@ var KR = this.KR || {};
 
         var _getTileLoader = function (dataset) {
             return function (bounds, success, error) {
-                _loadstart(KR.Util.stamp(dataset));
-                _loadTiledDataset(dataset, bounds, success, error);
+                _loadTiledDataset(dataset, bounds, success, error, function () {
+                    _loadstart(KR.Util.stamp(dataset));
+                });
             };
         };
 
@@ -559,6 +572,7 @@ var KR = this.KR || {};
                     return dataset.isStatic;
                 })
                 .each(function (dataset) {
+                    _loadstart(KR.Util.stamp(dataset));
                     api.getData(
                         dataset.dataset,
                         function (data) {
@@ -570,18 +584,32 @@ var KR = this.KR || {};
         };
 
         var _showDataset = function (datasetId) {
-            var bounds = map.getBounds();
-            var zoom = map.getZoom();
-            if (_shouldLoad(datasetId, zoom, bounds)) {
-                var loader = _loaders[datasetId];
-                loader(bounds, _datasetLoaded, _loadError);
+            var dataset = _getDataset(datasetId);
+            if (dataset.isStatic) {
+                map.addLayer(_layers[datasetId]);
+            } else {
+                var bounds = map.getBounds();
+                var zoom = map.getZoom();
+                if (_shouldLoad(datasetId, zoom, bounds)) {
+                    var loader = _loaders[datasetId];
+                    if (loader) {
+                        loader(bounds, _datasetLoaded, _loadError);
+                    } else {
+                        console.error('no loader found for ', datasetId);
+                    }
+                }
             }
         };
 
         var _hideDataset = function (datasetId) {
-            _layers[datasetId].clearLayers();
+            var dataset = _getDataset(datasetId);
+            if (dataset.isStatic) {
+                map.removeLayer(_layers[datasetId]);
+            } else {
+                _layers[datasetId].clearLayers();
+            }
+            
         };
-
 
         var _toggleDatasetGroup = function (datasets, callback) {
 
@@ -639,7 +667,7 @@ var KR = this.KR || {};
             map.on('moveend', _reload);
 
             //load the static datasets once
-            //_loadStatic(_flattened);
+            _loadStatic(_flattened);
 
             //reload the non-static datasets
             _reload();

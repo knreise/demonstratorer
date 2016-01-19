@@ -305,7 +305,7 @@ var KR = this.KR || {};
             var locateBtn = L.Knreise.LocateButton(null, null, {bounds: bounds});
             locateBtn.addTo(map);
 
-            var dl = ns.newDatasetLoader(api, map, datasets, sidebar);
+            var dl = ns.newDatasetLoader(api, map, datasets, sidebar, bounds, filter);
 
             var initMapPos = function (initPos) {
                 unFreezeMap(map);
