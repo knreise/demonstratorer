@@ -27,7 +27,7 @@
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
-        },
+        }/*,
         {
             provider: 'kulturminnedata',
             name: 'Fangstgroper',
@@ -68,7 +68,7 @@
                 minSize: 20
             },
             cluster: false
-        },
+        }*/,
         {
             grouped: true,
             name: 'Historie',

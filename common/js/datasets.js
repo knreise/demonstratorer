@@ -144,7 +144,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
                     api.getItem(
-                        {api: 'jernbanemuseet', id:  feature.properties.id},
+                        {api: 'jernbanemuseet', id: feature.properties.id},
                         callback
                     );
                 },
@@ -201,7 +201,7 @@ KR.Config = KR.Config || {};
                     thumbnail: true
                 },
                 datasets: [
-                    /*{
+                    {
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -245,7 +245,7 @@ KR.Config = KR.Config || {};
                         isStatic: false,
                         bbox: false,
                         template: KR.Util.getDatasetTemplate('foto_sf')
-                    },*/
+                    },
                     {
                         dataset: {
                             api: 'norvegiana',
@@ -278,35 +278,6 @@ KR.Config = KR.Config || {};
                     }
                 ],
                 description: 'Kunstdata fra Digitalt museum '
-            },
-            'test': {
-                grouped: true,
-                name: 'TestGruppe',
-                style: {
-                    fillcolor: '#ff0000',
-                    circle: false,
-                    thumbnail: true
-                },
-                datasets: [
-                {
-                    name: 'Kulturminnesøk - brukerregistreringer',
-                    hideFromGenerator: false,
-                    provider: 'riksantikvaren',
-                    dataset: {
-                        api: 'kulturminnedata',
-                        layer: 2,
-                        getExtraData: true,
-                        extraDataLayer: 6,
-                        matchId: 'KulturminnesokID'
-                    },
-                    cluster: true,
-                    isStatic: false,
-                    style: {thumbnail: true},
-                    description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
-                    template: KR.Util.getDatasetTemplate('brukerminne')
-                }
-                ],
-                description: 'Testgruppe'
             },
             'wikipedia': {
                 name: 'Wikipedia',
@@ -483,7 +454,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: true,
                 style: {thumbnail: true},
-                description: 'Bilder fra Kulturminnesøks Flickr-gruppe',
+                description: 'Bilder fra Kulturminnesøks Flickr-gruppe'
             },
             'riksarkivet': {
                 name: 'Riksarkivet',
@@ -497,7 +468,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra Riksarkivets Flickr-konto',
+                description: 'Bilder fra Riksarkivets Flickr-konto'
             },
             'nasjonalbiblioteket': {
                 name: 'Nasjonalbiblioteket',
@@ -511,7 +482,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra Nasjonalbibliotekets Flickr-konto',
+                description: 'Bilder fra Nasjonalbibliotekets Flickr-konto'
             },
             'oslobyarkiv': {
                 name: 'Oslo Byarkiv',
@@ -525,7 +496,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra Oslo byarkiv sin Flickr-konto',
+                description: 'Bilder fra Oslo byarkiv sin Flickr-konto'
             },
             'nasjonalmuseet': {
                 name: 'Nasjonalmuseet',
@@ -539,7 +510,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra Nasjonalmuseet sin Flickr-konto',
+                description: 'Bilder fra Nasjonalmuseet sin Flickr-konto'
             },
             'nve': {
                 name: 'NVE',
@@ -554,7 +525,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra NVE Flickr-konto',
+                description: 'Bilder fra NVE Flickr-konto'
             },
             'vestfoldmuseene': {
                 name: 'Vestfoldmuseene',
@@ -569,7 +540,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra Vestfoldmuseene sin Flickr-konto',
+                description: 'Bilder fra Vestfoldmuseene sin Flickr-konto'
             },
             'perspektivet': {
                 name: 'Perspektivet Museum',
@@ -584,7 +555,7 @@ KR.Config = KR.Config || {};
                 template: KR.Util.getDatasetTemplate('flickr'),
                 isStatic: false,
                 style: {thumbnail: true},
-                description: 'Bilder fra Perspektivet Museum sin Flickr-konto',
+                description: 'Bilder fra Perspektivet Museum sin Flickr-konto'
             }
         };
 
