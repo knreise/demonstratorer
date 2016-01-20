@@ -685,6 +685,9 @@ var KR = this.KR || {};
                 _hideDataset(datasetId);
             }
             callback(dataset.visible);
+            if (dataset.linkedLayer) {
+                dataset.linkedLayer.toggleVisible(dataset.visible);
+            }
         };
 
         var featureClicked = function (feature, dataset) {

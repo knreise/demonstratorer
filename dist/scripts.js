@@ -3812,6 +3812,7 @@ KR.Config = KR.Config || {};
 
         var raLinkedLayer = function (api) {
             var _cache = {},
+                _visible = true,
                 _map,
                 _parentLayer,
                 _parentDataset,
@@ -3908,7 +3909,7 @@ KR.Config = KR.Config || {};
                 if (!_minZoom) {
                     return true;
                 }
-                return _map.getZoom() >= _minZoom;
+                return _map.getZoom() >= _minZoom && _visible;
             };
 
             var dataChanged = function () {
@@ -3940,6 +3941,11 @@ KR.Config = KR.Config || {};
                 });
             };
 
+            var toggleVisible = function (visible) {
+                _visible = visible;
+                dataChanged();
+            };
+
             var init = function (map, layer, dataset, clicked) {
                 _map = map;
                 _parentLayer = layer;
@@ -3959,7 +3965,8 @@ KR.Config = KR.Config || {};
                 init: init,
                 dataChanged: dataChanged,
                 featureSelected: featureSelected,
-                findFeature: findFeature
+                findFeature: findFeature,
+                toggleVisible: toggleVisible
             };
         };
 
@@ -5460,6 +5467,9 @@ var KR = this.KR || {};
                 _hideDataset(datasetId);
             }
             callback(dataset.visible);
+            if (dataset.linkedLayer) {
+                dataset.linkedLayer.toggleVisible(dataset.visible);
+            }
         };
 
         var featureClicked = function (feature, dataset) {
