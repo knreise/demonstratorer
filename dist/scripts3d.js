@@ -1252,6 +1252,21 @@ KR.Style2 = {};
         return createAwesomeMarker(fillcolor);
     };
 
+    ns.getPathStyle = function (dataset, feature, clickable) {
+        clickable = clickable || false;
+        var config = _getConfig(dataset);
+        var fill = getFillColor(config, feature);
+        var border = getBorderColor(config, feature);
+        return {
+            weight: 1,
+            color: border,
+            fillColor: fill,
+            clickable: clickable,
+            opacity: 0.8,
+            fillOpacity: 0.4
+        };
+    };
+
     ns.getClusterIcon = function (dataset, cluster, selected) {
 
         var features = cluster.getAllChildMarkers();
@@ -2084,6 +2099,9 @@ var KR = this.KR || {};
 
 
             if (options.footerTemplate && feature.properties.link) {
+                if (!feature.properties.provider) {
+                    feature.properties.provider = dataset.provider;
+                }
                 content += options.footerTemplate(feature.properties);
             }
 
@@ -3040,8 +3058,158 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
+        var raLinkedLayer = function (api) {
+            var _cache = {},
+                _map,
+                _parentLayer,
+                _parentDataset,
+                _layer,
+                _minZoom,
+                _clicked;
 
+            var deselectAll = function () {
+                _.each(_layer.getLayers(), function (layer) {
+                    var style = KR.Style2.getPathStyle(_parentDataset, layer.feature, true);
+                    layer.setStyle(style);
+                });
+            };
 
+            var featureSelected = function (selectedFeature) {
+                deselectAll();
+                var layer = _.find(_layer.getLayers(), function (layer) {
+                    return layer.feature.id === selectedFeature.properties.id;
+                });
+                if (layer) {
+                    layer.setStyle({
+                        weight: 1,
+                        color: '#436978',
+                        fillColor: '#72B026',
+                        clickable: true,
+                        opacity: 0.8,
+                        fillOpacity: 0.4
+                    });
+                }
+            };
+
+            var _layerClicked = function (feature) {
+                _clicked(feature, _parentDataset);
+            };
+
+            var _layerCreated = function (layer) {
+                layer.on('click', function () {
+                    _layerClicked(layer.feature);
+                });
+            };
+
+            var _showData = function (features) {
+                features = _.map(features, function (feature) {
+                    feature.id = feature.properties.lok;
+                    return feature;
+                });
+
+                KR.updateLayerFeatures(_layer, features, function (feature) {
+                    return KR.Style2.getPathStyle(_parentDataset, feature, true);
+                }, _layerCreated);
+
+            };
+
+            var _getFromCache = function (ids) {
+                return _.chain(ids)
+                    .map(function (id) {
+                        return _cache[id];
+                    })
+                    .compact()
+                    .value();
+            };
+
+            var _getData = function (ids) {
+
+                var cached = _.filter(ids, function (id) {
+                    return _cache[id];
+                });
+                var uncached = _.filter(ids, function (id) {
+                    return !_.has(_cache, id);
+                });
+
+                var q = {
+                    api: 'kulturminnedataSparql',
+                    type: 'lokalitetpoly',
+                    lokalitet: uncached
+                };
+                if (uncached.length) {
+                    api.getData(q, function (data) {
+
+                        var newCache = _.reduce(data.features, function (acc, feature) {
+                            acc[feature.properties.lok] = feature;
+                            return acc;
+                        }, {});
+
+                        _.extend(_cache, newCache);
+                        _showData(_getFromCache(ids));
+                    });
+                } else {
+                    _showData(_getFromCache(ids));
+                }
+            };
+
+            var shouldShow = function () {
+                if (!_minZoom) {
+                    return true;
+                }
+                return _map.getZoom() >= _minZoom;
+            };
+
+            var dataChanged = function () {
+                var bbox = _map.getBounds();
+                if (!shouldShow()) {
+                    if (_map.hasLayer(_layer)) {
+                        _map.removeLayer(_layer);
+                    }
+                    return;
+                }
+                if (!_map.hasLayer(_layer)) {
+                    _map.addLayer(_layer);
+                }
+
+                var ids = _.chain(_parentLayer.getLayers())
+                    .filter(function (layer) {
+                        return bbox.contains(layer.getLatLng());
+                    })
+                    .map(function (layer) {
+                        return layer.feature.properties.id;
+                    })
+                    .value();
+                _getData(ids);
+            };
+
+            var findFeature = function (feature, layers) {
+                return _.find(layers, function (layer) {
+                    return layer.feature.properties.id === feature.id;
+                });
+            };
+
+            var init = function (map, layer, dataset, clicked) {
+                _map = map;
+                _parentLayer = layer;
+                _parentDataset = dataset;
+                if (_parentDataset.linkedLayerOptions && _parentDataset.linkedLayerOptions.minZoom) {
+                    _minZoom = _parentDataset.linkedLayerOptions.minZoom;
+                }
+                _layer = new L.featureGroup([]).addTo(_map);
+                _clicked = clicked;
+                if (_parentDataset.isStatic) {
+                    map.on('moveend', dataChanged);
+                }
+            };
+
+            return {
+                deselectAll: deselectAll,
+                init: init,
+                dataChanged: dataChanged,
+                featureSelected: featureSelected,
+                findFeature: findFeature
+            };
+        };
 
         var list = {
             'difo': {
@@ -3387,8 +3555,12 @@ KR.Config = KR.Config || {};
                 bbox: false,
                 isStatic: true,
                 description: 'Data fra Riksantikvarens kulturminnesøk',
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly,
+                linkedLayer: raLinkedLayer(api),
+                linkedLayerOptions: {
+                    minZoom: 15
+                }
+                //unclusterCount: 20,
+                //init: kulturminneFunctions.initKulturminnePoly,
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',

@@ -1252,6 +1252,21 @@ KR.Style2 = {};
         return createAwesomeMarker(fillcolor);
     };
 
+    ns.getPathStyle = function (dataset, feature, clickable) {
+        clickable = clickable || false;
+        var config = _getConfig(dataset);
+        var fill = getFillColor(config, feature);
+        var border = getBorderColor(config, feature);
+        return {
+            weight: 1,
+            color: border,
+            fillColor: fill,
+            clickable: clickable,
+            opacity: 0.8,
+            fillOpacity: 0.4
+        };
+    };
+
     ns.getClusterIcon = function (dataset, cluster, selected) {
 
         var features = cluster.getAllChildMarkers();
@@ -2316,6 +2331,9 @@ var KR = this.KR || {};
 
 
             if (options.footerTemplate && feature.properties.link) {
+                if (!feature.properties.provider) {
+                    feature.properties.provider = dataset.provider;
+                }
                 content += options.footerTemplate(feature.properties);
             }
 
@@ -3792,8 +3810,158 @@ KR.Config = KR.Config || {};
             komm = '0' + komm;
         }
 
+        var raLinkedLayer = function (api) {
+            var _cache = {},
+                _map,
+                _parentLayer,
+                _parentDataset,
+                _layer,
+                _minZoom,
+                _clicked;
 
+            var deselectAll = function () {
+                _.each(_layer.getLayers(), function (layer) {
+                    var style = KR.Style2.getPathStyle(_parentDataset, layer.feature, true);
+                    layer.setStyle(style);
+                });
+            };
 
+            var featureSelected = function (selectedFeature) {
+                deselectAll();
+                var layer = _.find(_layer.getLayers(), function (layer) {
+                    return layer.feature.id === selectedFeature.properties.id;
+                });
+                if (layer) {
+                    layer.setStyle({
+                        weight: 1,
+                        color: '#436978',
+                        fillColor: '#72B026',
+                        clickable: true,
+                        opacity: 0.8,
+                        fillOpacity: 0.4
+                    });
+                }
+            };
+
+            var _layerClicked = function (feature) {
+                _clicked(feature, _parentDataset);
+            };
+
+            var _layerCreated = function (layer) {
+                layer.on('click', function () {
+                    _layerClicked(layer.feature);
+                });
+            };
+
+            var _showData = function (features) {
+                features = _.map(features, function (feature) {
+                    feature.id = feature.properties.lok;
+                    return feature;
+                });
+
+                KR.updateLayerFeatures(_layer, features, function (feature) {
+                    return KR.Style2.getPathStyle(_parentDataset, feature, true);
+                }, _layerCreated);
+
+            };
+
+            var _getFromCache = function (ids) {
+                return _.chain(ids)
+                    .map(function (id) {
+                        return _cache[id];
+                    })
+                    .compact()
+                    .value();
+            };
+
+            var _getData = function (ids) {
+
+                var cached = _.filter(ids, function (id) {
+                    return _cache[id];
+                });
+                var uncached = _.filter(ids, function (id) {
+                    return !_.has(_cache, id);
+                });
+
+                var q = {
+                    api: 'kulturminnedataSparql',
+                    type: 'lokalitetpoly',
+                    lokalitet: uncached
+                };
+                if (uncached.length) {
+                    api.getData(q, function (data) {
+
+                        var newCache = _.reduce(data.features, function (acc, feature) {
+                            acc[feature.properties.lok] = feature;
+                            return acc;
+                        }, {});
+
+                        _.extend(_cache, newCache);
+                        _showData(_getFromCache(ids));
+                    });
+                } else {
+                    _showData(_getFromCache(ids));
+                }
+            };
+
+            var shouldShow = function () {
+                if (!_minZoom) {
+                    return true;
+                }
+                return _map.getZoom() >= _minZoom;
+            };
+
+            var dataChanged = function () {
+                var bbox = _map.getBounds();
+                if (!shouldShow()) {
+                    if (_map.hasLayer(_layer)) {
+                        _map.removeLayer(_layer);
+                    }
+                    return;
+                }
+                if (!_map.hasLayer(_layer)) {
+                    _map.addLayer(_layer);
+                }
+
+                var ids = _.chain(_parentLayer.getLayers())
+                    .filter(function (layer) {
+                        return bbox.contains(layer.getLatLng());
+                    })
+                    .map(function (layer) {
+                        return layer.feature.properties.id;
+                    })
+                    .value();
+                _getData(ids);
+            };
+
+            var findFeature = function (feature, layers) {
+                return _.find(layers, function (layer) {
+                    return layer.feature.properties.id === feature.id;
+                });
+            };
+
+            var init = function (map, layer, dataset, clicked) {
+                _map = map;
+                _parentLayer = layer;
+                _parentDataset = dataset;
+                if (_parentDataset.linkedLayerOptions && _parentDataset.linkedLayerOptions.minZoom) {
+                    _minZoom = _parentDataset.linkedLayerOptions.minZoom;
+                }
+                _layer = new L.featureGroup([]).addTo(_map);
+                _clicked = clicked;
+                if (_parentDataset.isStatic) {
+                    map.on('moveend', dataChanged);
+                }
+            };
+
+            return {
+                deselectAll: deselectAll,
+                init: init,
+                dataChanged: dataChanged,
+                featureSelected: featureSelected,
+                findFeature: findFeature
+            };
+        };
 
         var list = {
             'difo': {
@@ -4139,8 +4307,12 @@ KR.Config = KR.Config || {};
                 bbox: false,
                 isStatic: true,
                 description: 'Data fra Riksantikvarens kulturminnesøk',
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly,
+                linkedLayer: raLinkedLayer(api),
+                linkedLayerOptions: {
+                    minZoom: 15
+                }
+                //unclusterCount: 20,
+                //init: kulturminneFunctions.initKulturminnePoly,
             },
             'brukerminner': {
                 name: 'Kulturminnesøk - brukerregistreringer',
@@ -4796,11 +4968,14 @@ var KR = this.KR || {};
 
         var _sidebarHandler = SidebarHandler(sidebar);
 
-        var _selectFeature = function (dataset, layer) {
+        var selectFeature = function (dataset, layer) {
             _sidebarHandler.showLayer(layer, dataset);
             if (layer.setIcon) {
                 layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, true));
                 layer.setZIndexOffset(1000);
+            }
+            if (dataset.linkedLayer) {
+                dataset.linkedLayer.featureSelected(layer.feature);
             }
         };
 
@@ -4841,6 +5016,10 @@ var KR = this.KR || {};
 
         var deselectAll = function () {
             _.each(datasets, function (dataset) {
+
+                if (dataset.linkedLayer) {
+                    dataset.linkedLayer.deselectAll();
+                }
                 var datasetId = KR.Util.stamp(dataset);
                 var layerGroup = layerGroups[datasetId];
                 if (layerGroup) {
@@ -4858,7 +5037,7 @@ var KR = this.KR || {};
             deselectAll();
             var datasetId = KR.Util.stamp(dataset);
             var layerGroup = layerGroups[datasetId];
-            _selectFeature(dataset, layer);
+            selectFeature(dataset, layer);
         };
 
         var clusterClicked = function (dataset, layer) {
@@ -4873,7 +5052,8 @@ var KR = this.KR || {};
         return {
             featureClicked: featureClicked,
             clusterClicked: clusterClicked,
-            deselectAll: deselectAll
+            deselectAll: deselectAll,
+            selectFeature: selectFeature
         };
     };
 
@@ -4983,6 +5163,43 @@ var KR = this.KR || {};
             }, {});
         };
 
+        ns.updateLayerFeatures = function (layerGroup, features, styleFunc, layerCreated) {
+            //get the ids of the new features after load
+            var newIds = _.pluck(features, 'id');
+
+            //remove layers not on map anymore
+            _.each(layerGroup.getLayers(), function (layer) {
+                if (newIds.indexOf(layer.feature.id) === -1) {
+                    layerGroup.removeLayer(layer);
+                } 
+            });
+
+            //get ids of existing layers
+            var existingIds = _.map(layerGroup.getLayers(), function (layer) {
+                return layer.feature.id;
+            });
+
+            //only add new layers
+            _.chain(features)
+                .filter(function (feature) {
+                    return (existingIds.indexOf(feature.id) === -1);
+                })
+                .map(function (feature) {
+                    return L.geoJson(feature).getLayers()[0];
+                })
+                .each(function (layer) {
+                    if (layer.setIcon) {
+                        layer.setIcon(styleFunc(layer.feature));
+                    } else {
+                        layer.setStyle(styleFunc(layer.feature));
+                    }
+                    if (layerCreated) {
+                        layerCreated(layer);
+                    }
+                    layerGroup.addLayer(layer);
+                });
+        };
+
         var _datasetLoaded = function (dataset, data) {
             var layerGroup = _layers[KR.Util.stamp(dataset)];
             if (layerGroup) {
@@ -4991,34 +5208,9 @@ var KR = this.KR || {};
                     data = filter(data);
                 }
 
-                //get the ids of the new features after load
-                var newIds = _.pluck(data.features, 'id');
-
-                //remove layers not on map anymore
-                _.each(layerGroup.getLayers(), function (layer) {
-                    if (newIds.indexOf(layer.feature.id) === -1) {
-                        layerGroup.removeLayer(layer);
-                    } 
+                ns.updateLayerFeatures(layerGroup, data.features, function (feature) {
+                    return KR.Style2.getIcon(dataset, feature, false);
                 });
-
-                //get ids of existing layers
-                var existingIds = _.map(layerGroup.getLayers(), function (layer) {
-                    return layer.feature.id;
-                });
-
-
-                //only add new layers
-                _.chain(data.features)
-                    .filter(function (feature) {
-                        return (existingIds.indexOf(feature.id) === -1);
-                    })
-                    .map(function (feature) {
-                        return L.geoJson(feature).getLayers()[0];
-                    })
-                    .each(function (layer) {
-                        layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
-                        layerGroup.addLayer(layer);
-                    });
                 _loadend(KR.Util.stamp(dataset));
             }
         };
@@ -5168,6 +5360,7 @@ var KR = this.KR || {};
                     if (dataset.minZoom && dataset.bbox) {
                         dataset.isStatic = false;
                     }
+
                     return dataset;
                 })
                 .value();
@@ -5205,6 +5398,9 @@ var KR = this.KR || {};
                         dataset.dataset,
                         function (data) {
                             _datasetLoaded(dataset, data);
+                            if (dataset.linkedLayer) {
+                                dataset.linkedLayer.dataChanged();
+                            }
                         },
                         _loadError
                     );
@@ -5264,7 +5460,32 @@ var KR = this.KR || {};
                 _hideDataset(datasetId);
             }
             callback(dataset.visible);
+        };
 
+        var featureClicked = function (feature, dataset) {
+            if (dataset.linkedLayer) {
+                var layers = _layers[KR.Util.stamp(dataset)].getLayers();
+                var layer = dataset.linkedLayer.findFeature(feature, layers);
+                if (layer) {
+                    featureSelector.deselectAll();
+                    featureSelector.selectFeature(dataset, layer);
+                }
+            }
+        };
+
+        var _setupLinked = function () {
+            _.chain(_flattened)
+            .filter(function (dataset) {
+                return _.has(dataset, 'linkedLayer');
+            }).
+            each(function (dataset) {
+                dataset.linkedLayer.init(
+                    map,
+                    _layers[KR.Util.stamp(dataset)],
+                    dataset,
+                    featureClicked
+                );
+            });
         };
 
         var init = function () {
@@ -5290,6 +5511,8 @@ var KR = this.KR || {};
             _.each(_layers, function (layer) {
                 layer.addTo(map);
             });
+
+            _setupLinked();
 
             //register for moveend to reload non-static
             map.on('moveend', _reload);

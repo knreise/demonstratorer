@@ -224,6 +224,9 @@ var KR = this.KR || {};
 
 
             if (options.footerTemplate && feature.properties.link) {
+                if (!feature.properties.provider) {
+                    feature.properties.provider = dataset.provider;
+                }
                 content += options.footerTemplate(feature.properties);
             }
 

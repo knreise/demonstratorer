@@ -656,6 +656,21 @@ KR.Style2 = {};
         return createAwesomeMarker(fillcolor);
     };
 
+    ns.getPathStyle = function (dataset, feature, clickable) {
+        clickable = clickable || false;
+        var config = _getConfig(dataset);
+        var fill = getFillColor(config, feature);
+        var border = getBorderColor(config, feature);
+        return {
+            weight: 1,
+            color: border,
+            fillColor: fill,
+            clickable: clickable,
+            opacity: 0.8,
+            fillOpacity: 0.4
+        };
+    };
+
     ns.getClusterIcon = function (dataset, cluster, selected) {
 
         var features = cluster.getAllChildMarkers();

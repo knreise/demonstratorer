@@ -193,11 +193,14 @@ var KR = this.KR || {};
 
         var _sidebarHandler = SidebarHandler(sidebar);
 
-        var _selectFeature = function (dataset, layer) {
+        var selectFeature = function (dataset, layer) {
             _sidebarHandler.showLayer(layer, dataset);
             if (layer.setIcon) {
                 layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, true));
                 layer.setZIndexOffset(1000);
+            }
+            if (dataset.linkedLayer) {
+                dataset.linkedLayer.featureSelected(layer.feature);
             }
         };
 
@@ -238,6 +241,10 @@ var KR = this.KR || {};
 
         var deselectAll = function () {
             _.each(datasets, function (dataset) {
+
+                if (dataset.linkedLayer) {
+                    dataset.linkedLayer.deselectAll();
+                }
                 var datasetId = KR.Util.stamp(dataset);
                 var layerGroup = layerGroups[datasetId];
                 if (layerGroup) {
@@ -255,7 +262,7 @@ var KR = this.KR || {};
             deselectAll();
             var datasetId = KR.Util.stamp(dataset);
             var layerGroup = layerGroups[datasetId];
-            _selectFeature(dataset, layer);
+            selectFeature(dataset, layer);
         };
 
         var clusterClicked = function (dataset, layer) {
@@ -270,7 +277,8 @@ var KR = this.KR || {};
         return {
             featureClicked: featureClicked,
             clusterClicked: clusterClicked,
-            deselectAll: deselectAll
+            deselectAll: deselectAll,
+            selectFeature: selectFeature
         };
     };
 
@@ -380,6 +388,43 @@ var KR = this.KR || {};
             }, {});
         };
 
+        ns.updateLayerFeatures = function (layerGroup, features, styleFunc, layerCreated) {
+            //get the ids of the new features after load
+            var newIds = _.pluck(features, 'id');
+
+            //remove layers not on map anymore
+            _.each(layerGroup.getLayers(), function (layer) {
+                if (newIds.indexOf(layer.feature.id) === -1) {
+                    layerGroup.removeLayer(layer);
+                } 
+            });
+
+            //get ids of existing layers
+            var existingIds = _.map(layerGroup.getLayers(), function (layer) {
+                return layer.feature.id;
+            });
+
+            //only add new layers
+            _.chain(features)
+                .filter(function (feature) {
+                    return (existingIds.indexOf(feature.id) === -1);
+                })
+                .map(function (feature) {
+                    return L.geoJson(feature).getLayers()[0];
+                })
+                .each(function (layer) {
+                    if (layer.setIcon) {
+                        layer.setIcon(styleFunc(layer.feature));
+                    } else {
+                        layer.setStyle(styleFunc(layer.feature));
+                    }
+                    if (layerCreated) {
+                        layerCreated(layer);
+                    }
+                    layerGroup.addLayer(layer);
+                });
+        };
+
         var _datasetLoaded = function (dataset, data) {
             var layerGroup = _layers[KR.Util.stamp(dataset)];
             if (layerGroup) {
@@ -388,34 +433,9 @@ var KR = this.KR || {};
                     data = filter(data);
                 }
 
-                //get the ids of the new features after load
-                var newIds = _.pluck(data.features, 'id');
-
-                //remove layers not on map anymore
-                _.each(layerGroup.getLayers(), function (layer) {
-                    if (newIds.indexOf(layer.feature.id) === -1) {
-                        layerGroup.removeLayer(layer);
-                    } 
+                ns.updateLayerFeatures(layerGroup, data.features, function (feature) {
+                    return KR.Style2.getIcon(dataset, feature, false);
                 });
-
-                //get ids of existing layers
-                var existingIds = _.map(layerGroup.getLayers(), function (layer) {
-                    return layer.feature.id;
-                });
-
-
-                //only add new layers
-                _.chain(data.features)
-                    .filter(function (feature) {
-                        return (existingIds.indexOf(feature.id) === -1);
-                    })
-                    .map(function (feature) {
-                        return L.geoJson(feature).getLayers()[0];
-                    })
-                    .each(function (layer) {
-                        layer.setIcon(KR.Style2.getIcon(dataset, layer.feature, false));
-                        layerGroup.addLayer(layer);
-                    });
                 _loadend(KR.Util.stamp(dataset));
             }
         };
@@ -565,6 +585,7 @@ var KR = this.KR || {};
                     if (dataset.minZoom && dataset.bbox) {
                         dataset.isStatic = false;
                     }
+
                     return dataset;
                 })
                 .value();
@@ -602,6 +623,9 @@ var KR = this.KR || {};
                         dataset.dataset,
                         function (data) {
                             _datasetLoaded(dataset, data);
+                            if (dataset.linkedLayer) {
+                                dataset.linkedLayer.dataChanged();
+                            }
                         },
                         _loadError
                     );
@@ -661,7 +685,32 @@ var KR = this.KR || {};
                 _hideDataset(datasetId);
             }
             callback(dataset.visible);
+        };
 
+        var featureClicked = function (feature, dataset) {
+            if (dataset.linkedLayer) {
+                var layers = _layers[KR.Util.stamp(dataset)].getLayers();
+                var layer = dataset.linkedLayer.findFeature(feature, layers);
+                if (layer) {
+                    featureSelector.deselectAll();
+                    featureSelector.selectFeature(dataset, layer);
+                }
+            }
+        };
+
+        var _setupLinked = function () {
+            _.chain(_flattened)
+            .filter(function (dataset) {
+                return _.has(dataset, 'linkedLayer');
+            }).
+            each(function (dataset) {
+                dataset.linkedLayer.init(
+                    map,
+                    _layers[KR.Util.stamp(dataset)],
+                    dataset,
+                    featureClicked
+                );
+            });
         };
 
         var init = function () {
@@ -687,6 +736,8 @@ var KR = this.KR || {};
             _.each(_layers, function (layer) {
                 layer.addTo(map);
             });
+
+            _setupLinked();
 
             //register for moveend to reload non-static
             map.on('moveend', _reload);
