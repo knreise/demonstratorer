@@ -393,6 +393,13 @@
     font-size: 20px;
 }
 
+#overlay img {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .image-fullscreen-link:before {
     content: "\f0b2";
     font-family: FontAwesome;
