@@ -9,7 +9,7 @@
 
     //The datasets in use
     var datasets = [
-        {
+       /* {
             dataset: {
                 api: 'cartodb',
                 table: 'pilegrimsleden_dovre',
@@ -27,8 +27,8 @@
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
-        }/*,
-        {
+        },*/
+        /*{
             provider: 'kulturminnedata',
             name: 'Fangstgroper',
             dataset_name_override: 'fangstlokaliteter',
@@ -40,18 +40,20 @@
             template: KR.Util.getDatasetTemplate('fangstgrop'),
             smallMarker: true,
             cluster: false,
+            isStatic: true,
+            bbox: true,
             style: {
                 fillcolor: '#000',
                 circle: true,
                 radius: 1.5
             }
-        },
+        },*/
         {
             id: 'verneomraader',
             dataset: {
                 api: 'cartodb',
                 table: 'naturvernomrader_utm33_2',
-                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform']
             },
             provider: 'Naturbase',
             name: 'Verneområder',
@@ -68,7 +70,7 @@
                 minSize: 20
             },
             cluster: false
-        }*/,
+        }/*,
         {
             grouped: true,
             name: 'Historie',
@@ -185,7 +187,7 @@
             cluster: false,
             minZoom: 14,
             template: KR.Util.getDatasetTemplate('popup')
-        }
+        } */
     ];
 
     KR.setupMap(api, datasets, {
@@ -193,6 +195,7 @@
         title: title,
         image: image,
         geomFilter: true,
+        showGeom: true,
         layer: 'norges_grunnkart',
         description: $('#description_template').html()
     });

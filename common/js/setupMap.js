@@ -297,6 +297,7 @@ var KR = this.KR || {};
         }
 
         function showDatasets(bounds, datasets, filter, lineLayer, initPos) {
+            console.log(bounds.toBBoxString());
             if (options.allstatic) {
                 datasets = _setAllStatic(datasets);
             }

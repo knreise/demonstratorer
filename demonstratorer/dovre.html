@@ -681,7 +681,7 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 
     //The datasets in use
     var datasets = [
-        {
+       /* {
             dataset: {
                 api: 'cartodb',
                 table: 'pilegrimsleden_dovre',
@@ -699,8 +699,8 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
-        }/*,
-        {
+        },*/
+        /*{
             provider: 'kulturminnedata',
             name: 'Fangstgroper',
             dataset_name_override: 'fangstlokaliteter',
@@ -712,12 +712,14 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
             template: KR.Util.getDatasetTemplate('fangstgrop'),
             smallMarker: true,
             cluster: false,
+            isStatic: true,
+            bbox: true,
             style: {
                 fillcolor: '#000',
                 circle: true,
                 radius: 1.5
             }
-        },
+        },*/
         {
             id: 'verneomraader',
             dataset: {
@@ -740,7 +742,7 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
                 minSize: 20
             },
             cluster: false
-        }*/,
+        }/*,
         {
             grouped: true,
             name: 'Historie',
@@ -857,7 +859,7 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
             cluster: false,
             minZoom: 14,
             template: KR.Util.getDatasetTemplate('popup')
-        }
+        } */
     ];
 
     KR.setupMap(api, datasets, {
@@ -865,6 +867,7 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
         title: title,
         image: image,
         geomFilter: true,
+        showGeom: true,
         layer: 'norges_grunnkart',
         description: $('#description_template').html()
     });

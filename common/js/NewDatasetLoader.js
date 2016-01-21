@@ -125,7 +125,10 @@ var KR = this.KR || {};
                         bounds.getSouth()
                     ]);
                     features = _.filter(features, function (feature) {
-                        return turf.inside(feature, poly);
+                        if (feature.geometry.type === 'Point') {
+                            return turf.inside(feature, poly);
+                        }
+                        return turf.intersect(feature, poly);
                     });
                     callback(ds, {features: features});
                 });
@@ -259,6 +262,7 @@ var KR = this.KR || {};
         };
 
         var featureClicked = function (dataset, layer) {
+            console.log(dataset, layer);
             deselectAll();
             var datasetId = KR.Util.stamp(dataset);
             var layerGroup = layerGroups[datasetId];
@@ -286,7 +290,7 @@ var KR = this.KR || {};
     ns.newDatasetLoader = function (api, map, datasets, sidebar, bounds, filter) {
 
         var DEFAULTS = {
-            isStatic: true,
+            isStatic: false,
             bbox: true,
             cluster: true,
             visible: true
@@ -371,10 +375,10 @@ var KR = this.KR || {};
         };
 
         var _createLayer = function (dataset) {
-            return L.featureGroup([])
-                .on('click', function (e) {
+            return L.featureGroup([]);
+                /*.on('click', function (e) {
                     featureSelector.featureClicked(dataset, e.layer);
-                });
+                });*/
         };
 
         var _createLayers = function (datasets) {
@@ -388,7 +392,8 @@ var KR = this.KR || {};
             }, {});
         };
 
-        ns.updateLayerFeatures = function (layerGroup, features, styleFunc, layerCreated) {
+        ns.updateLayerFeatures = function (layerGroup, features, styleFunc, layerCreated, style, onClick) {
+            style = style || {};
             //get the ids of the new features after load
             var newIds = _.pluck(features, 'id');
 
@@ -413,29 +418,52 @@ var KR = this.KR || {};
                     return L.geoJson(feature).getLayers()[0];
                 })
                 .each(function (layer) {
-                    if (layer.setIcon) {
-                        layer.setIcon(styleFunc(layer.feature));
+                    var feature = layer.feature;
+                    if (style.circle) {
+                        layer = L.circleMarker(layer.getLatLng(), styleFunc(layer.feature));
+                        layer.feature = feature;
+                    } else if (layer.setIcon) {
+                        var i = styleFunc(layer.feature);
+                        layer.setIcon(i);
                     } else {
-                        layer.setStyle(styleFunc(layer.feature));
+                        var s = styleFunc(layer.feature);
+                        layer.setStyle(s);
                     }
                     if (layerCreated) {
                         layerCreated(layer);
                     }
+                    layer.feature = feature;
                     layerGroup.addLayer(layer);
+                    if (onClick) {
+                        layer.on('click', function () {
+                            layer.feature = feature;
+                            onClick(layer);
+                        });
+                    }
+                    
                 });
         };
 
         var _datasetLoaded = function (dataset, data) {
+
             var layerGroup = _layers[KR.Util.stamp(dataset)];
             if (layerGroup) {
+                var onClick = function (layer) {
+                    featureSelector.featureClicked(dataset, layer);
+                };
+
+                var createStyle = function (feature) {
+                    if (feature.geometry.type === 'Point') {
+                        return KR.Style2.getIcon(dataset, feature, false);
+                    }
+                    return KR.Style2.getPathStyle(dataset, feature, true);
+                };
 
                 if (filter) {
                     data = filter(data);
                 }
-
-                ns.updateLayerFeatures(layerGroup, data.features, function (feature) {
-                    return KR.Style2.getIcon(dataset, feature, false);
-                });
+                var style = dataset.style;
+                ns.updateLayerFeatures(layerGroup, data.features, createStyle, null, style, onClick);
                 _loadend(KR.Util.stamp(dataset));
             }
         };
@@ -455,23 +483,7 @@ var KR = this.KR || {};
                 callback(dataset, {features: []});
                 return;
             }
-            if (dataset.bboxFunc) {
-                //TODO: check what kommune this returns, possibly reduce to fewer requests
-                /*
-                dataset.bboxFunc(
-                    api,
-                    dataset.dataset,
-                    tile.bounds.toBBoxString(),
-                    function (data) {
-                        //tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
-                        callback(dataset, data);
-                    },
-                    function (e) {
-                        error(e, dataset);
-                    }
-                );
-                */
-            } else {
+            else {
                 api.getBbox(
                     dataset.dataset,
                     tile.bounds.toBBoxString(),
@@ -606,7 +618,6 @@ var KR = this.KR || {};
                     } else {
                         acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
                     }
-                    
                     return acc;
                 }, {})
                 .value();
@@ -619,16 +630,27 @@ var KR = this.KR || {};
                 })
                 .each(function (dataset) {
                     _loadstart(KR.Util.stamp(dataset));
-                    api.getData(
-                        dataset.dataset,
-                        function (data) {
-                            _datasetLoaded(dataset, data);
-                            if (dataset.linkedLayer) {
-                                dataset.linkedLayer.dataChanged();
-                            }
-                        },
-                        _loadError
-                    );
+
+                    var loaded = function (data) {
+                        _datasetLoaded(dataset, data);
+                        if (dataset.linkedLayer) {
+                            dataset.linkedLayer.dataChanged();
+                        }
+                    };
+                    if (dataset.bbox) {
+                        api.getBbox(
+                            dataset.dataset,
+                            bounds.toBBoxString(),
+                            loaded,
+                            _loadError
+                        );
+                    } else {
+                        api.getData(
+                            dataset.dataset,
+                            loaded,
+                            _loadError
+                        );
+                    }
                 });
         };
 

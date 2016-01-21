@@ -1067,6 +1067,19 @@ KR.Style = {};
 }(KR.Style));
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 KR.Style2 = {};
 (function (ns) {
     'use strict';
@@ -1080,24 +1093,133 @@ KR.Style2 = {};
         thumbnail: true
     };
 
-    function _getConfig(dataset) {
+
+    var verneomrTypes = {
+        landskapsvern: {
+            ids: [
+                'LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV',
+                'NM', 'BVV', 'PO', 'DO', 'D'
+            ],
+            style: {
+                fillColor: '#d8cb7a',
+                color: '#9c8f1b'
+            }
+        },
+        nasjonalpark: {
+            ids: ['NP', 'NPS'],
+            style: {
+                fillColor: '#7f9aac',
+                color: '#b3a721'
+            }
+        },
+        naturreservat: {
+            ids: ['NR', 'NRS'],
+            style: {
+                fillColor: '#ef9874',
+                color: '#ef9873'
+            }
+        }
+    };
+
+    function getVerneOmrcolor(feature) {
+        var id = feature.properties.vernef_id;
+        return _.find(verneomrTypes, function (type) {
+            return (type.ids.indexOf(id) !== -1);
+        });
+    }
+
+       /*
+        Pre-defined datasets and their styling
+    */
+    ns.datasets = {
+        'Digitalt fortalt': {
+            fillcolor: '#F69730',
+            circle: false,
+            thumbnail: true
+        },
+        'Kulturminnesok': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'DigitaltMuseum': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'Musit': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'Artsdatabanken': {
+            fillcolor: '#5B396B',
+            thumbnail: false,
+            circle: true
+        },
+        'riksantikvaren': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: true
+        },
+        'verneomraader': {
+            fillcolor: function (feature) {
+                if (feature) {
+                    var c = getVerneOmrcolor(feature);
+                    if (c) {
+                        return c.style.fillColor;
+                    }
+                }
+                return '#009300';
+            },
+            bordercolor: function (feature) {
+                if (feature) {
+                    var c = getVerneOmrcolor(feature);
+                    if (c) {
+                        return c.style.color;
+                    }
+                }
+                return '#009300';
+            },
+            clickable: true
+            //thumbnail: false,
+            //circle: true
+        },
+        'wikipedia': {
+            fillcolor: '#D14020',
+            thumbnail: true
+        }
+    };
+
+    function _getConfig(dataset, feature) {
         var style;
         if (dataset.grouped) {
             if (dataset.style) {
                 return _.extend({}, DEFAULT_STYLE, style, dataset.style);
             } else {
-                return _getConfig(dataset.datasets[0]);
+                return _getConfig(dataset.datasets[0], feature);
             }
         }
 
         var config;
-
-        if (dataset.style) {
-            return _.extend({}, DEFAULT_STYLE, style, dataset.style);
-        }
-        var style = KR.Style.getDatasetStyle(datasetId) || {};
         var datasetId = KR.Util.getDatasetId(dataset);
-        return _.extend({}, DEFAULT_STYLE, style);
+        if (dataset.style) {
+            config = _.extend({}, DEFAULT_STYLE, style, dataset.style);
+        } else if (ns.datasets[datasetId]) {
+            config = ns.datasets[datasetId];
+        } else {
+            var style = KR.Style.getDatasetStyle(datasetId) || {};
+            config = _.extend({}, DEFAULT_STYLE, style);
+        }
+
+        return _.reduce(config, function (acc, value, key) {
+
+            if (_.isFunction(value)) {
+                value = value(feature);
+            }
+            acc[key] = value;
+            return acc;
+        }, {});
     }
 
     function valueOrfunc(dict, key, feature, dropFeature) {
@@ -1237,7 +1359,7 @@ KR.Style2 = {};
 
     ns.getIcon = function (dataset, feature, selected) {
 
-        var config = _getConfig(dataset);
+        var config = _getConfig(dataset, feature);
         var fillcolor = selected ? SELECTED_COLOR : getFillColor(config, feature);
         var bordercolor = selected ? SELECTED_COLOR : getBorderColor(config, feature);
         if (config.thumbnail) {
@@ -1254,7 +1376,7 @@ KR.Style2 = {};
 
     ns.getPathStyle = function (dataset, feature, clickable) {
         clickable = clickable || false;
-        var config = _getConfig(dataset);
+        var config = _getConfig(dataset, feature);
         var fill = getFillColor(config, feature);
         var border = getBorderColor(config, feature);
         return {
@@ -1276,7 +1398,7 @@ KR.Style2 = {};
         }));
 
 
-        var config = _getConfig(dataset);
+        var config = _getConfig(dataset, feature);
         var colors;
         /*if (_.compact(groups).length > 1) {
             var groupIds = _.compact(groups);

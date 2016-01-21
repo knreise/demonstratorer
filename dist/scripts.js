@@ -1067,6 +1067,19 @@ KR.Style = {};
 }(KR.Style));
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 KR.Style2 = {};
 (function (ns) {
     'use strict';
@@ -1080,24 +1093,133 @@ KR.Style2 = {};
         thumbnail: true
     };
 
-    function _getConfig(dataset) {
+
+    var verneomrTypes = {
+        landskapsvern: {
+            ids: [
+                'LVO', 'LVOD', 'LVOP', 'LVOPD', 'BV', 'MAV', 'P', 'GVS', 'MIV',
+                'NM', 'BVV', 'PO', 'DO', 'D'
+            ],
+            style: {
+                fillColor: '#d8cb7a',
+                color: '#9c8f1b'
+            }
+        },
+        nasjonalpark: {
+            ids: ['NP', 'NPS'],
+            style: {
+                fillColor: '#7f9aac',
+                color: '#b3a721'
+            }
+        },
+        naturreservat: {
+            ids: ['NR', 'NRS'],
+            style: {
+                fillColor: '#ef9874',
+                color: '#ef9873'
+            }
+        }
+    };
+
+    function getVerneOmrcolor(feature) {
+        var id = feature.properties.vernef_id;
+        return _.find(verneomrTypes, function (type) {
+            return (type.ids.indexOf(id) !== -1);
+        });
+    }
+
+       /*
+        Pre-defined datasets and their styling
+    */
+    ns.datasets = {
+        'Digitalt fortalt': {
+            fillcolor: '#F69730',
+            circle: false,
+            thumbnail: true
+        },
+        'Kulturminnesok': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'DigitaltMuseum': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'Musit': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: false
+        },
+        'Artsdatabanken': {
+            fillcolor: '#5B396B',
+            thumbnail: false,
+            circle: true
+        },
+        'riksantikvaren': {
+            fillcolor: '#436978',
+            circle: false,
+            thumbnail: true
+        },
+        'verneomraader': {
+            fillcolor: function (feature) {
+                if (feature) {
+                    var c = getVerneOmrcolor(feature);
+                    if (c) {
+                        return c.style.fillColor;
+                    }
+                }
+                return '#009300';
+            },
+            bordercolor: function (feature) {
+                if (feature) {
+                    var c = getVerneOmrcolor(feature);
+                    if (c) {
+                        return c.style.color;
+                    }
+                }
+                return '#009300';
+            },
+            clickable: true
+            //thumbnail: false,
+            //circle: true
+        },
+        'wikipedia': {
+            fillcolor: '#D14020',
+            thumbnail: true
+        }
+    };
+
+    function _getConfig(dataset, feature) {
         var style;
         if (dataset.grouped) {
             if (dataset.style) {
                 return _.extend({}, DEFAULT_STYLE, style, dataset.style);
             } else {
-                return _getConfig(dataset.datasets[0]);
+                return _getConfig(dataset.datasets[0], feature);
             }
         }
 
         var config;
-
-        if (dataset.style) {
-            return _.extend({}, DEFAULT_STYLE, style, dataset.style);
-        }
-        var style = KR.Style.getDatasetStyle(datasetId) || {};
         var datasetId = KR.Util.getDatasetId(dataset);
-        return _.extend({}, DEFAULT_STYLE, style);
+        if (dataset.style) {
+            config = _.extend({}, DEFAULT_STYLE, style, dataset.style);
+        } else if (ns.datasets[datasetId]) {
+            config = ns.datasets[datasetId];
+        } else {
+            var style = KR.Style.getDatasetStyle(datasetId) || {};
+            config = _.extend({}, DEFAULT_STYLE, style);
+        }
+
+        return _.reduce(config, function (acc, value, key) {
+
+            if (_.isFunction(value)) {
+                value = value(feature);
+            }
+            acc[key] = value;
+            return acc;
+        }, {});
     }
 
     function valueOrfunc(dict, key, feature, dropFeature) {
@@ -1237,7 +1359,7 @@ KR.Style2 = {};
 
     ns.getIcon = function (dataset, feature, selected) {
 
-        var config = _getConfig(dataset);
+        var config = _getConfig(dataset, feature);
         var fillcolor = selected ? SELECTED_COLOR : getFillColor(config, feature);
         var bordercolor = selected ? SELECTED_COLOR : getBorderColor(config, feature);
         if (config.thumbnail) {
@@ -1254,7 +1376,7 @@ KR.Style2 = {};
 
     ns.getPathStyle = function (dataset, feature, clickable) {
         clickable = clickable || false;
-        var config = _getConfig(dataset);
+        var config = _getConfig(dataset, feature);
         var fill = getFillColor(config, feature);
         var border = getBorderColor(config, feature);
         return {
@@ -1276,7 +1398,7 @@ KR.Style2 = {};
         }));
 
 
-        var config = _getConfig(dataset);
+        var config = _getConfig(dataset, feature);
         var colors;
         /*if (_.compact(groups).length > 1) {
             var groupIds = _.compact(groups);
@@ -4878,7 +5000,10 @@ var KR = this.KR || {};
                         bounds.getSouth()
                     ]);
                     features = _.filter(features, function (feature) {
-                        return turf.inside(feature, poly);
+                        if (feature.geometry.type === 'Point') {
+                            return turf.inside(feature, poly);
+                        }
+                        return turf.intersect(feature, poly);
                     });
                     callback(ds, {features: features});
                 });
@@ -5012,6 +5137,7 @@ var KR = this.KR || {};
         };
 
         var featureClicked = function (dataset, layer) {
+            console.log(dataset, layer);
             deselectAll();
             var datasetId = KR.Util.stamp(dataset);
             var layerGroup = layerGroups[datasetId];
@@ -5039,7 +5165,7 @@ var KR = this.KR || {};
     ns.newDatasetLoader = function (api, map, datasets, sidebar, bounds, filter) {
 
         var DEFAULTS = {
-            isStatic: true,
+            isStatic: false,
             bbox: true,
             cluster: true,
             visible: true
@@ -5124,10 +5250,10 @@ var KR = this.KR || {};
         };
 
         var _createLayer = function (dataset) {
-            return L.featureGroup([])
-                .on('click', function (e) {
+            return L.featureGroup([]);
+                /*.on('click', function (e) {
                     featureSelector.featureClicked(dataset, e.layer);
-                });
+                });*/
         };
 
         var _createLayers = function (datasets) {
@@ -5141,7 +5267,8 @@ var KR = this.KR || {};
             }, {});
         };
 
-        ns.updateLayerFeatures = function (layerGroup, features, styleFunc, layerCreated) {
+        ns.updateLayerFeatures = function (layerGroup, features, styleFunc, layerCreated, style, onClick) {
+            style = style || {};
             //get the ids of the new features after load
             var newIds = _.pluck(features, 'id');
 
@@ -5166,29 +5293,52 @@ var KR = this.KR || {};
                     return L.geoJson(feature).getLayers()[0];
                 })
                 .each(function (layer) {
-                    if (layer.setIcon) {
-                        layer.setIcon(styleFunc(layer.feature));
+                    var feature = layer.feature;
+                    if (style.circle) {
+                        layer = L.circleMarker(layer.getLatLng(), styleFunc(layer.feature));
+                        layer.feature = feature;
+                    } else if (layer.setIcon) {
+                        var i = styleFunc(layer.feature);
+                        layer.setIcon(i);
                     } else {
-                        layer.setStyle(styleFunc(layer.feature));
+                        var s = styleFunc(layer.feature);
+                        layer.setStyle(s);
                     }
                     if (layerCreated) {
                         layerCreated(layer);
                     }
+                    layer.feature = feature;
                     layerGroup.addLayer(layer);
+                    if (onClick) {
+                        layer.on('click', function () {
+                            layer.feature = feature;
+                            onClick(layer);
+                        });
+                    }
+                    
                 });
         };
 
         var _datasetLoaded = function (dataset, data) {
+
             var layerGroup = _layers[KR.Util.stamp(dataset)];
             if (layerGroup) {
+                var onClick = function (layer) {
+                    featureSelector.featureClicked(dataset, layer);
+                };
+
+                var createStyle = function (feature) {
+                    if (feature.geometry.type === 'Point') {
+                        return KR.Style2.getIcon(dataset, feature, false);
+                    }
+                    return KR.Style2.getPathStyle(dataset, feature, true);
+                };
 
                 if (filter) {
                     data = filter(data);
                 }
-
-                ns.updateLayerFeatures(layerGroup, data.features, function (feature) {
-                    return KR.Style2.getIcon(dataset, feature, false);
-                });
+                var style = dataset.style;
+                ns.updateLayerFeatures(layerGroup, data.features, createStyle, null, style, onClick);
                 _loadend(KR.Util.stamp(dataset));
             }
         };
@@ -5208,23 +5358,7 @@ var KR = this.KR || {};
                 callback(dataset, {features: []});
                 return;
             }
-            if (dataset.bboxFunc) {
-                //TODO: check what kommune this returns, possibly reduce to fewer requests
-                /*
-                dataset.bboxFunc(
-                    api,
-                    dataset.dataset,
-                    tile.bounds.toBBoxString(),
-                    function (data) {
-                        //tiledLoader.saveTileData(KR.Util.stamp(dataset), tile.x, tile.y, data);
-                        callback(dataset, data);
-                    },
-                    function (e) {
-                        error(e, dataset);
-                    }
-                );
-                */
-            } else {
+            else {
                 api.getBbox(
                     dataset.dataset,
                     tile.bounds.toBBoxString(),
@@ -5359,7 +5493,6 @@ var KR = this.KR || {};
                     } else {
                         acc[KR.Util.stamp(dataset)] = _getTileLoader(dataset);
                     }
-                    
                     return acc;
                 }, {})
                 .value();
@@ -5372,16 +5505,27 @@ var KR = this.KR || {};
                 })
                 .each(function (dataset) {
                     _loadstart(KR.Util.stamp(dataset));
-                    api.getData(
-                        dataset.dataset,
-                        function (data) {
-                            _datasetLoaded(dataset, data);
-                            if (dataset.linkedLayer) {
-                                dataset.linkedLayer.dataChanged();
-                            }
-                        },
-                        _loadError
-                    );
+
+                    var loaded = function (data) {
+                        _datasetLoaded(dataset, data);
+                        if (dataset.linkedLayer) {
+                            dataset.linkedLayer.dataChanged();
+                        }
+                    };
+                    if (dataset.bbox) {
+                        api.getBbox(
+                            dataset.dataset,
+                            bounds.toBBoxString(),
+                            loaded,
+                            _loadError
+                        );
+                    } else {
+                        api.getData(
+                            dataset.dataset,
+                            loaded,
+                            _loadError
+                        );
+                    }
                 });
         };
 
@@ -5813,6 +5957,7 @@ var KR = this.KR || {};
         }
 
         function showDatasets(bounds, datasets, filter, lineLayer, initPos) {
+            console.log(bounds.toBBoxString());
             if (options.allstatic) {
                 datasets = _setAllStatic(datasets);
             }
