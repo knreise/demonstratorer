@@ -446,6 +446,7 @@ KR.Util = KR.Util || {};
         } else {
             baseLayer.addTo(map);
         }
+        L.control.scale().addTo(map);
         return map;
     };
 
