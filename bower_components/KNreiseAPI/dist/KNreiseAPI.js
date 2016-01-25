@@ -746,12 +746,13 @@ KR.NorvegianaAPI = function (apiName) {
 
 
     function _get(params, parameters, callback, errorCallback, options) {
+        options = _.extend({checkCancel: true}, options || {});
         var dataset = _fixDataset(parameters.dataset);
 
         params = _.extend({
             query: dataset,
             format: 'json',
-            rows: 1000,
+            rows: 1000
         }, params);
         params.query += ' delving_hasGeoHash:true';
 
@@ -760,7 +761,10 @@ KR.NorvegianaAPI = function (apiName) {
             params.qf = parameters.query;
             requestId += parameters.query;
         }
-        _checkCancel(requestId);
+        if (options.checkCancel) {
+            _checkCancel(requestId);
+        }
+        
 
         var url = BASE_URL + '?'  + KR.Util.createQueryParameterString(params);
         if (options.allPages) {
@@ -1373,7 +1377,7 @@ KR.SparqlAPI = function (apiName, options) {
         var query = 'select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?url as ?link ?picture ?picturelabel ?picturedescription ?picturelicence { ' +
                 ' ?id a ?type ; ' +
                 ' rdfs:label ?name ; ' +
-                ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ; ' +
+                
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/AnsvarligOrganisasjon> ?org ; ' +
@@ -1382,6 +1386,7 @@ KR.SparqlAPI = function (apiName, options) {
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
                 ' optional { ?org rdfs:label ?orglabel .} ' +
+                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .} ' +
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
@@ -1420,7 +1425,6 @@ KR.SparqlAPI = function (apiName, options) {
         var query = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?url as ?link ?picture ?picturelabel ?picturedescription ?picturelicence { ' +
                 ' ?id a ?type ; ' +
                 ' rdfs:label ?name ; ' +
-                ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/AnsvarligOrganisasjon> ?org ; ' +
@@ -1429,6 +1433,7 @@ KR.SparqlAPI = function (apiName, options) {
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
                 ' optional { ?org rdfs:label ?orglabel .} ' +
+                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .} ' +
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
