@@ -30,7 +30,7 @@
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
     "L.TileLayer.Kartverket": "1.0.2",
     "Leaflet-MiniMap": "https://github.com/Norkart/Leaflet-MiniMap.git#~2.2.0",
-    "KNreiseAPI": "1.7.23",
+    "KNreiseAPI": "1.7.25",
     "cesium-minimap": "0.0.2",
     "cilogi-marker": "https://github.com/cilogi/cilogi-marker.git",
     "leaflet.knreise-markers": "https://github.com/knreise/Leaflet.knreise-markers.git",
@@ -39,6 +39,6 @@
     "fontawesome": "4.4.0"
   },
   "resolutions": {
-    "KNreiseAPI": "1.7.24"
+    "KNreiseAPI": "1.7.25"
   }
 }
