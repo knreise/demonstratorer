@@ -427,7 +427,6 @@ KR.Util = KR.Util || {};
     };
 
     ns.createMap = function (div, options) {
-        console.log(options);
         options = options || {};
 
 

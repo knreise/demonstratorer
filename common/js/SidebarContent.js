@@ -176,8 +176,12 @@ var KR = this.KR || {};
 
         function setupFullscreenClick(element) {
             element.find('img[data-fullsize-url!=""]').click(function () {
+
                 var url = $(this).attr('data-fullsize-url');
-                $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
+                if (!url) {
+                    return;
+                }
+                $('#overlay').removeClass('hidden').html($('<img src="' + url + '" />')).click(function () {
                     $('#overlay').addClass('hidden').html('');
                 });
             });
@@ -219,6 +223,7 @@ var KR = this.KR || {};
 
             var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
+
 
             content += template(_.extend({image: null}, feature.properties));
 
