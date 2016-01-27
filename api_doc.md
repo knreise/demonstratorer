@@ -134,6 +134,7 @@ The options dict exposes a lot of options:
 | image          | string            | null            | no        | Url to image for SplashScreen                                                                                 |
 | description    | string            | null            | no        | HTML-markup to display as description in SplashScreen                                                         |
 | clusterRadius  | number            | 80              | no        | The maxClusterRadius to use for markerCLuster (see [Leaflet.markercluster][mcDoc]).                           |
+| showScaleBar   | bool              | false           | no        | Show a scalebar in the map (L.control.scale)                                                                  |
 * One of komm, fylke, line or bbox must be set
 
 [mcDoc]: https://github.com/Leaflet/Leaflet.markercluster#all-options
