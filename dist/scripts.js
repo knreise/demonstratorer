@@ -478,7 +478,6 @@ KR.Util = KR.Util || {};
     };
 
     ns.createMap = function (div, options) {
-        console.log(options);
         options = options || {};
 
 
@@ -1744,7 +1743,7 @@ KR.MediaCarousel = {};
         'image': _createImage,
         'video': _createVideo,
         'sound': _createSound,
-        'captioned_image': _createCaptionedImage,
+        'captioned_image': _createCaptionedImage
     };
 
     function _getMarkup(mediaObject) {
@@ -1761,7 +1760,6 @@ KR.MediaCarousel = {};
         var element = $('<div class="hidden"> </div>')
             .attr('data-src', mediaObject.url)
             .attr('data-type', mediaObject.type);
-
         _.each(mediaObject, function (value, key) {
             element.attr('data-own-' + key, value);
         });
@@ -2035,8 +2033,12 @@ var KR = this.KR || {};
 
         function setupFullscreenClick(element) {
             element.find('img[data-fullsize-url!=""]').click(function () {
+
                 var url = $(this).attr('data-fullsize-url');
-                $('#overlay').removeClass('hidden').html($('<img src="' + url+ '" />')).click(function () {
+                if (!url) {
+                    return;
+                }
+                $('#overlay').removeClass('hidden').html($('<img src="' + url + '" />')).click(function () {
                     $('#overlay').addClass('hidden').html('');
                 });
             });
@@ -2078,6 +2080,7 @@ var KR = this.KR || {};
 
             var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
+
 
             content += template(_.extend({image: null}, feature.properties));
 

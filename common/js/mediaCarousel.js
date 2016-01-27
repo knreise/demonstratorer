@@ -78,7 +78,7 @@ KR.MediaCarousel = {};
         'image': _createImage,
         'video': _createVideo,
         'sound': _createSound,
-        'captioned_image': _createCaptionedImage,
+        'captioned_image': _createCaptionedImage
     };
 
     function _getMarkup(mediaObject) {
@@ -95,7 +95,6 @@ KR.MediaCarousel = {};
         var element = $('<div class="hidden"> </div>')
             .attr('data-src', mediaObject.url)
             .attr('data-type', mediaObject.type);
-
         _.each(mediaObject, function (value, key) {
             element.attr('data-own-' + key, value);
         });
