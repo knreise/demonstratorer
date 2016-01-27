@@ -478,6 +478,7 @@ KR.Util = KR.Util || {};
     };
 
     ns.createMap = function (div, options) {
+        console.log(options);
         options = options || {};
 
 
@@ -497,7 +498,9 @@ KR.Util = KR.Util || {};
         } else {
             baseLayer.addTo(map);
         }
-        L.control.scale().addTo(map);
+        if (options.showScaleBar) {
+            L.control.scale({imperial: false}).addTo(map);
+        }
         return map;
     };
 
