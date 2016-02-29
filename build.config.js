@@ -283,6 +283,21 @@ module.exports = {
       description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
     },
     {
+      id: 'stavkirker',
+      name: 'Stavkirker',
+      description: 'Stavkirker og innhold knyttet til stavkirker fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
+    },
+    {
+      id: 'stavkirker_ra',
+      name: 'Stavkirker - Riksantikvaren',
+      description: 'Stavkirker fra Riksantikvaren og Kulturminnesøk'
+    },
+    {
+      id: 'middelalderkirker',
+      name: 'Middelalderkirker - Riksantikvaren',
+      description: 'Middelalderkirker fra Riksantikvaren og Kulturminnesøk'
+    },
+    {
       id: 'jul',
       name: 'God jul',
       description: 'Julehistorie fra hele landet',
