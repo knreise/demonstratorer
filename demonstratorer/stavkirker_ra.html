@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Stavkirker</title>
+        <title>KNReise - Stavkirker - Riksantikvaren</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -668,7 +668,7 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Stavkirker';
+            var title = 'Stavkirker - Riksantikvaren';
             var image = '';
 
             (function () {
@@ -730,40 +730,7 @@
             unclusterCount: 10,
             init: kulturminneFunctions.initKulturminnePoly,
             style: {fillcolor: '#ddb522'},
-        },
-        {
-            name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia',
-                category: 'Stavkirker'
-            },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
-            style: {template: true},
-            style: {fillcolor: '#135992'},
-            bbox: false,
-            isStatic: true,
-            getFeatureData: function (feature, callback) {
-                api.getItem(
-                    {api: 'wikipedia', id: feature.properties.id},
-                    callback
-                );
-            }
-	    },
-        {
-            name: 'Digitalt Museum',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'DiMu',
-                query: 'dc_subject_facet:Stavkirker'
-            },
-            template: KR.Util.getDatasetTemplate('digitalt_museum'),
-            isStatic: true,
-            thumbnails: true,
-            bbox: true,
-            style: {fillcolor: '#882a28'}
-        }
-            ];
+        }            ];
 
 
     KR.setupMap(api, datasets, {

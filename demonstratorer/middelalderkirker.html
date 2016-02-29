@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Stavkirker</title>
+        <title>KNReise - Middelalderkirker - Riksantikvaren</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -31,7 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-<p class="small"><b>Urnes stavkirke</b> - Foto: Nils O. Reppen</p>
+<p class="small"><b>L&oslash;renskog kirke</b></p>
 </script>
 
 
@@ -668,24 +668,26 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Stavkirker';
+            var title = 'Middelalderkirker - Riksantikvaren';
             var image = '';
 
             (function () {
     'use strict';
 
 
+
     var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img (SAMPLE(?point) as ?point) ?url ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
 		' ?id a ?type ;' +
-		'      rdfs:label ?name ;' +
+		'   rdfs:label ?name ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ;' +
 		' <https://data.kulturminne.no/askeladden/schema/AnsvarligOrganisasjon> ?org ;' +
+		' <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune  ;' +
 		' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
 		' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .}' +
 		' optional { ?loccat rdfs:label ?loccatlabel .}' +
-		' optional { ?locart rdfs:label ?locartlabel .}' +
-		' optional { ?org rdfs:label ?orglabel .}' +
+		' optional {  ?locart rdfs:label ?locartlabel .}' +
+		' optional {   ?org rdfs:label ?orglabel .}' +
 		' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
 		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url)' +
 		' optional {' +
@@ -699,9 +701,16 @@
 		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
 		'   }' +
 		' ?enk <https://data.kulturminne.no/askeladden/schema/i-lokalitet> ?id;' +
-		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10157>;' +
-		'      <https://data.kulturminne.no/askeladden/schema/vernetype> <https://data.kulturminne.no/askeladden/vernetype/AUT>' +
+		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10132> ;' +
+		'         <https://data.kulturminne.no/askeladden/schema/datering> ?datering;' +
+		'         <https://data.kulturminne.no/askeladden/schema/vernetype> <https://data.kulturminne.no/askeladden/vernetype/AUT>' +
+		' filter(?datering in (<https://data.kulturminne.no/askeladden/datering/050>,<https://data.kulturminne.no/askeladden/datering/051>,<https://data.kulturminne.no/askeladden/datering/052>,<https://data.kulturminne.no/askeladden/datering/053>) and strstarts(str(?kommune),"https://data.kulturminne.no/difi/geo/kommune/02"))' +
 		' }';
+
+
+
+   
+
 
 
     var api = new KR.API({
@@ -730,46 +739,13 @@
             unclusterCount: 10,
             init: kulturminneFunctions.initKulturminnePoly,
             style: {fillcolor: '#ddb522'},
-        },
-        {
-            name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia',
-                category: 'Stavkirker'
-            },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
-            style: {template: true},
-            style: {fillcolor: '#135992'},
-            bbox: false,
-            isStatic: true,
-            getFeatureData: function (feature, callback) {
-                api.getItem(
-                    {api: 'wikipedia', id: feature.properties.id},
-                    callback
-                );
-            }
-	    },
-        {
-            name: 'Digitalt Museum',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'DiMu',
-                query: 'dc_subject_facet:Stavkirker'
-            },
-            template: KR.Util.getDatasetTemplate('digitalt_museum'),
-            isStatic: true,
-            thumbnails: true,
-            bbox: true,
-            style: {fillcolor: '#882a28'}
-        }
-            ];
+        }            ];
 
 
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
-        image: 'http://knreise.no/demonstratorer/common/img/T284_01_0379.jpg',
+        image: 'http://knreise.no/demonstratorer/common/img/T037_01_0001.jpg',
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
