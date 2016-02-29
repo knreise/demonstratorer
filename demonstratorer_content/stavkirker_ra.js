@@ -67,5 +67,6 @@
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
+        showScaleBar: true,
     });
 }());
