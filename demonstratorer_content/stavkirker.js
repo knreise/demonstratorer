@@ -53,9 +53,10 @@
             template: KR.Util.getDatasetTemplate('ra_sparql'),
             getFeatureData: kulturminneFunctions.getRaFeatureData,
             bbox: false,
-            isStatic: true,
-            unclusterCount: 20,
+            isStatic: false,
+            unclusterCount: 10,
             init: kulturminneFunctions.initKulturminnePoly,
+            style: {fillcolor: '#ddb522'},
         },
         {
             name: 'Wikipedia',
@@ -66,6 +67,7 @@
             },
             template: KR.Util.getDatasetTemplate('wikipedia'),
             style: {template: true},
+            style: {fillcolor: '#135992'},
             bbox: false,
             isStatic: true,
             getFeatureData: function (feature, callback) {
@@ -85,19 +87,18 @@
             template: KR.Util.getDatasetTemplate('digitalt_museum'),
             isStatic: true,
             thumbnails: true,
-            bbox: true
+            bbox: true,
+            style: {fillcolor: '#882a28'}
         }
             ];
 
-    var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');
 
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
-        image: image,
+        image: 'http://knreise.no/demonstratorer/common/img/T284_01_0379.jpg',
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
-        layer: layer
     });
 }());
