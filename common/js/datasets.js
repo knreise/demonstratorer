@@ -129,7 +129,7 @@ KR.Config = KR.Config || {};
                         getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
-                        isStatic: true,
+                        isStatic: false,
                         unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly
                     }
@@ -187,7 +187,7 @@ KR.Config = KR.Config || {};
                         getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
-                        isStatic: true,
+                        isStatic: false,
                         unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly
                     }
@@ -217,7 +217,7 @@ KR.Config = KR.Config || {};
                         getFeatureData: kulturminneFunctions.getRaFeatureData,
                         template: KR.Util.getDatasetTemplate('ra_sparql'),
                         bbox: false,
-                        isStatic: true,
+                        isStatic: false,
                         unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly
                     },
@@ -332,7 +332,7 @@ KR.Config = KR.Config || {};
                 getFeatureData: kulturminneFunctions.getRaFeatureData,
                 template: KR.Util.getDatasetTemplate('ra_sparql'),
                 bbox: false,
-                isStatic: true,
+                isStatic: false,
                 description: 'Data fra Riksantikvarens kulturminnesøk',
                 unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
