@@ -1,8 +1,6 @@
 (function () {
     'use strict';
 
-
-
     var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?url ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
 		' ?id a ?type ;' +
 		'   rdfs:label ?name ;' +
