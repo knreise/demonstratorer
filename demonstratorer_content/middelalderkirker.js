@@ -64,7 +64,8 @@
             init: kulturminneFunctions.initKulturminnePoly,
             style: {fillcolor: '#ddb522'},
             thumbnails: true,
-        }            ];
+        }            
+    ];
 
 
     KR.setupMap(api, datasets, {
@@ -76,5 +77,6 @@
         showGeom: true,
         showScaleBar: true,
         fillcolor: '#ddb522',
+        minZoom: 5,
     });
 }());

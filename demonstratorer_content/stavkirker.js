@@ -96,13 +96,13 @@
 
 
     KR.setupMap(api, datasets, {
-        bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
+        bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
         image: 'http://knreise.no/demonstratorer/common/img/T284_01_0379.jpg',
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
         showScaleBar: true,
-
+        minZoom: 6,
     });
 }());
