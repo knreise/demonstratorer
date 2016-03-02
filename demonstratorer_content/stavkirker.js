@@ -91,8 +91,7 @@
 		            name: 'Digitalt Museum',
 		            dataset: {
 		                api: 'norvegiana',
-		                dataset: 'DiMu',
-		                query: 'dc_subject_facet:Stavkirker'
+		                dataset: 'DiMu AND stavkirke',
 		            },
 		            template: KR.Util.getDatasetTemplate('digitalt_museum'),
 		            isStatic: true,

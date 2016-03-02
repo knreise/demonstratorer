@@ -762,7 +762,7 @@
 		            style: {template: true},
 		            style: {fillcolor: '#135992'},
 		            bbox: false,
-		            isStatic: true,
+		            isStatic: false,
 		            getFeatureData: function (feature, callback) {
 		                api.getItem(
 		                    {api: 'wikipedia', id: feature.properties.id},
@@ -774,11 +774,10 @@
 		            name: 'Digitalt Museum',
 		            dataset: {
 		                api: 'norvegiana',
-		                dataset: 'DiMu',
-		                query: 'dc_subject_facet:Stavkirker'
+		                dataset: 'DiMu AND stavkirke',
 		            },
 		            template: KR.Util.getDatasetTemplate('digitalt_museum'),
-		            isStatic: true,
+		            isStatic: false,
 		            thumbnails: true,
 		            bbox: true,
 		            style: {fillcolor: '#882a28'}
