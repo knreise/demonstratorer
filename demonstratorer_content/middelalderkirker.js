@@ -66,7 +66,6 @@
     ];
 
 
-
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
@@ -76,5 +75,6 @@
         showGeom: true,
         showScaleBar: true,
         fillcolor: '#ddb522',
+        minZoom: 5,
     });
 }());
