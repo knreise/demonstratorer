@@ -33,6 +33,7 @@
 		' filter(?datering in (<https://data.kulturminne.no/askeladden/datering/050>,<https://data.kulturminne.no/askeladden/datering/051>,<https://data.kulturminne.no/askeladden/datering/052>,<https://data.kulturminne.no/askeladden/datering/053>))' +
 		' }';
 
+
     var api = new KR.API({
         flickr: {
             apikey: 'ab1f664476dabf83a289735f97a6d56c'
@@ -65,6 +66,7 @@
     ];
 
 
+
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
@@ -73,5 +75,6 @@
         geomFilter: true,
         showGeom: true,
         showScaleBar: true,
+        fillcolor: '#ddb522',
     });
 }());

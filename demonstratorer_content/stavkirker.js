@@ -60,6 +60,7 @@
             style: {fillcolor: '#ddb522'},
             thumbnail: true,
             minZoom: 7,
+            thumbnails: true,
         },
         {
             name: 'Wikipedia',
