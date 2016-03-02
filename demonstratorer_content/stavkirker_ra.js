@@ -2,7 +2,7 @@
     'use strict';
 
 
-    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img (SAMPLE(?point) as ?point) ?url ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
+    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?url ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
 		' ?id a ?type ;' +
 		'      rdfs:label ?name ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
@@ -24,6 +24,7 @@
 		' ?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence .' +
 		' BIND(REPLACE(STR(?link), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +
 		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
+		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail)' +
 		'   }' +
 		' ?enk <https://data.kulturminne.no/askeladden/schema/i-lokalitet> ?id;' +
 		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10157>;' +
@@ -57,7 +58,9 @@
             unclusterCount: 10,
             init: kulturminneFunctions.initKulturminnePoly,
             style: {fillcolor: '#ddb522'},
-        }            ];
+            thumbnail: true,
+        }            
+    ];
 
 
     KR.setupMap(api, datasets, {
