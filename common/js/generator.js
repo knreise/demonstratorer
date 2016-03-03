@@ -152,12 +152,20 @@ var KR = this.KR || {};
         api.getData(dataset, callback);
     }
 
+    function formatKomm(num) {
+        return ('0000' + num).slice(-4);
+    }
+
     function getMunicipalityList(callback) {
         var dataset = {
             api: 'cartodb',
             query: 'SELECT DISTINCT komm, navn FROM kommuner ORDER BY navn',
             mapper: function (data) {
-                return data.rows;
+
+                return _.map(data.rows, function (row) {
+                    row.komm = formatKomm(row.komm);
+                    return row;
+                });
             }
         };
 
