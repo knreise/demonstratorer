@@ -443,12 +443,12 @@ med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikva
 <script type="text/template" id="ra_sparql_template">
 <h3><%= name %></h3>
 
-<% if (media) { %>
+<% if(!_.isUndefined(arguments[0].media)) { %>
   <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
 <% } %>
 
 
-<% if(!_.isUndefined(arguments[0]. description)) { %>
+<% if(!_.isUndefined(arguments[0].description)) { %>
 <p><%= description %></p>
 <% } %>
 
