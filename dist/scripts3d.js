@@ -1773,7 +1773,6 @@ var KR = this.KR || {};
         function _createListElement(feature, index, template, getData, features) {
             var marker;
             var color = KR.Style.colorForFeature(feature, true);
-            console.log(color);
             if (feature.properties.thumbnail) {
                 marker = options.thumbnailTemplate({
                     thumbnail: KR.Util.getImageCache(feature.properties.thumbnail, 80, 60),
