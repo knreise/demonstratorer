@@ -2,7 +2,7 @@
     'use strict';
 
 
-    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?url ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
+    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
 		' ?id a ?type ;' +
 		'      rdfs:label ?name ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
@@ -14,15 +14,15 @@
 		' optional { ?locart rdfs:label ?locartlabel .}' +
 		' optional { ?org rdfs:label ?orglabel .}' +
 		' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
-		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url)' +
+		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?link)' +
 		' optional {' +
 		' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id}}' +
 		' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
-		' ?picture <https://data.kulturminne.no/schema/source-link> ?link .' +
+		' ?picture <https://data.kulturminne.no/schema/source-link> ?imglink .' +
 		' ?picture rdfs:label ?picturelabel .' +
 		' ?picture dc:description ?picturedescription .' +
 		' ?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence .' +
-		' BIND(REPLACE(STR(?link), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +
+		' BIND(REPLACE(STR(?imglink), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +
 		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
 		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail)' +
 		'   }' +
