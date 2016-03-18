@@ -84,7 +84,7 @@
     KR.setupMap(api, datasets, {
         bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
-        image: 'http://knreise.no/demonstratorer/common/img/T284_01_0379.jpg',
+        image: 'http://knreise.no/demonstratorer/common/img/heddal_3D.png',
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
