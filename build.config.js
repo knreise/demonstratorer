@@ -302,6 +302,11 @@ module.exports = {
       id: '3d_telemark',
       name: '3D - Telemark',
       description: '3D visning av kulturminner i Telemark'
+    },
+    {
+      id: 'grenseomraader',
+      name: 'Kulturminner langs grensen',
+      description: 'Eksempel på kulturminner langs grensen mellom Norge og Sverige'
     }
   ],
   experiments: [
