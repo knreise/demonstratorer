@@ -14,7 +14,7 @@
             dataset: {
                 api: 'cartodb',
                 table: 'bensinstasjoner',
-                columns: ['the_geom', 'content', 'images', 'images as image', 'title', 'thumbnail', 'owner'],
+                columns: ['the_geom', 'content', 'images', 'images as image', 'title', 'thumbnail', 'owner', 'url'],
             },
             bbox: false,
             isStatic: false,
