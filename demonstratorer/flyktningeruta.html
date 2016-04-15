@@ -668,6 +668,35 @@
 </script>
 
 
+<script type="text/template" id="bensinstasjoner_template">
+<h3><%= title %></h3>
+
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+<p>
+    <%= content %>
+</p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Eier</td>
+      <td><%= owner %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="https://creativecommons.org/licenses/by/3.0/no/" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="https://foto.digitalarkivet.no/fotoweb/archives/5026-Finn%20din%20bensinstasjon/" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos Riksarkivet<a/></li>
+</ul>
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>

@@ -144,7 +144,8 @@ module.exports = {
     'foto_sf',
     'nasjonalbiblioteket',
     'byantikvaren_oslo',
-    '3d_sketchfab'
+    '3d_sketchfab',
+    'bensinstasjoner'
   ],
   demoTemplates: [
     'list_item',
@@ -307,6 +308,11 @@ module.exports = {
       id: 'grenseomraader',
       name: 'Kulturminner langs grensen',
       description: 'Eksempel på kulturminner langs grensen mellom Norge og Sverige'
+    },
+    {
+      id: 'bensinstasjoner',
+      name: 'Historiske bensinstasjoner',
+      description: 'Historiske bensinstasjoner fra Riksarkivets fotosamlinger'
     }
   ],
   experiments: [
