@@ -8,7 +8,7 @@
     var datasets = [
 
         {
-            name: 'Bensinstasjoner',
+            name: 'Arkivverket',
             hideFromGenerator: true,
             provider: 'Riksarkivet',
             dataset: {
