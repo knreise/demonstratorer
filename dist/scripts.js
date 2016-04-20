@@ -183,6 +183,7 @@ KR.Util = KR.Util || {};
                     }
                     return feature;
                 });
+                console.log(dataset)
                 var props = _.extend({}, {template: null, getFeatureData: null, noListThreshold: null}, dataset);
                 sidebar.showFeatures(
                     features,
@@ -2047,6 +2048,7 @@ var KR = this.KR || {};
 
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+            console.log(getData);
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
