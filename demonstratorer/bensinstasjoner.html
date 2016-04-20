@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Telemark</title>
+        <title>KNReise - Historiske bensinstasjoner</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -31,7 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash;k), Universitetsmuseene, Digitalt Museum, Digitalt Fortalt, Lokalhistoriewiki og Wikipedia. </br></br>
+<p class="small"><b>Bensinstasjon Lena</b></p>
 </script>
 
 
@@ -710,131 +710,56 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Telemark';
-            var image = 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200';
+            var title = 'Historiske bensinstasjoner';
+            var image = '';
 
             (function () {
     'use strict';
+	
+    var api = new KR.API();
 
-    var fylke = '8';
-
-    var api = new KR.API({
-        flickr: {
-            apikey: 'ab1f664476dabf83a289735f97a6d56c'
-        }
-    });
-
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
     //The datasets in use
     var datasets = [
+
         {
-            thumbnails: true,
-            name: 'Digitalt fortalt',
-            dataset: {dataset: 'difo', api: 'norvegiana'},
-            template: KR.Util.getDatasetTemplate('digitalt_fortalt')
-        },
-        {
-            thumbnails: true,
-            name: 'Kulturminnesøk',
-            provider: 'Riksantikvaren',
-            dataset: {
-                api: 'kulturminnedataSparql',
-                fylke: fylke
-            },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            getFeatureData: kulturminneFunctions.getRaFeatureData,
-            bbox: false,
-            isStatic: true,
-            unclusterCount: 20,
-            init: kulturminneFunctions.initKulturminnePoly,
-        },
-        {
-            provider: 'Riksantikvaren',
-            name: 'Kulturminnesøk - brukerregistrering',
-            dataset: {
-                api: 'kulturminnedata',
-                layer: 2
-            },
-            template: KR.Util.getDatasetTemplate('brukerminne'),
-        },
-        {
-            thumbnails: true,
-            name: 'Universitetsmuseene (Musit)',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'MUSIT'
-            },
-            template: KR.Util.getDatasetTemplate('musit'),
-            minZoom: 12,
-            style: {thumbnail: true}
-        },
-        {
-            thumbnails: true,
-            name: 'Digitalt Museum',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'DiMu'
-            },
-            template: KR.Util.getDatasetTemplate('digitalt_museum'),
-            minZoom: 12,
-            style: {thumbnail: true}
-        },
-        {
-            thumbnails: true,
-            name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia'
-            },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
-            style: {template: true},
-            minZoom: 13
-        },
-        {
-            name: 'Lokalhistoriewiki',
-            provider: 'Lokalhistoriewiki',
-            dataset: {
-                api: 'lokalhistoriewiki'
-            },
-            style: {thumbnail: true},
-            minZoom: 13,
-        },
-        {
-            name: 'Nasjonalbiblioteket',
+            name: 'Arkivverket',
             hideFromGenerator: true,
-            provider: 'Nasjonalbiblioteket',
+            provider: 'Riksarkivet',
             dataset: {
                 api: 'cartodb',
-                table: 'bygdebok_telemark'
+                table: 'bensinstasjoner',
+                columns: ['the_geom', 'content', 'images', 'images as image', 'title', 'thumbnail', 'owner', 'url'],
             },
             bbox: false,
             isStatic: false,
-            template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
             style: {
-	            thumbnail: false,
-	            fillcolor: '#744700',
-				circle: true,
-				opacity: 0.8,
-				radius: 20},
-            description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
+	            thumbnail: true,
+	            fillcolor: '#fece0a'
+	            },
+            description: 'Bensinstasjoner',
+            template: KR.Util.getDatasetTemplate('bensinstasjoner')
         }
-
-
-    ];
-
+        
+     ];	 
+	 
 
     KR.setupMap(api, datasets, {
-        fylke: fylke,
+        bbox: '2.4609375,56.9449741808516,33.3984375,71.85622888185527',
+        title: title,
+        image: 'http://knreise.no/demonstratorer/common/img/riksarkivet/SAS2009-10-1643.jpg',
+        description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
-        title: title,
-        image: image,
-        description: $('#description_template').html(),
-        maxZoom: 18,
-        minZoom: 9
+        showScaleBar: true,
+        minZoom: 5,
     });
 }());
+
+
+
+
+
         </script>
     </body>
 </html>

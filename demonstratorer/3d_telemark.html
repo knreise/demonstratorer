@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Telemark</title>
+        <title>KNReise - 3D - Telemark</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -31,7 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash;k), Universitetsmuseene, Digitalt Museum, Digitalt Fortalt, Lokalhistoriewiki og Wikipedia. </br></br>
+<p class="small"><b>Heddal stavkirke</b> - 3D modell</p>
 </script>
 
 
@@ -710,12 +710,12 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Telemark';
-            var image = 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200';
+            var title = '3D - Telemark';
+            var image = '';
 
             (function () {
     'use strict';
-
+	
     var fylke = '8';
 
     var api = new KR.API({
@@ -726,59 +726,72 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
 
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
+
     //The datasets in use
     var datasets = [
-        {
-            thumbnails: true,
-            name: 'Digitalt fortalt',
-            dataset: {dataset: 'difo', api: 'norvegiana'},
-            template: KR.Util.getDatasetTemplate('digitalt_fortalt')
-        },
-        {
-            thumbnails: true,
-            name: 'Kulturminnesøk',
-            provider: 'Riksantikvaren',
+
+		{
+            name: 'Kulturminner - 3D',
+            hideFromGenerator: true,
+            provider: 'Sketchfab - Telemark Fylkeskommune',
             dataset: {
-                api: 'kulturminnedataSparql',
-                fylke: fylke
+                api: 'cartodb',
+                table: 'table_3d_telemark',
+                columns: ['the_geom', 'content', 'license', 'link', 'modelid', 'name', 'title'],
             },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            getFeatureData: kulturminneFunctions.getRaFeatureData,
             bbox: false,
-            isStatic: true,
-            unclusterCount: 20,
-            init: kulturminneFunctions.initKulturminnePoly,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('3d_sketchfab'),
+            style: {
+	            thumbnail: false,
+	            fillcolor: '#744700'
+	            },
+            description: '3D-modeller av kulturminner i Telemark'
         },
         {
-            provider: 'Riksantikvaren',
-            name: 'Kulturminnesøk - brukerregistrering',
-            dataset: {
-                api: 'kulturminnedata',
-                layer: 2
+            grouped: true,
+            name: 'Kulturminner',
+            style: {
+                fillcolor: '#eebc0a',
+                circle: false,
+                thumbnail: true
             },
-            template: KR.Util.getDatasetTemplate('brukerminne'),
-        },
-        {
-            thumbnails: true,
-            name: 'Universitetsmuseene (Musit)',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'MUSIT'
-            },
-            template: KR.Util.getDatasetTemplate('musit'),
-            minZoom: 12,
-            style: {thumbnail: true}
-        },
-        {
-            thumbnails: true,
-            name: 'Digitalt Museum',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'DiMu'
-            },
-            template: KR.Util.getDatasetTemplate('digitalt_museum'),
-            minZoom: 12,
-            style: {thumbnail: true}
+            datasets: [
+		                {
+		            thumbnails: true,
+		            name: 'Kulturminnes�k',
+		            provider: 'Riksantikvaren',
+		            dataset: {
+		                api: 'kulturminnedataSparql',
+		                fylke: fylke
+		            },
+		            template: KR.Util.getDatasetTemplate('ra_sparql'),
+		            getFeatureData: kulturminneFunctions.getRaFeatureData,
+		            bbox: false,
+		            isStatic: true,
+		            unclusterCount: 20,
+		            init: kulturminneFunctions.initKulturminnePoly,
+		        },
+				{
+		            name: '3D Telemark',
+		            hideFromGenerator: true,
+		            provider: 'Sketchfab - Telemark Fylkeskommune',
+		            dataset: {
+		                api: 'cartodb',
+		                table: 'table_3d_telemark',
+		                columns: ['the_geom', 'content', 'license', 'link', 'modelid', 'name', 'title'],
+		            },
+		            bbox: false,
+		            isStatic: false,
+		            template: KR.Util.getDatasetTemplate('3d_sketchfab'),
+		            style: {
+			            thumbnail: false,
+			            fillcolor: '#744700'
+			            },
+		            description: '3D-modeller av kulturminner i Telemark'
+		        },
+                    ],
+            description: 'Kulturminner'
         },
         {
             thumbnails: true,
@@ -788,17 +801,10 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
                 api: 'wikipedia'
             },
             template: KR.Util.getDatasetTemplate('wikipedia'),
-            style: {template: true},
-            minZoom: 13
-        },
-        {
-            name: 'Lokalhistoriewiki',
-            provider: 'Lokalhistoriewiki',
-            dataset: {
-                api: 'lokalhistoriewiki'
+            style: {template: true,
+	            fillcolor: '#145993'
             },
-            style: {thumbnail: true},
-            minZoom: 13,
+            minZoom: 13
         },
         {
             name: 'Nasjonalbiblioteket',
@@ -813,28 +819,27 @@ Kulturminner i hele Telemark med innhold fra Riksantikvaren (Kulturminnes&oslash
             template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
             style: {
 	            thumbnail: false,
-	            fillcolor: '#744700',
+	            fillcolor: '#c10027',
 				circle: true,
 				opacity: 0.8,
 				radius: 20},
-            description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
-        }
-
-
+            description: 'Bygdeb�ker og lokalhistorie fra Nasjonalbibliotket'
+        }        
     ];
 
 
     KR.setupMap(api, datasets, {
-        fylke: fylke,
+        bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
+        title: title,
+        image: 'http://knreise.no/demonstratorer/common/img/heddal_3D.png',
+        description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
-        title: title,
-        image: image,
-        description: $('#description_template').html(),
-        maxZoom: 18,
-        minZoom: 9
+        showScaleBar: true,
+        minZoom: 6,
     });
 }());
+
         </script>
     </body>
 </html>

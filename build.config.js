@@ -143,7 +143,9 @@ module.exports = {
     'jernbanemuseet',
     'foto_sf',
     'nasjonalbiblioteket',
-    'byantikvaren_oslo'
+    'byantikvaren_oslo',
+    '3d_sketchfab',
+    'bensinstasjoner'
   ],
   demoTemplates: [
     'list_item',
@@ -298,10 +300,19 @@ module.exports = {
       description: 'Middelalderkirker fra Riksantikvaren og Kulturminnesøk'
     },
     {
-      id: 'jul',
-      name: 'God jul',
-      description: 'Julehistorie fra hele landet',
-      extraScripts: ['bower_components/L.SnowLayer.js']
+      id: '3d_telemark',
+      name: '3D - Telemark',
+      description: '3D visning av kulturminner i Telemark'
+    },
+    {
+      id: 'grenseomraader',
+      name: 'Kulturminner langs grensen',
+      description: 'Eksempel på kulturminner langs grensen mellom Norge og Sverige'
+    },
+    {
+      id: 'bensinstasjoner',
+      name: 'Historiske bensinstasjoner',
+      description: 'Historiske bensinstasjoner fra Riksarkivets fotosamlinger'
     }
   ],
   experiments: [
