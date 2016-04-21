@@ -66,7 +66,7 @@ var KR = this.KR || {};
             KR.Util.sendRequest(SKTokenUrl, null, function (token) {
                 if (token.indexOf('**') !== 0) {
                     callback(map.getWmts(
-                        'http://crossorigin.me/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
+                        'http://www.knreise.no/miniProxy/miniProxy.php/http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.nibcache_wmts',
                         'NiB',
                         {
                             TILEMATRIXSET: 'EPSG:900913',
