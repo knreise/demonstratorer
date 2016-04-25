@@ -295,6 +295,11 @@ module.exports = {
       description: 'Stavkirker fra Riksantikvaren og Kulturminnesøk'
     },
     {
+      id: 'nordkirker',
+      name: 'Kirker i Norden',
+      description: 'Oversikt over alle fredede kirker i Norden'
+    },
+    {
       id: 'middelalderkirker',
       name: 'Middelalderkirker - Riksantikvaren',
       description: 'Middelalderkirker fra Riksantikvaren og Kulturminnesøk'
