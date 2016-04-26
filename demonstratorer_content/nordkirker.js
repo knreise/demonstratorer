@@ -55,10 +55,11 @@
             dataset: {
                 api: 'cartodb',
                 table: 'k_samsok_kirker',
-                columns: ['the_geom', 'content', 'license', 'source', 'title', 'thumbnail', 'images'],
+                columns: ['the_geom', 'content', 'license', 'source', 'title', 'thumbnail', 'images as image', 'type', 'institution'],
             },
             bbox: false,
             isStatic: false,
+            template: KR.Util.getDatasetTemplate('nordkirker'),
             style: {
 	            thumbnail: true,
 	            fillcolor: '#fece0a'

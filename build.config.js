@@ -145,6 +145,7 @@ module.exports = {
     'nasjonalbiblioteket',
     'byantikvaren_oslo',
     '3d_sketchfab',
+    'nordkirker',
     'bensinstasjoner'
   ],
   demoTemplates: [
