@@ -1380,8 +1380,8 @@ KR.SparqlAPI = function (apiName, options) {
                 
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ; ' +
-                ' <https://data.kulturminne.no/askeladden/schema/AnsvarligOrganisasjon> ?org ; ' +
-                ' ?p <https://data.kulturminne.no/difi/geo/kommune/' + dataset.kommune + '> ; ' +
+                ' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ; ' +
+                ' ?p <https://data.kulturminne.no/askeladden/kommune/' + dataset.kommune + '> ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point . ' +
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
@@ -1427,8 +1427,8 @@ KR.SparqlAPI = function (apiName, options) {
                 ' rdfs:label ?name ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ; ' +
-                ' <https://data.kulturminne.no/askeladden/schema/AnsvarligOrganisasjon> ?org ; ' +
-                ' <https://data.kulturminne.no/askeladden/schema/i-kommune> ?kommune ; ' +
+                ' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ; ' +
+                ' <https://data.kulturminne.no/askeladden/schema/kommune> ?kommune ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point . ' +
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
@@ -1465,7 +1465,7 @@ KR.SparqlAPI = function (apiName, options) {
                 'where { ' +
                 '?enk a <https://data.kulturminne.no/askeladden/schema/Enkeltminne> . ' +
                 '?enk rdfs:label ?name . ' +
-                '?enk <https://data.kulturminne.no/askeladden/schema/i-lokalitet> <' + lokalitet.trim() + '> . ' +
+                '?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> <' + lokalitet.trim() + '> . ' +
                 '?enk <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?desc . ' +
                 '?enk <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?area . ' +
                 '?enk <https://data.kulturminne.no/askeladden/schema/enkeltminnekategori> ?enkcat . ' +
@@ -2044,7 +2044,7 @@ KR.API = function (options) {
         },
         kulturminnedataSparql: {
             api: KR.SparqlAPI,
-            params: {url: 'http://crossorigin.me/https://sparql.kulturminne.no/'}
+            params: {url: 'http://www.knreise.no/miniProxy/miniProxy.php/https://sparql.kulturminne.no/'}
         },
         utno: {
             api: KR.UtnoAPI,
