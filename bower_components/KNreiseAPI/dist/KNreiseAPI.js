@@ -1466,7 +1466,7 @@ KR.SparqlAPI = function (apiName, options) {
                 '?enk a <https://data.kulturminne.no/askeladden/schema/Enkeltminne> . ' +
                 '?enk rdfs:label ?name . ' +
                 '?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> <' + lokalitet.trim() + '> . ' +
-                '?enk <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?desc . ' +
+                '?enk <https://data.kulturminne.no/askeladden/schema/ksok> ?desc . ' +
                 '?enk <https://data.kulturminne.no/askeladden/schema/geo/area/etrs89> ?area . ' +
                 '?enk <https://data.kulturminne.no/askeladden/schema/enkeltminnekategori> ?enkcat . ' +
                 '?enkcat rdfs:label ?enkcatlabel . ' +
@@ -2044,7 +2044,7 @@ KR.API = function (options) {
         },
         kulturminnedataSparql: {
             api: KR.SparqlAPI,
-            params: {url: 'http://www.knreise.no/miniProxy/miniProxy.php/https://sparql.kulturminne.no/'}
+            params: {url: 'https://sparql.kulturminne.no/'}
         },
         utno: {
             api: KR.UtnoAPI,
