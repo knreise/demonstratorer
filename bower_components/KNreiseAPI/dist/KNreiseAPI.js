@@ -1305,38 +1305,44 @@ KR.SparqlAPI = function (apiName, options) {
 
     function _parseResponse(response, errorCallback) {
 
-        var features = _.map(response.results.bindings, function (item) {
-            var keys = _.without(_.keys(item), 'point', 'omraade');
-            var attrs = _.reduce(keys, function (acc, key) {
-                acc[key] = item[key].value;
-                return acc;
-            }, {});
+        var features = _.chain(response.results.bindings)
+            .map(function (item) {
+                var keys = _.without(_.keys(item), 'point', 'omraade');
+                var attrs = _.reduce(keys, function (acc, key) {
+                    acc[key] = item[key].value;
+                    return acc;
+                }, {});
 
-            if (!attrs.img) {
-                attrs.img = false;
-            }
-            attrs.title = attrs.name;
+                if (!attrs.img) {
+                    attrs.img = false;
+                }
+                attrs.title = attrs.name;
 
-            if (!attrs.license) {
-                attrs.license = license;
-            }
+                if (!attrs.license) {
+                    attrs.license = license;
+                }
 
-            if (_.has(item, 'point')) {
-                return KR.Util.createGeoJSONFeatureFromGeom(
-                    _parseGeom(item.point),
-                    attrs,
-                    apiName + '_' + attrs.id
-                );
-            }
-            if (_.has(item, 'omraade')) {
-                return KR.Util.createGeoJSONFeatureFromGeom(
-                    _parseGeom(item.omraade),
-                    attrs,
-                    apiName + '_' + attrs.id
-                );
-            }
-            return null;
-        });
+                if (_.has(item, 'point')) {
+                    return KR.Util.createGeoJSONFeatureFromGeom(
+                        _parseGeom(item.point),
+                        attrs,
+                        apiName + '_' + attrs.id
+                    );
+                }
+                if (_.has(item, 'omraade')) {
+                    return KR.Util.createGeoJSONFeatureFromGeom(
+                        _parseGeom(item.omraade),
+                        attrs,
+                        apiName + '_' + attrs.id
+                    );
+                }
+                return null;
+            })
+            .filter(function (feature) {
+                return !!feature;
+            })
+            .value();
+        
 
         return KR.Util.createFeatureCollection(features);
     }
