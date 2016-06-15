@@ -319,6 +319,12 @@ module.exports = {
       id: 'bensinstasjoner',
       name: 'Historiske bensinstasjoner',
       description: 'Historiske bensinstasjoner fra Riksarkivets fotosamlinger'
+    },
+    {
+      id: 'NVE',
+      name: 'NVE - "kulturminner i kart"',
+      description: 'NVEs kulturminner.',
+      url: 'demonstratorer/kulturminner-nve.html'
     }
   ],
   experiments: [
