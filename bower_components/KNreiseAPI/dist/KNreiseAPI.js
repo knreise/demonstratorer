@@ -2046,7 +2046,7 @@ KR.API = function (options) {
         },
         kulturminnedata: {
             api: KR.ArcgisAPI,
-            params: {url: 'http://askeladden.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'}
+            params: {url: 'http://askeladden_wms.ra.no/arcgis/rest/services/Husmann/Husmann/MapServer/'}
         },
         kulturminnedataSparql: {
             api: KR.SparqlAPI,
