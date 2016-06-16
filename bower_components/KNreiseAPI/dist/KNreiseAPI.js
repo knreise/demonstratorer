@@ -1392,7 +1392,7 @@ KR.SparqlAPI = function (apiName, options) {
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
                 ' optional { ?org rdfs:label ?orglabel .} ' +
-                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .} ' +
+                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .} ' +
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
@@ -1439,7 +1439,7 @@ KR.SparqlAPI = function (apiName, options) {
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
                 ' optional { ?org rdfs:label ?orglabel .} ' +
-                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .} ' +
+                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .} ' +
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +

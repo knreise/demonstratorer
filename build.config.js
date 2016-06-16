@@ -323,7 +323,7 @@ module.exports = {
     {
       id: 'NVE',
       name: 'NVE - "kulturminner i kart"',
-      description: 'NVEs kulturminner.',
+      description: 'Kulturminner fra NVE (Norges vassdrags- og energidirektorat).',
       url: 'demonstratorer/kulturminner-nve.html'
     }
   ],
