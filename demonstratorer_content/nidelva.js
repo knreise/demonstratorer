@@ -15,7 +15,7 @@
             dataset: {
                 api: 'cartodb',
                 table: 'naturvernomrader_utm33_2',
-                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform']
             },
             provider: 'Naturbase',
             name: 'Verneområder',
@@ -67,7 +67,7 @@
                     init: kulturminneFunctions.initKulturminnePoly,
 		            bbox: false,
 		            style: {fillcolor: '#728224'}
-		        },	
+		        }	
         	],
             isStatic: false,
             minZoom: 8
@@ -107,7 +107,7 @@
                 api: 'lokalhistoriewiki'
             },
             style: {thumbnail: true},
-            minZoom: 13,
+            minZoom: 13
         }
     ];
 
@@ -117,7 +117,8 @@
         title: title,
         image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
         description: $('#description_template').html(),
-        line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',
+        /*line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',*/
+        line: 'http://knreise.github.io/demonstratorer/demonstratorer/nidelva.kml',
         buffer: 0.5,
         layer: layer,
         maxZoom: 18,

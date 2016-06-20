@@ -7,9 +7,9 @@
 		'      rdfs:label ?name ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ;' +
-		' <https://data.kulturminne.no/askeladden/schema/AnsvarligOrganisasjon> ?org ;' +
+		' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ;' +
 		' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
-		' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .}' +
+		' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .}' +
 		' optional { ?loccat rdfs:label ?loccatlabel .}' +
 		' optional { ?locart rdfs:label ?locartlabel .}' +
 		' optional { ?org rdfs:label ?orglabel .}' +
@@ -26,7 +26,7 @@
 		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
 		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail)' +
 		'   }' +
-		' ?enk <https://data.kulturminne.no/askeladden/schema/i-lokalitet> ?id;' +
+		' ?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id;' +
 		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10157>;' +
 		'      <https://data.kulturminne.no/askeladden/schema/vernetype> <https://data.kulturminne.no/askeladden/vernetype/AUT>' +
 		' }';
