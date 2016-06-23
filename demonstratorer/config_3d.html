@@ -737,6 +737,38 @@
 </script>
 
 
+<script type="text/template" id="europeana280_template">
+<h3><%= engtitle %></h3>
+<h4><%= artist %></h4>
+
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+        <h5 style="text-align: center"><%= origtitle %> (<%= year %>)</h5>
+        
+<!--<p>
+    <%= content %>
+</p>-->
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Institution</td>
+      <td><%= institution %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
+</ul>
+
+</script>
+
+
 
 
         <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>

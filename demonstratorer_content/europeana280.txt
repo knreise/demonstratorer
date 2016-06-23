@@ -1,0 +1,3 @@
+<p class="small">----------</p>
+
+<p>Europeana 280</p>

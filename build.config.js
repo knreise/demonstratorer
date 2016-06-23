@@ -146,7 +146,8 @@ module.exports = {
     'byantikvaren_oslo',
     '3d_sketchfab',
     'nordkirker',
-    'bensinstasjoner'
+    'bensinstasjoner',
+    'europeana280'
   ],
   demoTemplates: [
     'list_item',
@@ -325,6 +326,11 @@ module.exports = {
       name: 'NVE - "kulturminner i kart"',
       description: 'Kulturminner fra NVE (Norges vassdrags- og energidirektorat).',
       url: 'demonstratorer/kulturminner-nve.html'
+    },
+    {
+      id: 'europeana280',
+      name: 'Europeana 280',
+      description: 'Kartvisning av Europeana 280'
     }
   ],
   experiments: [
