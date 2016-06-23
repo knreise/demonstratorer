@@ -40,6 +40,78 @@
 	            fillcolor: '#fece0a'
 	            },
             description: 'Europeana 280'
+        },
+        {
+            name: 'Finland',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - Finland',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_finland',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#fece0a'
+	            },
+            description: 'Europeana 280'
+        },
+        {
+            name: 'Denmark',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - Denmark',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_denmark',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#fece0a'
+	            },
+            description: 'Europeana 280'
+        },
+        {
+            name: 'Germany',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - Germany',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_germany',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#fece0a'
+	            },
+            description: 'Europeana 280'
+        },
+        {
+            name: 'Italy',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - Italy',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_italy',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#fece0a'
+	            },
+            description: 'Europeana 280'
         }
     ];
     
