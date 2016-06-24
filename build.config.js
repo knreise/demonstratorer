@@ -330,7 +330,7 @@ module.exports = {
     {
       id: 'europeana280',
       name: 'Europeana 280',
-      description: 'Kartvisning av Europeana 280'
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
     }
   ],
   experiments: [
