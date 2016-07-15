@@ -36,7 +36,8 @@ module.exports = {
     'bower_components/jquery-touchswipe/jquery.touchSwipe.min.js',
     'bower_components/L.TileLayer.Kartverket/dist/L.TileLayer.Kartverket.min.js',
     'bower_components/L.EasyButton/easy-button.min.js',
-    'bower_components/cilogi-marker/dist/cilogi-marker.min.js'
+    'bower_components/cilogi-marker/dist/cilogi-marker.min.js',
+    'bower_components/abdmob/x2js/xml2json.min.js'
   ],
   demoScripts: [
     'common/js/ErrorHandler.js',
@@ -148,7 +149,8 @@ module.exports = {
     'nordkirker',
     'bensinstasjoner',
     'europeana280',
-    'europeana280_2'
+    'europeana280_2',
+    'ksamsok'
   ],
   demoTemplates: [
     'list_item',
@@ -342,6 +344,11 @@ module.exports = {
       id: 'europeana_arthistory',
       name: 'Europeana Art History Collection',
       description: 'Europeana Art History Collection'
+    },
+    {
+      id: 'ksamsok',
+      name: 'K-samsök eksempel',
+      description: 'K-samsök eksempel'
     }
   ],
   experiments: [

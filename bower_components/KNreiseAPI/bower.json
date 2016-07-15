@@ -1,6 +1,6 @@
 {
   "name": "KNreiseAPI",
-  "version": "1.9.1",
+  "version": "1.9.3",
   "description": "Api wrapper for KNreise",
   "authors": [
     "Atle Frenvik Sveen <atle.sveen@norkart.no>"
@@ -23,6 +23,7 @@
     "togeojson": "~0.11.1",
     "esri2geo": "https://github.com/calvinmetcalf/esri2geo.git",
     "wellknown": "https://github.com/mapbox/wellknown.git#~0.3.1",
-    "proj4": "~2.3.6"
+    "proj4": "~2.3.6",
+    "abdmob/x2js": "~1.2.0"
   }
 }

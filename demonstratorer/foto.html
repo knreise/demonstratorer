@@ -807,6 +807,25 @@
 </script>
 
 
+<script type="text/template" id="ksamsok_template">
+<h3><%= title %></h3>
+
+<% if (image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+<% if (itemDescription) { %>
+    <p><%= itemDescription %></p>
+<% } %>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= url %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at K-samsök pages<a/></li>
+</ul>
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>

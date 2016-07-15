@@ -190,7 +190,6 @@ var KR = this.KR || {};
 
 
         function showFeature(feature, template, getData, callbacks, index, numFeatures) {
-            console.log(getData);
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
