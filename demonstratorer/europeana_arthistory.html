@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>KNReise - Europeana Art History Collection</title>
+
+
+        <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet/dist/leaflet.css' rel='stylesheet' />
+        <link href='../bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
+        <link href='../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
+        <link href='../bower_components/Leaflet.Photo/Leaflet.Photo.css' rel='stylesheet' />
+        <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
+        <link href='../bower_components/cilogi-marker/dist/cilogi-marker.css' rel='stylesheet' />
+        <link href='../dist/style.css' rel='stylesheet' />
+        
+        <meta name="apple-mobile-web-app-capable" content="yes">
+		<link rel="apple-touch-icon" href="">
+
+    </head>
+    <body>
+
+<div id="sidebar"></div>
+<div id="map"></div>
+
+
+
+<script type="text/template" id="description_template">
+
+</script>
+
+
+
+<script type="text/template" id="list_item_template">
+<a href="#" class="list-group-item">
+    <div class="media">
+        <div class="media-left media-middle">
+            <%= marker %>
+        </div>
+        <div class="media-body">
+            <h6><%= title %></h6>
+        </div>
+    </div>
+</a>
+</script>
+
+
+<script type="text/template" id="marker_template">
+<div class="" style="width: 3px; height: 45px; background-color: <%= color %>; border-radius:4px;">
+</div>
+</script>
+
+
+<script type="text/template" id="thumbnail_template">
+<img src="<%= thumbnail %>" srcset="<%= thumbnail2x %> 2x" width="80" height="60" class="thumbnail" style="border-color: <%= color %>"/>
+</script>
+
+
+<script type="text/template" id="footer_template">
+<ul class="list-unstyled">
+<% if (license) { %>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+<% } %>
+    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+</ul>
+</script>
+
+
+<script type="text/template" id="error_template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Feil!</strong> <span class="content"></span>
+</div>
+</script>
+
+
+<script type="text/template" id="message_template">
+<div class="alert alert-dismissible" role="alert">
+  <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <div class="content"></div>
+</div>
+</script>
+
+
+<script type="text/template" id="response_form_template">
+
+<div class="feedback-form">
+  <p class="show-more"><i class="fa fa-envelope-o"></i> Tilbakemelding</p>
+  <form class="hidden">
+    <h4>Tilbakemelding</h4>
+    <div class="form-group">
+      <label for="form_email">Har du spørsmål eller kommentarer til denne informasjonen eller ønsker du å 
+        si fra om feil eller mangler, så kan du gjøre det her:</label>
+      <textarea id="form_message" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="form_email">Din epost:</label>
+      <input type="email" class="form-control" id="form_email">
+    </div>
+    <button type="submit" class="btn btn-default">Send</button>
+  </form>
+  <div id="form-success" class="media hidden">
+      <button class="close pull-right" aria-label="Close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="media-left">
+        <i class="fa fa-check-circle fa-3x"></i>
+      </div>
+      <div class="media-body">
+      </div>
+  </div>
+</div>
+</script>
+
+
+<script type="text/template" id="splashscreen_template">
+<h2><%= title %></h2>
+<% if (image) { %> 
+<img class="splash-image" src="<%= image %>">
+<% } %>
+<div class="splash-content">
+    <% if (description) { %> 
+    <div><%= description %></div>
+    <% } %>
+    <% if (creator) { %> 
+
+        <table class="sidebar-table">
+            <tr>
+              <td>Laget av</td>
+              <td><%= creator %></td>
+            </tr>
+        </table>
+
+    <% } %>
+    
+    <% if (spinner) { %>
+        <p id="splash_spinner">
+            <i class="fa fa-spinner fa-pulse fa-4x"></i>
+            Laster data..
+        </p>
+    <%} %>
+
+    <div class="footer small">
+        <p>
+            Dette kartet er basert på åpne data og en løsning utviklet i regi av <a href="http://kulturognaturreise.no">Kultur- og naturreise</a>. Se også <a href="http://knreise.no/demonstratorer">andre kart og informasjon om selve løsningen</a>. All koden er fritt tilgjengelig på <a href="https://github.com/knreise/demonstratorer">GitHub</a>.</p>
+        <p>
+            <input id="persist_splash_cb" type="checkbox"> Ikke vis ved oppstart
+        </p>
+    </div>
+    
+</div>
+</script>
+
+
+<script type="text/template" id="user_position_template">
+<div class="distance">
+    <i class="fa fa-location-arrow" style="transform: rotate(<%= distanceBearing.rot %>deg); -webkit-transform: rotate(<%= distanceBearing.rot %>deg);"></i> 
+    <%= distanceBearing.dist %>
+</div>
+</script>
+
+<script type="text/template" id="verneomraader_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Verneform</td>
+      <td><%= verneform %></td>
+    </tr>
+</table>
+
+</script>
+
+
+<script type="text/template" id="kulturminne_template">
+<h3><%= title %></h3>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type kulturminne</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Kategori</td>
+      <td><%= allProps.dc_subject[1] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Art</td>
+      <td><%= allProps.dc_subject[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Vernestetus</td>
+      <td><%= allProps.dc_subject[2] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Registrerte funn</td>
+      <td>??</td>
+    </tr>
+    <tr>
+      <td>Synlig</td>
+      <td>??</td>
+    </tr>
+</table>
+</script>
+
+
+<script type="text/template" id="kulturminne2_template">
+<h3>Kulturminne</h3>
+
+<dl>
+    <dt>Navn</dt>
+    <dd><%= LokalitetNavn %></dd>
+
+    <dt>Kategori</dt>
+    <dd><%= Kategori %></dd>
+
+    <dt>Vernestatus</dt>
+    <dd><%= Vernestatus %></dd>
+
+    <dt>Beskrivelse</dt>
+    <dd><%= Beskrivelse %></dd>
+
+</dl>
+</script>
+
+
+<script type="text/template" id="musit_template">
+<h3><%= allProps.dc_title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] %></td>
+    </tr>
+
+    <% if (allProps.dc_date) { %>
+    <tr>
+      <td>Datering</td>
+      <td><%= allProps.dc_date[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator) { %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+    <% } %>
+</table>
+
+</script>
+
+
+<script type="text/template" id="digitalt_museum_template">
+<h3><%= title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% } %>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
+
+    <% if (allProps.abm_address) { %>
+    <tr>
+      <td>Adresse</td>
+      <td><%= allProps.abm_address[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_creator){ %>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] %></td>
+    </tr>
+    <% } %>
+
+    <% if (allProps.dc_subject) { %>
+    <tr>
+      <td>Emneord</td>
+      <td><%= allProps.dc_subject.join(', ')%></td>
+    </tr>
+    <% } %>
+
+</table>
+
+</script>
+
+
+<script type="text/template" id="digitalt_fortalt_template">
+<h3><%= title %></h3>
+
+<% if (media) { %>
+  <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
+<% } %>
+
+<p><%= allProps.abm_introduction %></p>
+
+<p><%= allProps.dc_description %></p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Samling</td>
+      <td><%= allProps.europeana_dataProvider[0] || 'n/a' %></td>
+    </tr>
+    <tr>
+      <td>Opphavsperson</td>
+      <td><%= allProps.dc_creator[0] || 'n/a' %></td>
+    </tr>
+</table>
+
+
+</script>
+
+
+<script type="text/template" id="folketelling_template">
+<% if (property.id.indexOf('g') === 0) { %> 
+    <h3><%= property.gatenavn_og_nummer_i_gata %></h3>
+
+    <p><%= property.bildelenke %></p>
+
+    <table class="sidebar-table">
+        <tr>
+          <td>Hjemmehørende</td>
+          <td><%= property.antall_hjemmehorende_personer || 0 %> personer</td>
+        </tr>
+        <tr>
+          <td>Etasjer</td>
+          <td><%= property.antall_etasjer %></td>
+        </tr>
+    </table>
+
+    <% if(apartments) { %> 
+        <% _.each(apartments.sort(function (a) {return parseInt(a.leilighetsnummer, 10)}), function (apartment) { %>
+            <table class="sidebar-table">
+                <tr colspan="2">
+                  <td><h4>Leilighet <%= apartment.leilighetsnummer %></h4></td>
+                </tr>
+                <tr>
+                  <td>Plassering</td>
+                  <td><%= apartment.bekvemmelighetens_beliggenhet %></td>
+                </tr>
+                <tr>
+                  <td>Etasje</td>
+                  <td><%= apartment.etasje %></td>
+                </tr>
+                <tr>
+                  <td>Husleie</td>
+                  <td><%= apartment.husleie %></td>
+                </tr>
+                <tr>
+                  <td>Beboere</td>
+                  <td><%= KR.Util.formatPersons(apartment.antall_hjemmehorende_personer) %></td>
+                </tr>
+                <tr colspan="2">
+                  <td>
+                    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/leilighet/<%= apartment.id %>" target="_blank">
+                      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+                    </a>
+                  </td>
+                </tr>
+            </table>
+        <% }) %>
+    </ul>
+
+<% } %>
+
+<% } else { %> 
+
+    <h3><%= property.bostedets_navn %></h3>
+
+    <% _.each(residents, function (resident) { %>
+      <table class="sidebar-table">
+          <tr colspan="2">
+            <td><h4><%= resident.fornavn %> <%= resident.patronymikon %> <%= resident.slektsnavn %></h4></td>
+          </tr>
+          <tr>
+            <td>Født</td>
+            <td><%= resident.fodselsaar %></td>
+          </tr>
+          <tr>
+            <td>Fødested</td>
+            <td><%= resident.fodested %></td>
+          </tr>
+          <tr>
+            <td>Yrke</td>
+            <td><%= resident.yrke %></td>
+          </tr>
+      </table>
+    <% }) %>
+    <a class="sidebar-link" href="http://digitalarkivet.arkivverket.no/ft/bosted_land/<%= property.id %>" target="_blank">
+      <i class="fa fa-external-link-square"></i> Vis hos Digitalarkivet
+    </a>
+    
+
+<% } %>
+
+</script>
+
+
+<script type="text/template" id="wikipedia_template">
+<h3><%= title %></h3>
+
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% } %>
+
+<div class="wikipedia-content">
+    <%= content %>
+</div>
+
+</script>
+
+
+<script type="text/template" id="ra_sparql_template">
+<h3><%= name %></h3>
+
+<% if(!_.isUndefined(arguments[0].media)) { %>
+  <%= KR.MediaCarousel.CreateMediaListMarkup(media) %>
+<% } %>
+
+
+<% if(!_.isUndefined(arguments[0].description)) { %>
+<p><%= description %></p>
+<% } %>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Type</td>
+      <td><%= loccatlabel %></td>
+    </tr>
+    <% if(!_.isUndefined(arguments[0].locartlabel)) { %>
+    <tr>
+      <td>Lokalitetsart</td>
+      <td><%= locartlabel  %></td>
+    </tr>
+    <% } %>
+    <% if(!_.isUndefined(arguments[0].orglabel)) { %>
+    <tr>
+      <td>Ansvarlig organisasjon</td>
+      <td><%= orglabel  %></td>
+    </tr>
+    <% } %>
+</table>
+</script>
+
+
+<script type="text/template" id="fangstgrop_template">
+<h3>Fangstgrop</h3>
+
+</script>
+
+
+<script type="text/template" id="flickr_template">
+<h3><%= title %></h3>
+
+<img class="fullwidth img-thumbnail" src="<%= image %>" />
+
+
+
+<ul class="list-unstyled distance">
+    <li>
+	    <a href="https://www.flickr.com/photos/<%= owner %>/<%= id %>/"  target="_blank" class="sidebar-link" >
+			<i class="fa fa-external-link-square"></i> Vis hos Flickr
+		</a>
+    </li>
+</ul>
+
+
+	
+
+
+</script>
+
+
+<script type="text/template" id="husmann_template">
+<h3>Kulturminne</h3>
+
+<dl>
+    <dt>Navn</dt>
+    <dd><%= Navn %></dd>
+</dl>
+</script>
+
+
+<script type="text/template" id="brukerminne_template">
+<h3><%= title %></h3>
+
+<% if(!_.isUndefined(arguments[0].extra)) { %>
+  <img class="fullwidth img-thumbnail" src="<%= extra.UrlTilBilde %>" />
+  <p class="small sidebar-image-text grey">
+  	<b><%= extra.Tittel %></b> - Foto: <%= extra.OpphavspersonFotograf %><br>
+  	<%= extra.Copyright %>
+  </p>
+  
+<% } %>
+
+
+<% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
+  <p><%= KortBeskrivelse %></p>
+<% } %>
+
+<p><%= Beskrivelse %></p>
+
+<table class="sidebar-table">
+    <tr>
+      <td>Datering</td>
+      <td><%= Datering %></td>
+    </tr>
+    <tr>
+      <td>Opprinnelig funksjon</td>
+      <td><%= OpprinneligFunksjon %></td>
+    </tr>
+    <% if(!_.isUndefined(arguments[0].NåværendeFunksjon)) { %>
+    <tr>
+      <td>Nåværende funksjon</td>
+      <td><%= NåværendeFunksjon %></td>
+    </tr>
+    <% } %>
+    <% if(!_.isUndefined(arguments[0].Kilder)) { %>
+    <tr>
+      <td>Kilder</td>
+      <td><%= Kilder %></td>
+    </tr>
+    <% } %>
+</table>
+</script>
+
+
+<script type="text/template" id="popup_template">
+<h3><%= title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% } %>
+<p><%= content %></p>
+
+</script>
+
+
+<script type="text/template" id="jernbanemuseet_template">
+<h3><%= title %></h3>
+
+<% if(images) { %>
+    <img class="fullwidth" src="<%= images[0] %>" />
+<% } %>
+<p><%= description %></p>
+
+<% _.each(pages, function (page) { %>
+    <h4><%= page.title %></h4>
+    <% _.each(page.blocks, function (block) { %>
+        <% if (block.type === 'text') { %>
+            <%= block.text %>
+        <% } else if (block.type === 'image_video') { %>
+            <% _.each(block.media, function (media) { %>
+                <% if (media.type === 'image') { %>
+                    <img class="fullwidth" src="<%= media.url %>" />
+                <% } else if (media.type === 'video') { %>
+                    <video class="video-js vjs-default-skin fullwidth" controls preload="auto" height="315" data-setup='{}'>
+                        <source src="<%= media.url %>" type='video/mp4'>
+                    </video>
+                <% } %>
+                <p>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
+                </p>
+            <% }) %>
+        <% } else if (block.type === 'links') { %>
+            <ul>
+            <% _.each(block.links, function (link) { %> 
+                <li><a href="<%= link.url%>"><%= link.title %></a></li>
+            <% }) %>
+            </ul>
+        <% } else if (block.type === 'audio') { %>
+            <% _.each(block.media, function (media) { %>
+                <p>
+                    <strong><%= media.title %></strong><br/>
+                    <em><%= media.description %></em>
+                </p>
+                <audio src="<%= media.url %>" preload="auto"></audio>
+            <% }) %>
+        <% } %>
+    <% }) %>
+<% }) %>
+
+</script>
+
+
+<script type="text/template" id="foto_sf_template">
+<h3><%= title %></h3>
+<% if(allProps.europeana_isShownBy) { %>
+    <img class="fullwidth img-thumbnail" src="<%= allProps.europeana_isShownBy[0] %>" />
+<% } %>
+<p><%= content %></p>
+
+</script>
+
+
+<script type="text/template" id="nasjonalbiblioteket_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+
+
+<ul class="list-unstyled distance">
+    <li>
+	    <a href="<%= url %>"  target="_blank" class="sidebar-link" >
+			<i class="fa fa-external-link-square"></i> Vis bok i bokhylla.no
+		</a>
+    </li>
+</ul>
+
+
+	
+
+
+</script>
+
+
+<script type="text/template" id="byantikvaren_oslo_template">
+<h3><%= title %></h3>
+
+<img class="fullwidth img-thumbnail" src="<%= images %>" width="400"/>
+
+<p><%= image_caption %></p>
+
+<p><%= content %></p>
+
+<p class="small"><%= kulturminne_tekst %></p>
+	
+
+
+</script>
+
+
+<script type="text/template" id="3d_sketchfab_template">
+<h3><%= title %></h3>
+
+<p><%= content %></p>
+
+<iframe width="420" height="280" src=<%= modelid %> frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" onmousewheel=""></iframe>
+
+
+</script>
+
+
+<script type="text/template" id="nordkirker_template">
+<h3><%= title %> (<%= type %>)</h3>
+
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+<p>
+    <%= content %>
+</p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Eier</td>
+      <td><%= institution %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= source %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Se hos Arkivverket<a/></li>
+</ul>
+
+</script>
+
+
+<script type="text/template" id="bensinstasjoner_template">
+<h3><%= title %></h3>
+
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+<p>
+    <%= content %>
+</p>
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Eier</td>
+      <td><%= owner %></td>
+    </tr>
+    <tr>
+      <td>Arkiv</td>
+      <td><a href="http://www.arkivportalen.no/side/arkiv/detaljer?arkivId=no-a1450-06000000031532" style="color:black">Pa 0982 - Esso Norge A/S</a></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="https://creativecommons.org/licenses/by/3.0/no/" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= url %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Se hos Arkivverket<a/></li>
+</ul>
+
+</script>
+
+
+<script type="text/template" id="europeana280_template">
+<h3><%= engtitle %></h3>
+<h4><%= artist %></h4>
+
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+        <h5 style="text-align: center"><%= origtitle %> (<%= year %>)</h5>
+        
+<!--<p>
+    <%= content %>
+</p>-->
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Institution</td>
+      <td><%= institution %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
+</ul>
+
+</script>
+
+
+<script type="text/template" id="europeana280_2_template">
+<h3><%= title %></h3>
+<h4><%= creator %></h4>
+
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% } %>
+
+        <h5 style="text-align: center"><%= title %> (<%= year %>)</h5>
+        
+<!--<p>
+    <%= content %>
+</p>-->
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Institution</td>
+      <td><%= dataProvider %></td>
+    </tr>
+    <tr>
+        <td>Country</td>
+        <td><%= country %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
+</ul>
+
+</script>
+
+
+
+
+        <script src="../dist/scripts_external.js" type="text/javascript"></script>
+        <script src="../dist/scripts.min.js" type="text/javascript"></script>
+        <script type="text/javascript">
+
+            var title = 'Europeana Art History Collection';
+            var image = '';
+
+            (function () {
+    'use strict';
+
+    var api = new KR.API({
+        europeana: {
+            apikey: 'pYEaya4fK'
+        }
+    });
+
+    var datasets = [
+         {
+            name: 'Europeana Art History Collection',
+            hideFromGenerator: true,
+            provider: 'Europeana Art History Collection',
+            dataset: {
+                api: 'europeana',
+                query: '(DATA_PROVIDER:"Östasiatiska museet" NOT TYPE:TEXT) OR (DATA_PROVIDER:"Medelhavsmuseet") OR (DATA_PROVIDER:"Rijksmuseum") OR (europeana_collectionName: "91631_Ag_SE_SwedishNationalHeritage_shm_art") OR (DATA_PROVIDER:"Bibliothèque municipale de Lyon") OR (DATA_PROVIDER:"Museu Nacional d\'Art de Catalunya") OR (DATA_PROVIDER:"Victoria and Albert Museum") OR (DATA_PROVIDER:"Slovak national gallery") OR (DATA_PROVIDER:"Thyssen-Bornemisza Museum") OR (DATA_PROVIDER:"Museo Nacional del Prado") OR (DATA_PROVIDER:"Statens Museum for Kunst") OR (DATA_PROVIDER:"Hungarian University of Fine Arts, Budapest") OR (DATA_PROVIDER:"Hungarian National Museum") OR (DATA_PROVIDER:"Museum of Applied Arts, Budapest") OR (DATA_PROVIDER:"Szépművészeti Múzeum") OR (DATA_PROVIDER:"Museum of Fine Arts - Hungarian National Gallery, Budapest") OR (DATA_PROVIDER:"Schola Graphidis Art Collection. Hungarian University of Fine Arts - High School of Visual Arts, Budapest") OR (PROVIDER:"Ville de Bourg-en-Bresse") OR (DATA_PROVIDER:"Universitätsbibliothek Heidelberg") OR ((what:("fine art" OR "beaux arts" OR "bellas artes" OR "belle arti" OR "schone kunsten" OR konst OR "bildende kunst" OR "Opere \'arte visiva" OR "decorative arts" OR konsthantverk OR "arts décoratifs" OR paintings OR schilderij OR pintura OR peinture OR dipinto OR malerei OR måleri OR målning OR sculpture OR skulptur OR sculptuur OR beeldhouwwerk OR drawing OR poster OR tapestry OR gobelin OR jewellery OR miniature OR prints OR träsnitt OR holzschnitt OR woodcut OR lithography OR chiaroscuro OR "old master print" OR estampe OR porcelain OR mannerism OR rococo OR impressionism OR expressionism OR romanticism OR "Neo-Classicism" OR "Pre-Raphaelite" OR Symbolism OR Surrealism OR Cubism OR "Art Deco" OR "Art Déco" OR Dadaism OR "De Stijl" OR "Pop Art" OR "art nouveau" OR "art history" OR "http://vocab.getty.edu/aat/300041273" OR "histoire de l\'art" OR kunstgeschichte OR "estudio de la historia del arte" OR Kunstgeschiedenis OR "illuminated manuscript" OR buchmalerei OR enluminure OR "manuscrito illustrado" OR "manoscritto miniato" OR boekverluchting OR kalligrafi OR calligraphy OR exlibris)) AND (provider_aggregation_edm_isShownBy:*)) NOT (what: "printed serial" OR what:"printedbook" OR "printing paper" OR "printed music" OR DATA_PROVIDER:"NALIS Foundation" OR DATA_PROVIDER:"Ministère de la culture et de la communication, Musées de France" OR DATA_PROVIDER:"CER.ES: Red Digital de Colecciones de museos de España" OR PROVIDER:"OpenUp!" OR PROVIDER:"BHL Europe" OR PROVIDER:"EFG - The European Film Gateway" OR DATA_PROVIDER: "Malta Aviation Museum Foundation" OR DATA_PROVIDER:"National Széchényi Library - Digital Archive of Pictures" OR PROVIDER:"Swiss National Library")'
+            },
+            bbox: true,
+            isStatic: false,
+            minZoom: 12,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#ff0000'
+                },
+            description: 'Europeana Art History Collection'
+        }
+    ];
+
+    var layer = L.tileLayer('https://api.mapbox.com/styles/v1/vemundolstad/ciptnvtke003dcxmbfp6twjlr/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoidmVtdW5kb2xzdGFkIiwiYSI6ImNpcHRsNW8yOTAwMzVoem0yN3kyZ3B6eXcifQ.E8botDAcNDcki0fCncD4Gw') 
+
+    KR.setupMap(api, datasets, {
+        title: title,
+        bbox: '-28.828125,46.40625,34.1618181612,71.9653876991',
+        image: 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=https%3A%2F%2Fwww.dropbox.com%2Fs%2Fqpl39c1v2bj3q67%2FNO_Munch_The_Scream_NG.M.00939.jpg%3Fraw%3D1&size=LARGE&type=IMAGE',
+        description: $('#description_template').html(),
+        geomFilter: true,
+        showGeom: true,
+        showScaleBar: true,
+        fillcolor: '#ddb522',
+        minZoom: 4,
+        layer: layer,
+        showLayerList: true
+    });
+}());
+
+        </script>
+    </body>
+</html>

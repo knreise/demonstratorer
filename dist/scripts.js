@@ -4711,7 +4711,7 @@ var KR = this.KR || {};
                 if (lineLayer) {
                     lineLayer.addTo(map);
                 }
-                if (datasets.length > 1) {
+                if (datasets.length > 1 || options.showLayerList) {
                     L.control.datasets(layers).addTo(map);
                 }
             };

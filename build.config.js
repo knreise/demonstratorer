@@ -337,6 +337,11 @@ module.exports = {
       id: 'europeana280_2',
       name: 'Europeana 280',
       description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+    },
+    {
+      id: 'europeana_arthistory',
+      name: 'Europeana Art History Collection',
+      description: 'Europeana Art History Collection'
     }
   ],
   experiments: [

@@ -995,7 +995,8 @@ KR.EuropeanaAPI = function (apiName, options) {
     function getBbox(parameters, bbox, callback, errorCallback, options) {
         var params = {
             wskey: apikey,
-            query: _bboxQuery(bbox)
+            query: _bboxQuery(bbox),
+            rows: 100
         };
         if (parameters.collection) {
             params.qf = 'europeana_collectionName:' + parameters.collection;

@@ -7,7 +7,7 @@ the grunt plugin [grunt-bump-build-git][grunt-bump-build-git] is used.
 In order to release a new version there are some steps to be taken:
 
 1. Commit all your changes so that you have no uncommitted files 
-2. run ```grunt release:{RELEASE_TYPE}``` where {RELEASE_TYPE} is either ```patch```, ```minor``` or ```major``` (see [semver][semver] spec for the difference)
+2. run ```grunt build:{RELEASE_TYPE}``` where {RELEASE_TYPE} is either ```patch```, ```minor``` or ```major``` (see [semver][semver] spec for the difference)
 3. Note the new version number reported (i.e. 1.1.1)
 4. commit all the new files
 5. tag the release: ```git tag 1.1.1```
