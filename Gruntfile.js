@@ -153,7 +153,7 @@ module.exports = function (grunt) {
                     };
                     var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo3d.html.tpl', fs);
                     fs.writeSync(fd, pageTemplate({data: demonstrator}));
-                    resetTemplateSettings()
+                    resetTemplateSettings();
                     done();
                 }
             },

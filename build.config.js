@@ -147,7 +147,8 @@ module.exports = {
     '3d_sketchfab',
     'nordkirker',
     'bensinstasjoner',
-    'europeana280'
+    'europeana280',
+    'europeana280_2'
   ],
   demoTemplates: [
     'list_item',
