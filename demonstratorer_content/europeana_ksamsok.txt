@@ -1,0 +1,1 @@
+<p>Basic test of Swedish data through europeana</p>

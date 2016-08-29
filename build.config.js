@@ -246,6 +246,21 @@ module.exports = {
         description: '<p>Foto: Dag Olav Brækkan</p><p>Flyktningeruta går fra Skullerudstua i Oslo og helt til Grenselosmuseet ved vannet Skjervangen i Eidskog. En tur på borti 120 km. Det fins flere flyktningeruter i Norge, men denne tar utgangspunkt i trafikken som gikk ut fra Oslo og østover til Sverige.</p></br>'
       }
     },
+    {
+      id: 'brudleruta',
+      name: 'Brudleruta',
+      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Flyktningeruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      params: {
+        datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
+        allstatic: true,
+        line: 'utno/2.17280',
+        buffer: 2,
+        linecolor: '#deb238',
+        layer: 'norges_grunnkart_graatone',
+        image: 'https://gfx.nrk.no/WzBhldVq62wY6EAlgNRIPwoDLjogR3DINIdh_Vw2LY9Q',
+        description: '<p>Foto: Dag Olav Brækkan</p><p>Flyktningeruta går fra Skullerudstua i Oslo og helt til Grenselosmuseet ved vannet Skjervangen i Eidskog. En tur på borti 120 km. Det fins flere flyktningeruter i Norge, men denne tar utgangspunkt i trafikken som gikk ut fra Oslo og østover til Sverige.</p></br>'
+      }
+    },    
 	{
       id: 'kjaerlighetsstien',
       name: 'Kjærlighetsstien og Gamlegata',
@@ -349,7 +364,12 @@ module.exports = {
       id: 'ksamsok',
       name: 'K-samsök eksempel',
       description: 'K-samsök eksempel'
-    }
+    },
+    {
+      id: 'europeana_ksamsok',
+      name: 'K-samsök eksempel från Europeana',
+      description: 'K-samsök eksempel från Europeana'
+    }    
   ],
   experiments: [
     {
