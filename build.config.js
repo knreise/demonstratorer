@@ -249,7 +249,7 @@ module.exports = {
     {
       id: 'brudleruta',
       name: 'Brudleruta',
-      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Flyktningeruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Brudleruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
       params: {
         datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
         allstatic: true,
