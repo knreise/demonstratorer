@@ -258,7 +258,7 @@ module.exports = {
         linecolor: '#deb238',
         layer: 'norges_grunnkart_graatone',
         image: 'https://gfx.nrk.no/WzBhldVq62wY6EAlgNRIPwoDLjogR3DINIdh_Vw2LY9Q',
-        description: '<p>Foto: Dag Olav Brækkan</p><p>Flyktningeruta går fra Skullerudstua i Oslo og helt til Grenselosmuseet ved vannet Skjervangen i Eidskog. En tur på borti 120 km. Det fins flere flyktningeruter i Norge, men denne tar utgangspunkt i trafikken som gikk ut fra Oslo og østover til Sverige.</p></br>'
+        description: '<p>Flyfoto av Brudelene på Josdalsheii i Sirdal kommune.</p><p>Foto: Torill Folkestad, fylkeskonservatoren i Vest-Agder. Lisens: CC BY SA</p><p>Brudleruta er en gammel ferdselsvei mellom Sirdal og Kvinesdal. Turen går gjennom et vakkert heielandskap med mange interessante kulturhistoriske spor.Underveis kan du se de historiske Brudlene. Navnet "brudle" betyr fra gammelt av "et brudefølge"</p></br>'
       }
     },    
 	{
