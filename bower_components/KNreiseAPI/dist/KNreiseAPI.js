@@ -995,13 +995,19 @@ KR.EuropeanaAPI = function (apiName, options) {
     function getBbox(parameters, bbox, callback, errorCallback, options) {
         var params = {
             wskey: apikey,
-            query: _bboxQuery(bbox),
-            rows: 100
+            rows: 100,
+            query: _bboxQuery(bbox)
         };
+        var query = _bboxQuery(bbox);
         if (parameters.collection) {
             params.qf = 'europeana_collectionName:' + parameters.collection;
-        } else if (parameters.query) {
-            params.qf = parameters.query;
+        } else {
+            if (parameters.qf) {
+                params.qf = parameters.qf;
+            }
+            if (parameters.query) {
+                params.query += ' AND (' + parameters.query + ')';
+            }
         }
 
         _cursorQuery(params, callback, errorCallback);

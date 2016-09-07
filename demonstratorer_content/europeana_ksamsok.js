@@ -41,7 +41,8 @@
             provider: 'Europeana',
             dataset: {
                 api: 'europeana',
-                query: 'TITLE:kyrka AND DATA_PROVIDER:"Riksantikvarieämbetet" AND COUNTRY:"sweden"'
+                query: 'kyrka',
+                qf: 'DATA_PROVIDER:"Riksantikvarieämbetet" AND COUNTRY:"sweden"'
             },
             bbox: true,
             isStatic: true,
@@ -58,7 +59,8 @@
             provider: 'Europeana',
             dataset: {
                 api: 'europeana',
-                query: 'TITLE:kyrka AND DATA_PROVIDER:"Riksarkivet" AND COUNTRY:"sweden"'
+                query: 'TITLE:kyrka',
+                qf: 'DATA_PROVIDER:"Riksarkivet" AND COUNTRY:"sweden"'
             },
             bbox: true,
             isStatic: true,
