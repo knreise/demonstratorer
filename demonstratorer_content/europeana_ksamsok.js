@@ -36,12 +36,12 @@
 
     var datasets = [
          {
-            name: 'Riksantikvarieämbetet',
+            name: 'Uppsala (SWE)',
             hideFromGenerator: true,
-            provider: 'Europeana',
+            provider: 'Europeana - Riksantikvarieämbetet',
             dataset: {
                 api: 'europeana',
-                query: 'kyrka',
+                query: 'kyrka+Uppsala',
                 qf: 'DATA_PROVIDER:"Riksantikvarieämbetet" AND COUNTRY:"sweden"'
             },
             bbox: true,
@@ -54,13 +54,13 @@
             description: 'Riksantikvarieämbetet från K-samsök'
         },
          {
-            name: 'Riksarkivet',
+            name: 'Akershus (NOR)',
             hideFromGenerator: true,
-            provider: 'Europeana',
+            provider: 'Europeana - Kulturrådet (Akershusbasen)',
             dataset: {
                 api: 'europeana',
-                query: 'TITLE:kyrka',
-                qf: 'DATA_PROVIDER:"Riksarkivet" AND COUNTRY:"sweden"'
+                query: 'kirke',
+                qf: 'DATA_PROVIDER:"Akershusbasen" AND COUNTRY:"norway"'
             },
             bbox: true,
             isStatic: true,
@@ -69,7 +69,61 @@
                 thumbnail: true,
                 fillcolor: '#0000ff'
                 },
-            description: 'Riksarkivet från K-samsök'
+            description: 'Akershusbasen fra Digitalt museum'
+        },
+        {
+            name: 'Aalborg (DEN)',
+            hideFromGenerator: true,
+            provider: 'Europeana - Kulturarvsstyrelsen',
+            dataset: {
+                api: 'europeana',
+                query: 'kirke+aalborg',
+                qf: 'DATA_PROVIDER:"Kulturarvsstyrelsen"'
+        },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#00ffff'
+                },
+            description: 'Kulturarvsstyrelsen'
+        }, 
+        {
+            name: 'Berlin (GER)',
+            hideFromGenerator: true,
+            provider: 'Europeana - Deutsche Fotothek',
+            dataset: {
+                api: 'europeana',
+                query: 'kirche+berlin',
+                qf: 'DATA_PROVIDER:"Deutsche Fotothek"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#ffff00'
+                },
+            description: 'Deutsche Fotothek'
+        },  
+        {
+            name: 'Wien (AUT)',
+            hideFromGenerator: true,
+            provider: 'Europeana - Albertina',
+            dataset: {
+                api: 'europeana',
+                query: 'kirche+vienna',
+                qf: 'DATA_PROVIDER:"Albertina"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#ff00ff'
+                },
+            description: 'Albertina'
         }        
     ];    
 

@@ -351,6 +351,11 @@ module.exports = {
       description: 'Map showing the locations of all works of art in the Europeana 280 collection (Using CartoDB)'
     },
     {
+      id: 'historiskeBrev',
+      name: 'Historiske Brev',
+      description: 'Kart som viser brev fra historiske personer (Using CartoDB)'
+    },    
+    {
       id: 'europeana280_2',
       name: 'Europeana 280',
       description: 'Map showing the locations of all works of art in the Europeana 280 collection'

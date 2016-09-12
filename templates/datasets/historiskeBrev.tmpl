@@ -1,0 +1,19 @@
+<h3><%= title %></h3>
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+        <table class="sidebar-table">
+            
+            <tr>
+                <td>Institution</td>
+                <td><%= institution %></td>
+            </tr>
+            
+        </table>
+        
+        <ul class="list-unstyled">
+            <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+            <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
+        </ul>        
