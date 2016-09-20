@@ -150,7 +150,9 @@ module.exports = {
     'bensinstasjoner',
     'europeana280',
     'europeana280_2',
-    'ksamsok'
+    'ksamsok',
+    'historiskeBrev',
+    'turistveger'
   ],
   demoTemplates: [
     'list_item',
@@ -374,6 +376,11 @@ module.exports = {
       id: 'europeana_ksamsok',
       name: 'K-samsök eksempel från Europeana',
       description: 'K-samsök eksempel från Europeana'
+    },
+    {
+      id: 'nasjonale_turistveger',
+      name: 'Nasjonale turistveger',
+      description: 'Kart med data knyttet til nasjonale turistveger'
     }    
   ],
   experiments: [

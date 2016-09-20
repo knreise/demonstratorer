@@ -12,7 +12,7 @@
             dataset: {
                 api: 'cartodb',
                 table: 'ibsencartodb',
-                columns: ['the_geom', 'title', 'thumbnail', 'image', 'institution', 'license', 'source']
+                columns: ['the_geom', 'title', 'thumbnail', 'image', 'institution', 'license', 'source', 'avsender', 'mottaker', 'date', 'kortinfo', 'sted', 'year']
             },
             bbox: false,
             isStatic: false,

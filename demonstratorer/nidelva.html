@@ -824,6 +824,76 @@
 </script>
 
 
+<script type="text/template" id="historiskeBrev_template">
+<h3><%= title %></h3>
+<h4>Brev til <span style="text-transform: capitalize"><%= mottaker %></span><% if(date) { %>, <%= date %><% } %></h4>
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+        <table class="sidebar-table">
+            <% if(mottaker) { %>
+                <tr>
+                    <td>Info om mottaker:</td>
+                    <td><%= kortinfo %></td>
+                </tr>
+            <% } %>            
+            <% if(year) { %>
+                <tr>
+                    <td>Leveår, mottaker:</td>
+                    <td><%= year %></td>
+                </tr>
+            <% } %>
+            <% if(sted) { %>
+            <tr>
+                <td>Sted:</td>
+                <td><span style="text-transform: capitalize"><%= sted %></span></td>
+            </tr>
+            <% } %>            
+            <tr>
+                <td>Institusjon:</td>
+                <td><%= institution %></td>
+            </tr>
+            
+        </table>
+        
+        <ul class="list-unstyled">
+            <li><a href="<%= license %>" class="sidebar-link" target="_lisens"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+            <li><a href="<%= source %>" class="sidebar-link" target="_HIS"><i class="fa fa-external-link-square"></i> Vis brevet på HIS sine hjemmesider<a/></li>
+        </ul>        
+
+</script>
+
+
+<script type="text/template" id="turistveger_template">
+<h3><%= title %></h3>
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+<p>
+    <%= content %>
+</p>
+
+        <table class="sidebar-table">
+            
+            <tr>
+                <td>Institution</td>
+                <td><%= institution %></td>
+            </tr>
+            
+        </table>
+
+        <ul class="list-unstyled">
+            <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+            <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> vis mer informasjon<a/></li>
+        </ul>
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>
