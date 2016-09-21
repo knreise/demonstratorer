@@ -152,7 +152,8 @@ module.exports = {
     'europeana280_2',
     'ksamsok',
     'historiskeBrev',
-    'turistveger'
+    'turistveger',
+    'fotografregister'
   ],
   demoTemplates: [
     'list_item',
@@ -381,6 +382,11 @@ module.exports = {
       id: 'nasjonale_turistveger',
       name: 'Nasjonale turistveger',
       description: 'Kart med data knyttet til nasjonale turistveger'
+    },
+    {
+      id: 'fotografregister',
+      name: 'Fotografregisteret',
+      description: 'Kartfesting av virkestedene til fotografene i fotografregisteret til Preus museum'
     }    
   ],
   experiments: [

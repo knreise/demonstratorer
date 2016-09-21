@@ -887,6 +887,31 @@
 </script>
 
 
+<script type="text/template" id="fotografregister_template">
+<h3><%= title %></h3>
+
+    <table class="sidebar-table">
+        <tr>
+            <td>Sted:</td>
+            <td><% if(____gate) { %><%= ____gate %>, <% } %><% if(____sted) { %><%= ____sted %><% } %><% if(land) { %> (<%= land %>)<% } %></td>
+        </tr>
+        <tr>
+            <td>Virkeår:</td>
+            <td><% if(____fra) { %><%= ____fra %> - <% } %><% if(____til) { %><%= ____til %><% } %></td>
+        </tr>        
+        <% if(____id) { %>
+            <tr>
+                <td>Unik ID:</td>
+                <td><%= ____id %></td>
+            </tr>
+        <% } %>            
+        
+    </table>
+      
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>
