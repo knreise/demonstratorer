@@ -19,7 +19,7 @@
             template: KR.Util.getDatasetTemplate('fotografregister'),
             style: {
 	            thumbnail: true,
-	            fillcolor: '#FFFFFF'
+	            fillcolor: '#FF0000'
 	            },
             description: 'Fotografregister'
         }
@@ -39,7 +39,7 @@
         geomFilter: true,
         showGeom: true,
         showScaleBar: true,
-        fillcolor: '#ddb522',
+        fillcolor: '#ff0000',
         minZoom: 4,
         layer: layer
     });

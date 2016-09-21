@@ -911,6 +911,10 @@
         <% } %>            
         
     </table>
+
+<ul class="list-unstyled">
+    <li><a href="http://kulturnav.org/<%= ____id %>" class="sidebar-link" target="_kulturNAV"><i class="fa fa-external-link-square"></i> Vis fotografinfo i KulturNAV<a/></li>
+</ul>  
       
 
 </script>
@@ -946,7 +950,7 @@
             template: KR.Util.getDatasetTemplate('fotografregister'),
             style: {
 	            thumbnail: true,
-	            fillcolor: '#FFFFFF'
+	            fillcolor: '#FF0000'
 	            },
             description: 'Fotografregister'
         }
@@ -966,7 +970,7 @@
         geomFilter: true,
         showGeom: true,
         showScaleBar: true,
-        fillcolor: '#ddb522',
+        fillcolor: '#ff0000',
         minZoom: 4,
         layer: layer
     });
