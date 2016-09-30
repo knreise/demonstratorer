@@ -919,6 +919,38 @@
 </script>
 
 
+<script type="text/template" id="emigrantprotokoller_template">
+<h3><%= title %></h3>
+
+    <table class="sidebar-table">
+        <tr>
+            <td>Navn:</td>
+            <td><%= title %></td>
+        </tr>
+        <% if(foedt) { %>
+        <tr>
+            <td>Alder/Fødselsdato:</td>
+            <td><%= foedt %></td>
+        </tr>
+        <% } %> 
+        <tr>
+            <td>Utreisedato:</td>
+            <td><%= utreisedato %></td>
+        </tr> 
+        <tr>
+            <td>Avreisehavn:</td>
+            <td><%= avreisehavn %></td>
+        </tr> 
+    </table>
+
+<ul class="list-unstyled">
+    <li><a href="http://digitalarkivet.arkivverket.no/<%= da_id %>" class="sidebar-link" target="_DA"><i class="fa fa-external-link-square"></i> Vis person i Digitalarkivet<a/></li>
+</ul>  
+      
+
+</script>
+
+
 
 
         <script src="../dist/scripts_external.js" type="text/javascript"></script>

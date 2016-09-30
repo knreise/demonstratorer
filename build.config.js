@@ -153,7 +153,8 @@ module.exports = {
     'ksamsok',
     'historiskeBrev',
     'turistveger',
-    'fotografregister'
+    'fotografregister',
+    'emigrantprotokoller'
   ],
   demoTemplates: [
     'list_item',
@@ -387,7 +388,12 @@ module.exports = {
       id: 'fotografregister',
       name: 'Fotografregisteret',
       description: 'Kartfesting av virkestedene til fotografene i fotografregisteret til Preus museum'
-    }    
+    },
+    {
+      id: 'emigrantprotokoller',
+      name: 'Emigrantprotokoller',
+      description: 'Kartfesting av reisem&aring;lene til norske emigranter'
+    }     
   ],
   experiments: [
     {
