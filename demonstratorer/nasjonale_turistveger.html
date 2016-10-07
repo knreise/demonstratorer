@@ -1008,22 +1008,39 @@
             description: 'Bilder fra området omkring turistvegene'
         }
     ];
+    
+        var layer = L.tileLayer('https://api.mapbox.com/styles/v1/vemundolstad/ciptnvtke003dcxmbfp6twjlr/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoidmVtdW5kb2xzdGFkIiwiYSI6ImNpcHRsNW8yOTAwMzVoem0yN3kyZ3B6eXcifQ.E8botDAcNDcki0fCncD4Gw') 
+    
 
-	 
-	 
-	 
-
-    KR.setupMap(api, datasets, {
+    var options = {
         title: title,
-        bbox: '4.0223174095,57.6773017445,30.9705657959,71.4034238089',
+        bbox: "4.0223174095,57.6773017445,30.9705657959,71.4034238089",
         image: 'http://www.nasjonaleturistveger.no/en/_image/1334546/label/large.jpeg?_encoded=2f66666666666678302f30382f3b2934323031286874646977656c616373&_ts=154581ca950',
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,
         showScaleBar: true,
         minZoom: 6,
-        layer: 'norges_grunnkart'
-    });
+        layer : layer,
+        line: 'http://kulturminnedata.no/nvdb_utenz.geojson',
+        buffer: 1,
+        linecolor: '#FF0000' 
+    };
+
+    KR.setupMap(api, datasets, options, false);
+    /*KR.setupMap(api, datasets, {
+        title: title,
+        image: 'http://www.nasjonaleturistveger.no/en/_image/1334546/label/large.jpeg?_encoded=2f66666666666678302f30382f3b2934323031286874646977656c616373&_ts=154581ca950',
+        description: $('#description_template').html(),
+        geomFilter: true,
+        showGeom: true,
+        showScaleBar: true,
+        minZoom: 6,
+        layer: 'norges_grunnkart',
+        line: 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml',
+        buffer: 1,
+        linecolor: '#FF0000'       
+    });*/ 
 }());
 
         </script>
