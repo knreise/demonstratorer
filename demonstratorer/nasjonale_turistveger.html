@@ -1006,7 +1006,50 @@
 	            fillcolor: '#ff0000'
 	            },
             description: 'Bilder fra området omkring turistvegene'
-        }
+        },
+        {
+            id: 'verneomraader',
+            dataset: {
+                api: 'cartodb',
+                table: 'naturvernomrader_utm33_2',
+                columns: ['iid', 'omradenavn', 'vernef_id', 'verneform'],
+            },
+            provider: 'Naturbase',
+            name: 'Verneområder',
+            template: _.template($('#verneomraader_template').html()),
+            getFeatureData: function (feature, callback) {
+                api.getItem(
+                    {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
+                    callback
+                );
+            },
+            toPoint: {
+                showAlways: true,
+                stopPolyClick: true,
+                minSize: 20
+            },
+            minZoom: 10,
+            cluster: false
+        },
+        {
+            name: 'Wikipedia',
+            provider: 'Wikipedia',
+            dataset: {
+                api: 'wikipedia'
+            },
+            style: {thumbnail: true},
+            minZoom: 13,
+            template: KR.Util.getDatasetTemplate('wikipedia')
+        },
+                {
+                    name: 'DiMu',
+                    dataset: {
+                        api: 'norvegiana',
+                        dataset: 'DiMu'
+                    },
+                    template: KR.Util.getDatasetTemplate('digitalt_museum'),
+                    style: {fillcolor: '#333333'}
+                }
     ];
     
         var layer = L.tileLayer('https://api.mapbox.com/styles/v1/vemundolstad/ciptnvtke003dcxmbfp6twjlr/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoidmVtdW5kb2xzdGFkIiwiYSI6ImNpcHRsNW8yOTAwMzVoem0yN3kyZ3B6eXcifQ.E8botDAcNDcki0fCncD4Gw') 
@@ -1022,7 +1065,7 @@
         showScaleBar: true,
         minZoom: 6,
         layer : layer,
-        line: 'http://kulturminnedata.no/nvdb_utenz.geojson',
+        line: 'http://kulturminnedata.no/kart/turistveg_hardangervidda_line.geojson',
         buffer: 1,
         linecolor: '#FF0000' 
     };
@@ -1037,6 +1080,7 @@
         showScaleBar: true,
         minZoom: 6,
         layer: 'norges_grunnkart',
+        line: 'http://kulturminnedata.no/kart/turistveg_lofoten_line.json',
         line: 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml',
         buffer: 1,
         linecolor: '#FF0000'       
