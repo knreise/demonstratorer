@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Nasjonale turistveger</title>
+        <title>KNReise - Nasjonal turistveg over Hardangervidda</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -31,7 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-<p>Kulturminner langs dei nasjonale turistvegene</p>
+<p>Kulturminner langs Hardangervidda</p>
 </script>
 
 
@@ -957,7 +957,7 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Nasjonale turistveger';
+            var title = 'Nasjonal turistveg over Hardangervidda';
             var image = '';
 
             (function () {
@@ -1042,7 +1042,7 @@
             template: KR.Util.getDatasetTemplate('wikipedia')
         },
         {
-            name: 'Digitalt Museum',
+            name: 'DiMu',
             dataset: {
                 api: 'norvegiana',
                 dataset: 'DiMu'
@@ -1051,91 +1051,9 @@
             style: {fillcolor: '#333333'}
         },
         {
-            name: 'Digitalt fortalt',
-            dataset: {dataset: 'difo', api: 'norvegiana'},
-            cluster: true,
-            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
-            noListThreshold: Infinity
-        },        
-        {
             grouped: true,
-            name: 'Kulturminner',
+            name: 'Historie',
             datasets: [
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '1'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '2'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '3'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '4'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '5'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
             {
                 thumbnails: true,
                 name: 'Kulturminnesøk',
@@ -1151,81 +1069,6 @@
                 unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly
             },  
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '7'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '8'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '9'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '10'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '11'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
             {
                 thumbnails: true,
                 name: 'Kulturminnesøk',
@@ -1240,112 +1083,8 @@
                 isStatic: true,
                 unclusterCount: 20,
                 init: kulturminneFunctions.initKulturminnePoly,
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '14'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '15'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '16'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '17'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                        {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '18'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                                    {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '19'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
-                                    {
-                thumbnails: true,
-                name: 'Kulturminnesøk',
-                provider: 'Riksantikvaren',
-                dataset: {
-                    api: 'kulturminnedataSparql',
-                    fylke: '20'
-                },
-                template: KR.Util.getDatasetTemplate('ra_sparql'),
-                getFeatureData: kulturminneFunctions.getRaFeatureData,
-                bbox: false,
-                isStatic: true,
-                unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly
-            },
+            }
+            
             ]
         }
                         
@@ -1364,7 +1103,7 @@
         showScaleBar: true,
         minZoom: 6,
         layer : 'norges_grunnkart',
-        line: 'http://kulturminnedata.no/kart/turistveger_samlet.geojson',
+        line: 'http://kulturminnedata.no/kart/turistveg_hardangervidda.geojson',
         buffer: 1,
         linecolor: '#FF0000' 
     };
