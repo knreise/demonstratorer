@@ -89,8 +89,15 @@
             style: {fillcolor: '#333333'}
         },
         {
+            name: 'Digitalt fortalt',
+            dataset: {dataset: 'difo', api: 'norvegiana'},
+            cluster: true,
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
+            noListThreshold: Infinity
+        },        
+        {
             grouped: true,
-            name: 'Historie',
+            name: 'Kulturminner',
             datasets: [
             {
                 thumbnails: true,
@@ -120,7 +127,7 @@
                 bbox: false,
                 isStatic: true,
                 unclusterCount: 20,
-                init: kulturminneFunctions.initKulturminnePoly,
+                init: kulturminneFunctions.initKulturminnePoly
             }
             
             ]
