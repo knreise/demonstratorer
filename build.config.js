@@ -387,7 +387,7 @@ module.exports = {
     {
       id: 'nasjonale_turistveger_hardangervidda',
       name: 'Nasjonal turistveg over Hardangervidda',
-      description: 'Kart med data knyttet til den nasjonale turistvegen over Hardangervidda.'
+      description: 'Kart med kulturdata knyttet til den nasjonale turistvegen over Hardangervidda.'
     },
     {
       id: 'fotografregister',
