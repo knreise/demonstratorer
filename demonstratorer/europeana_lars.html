@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Lars Rogstads Europeanakart</title>
+        <title>KNReise - Europeana - slott</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -958,8 +958,8 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Lars Rogstads Europeanakart';
-            var image = '';
+            var title = 'Europeana - slott';
+            var image = 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=http%3A%2F%2Fwww.pictures-bank.eu%2Fpokazobrazek.php%3Ffileno%3D2190%26a%3D1&type=IMAGE?width=600&height=380';
 
             (function () {
     'use strict';
@@ -1089,7 +1089,7 @@
             template: KR.Util.getDatasetTemplate('europeana280_2'),
             style: {
                 thumbnail: true,
-                fillcolor: '#00ffff'
+                fillcolor: '#ff0000'
                 },
             minZoom: 5,
             description: 'Fritekstsøk på Castle'
@@ -1109,14 +1109,14 @@
             template: KR.Util.getDatasetTemplate('europeana280_2'),
             style: {
                 thumbnail: true,
-                fillcolor: '#00ffff'
+                fillcolor: '#b3b300'
                 },
             minZoom: 5,
             description: 'Fritekstsøk på Castle'
         }
         ,
         {
-            name: 'Castles - germany',
+            name: 'Castles - Germany',
             hideFromGenerator: true,
             provider: 'Europeana',
             dataset: {
@@ -1129,7 +1129,87 @@
             template: KR.Util.getDatasetTemplate('europeana280_2'),
             style: {
                 thumbnail: true,
-                fillcolor: '#00ffff'
+                fillcolor: '#5500ff'
+                },
+            minZoom: 5,
+            description: 'Fritekstsøk på Castle'
+        }
+		 ,
+        {
+            name: 'Castles - France',
+            hideFromGenerator: true,
+            provider: 'Europeana',
+            dataset: {
+                api: 'europeana',
+                query: 'castle',
+                qf: 'COUNTRY:"france"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#ffff00'
+                },
+            minZoom: 5,
+            description: 'Fritekstsøk på Castle'
+        }
+		,
+        {
+            name: 'Castles - United Kingdom',
+            hideFromGenerator: true,
+            provider: 'Europeana',
+            dataset: {
+                api: 'europeana',
+                query: 'castle',
+                qf: 'COUNTRY:"unitedkingdom"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#cc0000'
+                },
+            minZoom: 5,
+            description: 'Fritekstsøk på Castle'
+        }
+		,
+        {
+            name: 'Castles - Hungary',
+            hideFromGenerator: true,
+            provider: 'Europeana',
+            dataset: {
+                api: 'europeana',
+                query: 'castle',
+                qf: 'COUNTRY:"hungary"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#3333ff'
+                },
+            minZoom: 5,
+            description: 'Fritekstsøk på Castle'
+        }
+		,
+        {
+            name: 'Castles - Europe',
+            hideFromGenerator: true,
+            provider: 'Europeana',
+            dataset: {
+                api: 'europeana',
+                query: 'castle',
+                qf: 'COUNTRY:"europe"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+                thumbnail: true,
+                fillcolor: '#ff751a'
                 },
             minZoom: 5,
             description: 'Fritekstsøk på Castle'
