@@ -380,6 +380,11 @@ module.exports = {
       description: 'K-samsök eksempel från Europeana'
     },
     {
+      id: 'europeana_lars',
+      name: 'Lars Rogstads Europeanakart',
+      description: 'Europeanakart med data nennsomt utvalgt av Lars Rogstad'
+    },    
+    {
       id: 'nasjonale_turistveger',
       name: 'Nasjonale turistveger',
       description: 'Kart med data knyttet til nasjonale turistveger.'
