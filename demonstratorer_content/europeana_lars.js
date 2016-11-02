@@ -134,7 +134,7 @@
         ,
         {
             name: 'Castles - Poland',
-            hideFromGenerator: true,
+            hideFromGenerator: false,
             provider: 'Europeana',
             dataset: {
                 api: 'europeana',
