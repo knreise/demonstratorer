@@ -348,32 +348,6 @@ module.exports = {
       id: 'europeana_arthistory',
       name: 'Europeana Art History Collection',
       description: 'Europeana Art History Collection'
-    },
-    {
-      id: 'ksamsok',
-      name: 'K-samsök eksempel',
-      description: 'K-samsök eksempel'
-    },
-    {
-      id: 'europeana_ksamsok',
-      name: 'K-samsök eksempel från Europeana',
-      description: 'K-samsök eksempel från Europeana'
-    },
-    {
-      id: 'europeana_lars',
-      name: 'Europeana - slott',
-      description: 'Europeanadata; fritekstsøk på "castle", for utvalgte land',
-      image: 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=http%3A%2F%2Fwww.pictures-bank.eu%2Fpokazobrazek.php%3Ffileno%3D2190%26a%3D1&type=IMAGE?width=600&height=380'
-    },    
-    {
-      id: 'fotografregister',
-      name: 'Fotografregisteret',
-      description: 'Kartfesting av virkestedene til fotografene i fotografregisteret til Preus museum'
-    },
-    {
-      id: 'emigrantprotokoller',
-      name: 'Emigrantprotokoller',
-      description: 'Kartfesting av reisem&aring;lene til norske emigranter'
     }
 
   ],
@@ -398,7 +372,17 @@ module.exports = {
       id: 'middelalderkirker',
       name: 'Middelalderkirker - Riksantikvaren',
       description: 'Middelalderkirker fra Riksantikvaren og Kulturminnesøk'
-    }
+    },
+    {
+      id: 'fotografregister',
+      name: 'Fotografregisteret',
+      description: 'Kartfesting av virkestedene til fotografene i fotografregisteret til Preus museum'
+    },
+    {
+      id: 'emigrantprotokoller',
+      name: 'Emigrantprotokoller',
+      description: 'Kartfesting av reisem&aring;lene til norske emigranter'
+    }    
   ],
   demonstrators_dev: [
   //place demonstrators that will not be listed here
@@ -411,6 +395,22 @@ module.exports = {
       id: 'nasjonale_turistveger_hardangervidda',
       name: 'Nasjonal turistveg over Hardangervidda',
       description: 'Kart med kulturdata knyttet til den nasjonale turistvegen over Hardangervidda.'
+    },
+    {
+      id: 'ksamsok',
+      name: 'K-samsök eksempel',
+      description: 'K-samsök eksempel'
+    },
+    {
+      id: 'europeana_ksamsok',
+      name: 'K-samsök eksempel från Europeana',
+      description: 'K-samsök eksempel från Europeana'
+    },
+    {
+      id: 'europeana_lars',
+      name: 'Europeana - slott',
+      description: 'Europeanadata; fritekstsøk på "castle", for utvalgte land',
+      image: 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=http%3A%2F%2Fwww.pictures-bank.eu%2Fpokazobrazek.php%3Ffileno%3D2190%26a%3D1&type=IMAGE?width=600&height=380'
     }
   ],
   experiments: [
