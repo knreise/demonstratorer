@@ -309,26 +309,6 @@ module.exports = {
       description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
     },
     {
-      id: 'stavkirker',
-      name: 'Stavkirker',
-      description: 'Stavkirker og innhold knyttet til stavkirker fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
-    },
-    {
-      id: 'stavkirker_ra',
-      name: 'Stavkirker - Riksantikvaren',
-      description: 'Stavkirker fra Riksantikvaren og Kulturminnesøk'
-    },
-    {
-      id: 'nordkirker',
-      name: 'Kirker i Norden',
-      description: 'Testkart for visning av kirker i Norden'
-    },
-    {
-      id: 'middelalderkirker',
-      name: 'Middelalderkirker - Riksantikvaren',
-      description: 'Middelalderkirker fra Riksantikvaren og Kulturminnesøk'
-    },
-    {
       id: '3d_telemark',
       name: '3D - Telemark',
       description: '3D visning av kulturminner i Telemark'
@@ -386,16 +366,6 @@ module.exports = {
       image: 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=http%3A%2F%2Fwww.pictures-bank.eu%2Fpokazobrazek.php%3Ffileno%3D2190%26a%3D1&type=IMAGE?width=600&height=380'
     },    
     {
-      id: 'nasjonale_turistveger',
-      name: 'Nasjonale turistveger',
-      description: 'Kart med data knyttet til nasjonale turistveger.'
-    },
-    {
-      id: 'nasjonale_turistveger_hardangervidda',
-      name: 'Nasjonal turistveg over Hardangervidda',
-      description: 'Kart med kulturdata knyttet til den nasjonale turistvegen over Hardangervidda.'
-    },
-    {
       id: 'fotografregister',
       name: 'Fotografregisteret',
       description: 'Kartfesting av virkestedene til fotografene i fotografregisteret til Preus museum'
@@ -409,9 +379,39 @@ module.exports = {
   ],
   demonstrators_extra: [
     //place demonstrators for "flere demonstratorer" here
+    {
+      id: 'stavkirker',
+      name: 'Stavkirker',
+      description: 'Stavkirker og innhold knyttet til stavkirker fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
+    },
+    {
+      id: 'stavkirker_ra',
+      name: 'Stavkirker - Riksantikvaren',
+      description: 'Stavkirker fra Riksantikvaren og Kulturminnesøk'
+    },
+    {
+      id: 'nordkirker',
+      name: 'Kirker i Norden',
+      description: 'Testkart for visning av kirker i Norden'
+    },
+    {
+      id: 'middelalderkirker',
+      name: 'Middelalderkirker - Riksantikvaren',
+      description: 'Middelalderkirker fra Riksantikvaren og Kulturminnesøk'
+    }
   ],
   demonstrators_dev: [
   //place demonstrators that will not be listed here
+    {
+      id: 'nasjonale_turistveger',
+      name: 'Nasjonale turistveger',
+      description: 'Kart med data knyttet til nasjonale turistveger.'
+    },
+    {
+      id: 'nasjonale_turistveger_hardangervidda',
+      name: 'Nasjonal turistveg over Hardangervidda',
+      description: 'Kart med kulturdata knyttet til den nasjonale turistvegen over Hardangervidda.'
+    }
   ],
   experiments: [
     {
