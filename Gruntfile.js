@@ -40,7 +40,13 @@ module.exports = function (grunt) {
     }
 
     function getNonUrlDemos() {
-        return grunt.util._.filter(userConfig.demonstrators, function (d) {
+
+        var demos = []
+            .concat(userConfig.demonstrators)
+            .concat(userConfig.demonstrators_extra)
+            .concat(userConfig.demonstrators_dev);
+
+        return grunt.util._.filter(demos, function (d) {
             return !d.url;
         });
     }
@@ -48,6 +54,13 @@ module.exports = function (grunt) {
     function getTemplateFromFile(filename, fs) {
         return grunt.util._.template(fs.readFileSync(filename, 'utf8'));
     }
+
+    function setDemoUrl(d) {
+        if (!d.url) {
+            d.url = 'demonstratorer/' + d.id + '.html';
+        }
+    }
+
 
     // Project configuration.
     var taskConfig = {
@@ -80,10 +93,10 @@ module.exports = function (grunt) {
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/demonstratorFromParams.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate({data: d}));
-                            resetTemplateSettings()
+                            resetTemplateSettings();
                             done();
                         }
-                      }
+                      };
                     }
 
                     return {
@@ -115,7 +128,7 @@ module.exports = function (grunt) {
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate({data: demonstrator}));
-                            resetTemplateSettings()
+                            resetTemplateSettings();
                             done();
                         }
                     };
@@ -138,7 +151,7 @@ module.exports = function (grunt) {
 
                     var pageTemplate = getTemplateFromFile('./grunt_templates/new_demo.html.tpl', fs);
                     fs.writeSync(fd, pageTemplate({data: demonstrator}));
-                    resetTemplateSettings()
+                    resetTemplateSettings();
                     done();
                 },
 
@@ -163,13 +176,13 @@ module.exports = function (grunt) {
                     setTemplateSettings();
                     var t = grunt.util._.template(fs.readFileSync('grunt_templates/index.html.tpl', 'utf8'));
                     var demos = userConfig.demonstrators;
-                    grunt.util._.map(demos, function (d) {
-                        if (!d.url) {
-                            d.url = 'demonstratorer/' + d.id + '.html';
-                        }
-                    });
-                    fs.writeSync(fd, t({demos: demos}));
-                    resetTemplateSettings()
+                    grunt.util._.each(demos, setDemoUrl);
+
+                    var extraDemos = userConfig.demonstrators_extra;
+                    grunt.util._.each(extraDemos, setDemoUrl);
+
+                    fs.writeSync(fd, t({demos: demos, extraDemos: extraDemos}));
+                    resetTemplateSettings();
                     done();
                 }
             },
@@ -196,7 +209,7 @@ module.exports = function (grunt) {
 
                             var pageTemplate = getTemplateFromFile('./grunt_templates/experiment.html.tpl', fs);
                             fs.writeSync(fd, pageTemplate(demonstrator));
-                            resetTemplateSettings()
+                            resetTemplateSettings();
                             done();
                         }
                     };
@@ -208,7 +221,7 @@ module.exports = function (grunt) {
                     setTemplateSettings();
                     var pageTemplate = getTemplateFromFile('grunt_templates/examples.html.tpl', fs);
                     fs.writeSync(fd, pageTemplate({demonstrators: userConfig.experiments}));
-                    resetTemplateSettings()
+                    resetTemplateSettings();
                     done();
                 }
             }
@@ -223,7 +236,7 @@ module.exports = function (grunt) {
                 ],
                 tasks: ['default'],
                 options: {
-                    spawn: true,
+                    spawn: true
                 }
             }
         },
@@ -305,6 +318,15 @@ module.exports = function (grunt) {
               'dist/style3d.css': [userConfig.demoCss3d]
             }
           }
+        },
+        clean: ['demonstratorer/'],
+        copy: {
+          generator: {
+            expand: true,
+            flatten: true,
+            src: ['grunt_templates/generator.html'],
+            dest: 'demonstratorer/'
+          }
         }
     };
 
@@ -317,15 +339,18 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('demos', [
+        'clean',
         'concat',
         'uglify',
         'cssmin',
         'file-creator:build-demos',
         'file-creator:build-generators',
-        'file-creator:build-index'
+        'file-creator:build-index',
+        'copy:generator'
     ]);
     
     grunt.registerTask('default', [

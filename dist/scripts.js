@@ -1556,7 +1556,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
-
+        console.log(feature)
         this.show();
         this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
 

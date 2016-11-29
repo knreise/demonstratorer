@@ -404,7 +404,14 @@ module.exports = {
       id: 'emigrantprotokoller',
       name: 'Emigrantprotokoller',
       description: 'Kartfesting av reisem&aring;lene til norske emigranter'
-    }     
+    }
+
+  ],
+  demonstrators_extra: [
+    //place demonstrators for "flere demonstratorer" here
+  ],
+  demonstrators_dev: [
+  //place demonstrators that will not be listed here
   ],
   experiments: [
     {

@@ -39,6 +39,29 @@
                   <p class="list-group-item-text">{{= demonstrator.description }}</p>
                 </a>{{ }) }}
             </div>
+
+            {{if (extraDemos.length) { }}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Flere Demonstratorer
+                    </a>
+                  </h4>
+                </div>
+                
+                <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="list-group">
+                      {{ _.each(extraDemos, function (demonstrator) { }}
+                        <a href="{{= demonstrator.url }}" class="list-group-item" target="_blank">
+                          <h4 class="list-group-item-heading"><i class="fa fa-map-o"></i> {{= demonstrator.name }}</h4>
+                          <p class="list-group-item-text">{{= demonstrator.description }}</p>
+                        </a>{{ }) }}
+                    </div>
+                </div>
+              </div>
+              {{ } }}
+
         </div>
         <div class="col-md-6">
 	      <div>
@@ -90,6 +113,8 @@
 		<img src="common/img/samarbeidspartnere_riksarkivet.png"/>
 	</div>
 	</footer>
-    
+
+    <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
