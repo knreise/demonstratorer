@@ -19,18 +19,17 @@
 		' optional { ?org rdfs:label ?orglabel .}' +
 		' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
 		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?link)' +
-		' optional {' +
-		' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id}}' +
-		' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
-		' ?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence .' +
-		' ?picture <https://data.kulturminne.no/schema/source-link> ?imglink .' +
-		' ?picture rdfs:label ?picturelabel .' +
-		' optional {?picture dc:description ?picturedescription .}' +
-		
-		' BIND(REPLACE(STR(?imglink), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +
-		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
-		' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail)' +
-		'   }' +
+		'optional {' +
+    '{select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}}' +
+	' ?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id .' +
+	' ?picture <http://purl.org/dc/terms/license> ?picturelicence .' +
+	' ?picture <http://schema.org/url> ?imglink .' +
+	' ?picture rdfs:label ?picturelabel .' +
+	' ?picture dc:description ?picturedescription . ' +
+	' BIND(strafter(STR(?imglink), "URN") AS ?linkid)' +
+	' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=", ?linkid) AS ?img)' +
+    ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=", ?linkid) AS ?thumbnail)' +
+        '}' +
 		' ?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id;' +
 		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> ?art ;' +
 		'         <https://data.kulturminne.no/askeladden/schema/datering> ?datering;' +

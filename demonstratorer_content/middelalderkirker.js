@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
+    var sparqlQuery = 'select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
 		' ?id a ?type ;' +
-		'   rdfs:label ?name ;' +
+		' rdfs:label ?name ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ;' +
 		' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ;' +
@@ -22,9 +22,11 @@
         ' ?picture rdfs:label ?picturelabel .' +
         ' ?picture dc:description ?picturedescription .' +    
         ' ?picture <http://purl.org/dc/terms/license> ?picturelicence .'
-        ' BIND(REPLACE(STR(?imglink), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail)' +
+        /*' BIND(REPLACE(STR(?imglink), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +*/
+        ' BIND(strafter(STR(?imglink), "URN") AS ?linkid)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=", ?linkid) AS ?img)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=", ?linkid) AS ?thumbnail)' +
+        
 		'   }' +
 		' ?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id;' +
 		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10132> ;' +
@@ -70,7 +72,7 @@
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
-        image: 'http://knreise.no/demonstratorer/common/img/T037_01_0001.jpg',
+        image: 'http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=:NBN:no-RAKV_arkiv_D9D86C086BAD4071%208FF619C9AC9332F0',
         description: $('#description_template').html(),
         geomFilter: true,
         showGeom: true,

@@ -21,10 +21,11 @@
         ' ?picture <http://schema.org/url> ?imglink .' +
         ' ?picture rdfs:label ?picturelabel .' +
         ' ?picture dc:description ?picturedescription .' +    
-        ' ?picture <http://purl.org/dc/terms/license> ?picturelicence .'
-        ' BIND(REPLACE(STR(?imglink), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail)' +
+        ' ?picture <http://purl.org/dc/terms/license> ?picturelicence .' +
+        ' BIND(strafter(STR(?imglink), "URN") AS ?linkid)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=", ?linkid) AS ?img)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=", ?linkid) AS ?thumbnail)' +
+        
 		'   }' +
 		' ?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id;' +
 		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10157>;' +
@@ -58,7 +59,7 @@
             unclusterCount: 10,
             init: kulturminneFunctions.initKulturminnePoly,
             style: {fillcolor: '#ddb522'},
-            thumbnail: true
+            thumbnail: false
         }            
     ];
 
