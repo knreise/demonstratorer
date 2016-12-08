@@ -52,6 +52,9 @@
                         api: 'norvegiana',
                         dataset: 'DiMu'
                     },
+                    style: {
+        	            thumbnail: true,
+    	            },
                     template: KR.Util.getDatasetTemplate('digitalt_museum')
                 },
                 {
@@ -73,7 +76,7 @@
             dataset: {dataset: 'difo', api: 'norvegiana'},
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
-            noListThreshold: Infinity
+            noListThreshold: Infinity,
         },
         {
             name: 'Trondheim byarkiv',
@@ -93,7 +96,7 @@
                 api: 'wikipedia'
             },
             style: {thumbnail: true},
-            minZoom: 13,
+            minZoom: 10,
             template: KR.Util.getDatasetTemplate('wikipedia')
         }
     ];

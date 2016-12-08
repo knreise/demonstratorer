@@ -197,12 +197,6 @@ module.exports = {
       description: 'Hele pilegrimsleden med alt relevant innhold langs denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
     }, 
     {
-      id: 'gudbrandsdalsleden_line',
-      name: 'Gudbrandsdalsleden - "guidet tur"',
-      description: 'Velkommen til en guidet tur langs Gudbrandsdalsleden. Mens du beveger deg langs leden vil vi vise deg relevant innhold.',
-      url: 'demonstratorer/linemap.html'
-    }, 
-    {
       id: 'telemark',
       name: 'Telemark',
       description: 'Innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnesøk, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
@@ -230,12 +224,6 @@ module.exports = {
       }
     },
     {
-      id: 'keiserstien3d',
-      name: 'Turistvegen over Folgefonna - 3D',
-      description: '3D-visning av <b>Turistvegen over Folgefonna</b> - selve ruta sammen med data fra aktuelle kilder i nærheten av denne.',
-      url: 'demonstratorer/keiserstien3d.html'
-    },
-    {
       id: 'flyktningeruta',
       name: 'Flyktningeruta',
       description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Flyktningeruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
@@ -261,10 +249,44 @@ module.exports = {
         buffer: 2,
         linecolor: '#deb238',
         layer: 'norges_grunnkart_graatone',
-        image: 'https://gfx.nrk.no/WzBhldVq62wY6EAlgNRIPwoDLjogR3DINIdh_Vw2LY9Q',
+        image: 'https://lokalhistoriewiki.no/images/thumb/Brudler.jpeg/320px-Brudler.jpeg',
         description: '<p>Flyfoto av Brudelene på Josdalsheii i Sirdal kommune.</p><p>Foto: Torill Folkestad, fylkeskonservatoren i Vest-Agder. Lisens: CC BY SA</p><p>Brudleruta er en gammel ferdselsvei mellom Sirdal og Kvinesdal. Turen går gjennom et vakkert heielandskap med mange interessante kulturhistoriske spor.Underveis kan du se de historiske Brudlene. Navnet "brudle" betyr fra gammelt av "et brudefølge"</p></br>'
       }
     },    
+	{
+      id: 'nidelva',
+      name: 'Nidelva',
+      description: 'Historie og kulturminner langs Nidelva i Trondheim kommune'
+    },
+    {
+      id: 'akerselva',
+      name: 'Akerselva - DOGA',
+      description: 'Historie og kulturminner langs Akerselva og ved DOGA'
+    },
+    {
+      id: 'foto',
+      name: 'Foto',
+      description: 'Historiske foto fra ulike kilder i hele landet'
+    },
+    {
+      id: '2verdenskrig',
+      name: '2. verdenskrig',
+      description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
+    },
+    {
+      id: 'bensinstasjoner',
+      name: 'Historiske bensinstasjoner',
+      description: 'Historiske bensinstasjoner fra Riksarkivets fotosamlinger'
+    },
+    {
+      id: 'NVE',
+      name: 'NVE - "kulturminner i kart"',
+      description: 'Kulturminner fra NVE (Norges vassdrags- og energidirektorat).',
+      url: 'demonstratorer/kulturminner-nve.html'
+    },
+  ],
+  demonstrators_extra: [
+    //place demonstrators for "flere demonstratorer" here
 	{
       id: 'kjaerlighetsstien',
       name: 'Kjærlighetsstien og Gamlegata',
@@ -287,27 +309,7 @@ module.exports = {
       id: 'trondheim',
       name: 'Trondheim',
       description: 'Demonstrator med fokus på Trondheim - innhold fra Digitalt fortalt, Kulturminnesøk, Trondheim byarkiv, Universitetsmueene, Digitalt Musuem og Wikipedia.'
-    },
-	{
-      id: 'nidelva',
-      name: 'Nidelva',
-      description: 'Historie og kulturminner langs Nidelva i Trondheim kommune'
-    },
-    {
-      id: 'akerselva',
-      name: 'Akerselva - DOGA',
-      description: 'Historie og kulturminner langs Akerselva og ved DOGA'
-    },
-    {
-      id: 'foto',
-      name: 'Foto',
-      description: 'Historiske foto fra ulike kilder i hele landet'
-    },
-    {
-      id: '2verdenskrig',
-      name: '2. verdenskrig',
-      description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
-    },
+    },  
     {
       id: '3d_telemark',
       name: '3D - Telemark',
@@ -318,41 +320,6 @@ module.exports = {
       name: 'Kulturminner langs grensen',
       description: 'Eksempel på kulturminner langs grensen mellom Norge og Sverige'
     },
-    {
-      id: 'bensinstasjoner',
-      name: 'Historiske bensinstasjoner',
-      description: 'Historiske bensinstasjoner fra Riksarkivets fotosamlinger'
-    },
-    {
-      id: 'NVE',
-      name: 'NVE - "kulturminner i kart"',
-      description: 'Kulturminner fra NVE (Norges vassdrags- og energidirektorat).',
-      url: 'demonstratorer/kulturminner-nve.html'
-    },
-    {
-      id: 'europeana280',
-      name: 'Europeana 280',
-      description: 'Map showing the locations of all works of art in the Europeana 280 collection (Using CartoDB)'
-    },
-    {
-      id: 'historiskeBrev',
-      name: 'Historiske Brev',
-      description: 'Kart som viser brev fra historiske personer (Using CartoDB)'
-    },    
-    {
-      id: 'europeana280_2',
-      name: 'Europeana 280',
-      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
-    },
-    {
-      id: 'europeana_arthistory',
-      name: 'Europeana Art History Collection',
-      description: 'Europeana Art History Collection'
-    }
-
-  ],
-  demonstrators_extra: [
-    //place demonstrators for "flere demonstratorer" here
     {
       id: 'stavkirker',
       name: 'Stavkirker',
@@ -382,10 +349,44 @@ module.exports = {
       id: 'emigrantprotokoller',
       name: 'Emigrantprotokoller',
       description: 'Kartfesting av reisem&aring;lene til norske emigranter'
-    }    
+    },
+        {
+      id: 'europeana280',
+      name: 'Europeana 280',
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection (Using CartoDB)'
+    },
+    {
+      id: 'historiskeBrev',
+      name: 'Historiske Brev',
+      description: 'Kart som viser brev fra historiske personer (Using CartoDB)'
+    },    
+    {
+      id: 'europeana280_2',
+      name: 'Europeana 280',
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+    },
+    {
+      id: 'europeana_arthistory',
+      name: 'Europeana Art History Collection',
+      description: 'Europeana Art History Collection'
+    }
   ],
   demonstrators_dev: [
-  //place demonstrators that will not be listed here
+    //place demonstrators that will not be listed here
+    //obsolete demonstrators
+    {
+      id: 'gudbrandsdalsleden_line',
+      name: 'Gudbrandsdalsleden - "guidet tur"',
+      description: 'Velkommen til en guidet tur langs Gudbrandsdalsleden. Mens du beveger deg langs leden vil vi vise deg relevant innhold.',
+      url: 'demonstratorer/linemap.html'
+    },
+    {
+      id: 'keiserstien3d',
+      name: 'Turistvegen over Folgefonna - 3D',
+      description: '3D-visning av <b>Turistvegen over Folgefonna</b> - selve ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      url: 'demonstratorer/keiserstien3d.html'
+    },    
+    //under development
     {
       id: 'nasjonale_turistveger',
       name: 'Nasjonale turistveger',
