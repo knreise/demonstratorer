@@ -31,7 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-<p class="small"><b>Urnes stavkirke</b> - Foto: Nils O. Reppen</p>
+<p class="small"><b>Uvdal stavkirke</b> - Foto: Synn�ve Haugen</p>
 </script>
 
 
@@ -986,11 +986,11 @@
 		' ?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id .' +
         ' ?picture <http://schema.org/url> ?imglink .' +
         ' ?picture rdfs:label ?picturelabel .' +
-        ' ?picture dc:description ?picturedescription .' +    
+        ' optional {?picture dc:description ?picturedescription .}' +    
         ' ?picture <http://purl.org/dc/terms/license> ?picturelicence .' +
         ' BIND(strafter(STR(?imglink), "URN") AS ?linkid)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=", ?linkid) AS ?img)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=", ?linkid) AS ?thumbnail)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN", ?linkid) AS ?img)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=URN", ?linkid) AS ?thumbnail)' +
         
 		'   }' +
 		' ?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id;' +
@@ -1033,7 +1033,7 @@
     KR.setupMap(api, datasets, {
         bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
-        image: 'http://knreise.no/demonstratorer/common/img/T284_01_0379.jpg',
+        image: 'http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN:NBN:no-RAKV_arkiv_6835417DEC7A4ADB',
         /*image: 'http://www.knreise.no/img/riksantikvaren/T248_01_0286.jpg',*/
         description: $('#description_template').html(),
         geomFilter: true,
