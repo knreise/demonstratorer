@@ -188,30 +188,30 @@ module.exports = {
         "bbox": "4.0223174095,57.6773017445,30.9705657959,71.4034238089",
         "layer": "norges_grunnkart_graatone",
         "image": 'http://dms01.dimu.org/image/012s7YmtE6EN?dimension=1200x1200',
-        "description": '<p><small>Foto: Lindahl, Axel / Norsk Folkemuseum</small></p><p>Landsdekkende visning av sentrale datasett. Kulturminner, historie og fakta fra Kulturminnesøk (Riksantikvaren), Digitalt Museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewike, Folketellingen 1910 (Digitalarkivet), Verneområder, Lokalhistoriewiki og Wikipedia.</p></br>'
+        "description": '<p><small>Foto: Lindahl, Axel / Norsk Folkemuseum</small></p><p>Landsdekkende visning av sentrale datasett. Kulturminner, historie og fakta fra Kulturminnesøk (Riksantikvaren), Digitalt Museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewiki, Folketellingen 1910 (Digitalarkivet), Verneområder, Lokalhistoriewiki og Wikipedia.</p></br>'
       }
+    },
+    {
+      id: 'telemark',
+      name: 'Telemark',
+      description: 'Innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnesøk, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt, Wikipedia og Lokalhistoriewiki.',
+      image: 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200'
     },
     {
       id: 'gudbrandsdalsleden',
       name: 'Gudbrandsdalsleden',
-      description: 'Hele pilegrimsleden med alt relevant innhold langs denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
+      description: 'Pilegrimsleden fra Oslo til Trondheim, med alt relevant innhold langs denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.'
     }, 
-    {
-      id: 'telemark',
-      name: 'Telemark',
-      description: 'Innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnesøk, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt og Wikipedia.',
-      image: 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200'
-    },
     {
       id: 'dovre',
       name: 'Dovre',
-      description: 'Kart med fokus på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold og samarbeidet med SNO om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
+      description: 'Kart med fokus på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold og samarbeidet med Statens naturoppsyn om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
       image: 'http://media31.dimu.no/media/image/H-DF/DF.5444/13948?width=800&height=580'
     },
     {
       id: 'keiserstien',
       name: 'Turistvegen over Folgefonna',
-      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Turistvegen over Folgefonna</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      description: 'Historiske vandreruter er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. Turistvegen over Folgefonna er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
       params: {
         datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
         allstatic: true,
@@ -225,8 +225,8 @@ module.exports = {
     },
     {
       id: 'flyktningeruta',
-      name: 'Flyktningeruta',
-      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Flyktningeruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      name: 'Flyktningeruta gjennom Østmarka til Sverige',
+      description: 'Historiske vandreruter er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. Flyktningeruta er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
       params: {
         datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
         allstatic: true,
@@ -240,8 +240,8 @@ module.exports = {
     },
     {
       id: 'brudleruta',
-      name: 'Brudleruta',
-      description: '<b>Historiske vandreruter</b> er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. <b>Brudleruta</b> er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
+      name: 'Brudleruta mellom Sirdal og Kvinesdal',
+      description: 'Historiske vandreruter er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. Brudleruta er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
       params: {
         datasets: ['difo', 'arkeologi', 'historie', 'riksantikvaren', 'brukerminner', 'wikipedia'],
         allstatic: true,
@@ -256,22 +256,22 @@ module.exports = {
 	{
       id: 'nidelva',
       name: 'Nidelva',
-      description: 'Historie og kulturminner langs Nidelva i Trondheim kommune'
+      description: 'Historie og kulturminner langs Nidelva i Trondheim.'
     },
     {
       id: 'akerselva',
-      name: 'Akerselva - DOGA',
-      description: 'Historie og kulturminner langs Akerselva og ved DOGA'
+      name: 'Akerselva',
+      description: 'Historie og kulturminner langs Akerselva i Oslo.'
     },
     {
       id: 'foto',
-      name: 'Foto',
-      description: 'Historiske foto fra ulike kilder i hele landet'
+      name: 'Historiske foto fra hele Norge',
+      description: 'Historiske foto fra lokale, regionale og nasjonale fotosamlinger.'
     },
     {
       id: '2verdenskrig',
-      name: '2. verdenskrig',
-      description: '2. verdenskrig og krigens kulturminner. Eget kartgrunnlag basert på tjenesten Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
+      name: 'Krigens kulturminner',
+      description: 'Kulturminner fra 2. verdenskrig. Eget kartgrunnlag fra Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.'
     },
     {
       id: 'bensinstasjoner',

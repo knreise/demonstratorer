@@ -1,0 +1,2 @@
+<p class="small"><b>Dombås</b> - Kommer</p>
+<p>Kulturminner fra 2. verdenskrig. Eget kartgrunnlag fra Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.</p>
