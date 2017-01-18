@@ -59,7 +59,7 @@
             unclusterCount: 10,
             init: kulturminneFunctions.initKulturminnePoly,
             style: {fillcolor: '#ddb522'},
-            thumbnail: false
+            thumbnail: true
         }            
     ];
 

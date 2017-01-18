@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Stavkirker - Riksantikvaren</title>
+        <title>KNReise - Test av API</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -31,7 +31,7 @@
 
 
 <script type="text/template" id="description_template">
-<p class="small"><b>Uvdal stavkirke</b> - Foto: Synn�ve Haugen</p>
+<p class="small"><b>Bragernes torg</b> - Foto: Jac Brun, lisens: PD</p>
 </script>
 
 
@@ -961,42 +961,39 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            var title = 'Stavkirker - Riksantikvaren';
+            var title = 'Test av API';
             var image = '';
 
             (function () {
     'use strict';
 
 
-    var sparqlQuery = ' select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?link ?picturelabel ?picturedescription ?picturelicence {' +
-		' ?id a ?type ;' +
-		'      rdfs:label ?name ;' +
-		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
-		' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ;' +
-		' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ;' +
-		' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
-		' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .}' +
-		' optional { ?loccat rdfs:label ?loccatlabel .}' +
-		' optional { ?locart rdfs:label ?locartlabel .}' +
-		' optional { ?org rdfs:label ?orglabel .}' +
-		' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
-		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?link)' +
-		' optional {' +
-		' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}}' +
-		' ?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id .' +
-        ' ?picture <http://schema.org/url> ?imglink .' +
-        ' ?picture rdfs:label ?picturelabel .' +
-        ' optional {?picture dc:description ?picturedescription .}' +    
-        ' ?picture <http://purl.org/dc/terms/license> ?picturelicence .' +
-        ' BIND(strafter(STR(?imglink), "URN") AS ?linkid)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN", ?linkid) AS ?img)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=URN", ?linkid) AS ?thumbnail)' +
-        
-		'   }' +
-		' ?enk <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id;' +
-		'      <https://data.kulturminne.no/askeladden/schema/enkeltminneart> <https://data.kulturminne.no/askeladden/enkeltminneart/10157>;' +
-		'      <https://data.kulturminne.no/askeladden/schema/vernetype> <https://data.kulturminne.no/askeladden/vernetype/AUT>' +
-		' }';
+    var sparqlQuery = ' select distinct ?id ?name { ' +
+' 	?id a ?type ;  ' +
+	' rdfs:label ?name ; ' + 
+	' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ; ' +
+	' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ; ' +
+	' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ; ' + 
+	' <https://data.kulturminne.no/askeladden/schema/kommune> ?kommune ; ' +
+	' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point . ' + 
+	' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .} ' +
+	' optional { ?loccat rdfs:label ?loccatlabel .} ' +
+	' optional { ?locart rdfs:label ?locartlabel .} ' +
+	' optional { ?org rdfs:label ?orglabel .} ' +
+	' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
+	' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
+	' optional { ' +
+	' 	{select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}} ' +
+	' 	?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id . ' +
+	' 	?picture <http://schema.org/url> ?link . ' +
+	' 	?picture rdfs:label ?picturelabel . ' +
+	' 	optional {?picture dc:description ?picturedescription .}     ' +
+	' 	?picture <http://purl.org/dc/terms/license> ?picturelicence . ' +
+	' 	BIND(strafter(STR(?link), "URN") AS ?linkid) ' +
+	' 	BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN", ?linkid) AS ?img) ' +
+	' 	BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=URN", ?linkid) AS ?thumbnail) ' +
+	' } ' +
+	' }';		
 
 
     var api = new KR.API({
@@ -1033,7 +1030,7 @@
     KR.setupMap(api, datasets, {
         bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
-        image: 'http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN:NBN:no-RAKV_arkiv_6835417DEC7A4ADB',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Drammen_torg_-_no-nb_digifoto_20160715_00087_NB_MIT_FNR_18530.jpg/640px-Drammen_torg_-_no-nb_digifoto_20160715_00087_NB_MIT_FNR_18530.jpg',
         /*image: 'http://www.knreise.no/img/riksantikvaren/T248_01_0286.jpg',*/
         description: $('#description_template').html(),
         geomFilter: true,

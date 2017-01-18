@@ -369,7 +369,12 @@ module.exports = {
       id: 'europeana_arthistory',
       name: 'Europeana Art History Collection',
       description: 'Europeana Art History Collection'
-    }
+    },
+    {
+      id: 'sparql_debug',
+      name: 'Test av API',
+      description: 'Forskjellige tester av Riksantikvarens API'
+    }    
   ],
   demonstrators_dev: [
     //place demonstrators that will not be listed here
