@@ -150,6 +150,8 @@ module.exports = {
     'bensinstasjoner',
     'europeana280',
     'europeana280_2',
+    'europeana_art',
+    'europeana_art_carto',
     'ksamsok',
     'historiskeBrev',
     'turistveger',
@@ -284,6 +286,16 @@ module.exports = {
       description: 'Kulturminner fra NVE (Norges vassdrags- og energidirektorat).',
       url: 'demonstratorer/kulturminner-nve.html'
     },
+        {
+      id: 'europeana_art_carto',
+      name: 'Europeana 280 (carto)',
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+    },
+    {
+      id: 'europeana_art',
+      name: 'Europeana 280',
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+    }
   ],
   demonstrators_extra: [
     //place demonstrators for "flere demonstratorer" here

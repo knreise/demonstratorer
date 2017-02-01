@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>KNReise - Turistvegen over Folgefonna</title>
+        <title>KNReise - Europeana 280</title>
 
 
         <link href='../bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' />
@@ -18,6 +18,9 @@
         <link href='../bower_components/video.js/dist/video-js/video-js.css' rel='stylesheet' />
         <link href='../bower_components/cilogi-marker/dist/cilogi-marker.css' rel='stylesheet' />
         <link href='../dist/style.css' rel='stylesheet' />
+        
+        <meta name="apple-mobile-web-app-capable" content="yes">
+		<link rel="apple-touch-icon" href="">
 
     </head>
     <body>
@@ -28,6 +31,7 @@
 
 
 <script type="text/template" id="description_template">
+<p>We invited all 28 EU Member States to nominate 10 pieces of art held in their country that have contributed to a major European art movement. We�re pleased to say that every country got involved, and Norway too. We started sharing some of these fascinating artworks in March, and will be unveiling more as the campaign begins in full.</p>
 
 </script>
 
@@ -1026,53 +1030,62 @@
         <script src="../dist/scripts.min.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-            
+            var title = 'Europeana 280';
+            var image = '';
+
             (function () {
-                'use strict';
+    'use strict';
 
-                var title = 'Turistvegen over Folgefonna';
-                var image = '';
+    var api = new KR.API({
+        europeana: {
+            apikey: 'pYEaya4fK'
+        }
+    });
+   /* 
 
-                var qs = {
-    "datasets": [
-        "difo",
-        "arkeologi",
-        "historie",
-        "riksantikvaren",
-        "brukerminner",
-        "wikipedia"
-    ],
-    "allstatic": true,
-    "line": "utno/2.8158",
-    "buffer": 2,
-    "linecolor": "#000",
-    "layer": "norges_grunnkart",
-    "image": "http://dms07.dimu.org/image/012wWX5cXPto?dimension=600x380",
-    "description": "<p>Turistvegen over Folgefonna er en klassisk bretur, fra Sunndalen over Fonnabu/Folgefonna til Tokheim ved Sørfjorden.</p><p>«Folgefonnens is dækker det ujevne lands overflade, men selve fonnen er forholdsvis jevn i overflaten, og den syder sin rand udover til siderne og tildels sender den sin is langt ned i dalene». Slik ble Folgefonna skildret i «Norges Land og folk i 1896». Turistvegen over Folgefonna er en fottur som følger i sporene etter de europeiske turistene som flokket til fjord-Norge fra midten av 1800-tallet.</p></br>",
-    "title": "Turistvegen over Folgefonna"
-};
+    var colors = ['#ff7373', '#000000', '#c6e2ff', '#4bae56', '#4bae56', '#660066', '#ff7f50', '#4bae56', '#000000', '#c39797', '#c6e2ff', '#a93d3d', '#990000', '#ffd700', '#FFFFFF', '#31698a', '#ffff00', '#cbbeb5', '#00ff7f'];
+    var countries = ['Austria', 'Belgium', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Netherlands', 'Norway', 'Poland ', 'Portugal',  'Spain', 'Sweden', 'United Kingdom']   
+    */
 
-                //set up an instance of the Norvegiana API
-                var api = new KR.API({
-                    flickr: {
-                        apikey: 'ab1f664476dabf83a289735f97a6d56c'
-                    },
-                    jernbanemuseet: {
-                        apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
-                    }
-                });
+    var colors = ['#cc0000', '#000000', '#003300', '#003366'];
+    var countries = ['Austria', 'Belgium', 'Bulgaria', 'Croatia'];
+     
+    var datasets = _.map(countries, function (country, i) {
+        return {
+            name: 'Europeana 280 ' + country,
+            hideFromGenerator: true,
+            provider: 'Europeana 280',
+            dataset: {
+                api: 'europeana',
+                qf: '(PROVIDER:"Europeana 280") AND COUNTRY:"' + country.toLowerCase() + '"'
+            },
+            bbox: true,
+            isStatic: true,
+            template: KR.Util.getDatasetTemplate('europeana_art'),
+            style: {
+                thumbnail: true,
+                fillcolor: colors[i]
+                },
+            description: 'Europeana 280'
+        };
+    });
 
-                if (qs.title && !title) {
-                    $('title').append(qs.title);
-                }
+    var layer = L.tileLayer('https://api.mapbox.com/styles/v1/vemundolstad/ciptnvtke003dcxmbfp6twjlr/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoidmVtdW5kb2xzdGFkIiwiYSI6ImNpcHRsNW8yOTAwMzVoem0yN3kyZ3B6eXcifQ.E8botDAcNDcki0fCncD4Gw') 
 
-                if (qs.norvegianaCollection) {
-                    KR.setupCollectionMap(api, qs.norvegianaCollection, qs.layer);
-                } else {
-                    KR.setupMapFromUrl(api, qs.datasets, qs);
-                }
+    KR.setupMap(api, datasets, {
+        title: title,
+        bbox: '-28.828125,46.40625,34.1618181612,71.9653876991',
+        image: 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=https%3A%2F%2Fwww.dropbox.com%2Fs%2Fqpl39c1v2bj3q67%2FNO_Munch_The_Scream_NG.M.00939.jpg%3Fraw%3D1&size=LARGE&type=IMAGE',
+        description: $('#description_template').html(),
+        geomFilter: true,
+        showGeom: true,
+        showScaleBar: true,
+        fillcolor: '#ddb522',
+        minZoom: 4,
+        layer: layer
+    });
+}());
 
-            }());
         </script>
     </body>
 </html>
