@@ -8,12 +8,12 @@
     });
    /* 
 
-    var colors = ['#ff7373', '#000000', '#c6e2ff', '#4bae56', '#4bae56', '#660066', '#ff7f50', '#4bae56', '#000000', '#c39797', '#c6e2ff', '#a93d3d', '#990000', '#ffd700', '#FFFFFF', '#31698a', '#ffff00', '#cbbeb5', '#00ff7f'];
+    var colors = ['#CC7373', '#000000', '#c6e2ff', '#4bae56', '#4bae56', '#660066', '#ff7f50', '#4bae56', '#000000', '#c39797', '#c6e2ff', '#a93d3d', '#990000', '#ffd700', '#FFFFFF', '#31698a', '#ffff00', '#cbbeb5', '#00ff7f'];
     var countries = ['Austria', 'Belgium', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Netherlands', 'Norway', 'Poland ', 'Portugal',  'Spain', 'Sweden', 'United Kingdom']   
     */
 
-    var colors = ['#cc0000', '#000000', '#003300', '#003366'];
-    var countries = ['Austria', 'Belgium', 'Bulgaria', 'Croatia'];
+    var colors = ['#FF0099', '#CCFF66', '#9933FF', '#66CCFF', '#669999'];
+    var countries = ['Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus'];
      
     var datasets = _.map(countries, function (country, i) {
         return {

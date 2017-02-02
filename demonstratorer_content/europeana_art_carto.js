@@ -20,7 +20,7 @@
             template: KR.Util.getDatasetTemplate('europeana280'),
             style: {
 	            thumbnail: true,
-	            fillcolor: '#ff0099'
+	            fillcolor: '#FF0099'
 	            },
             description: 'Europeana 280'
         },
@@ -38,7 +38,7 @@
             template: KR.Util.getDatasetTemplate('europeana280'),
             style: {
 	            thumbnail: true,
-	            fillcolor: '#ccff66'
+	            fillcolor: '#CCFF66'
 	            },
             description: 'Europeana 280'
         }, 
@@ -74,7 +74,7 @@
             template: KR.Util.getDatasetTemplate('europeana280'),
             style: {
 	            thumbnail: true,
-	            fillcolor: '#66ccff'
+	            fillcolor: '#66CCFF'
 	            },
             description: 'Europeana 280'
         },         
@@ -96,6 +96,24 @@
 	            },
             description: 'Europeana 280'
         }, 
+		{
+            name: 'Czech Republic',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - Czech Republic',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_czechrepublic',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'origtitle as title', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#ff9966'
+	            },
+            description: 'Europeana 280'
+        },
         {
             name: 'Denmark',
             hideFromGenerator: true,
@@ -438,9 +456,24 @@
 	            },
             description: 'Europeana 280'
         },        
-        
-        
-        
+        {
+            name: 'Slovenia',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - Slovenia',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_slovenia',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'origtitle as title', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#99ff99'
+	            },
+            description: 'Europeana 280'
+        },        
         {
             name: 'Spain',
             hideFromGenerator: true,
@@ -477,6 +510,68 @@
 	            },
             description: 'Europeana 280'
         },
+        {
+            grouped: true,
+            name: 'United Kingdom',
+            datasets: [
+        {
+            name: 'England',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - UK (England)',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_england',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'origtitle as title', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#ff3333'
+	            },
+            description: 'Europeana 280'
+        },
+        {
+            name: 'Scotland',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - UK (Scotland)',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_scotland',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'origtitle as title', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#6633ff'
+	            },
+            description: 'Europeana 280'
+        },
+        {
+            name: 'Wales',
+            hideFromGenerator: true,
+            provider: 'Europeana 280 - UK (Wales)',
+            dataset: {
+                api: 'cartodb',
+                table: 'europeana280_wales',
+                columns: ['the_geom', 'artist', 'country', 'engtitle', 'origtitle', 'origtitle as title', 'flagicon_l', 'flagicon_s', 'thumbnail', 'infopage as source', 'institution', 'image', 'type', 'type as content', 'license', 'year']
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#66cc66'
+	            },
+            description: 'Europeana 280'
+        }                    
+            ]
+        }
+
+        /* 
 		{
             name: 'United Kingdom',
             hideFromGenerator: true,
@@ -494,7 +589,7 @@
 	            fillcolor: '#31698a'
 	            },
             description: 'Europeana 280'
-        }         
+        } */        
     ];
     
     /*var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A');*/

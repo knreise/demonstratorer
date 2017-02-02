@@ -288,14 +288,10 @@ module.exports = {
     },
         {
       id: 'europeana_art_carto',
-      name: 'Europeana 280 (carto)',
-      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
-    },
-    {
-      id: 'europeana_art',
       name: 'Europeana 280',
-      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection. Data has been harvested from the Europeana API but has been manually refined for this presentation.'
     }
+
   ],
   demonstrators_extra: [
     //place demonstrators for "flere demonstratorer" here
@@ -362,26 +358,11 @@ module.exports = {
       name: 'Emigrantprotokoller',
       description: 'Kartfesting av reisem&aring;lene til norske emigranter'
     },
-        {
-      id: 'europeana280',
-      name: 'Europeana 280',
-      description: 'Map showing the locations of all works of art in the Europeana 280 collection (Using CartoDB)'
-    },
     {
       id: 'historiskeBrev',
       name: 'Historiske Brev',
       description: 'Kart som viser brev fra historiske personer (Using CartoDB)'
     },    
-    {
-      id: 'europeana280_2',
-      name: 'Europeana 280',
-      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
-    },
-    {
-      id: 'europeana_arthistory',
-      name: 'Europeana Art History Collection',
-      description: 'Europeana Art History Collection'
-    },
     {
       id: 'sparql_debug',
       name: 'Test av API',
@@ -424,6 +405,21 @@ module.exports = {
       name: 'K-samsök eksempel från Europeana',
       description: 'K-samsök eksempel från Europeana'
     },
+    {
+      id: 'europeana_art',
+      name: 'Europeana 280',
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+    },   
+    {
+      id: 'europeana280_2',
+      name: 'Europeana 280',
+      description: 'Map showing the locations of all works of art in the Europeana 280 collection'
+    },
+    {
+      id: 'europeana_arthistory',
+      name: 'Europeana Art History Collection',
+      description: 'Europeana Art History Collection'
+    },    
     {
       id: 'europeana_lars',
       name: 'Europeana - slott',
