@@ -845,7 +845,7 @@
 </table>
 
 <ul class="list-unstyled">
-    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> License<a/></li>
     <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
 </ul>
 
@@ -876,6 +876,74 @@
     <tr>
         <td>Country</td>
         <td><%= country %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
+</ul>
+
+</script>
+
+
+<script type="text/template" id="europeana_art_template">
+<h3><%= title %></h3>
+<h4><%= creator %></h4>
+
+
+<% if(images) { %>
+    <img class="fullwidth img-thumbnail" src="<%= images[0] %>" />
+<% } %>
+
+        <h5 style="text-align: center"><%= title %> (<%= year %>)</h5>
+        
+<!--<p>
+    <%= content %>
+</p>-->
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Institution</td>
+      <td><%= dataProvider %></td>
+    </tr>
+    <tr>
+        <td>Country</td>
+        <td><%= country %></td>
+    </tr>
+
+</table>
+
+<ul class="list-unstyled">
+    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><a href="<%= source %>" class="sidebar-link" target="_eur280"><i class="fa fa-external-link-square"></i> View description at Europeana pages<a/></li>
+</ul>
+
+</script>
+
+
+<script type="text/template" id="europeana_art_carto_template">
+<h3><%= engtitle %></h3>
+<h4><%= artist %></h4>
+
+
+<% if(image) { %>
+    <img class="fullwidth img-thumbnail" src="<%= image %>" />
+<% } %>
+
+        <h5 style="text-align: center"><%= origtitle %> (<%= year %>)</h5>
+        
+<!--<p>
+    <%= content %>
+</p>-->
+
+<table class="sidebar-table">
+
+    <tr>
+      <td>Institution</td>
+      <td><%= institution %></td>
     </tr>
 
 </table>
