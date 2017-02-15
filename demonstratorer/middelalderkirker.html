@@ -1101,6 +1101,7 @@
         }            
     ];
 
+var layer = L.tileLayer('https://api.mapbox.com/styles/v1/vemundolstad/ciptnvtke003dcxmbfp6twjlr/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoidmVtdW5kb2xzdGFkIiwiYSI6ImNpcHRsNW8yOTAwMzVoem0yN3kyZ3B6eXcifQ.E8botDAcNDcki0fCncD4Gw')
 
     KR.setupMap(api, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
@@ -1112,6 +1113,7 @@
         showScaleBar: true,
         fillcolor: '#ddb522',
         minZoom: 5,
+        layer: layer
     });
 }());
 

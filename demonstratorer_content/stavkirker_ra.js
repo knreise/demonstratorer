@@ -67,6 +67,7 @@
     KR.setupMap(api, datasets, {
         bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
+        layer: "norges_grunnkart_graatone",
         image: 'http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN:NBN:no-RAKV_arkiv_6835417DEC7A4ADB',
         /*image: 'http://www.knreise.no/img/riksantikvaren/T248_01_0286.jpg',*/
         description: $('#description_template').html(),
