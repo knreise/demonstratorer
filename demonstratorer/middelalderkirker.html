@@ -1035,7 +1035,7 @@
             (function () {
     'use strict';
 
-    var sparqlQuery = 'select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
+    var sparqlQuery = 'select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) (SAMPLE(?area) as ?area) ?link ?linkid ?picturelabel ?picturedescription ?picturelicence {' +
 		' ?id a ?type ;' +
 		' rdfs:label ?name ;' +
 		' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
@@ -1043,6 +1043,7 @@
 		' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ;' +
 		' <https://data.kulturminne.no/askeladden/schema/kommune> ?kommune  ;' +
 		' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
+		' optional {?id <https://data.kulturminne.no/askeladden/schema/geo/area/wgs84> ?area .}' +
 		' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .}' +
 		' optional { ?loccat rdfs:label ?loccatlabel .}' +
 		' optional {  ?locart rdfs:label ?locartlabel .}' +
@@ -1050,8 +1051,12 @@
 		' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
 		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?link)' +
 		' optional {' +
-		' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}}' +
-		' ?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id .' +
+		' {select sample(?picture) as ?picture ?id where {' +
+        '     {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}' +
+        '      union' +
+        '      {?ide <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id .' +
+        '     ?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?ide}' +
+        '      }}' +
         ' ?picture <http://schema.org/url> ?imglink .' +
         ' ?picture rdfs:label ?picturelabel .' +
         ' optional {?picture dc:description ?picturedescription .}' +    

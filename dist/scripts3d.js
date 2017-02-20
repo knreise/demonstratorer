@@ -895,8 +895,6 @@ KR.Style = {};
             '</div>' +
             '<b>' + features.length + '</b>';
 
-        console.log(html);
-
         return new L.DivIcon({
             className: 'leaflet-marker-photo',
             html: html,
