@@ -839,7 +839,7 @@ KR.Style = {};
 
         var styleDict = {
             'border-color': color,
-            'background-image': 'url(' + feature.properties.thumbnail + ')'
+            'background-image': 'url(\'' + feature.properties.thumbnail + '\')'
         };
 
         if (selected) {
@@ -849,7 +849,7 @@ KR.Style = {};
         var thumbnail = KR.Util.getImageCache(feature.properties.thumbnail, 50, 50);
 
         var html = '<div class="outer">' +
-            '<div class="circle" style="background-image: url(' + thumbnail + ');border-color:' + color + ';"></div>' +
+            '<div class="circle" style="background-image: url(\'' + thumbnail + '\');border-color:' + color + ';"></div>' +
             '</div>';
 
         return new L.DivIcon({
@@ -877,7 +877,7 @@ KR.Style = {};
 
         var styleDict = {
             'border-color': color,
-            'background-image': 'url(' + thumbnail + ');'
+            'background-image': 'url(\'' + thumbnail + '\');'
         };
         if (rest) {
             styleDict['box-shadow'] = _.map(rest, function (c, index) {
@@ -894,6 +894,8 @@ KR.Style = {};
             '<div class="circle" style="' + KR.Util.createStyleString(styleDict) + '"></div>' +
             '</div>' +
             '<b>' + features.length + '</b>';
+
+        console.log(html);
 
         return new L.DivIcon({
             className: 'leaflet-marker-photo',
