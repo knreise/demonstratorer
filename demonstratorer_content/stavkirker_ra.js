@@ -17,7 +17,7 @@
 		' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
 		' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?link)' +
 		' optional {' +
-		' {select sample(?picture) as ?picture ?id where {' +
+		' {select SAMPLE(?picture) as ?picture ?id where {' +
         '     {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}' +
         '      union' +
         '      {?ide <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id .' +
