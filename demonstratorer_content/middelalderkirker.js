@@ -23,10 +23,10 @@
         '      {?ide <https://data.kulturminne.no/askeladden/schema/lokalitet> ?id .' +
         '     ?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?ide}' +
         '      }}' +
-        ' ?picture <http://schema.org/url> ?imglink .' +
-        ' ?picture rdfs:label ?picturelabel .' +
+        ' optional {?picture <http://schema.org/url> ?imglink .}' +
+        ' optional {?picture rdfs:label ?picturelabel .}' +
         ' optional {?picture dc:description ?picturedescription .}' +    
-        ' ?picture <http://purl.org/dc/terms/license> ?picturelicence .' +
+        ' optional {?picture <http://purl.org/dc/terms/license> ?picturelicence .}' +
         ' BIND(strafter(STR(?imglink), "URN") AS ?linkid)' +
         ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN", ?linkid) AS ?img)' +
         ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=URN", ?linkid) AS ?thumbnail)' +
