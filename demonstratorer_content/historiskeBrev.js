@@ -29,8 +29,8 @@
             provider: 'eMunch',
             dataset: {
                 api: 'cartodb',
-                table: 'emunch',
-                columns: ['the_geom', 'title', 'thumbnail', 'image_url as image', 'institusjon as institution', 'license', 'infopage as source', 'avsender', 'mottaker', 'date', 'kortinfo', 'sted', 'levetid as year']
+                table: 'emunch_2',
+                columns: ['the_geom', 'title', 'mtype', 'rtype', 'thumbnail', 'image_url as image', 'institusjon as institution', 'license', 'infopage as source', 'avsender', 'mottaker', 'date', 'kortinfo', 'sted', 'levetid as year']
             },
             bbox: false,
             isStatic: false,

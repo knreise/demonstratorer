@@ -890,23 +890,34 @@
 
 
 <script type="text/template" id="historiskeBrev_template">
-<h3><%= title %></h3>
-<h4>Brev til <span style="text-transform: capitalize"><%= mottaker %></span><% if(date) { %>, <%= date %><% } %></h4>
+<h4><%= title %></h4>
 
 <% if(image) { %>
     <img class="fullwidth img-thumbnail" src="<%= image %>" />
 <% } %>
 
         <table class="sidebar-table">
+            <% if(avsender) { %>
+                <tr>
+                    <td>Avsender:</td>
+                    <td><%= avsender %></td>
+                </tr>
+            <% } %> 
             <% if(mottaker) { %>
                 <tr>
-                    <td>Info om mottaker:</td>
+                    <td>Mottaker:</td>
+                    <td><%= mottaker %></td>
+                </tr>
+            <% } %>		
+            <% if(kortinfo) { %>
+                <tr>
+                    <td>Info om kontakt:</td>
                     <td><%= kortinfo %></td>
                 </tr>
-            <% } %>            
+            <% } %>   
             <% if(year) { %>
                 <tr>
-                    <td>Leveår, mottaker:</td>
+                    <td>Leveår, kontakt:</td>
                     <td><%= year %></td>
                 </tr>
             <% } %>
