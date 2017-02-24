@@ -29,8 +29,8 @@
             provider: 'eMunch',
             dataset: {
                 api: 'cartodb',
-                table: 'emunch_2',
-                columns: ['the_geom', 'title', 'mtype', 'rtype', 'thumbnail', 'image_url as image', 'institusjon as institution', 'license', 'infopage as source', 'avsender', 'mottaker', 'date', 'kortinfo', 'sted', 'levetid as year']
+                table: 'emunch_3',
+                columns: ['the_geom', 'title', 'mtype', 'rtype', 'thumbnail', 'image_url as image', 'institusjon as institution', 'license', 'infopage as source', 'avsender', 'mottaker', 'date', 'kortinfo', 'letteraddress as sted', 'levetid as year']
             },
             bbox: false,
             isStatic: false,
@@ -59,7 +59,7 @@
         showGeom: true,
         showScaleBar: true,
         fillcolor: '#ddb522',
-        minZoom: 4,
+        
         layer: layer
     });
 }());
