@@ -425,6 +425,11 @@ module.exports = {
       name: 'Europeana - slott',
       description: 'Europeanadata; fritekstsøk på "castle", for utvalgte land',
       image: 'https://www.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&uri=http%3A%2F%2Fwww.pictures-bank.eu%2Fpokazobrazek.php%3Ffileno%3D2190%26a%3D1&type=IMAGE?width=600&height=380'
+    },
+        {
+      id: 'drammen',
+      name: 'Arkitektur i Drammen',
+      description: 'Arkitektur i Drammen'
     }
   ],
   experiments: [

@@ -23,6 +23,23 @@
 	            },
             description: 'Historiske brev fra Henrik Ibsen'
         },
+		/*{
+            name: 'Edelfelt',
+            hideFromGenerator: true,
+            provider: 'Europeana',
+            dataset: {
+                api: 'europeana',
+                query: 'albert edelfelt'
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('europeana280_2'),
+            style: {
+	            thumbnail: true,
+	            fillcolor: '#FF0000'
+	            },
+            description: 'Historiske brev fra og til Albert Edelfelt'
+        },*/
 		{
             name: 'eMunch',
             hideFromGenerator: true,
