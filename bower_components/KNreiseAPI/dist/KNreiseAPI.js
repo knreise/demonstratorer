@@ -1567,7 +1567,6 @@ KR.SparqlAPI = function (apiName, options) {
         var query = 'select distinct ?id ?name ?description ?loccatlabel ?locartlabel ?orglabel ?img ?thumbnail (SAMPLE(?point) as ?point) ?url as ?link ?picture ?picturelabel ?picturedescription ?picturelicence { ' +
                 ' ?id a ?type ; ' +
                 ' rdfs:label ?name ; ' +
-                
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/lokalitetsart> ?locart ; ' +
                 ' <https://data.kulturminne.no/askeladden/schema/ansvarligorganisasjon> ?org ; ' +
@@ -1576,19 +1575,19 @@ KR.SparqlAPI = function (apiName, options) {
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
                 ' optional { ?org rdfs:label ?orglabel .} ' +
-                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .} ' +
+                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .} ' + /* Endret */
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
-                ' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id}} ' +
-                '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id . ' +
-                '  ?picture <https://data.kulturminne.no/schema/source-link> ?link . ' +
-                '  ?picture rdfs:label ?picturelabel . ' +
-                '  ?picture dc:description ?picturedescription . ' +
-                '  ?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence . ' +
-                '  BIND(REPLACE(STR(?link), "http://kulturminnebilder.ra.no/fotoweb/default.fwx\\\\?search\\\\=", "") AS ?linkid) ' +
-                '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?linkid) AS ?img) ' +
-                '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?linkid) AS ?thumbnail) ' +
+				'	{select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}} ' + /* Endret */
+                ' 	?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id . ' + /* Endret */
+                ' 	?picture <http://schema.org/url> ?link . ' + /* Endret */
+                ' 	?picture rdfs:label ?picturelabel . ' +
+                ' 	optional {?picture dc:description ?picturedescription .} ' + /* Endret */
+                ' 	?picture <http://purl.org/dc/terms/license> ?picturelicence .  ' +
+                ' 	BIND(strafter(STR(?link), "URN") AS ?linkid) ' + /* Endret */
+                ' 	BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN", ?linkid) AS ?img) ' + /* Endret */
+                ' 	BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=URN", ?linkid) ' + /* Endret */
                 '} ';
 
         if (dataset.filter) {
@@ -1623,19 +1622,19 @@ KR.SparqlAPI = function (apiName, options) {
                 ' optional { ?loccat rdfs:label ?loccatlabel .} ' +
                 ' optional { ?locart rdfs:label ?locartlabel .} ' +
                 ' optional { ?org rdfs:label ?orglabel .} ' +
-                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description .} ' +
+                ' optional { ?id <https://data.kulturminne.no/askeladden/schema/ksok> ?description .} ' + /* Endret */
                 ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
                 ' BIND(bif:concat("http://www.kulturminnesok.no/kulturminnesok/kulturminne/?LOK_ID=", ?lokid) AS ?url) ' +
                 ' optional { ' +
-                ' {select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id}} ' +
-                '  ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id . ' +
-                '  ?picture <https://data.kulturminne.no/schema/source-link> ?link . ' +
-                '  ?picture rdfs:label ?picturelabel . ' +
-                '  ?picture dc:description ?picturedescription . ' +
-                '  ?picture <https://data.kulturminne.no/bildearkivet/schema/license> ?picturelicence . ' +
-                '  BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid) ' +
-                '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img) ' +
-                '  BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=75&rs=0&pg=0&sr=", ?lokid) AS ?thumbnail) ' +
+                ' 	{select sample(?picture) as ?picture ?id where {?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id}} ' + /* Endret */
+                '  	?picture <https://data.kulturminne.no/bildearkivet/schema/askeladdenid> ?id . ' + /* Endret */
+                '  	?picture <http://schema.org/url> ?link . ' + /* Endret */
+                '  	?picture rdfs:label ?picturelabel . ' +
+                '  	optional {?picture dc:description ?picturedescription .} ' + /* Endret */
+                '  	?picture <http://purl.org/dc/terms/license> ?picturelicence . ' + /* Endret */
+                '  	BIND(strafter(STR(?link), "URN") AS ?linkid) ' + /* Endret */
+                '  	BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=5000&ar=5001&sr=URN", ?linkid) AS ?img) ' + /* Endret */
+                '  	BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?sz=120&ar=5001&sr=URN", ?linkid) AS ?thumbnail) ' + /* Endret */
                 ' } ' +
                 ' FILTER regex(?kommune, "^.*' + fylke + '[1-9]{2}") . ';
 
@@ -2422,7 +2421,7 @@ KR.API = function (options) {
         lokalhistoriewiki: {
             api: KR.WikipediaAPI,
             params: {
-                url: 'http://www.knreise.no/miniProxy/miniProxy.php/http://test.lokalhistoriewiki.no:8080/api.php',
+                url: 'http://www.knreise.no/miniProxy/miniProxy.php/http://lokalhistoriewiki.no/api.php',
                 linkBase: 'http://lokalhistoriewiki.no/?curid=',
                 maxRadius: 100000
             }
