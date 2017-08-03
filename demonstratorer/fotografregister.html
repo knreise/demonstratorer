@@ -65,9 +65,9 @@
 <script type="text/template" id="footer_template">
 <ul class="list-unstyled">
 <% if (license) { %>
-    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><span onclick="window.open('<%= license %>', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');" class="sidebar-link" style="cursor: pointer;"><i class="fa fa-external-link-square"></i> Lisens</span></li>
 <% } %>
-    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+    <li><span onclick="window.open('<%= link %>', '_blank', 'location=yes,scrollbars=yes,status=yes');" class="sidebar-link" style="cursor: pointer;"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
 </ul>
 </script>
 
@@ -457,12 +457,12 @@
 
 <table class="sidebar-table">
     <tr>
-      <td>Type</td>
+      <td>Kategori</td>
       <td><%= loccatlabel %></td>
     </tr>
     <% if(!_.isUndefined(arguments[0].locartlabel)) { %>
     <tr>
-      <td>Lokalitetsart</td>
+      <td>Art</td>
       <td><%= locartlabel  %></td>
     </tr>
     <% } %>
