@@ -9,7 +9,7 @@
     //The datasets in use
     var datasets = [
 
-		{
+		/*{
             name: 'Turistveginfo',
             hideFromGenerator: true,
             provider: 'Nasjonale turistveger',
@@ -87,14 +87,14 @@
             },
             template: KR.Util.getDatasetTemplate('digitalt_museum'),
             style: {fillcolor: '#333333'}
-        },
+        },*/
         {
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
             cluster: true,
             template: KR.Util.getDatasetTemplate('digitalt_fortalt'),
             noListThreshold: Infinity
-        },        
+        }/*,        
         {
             grouped: true,
             name: 'Kulturminner',
@@ -131,7 +131,7 @@
             }
             
             ]
-        }
+        }*/
                         
     ];
     
@@ -149,6 +149,7 @@
         minZoom: 6,
         layer : 'norges_grunnkart',
         line: 'http://kulturminnedata.no/kart/turistveg_hardangervidda.geojson',
+        
         buffer: 1,
         linecolor: '#FF0000' 
     };
