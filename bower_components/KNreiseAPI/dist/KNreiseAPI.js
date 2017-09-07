@@ -164,8 +164,8 @@ KR.Util = {};
         Add crossorigin proxy to an url
     */
     ns.addCrossorigin = function (url) {
-        if (url.indexOf('http://www.knreise.no/miniProxy/miniProxy.php/') !== 0) {
-            return 'http://www.knreise.no/miniProxy/miniProxy.php/' + url;
+        if (url.indexOf('http://kd-miniproxy.ra.no/miniProxy.php/') !== 0) {
+            return 'http://kd-miniproxy.ra.no/miniProxy.php/' + url;
         }
         return url;
     };
@@ -2211,7 +2211,7 @@ KR.KSamsokAPI = function (apiName, options) {
     options = options || {};
     var requests = [];
 
-    var BASE_URL = 'http://www.knreise.no/miniProxy/miniProxy.php/http://kulturarvsdata.se/ksamsok/api';
+    var BASE_URL = 'http://kd-miniproxy.ra.no/miniProxy.php/http://kulturarvsdata.se/ksamsok/api';
     var apikey = options.apikey;
 
     var bboxTemplate = _.template('boundingBox=/WGS84 "<%= w %> <%= s %> <%= e %> <%= n %>"');
@@ -2349,7 +2349,7 @@ KR.KSamsokAPI = function (apiName, options) {
     }
 
     function getItem(dataset, callback, errorCallback) {
-        var url = 'http://www.knreise.no/miniProxy/miniProxy.php/' + dataset.itemId;
+        var url = 'http://kd-miniproxy.ra.no/miniProxy.php/' + dataset.itemId;
         KR.Util.sendRequest(url, _parseItem, callback, errorCallback);
     }
 
@@ -2374,11 +2374,11 @@ KR.API = function (options) {
         },
         wikipedia: {
             api: KR.WikipediaAPI,
-            params: {url: 'http://www.knreise.no/miniProxy/miniProxy.php/https://no.wikipedia.org/w/api.php', linkBase: 'http://no.wikipedia.org/?curid='}
+            params: {url: 'http://kd-miniproxy.ra.no/miniProxy.php/https://no.wikipedia.org/w/api.php', linkBase: 'http://no.wikipedia.org/?curid='}
         },
         wikipediaNN: {
             api: KR.WikipediaAPI,
-            params: {url: 'http://www.knreise.no/miniProxy/miniProxy.php/https://nn.wikipedia.org/w/api.php', linkBase: 'http://nn.wikipedia.org/?curid='}
+            params: {url: 'http://kd-miniproxy.ra.no/miniProxy.php/https://nn.wikipedia.org/w/api.php', linkBase: 'http://nn.wikipedia.org/?curid='}
         },
         cartodb: {
             api: KR.CartodbAPI,
@@ -2421,7 +2421,7 @@ KR.API = function (options) {
         lokalhistoriewiki: {
             api: KR.WikipediaAPI,
             params: {
-                url: 'http://www.knreise.no/miniProxy/miniProxy.php/http://lokalhistoriewiki.no/api.php',
+                url: 'http://kd-miniproxy.ra.no/miniProxy.php/http://lokalhistoriewiki.no/api.php',
                 linkBase: 'http://lokalhistoriewiki.no/?curid=',
                 maxRadius: 100000
             }
