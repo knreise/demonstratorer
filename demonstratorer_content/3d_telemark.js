@@ -44,7 +44,7 @@
             datasets: [
 		                {
 		            thumbnails: true,
-		            name: 'Kulturminnesøk',
+		            name: 'KulturminnesÃ¸k',
 		            provider: 'Riksantikvaren',
 		            dataset: {
 		                api: 'kulturminnedataSparql',
@@ -108,7 +108,7 @@
 				circle: true,
 				opacity: 0.8,
 				radius: 20},
-            description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
+            description: 'BygdebÃ¸ker og lokalhistorie fra Nasjonalbibliotket'
         }        
     ];
 

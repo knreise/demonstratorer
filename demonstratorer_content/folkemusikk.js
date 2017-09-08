@@ -28,7 +28,7 @@
         },
         {
             provider: 'Riksantikvaren',
-            name: 'Kulturminnesøk - brukerregistrering',
+            name: 'KulturminnesÃ¸k - brukerregistrering',
             dataset: {
                 api: 'kulturminnedata',
                 layer: 2,

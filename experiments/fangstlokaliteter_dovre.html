@@ -64,9 +64,9 @@
 <script type="text/template" id="footer_template">
 <ul class="list-unstyled">
 <% if (license) { %>
-    <li><a href="<%= license %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Lisens<a/></li>
+    <li><span onclick="window.open('<%= license %>', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');" class="sidebar-link" style="cursor: pointer;"><i class="fa fa-external-link-square"></i> Lisens</span></li>
 <% } %>
-    <li><a href="<%= link %>" class="sidebar-link"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
+    <li><span onclick="window.open('<%= link %>', '_blank', 'location=yes,scrollbars=yes,status=yes');" class="sidebar-link" style="cursor: pointer;"><i class="fa fa-external-link-square"></i> Vis hos <%= provider %><a/></li>
 </ul>
 </script>
 
@@ -456,12 +456,12 @@
 
 <table class="sidebar-table">
     <tr>
-      <td>Type</td>
+      <td>Kategori</td>
       <td><%= loccatlabel %></td>
     </tr>
     <% if(!_.isUndefined(arguments[0].locartlabel)) { %>
     <tr>
-      <td>Lokalitetsart</td>
+      <td>Art</td>
       <td><%= locartlabel  %></td>
     </tr>
     <% } %>
@@ -893,23 +893,34 @@
 
 
 <script type="text/template" id="historiskeBrev_template">
-<h3><%= title %></h3>
-<h4>Brev til <span style="text-transform: capitalize"><%= mottaker %></span><% if(date) { %>, <%= date %><% } %></h4>
+<h4><%= title %></h4>
 
 <% if(image) { %>
     <img class="fullwidth img-thumbnail" src="<%= image %>" />
 <% } %>
 
         <table class="sidebar-table">
+            <% if(avsender) { %>
+                <tr>
+                    <td>Avsender:</td>
+                    <td><%= avsender %></td>
+                </tr>
+            <% } %> 
             <% if(mottaker) { %>
                 <tr>
-                    <td>Info om mottaker:</td>
+                    <td>Mottaker:</td>
+                    <td><%= mottaker %></td>
+                </tr>
+            <% } %>		
+            <% if(kortinfo) { %>
+                <tr>
+                    <td>Info om kontakt:</td>
                     <td><%= kortinfo %></td>
                 </tr>
-            <% } %>            
+            <% } %>   
             <% if(year) { %>
                 <tr>
-                    <td>Leveår, mottaker:</td>
+                    <td>Leveår, kontakt:</td>
                     <td><%= year %></td>
                 </tr>
             <% } %>

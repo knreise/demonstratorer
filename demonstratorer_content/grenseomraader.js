@@ -30,7 +30,7 @@
 	            thumbnail: true,
 	            fillcolor: '#fece0a'
 	            },
-            description: 'Kulturminner i Strömstad kommune'
+            description: 'Kulturminner i StrÃ¶mstad kommune'
         },
         {
             id: 'riksantikvaren',
