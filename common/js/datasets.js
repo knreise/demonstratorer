@@ -9,15 +9,11 @@ KR.Config = KR.Config || {};
 (function (ns) {
     'use strict';
 
-    ns.getDatasetList = function (api, komm, fylke) {
+    ns.getDatasetList = function (api) {
 
+        var komm = null;
+        var fylke = null;
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
-        if (komm && komm.length === 3) {
-            komm = '0' + komm;
-        }
-
-
-
 
         var list = {
             'difo': {
@@ -29,7 +25,12 @@ KR.Config = KR.Config || {};
                 description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
                 allowTopic: true,
                 feedbackForm: true,
-                isStatic: false
+                isStatic: false,
+                style: {
+                    fillcolor: '#F69730',
+                    circle: false,
+                    thumbnail: true
+                }
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -42,10 +43,13 @@ KR.Config = KR.Config || {};
                 name: 'Verneområder',
                 template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
-                    api.getItem(
+                    /*api.getItem(
                         {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
                         callback
-                    );
+                    );*/
+                    console.log("NO API in datasets.js")
+                    callback();
+
                 },
                 toPoint: {
                     showAlways: true,
@@ -78,7 +82,11 @@ KR.Config = KR.Config || {};
                 minZoom: 14,
                 template: KR.Util.getDatasetTemplate('folketelling'),
                 getFeatureData: function (oldFeature, callback) {
-                    api.getData({
+
+                    console.log("NO API in datasets.js")
+                    callback();
+
+                    /*api.getData({
                         api: 'folketelling',
                         type: 'propertyData',
                         propertyId: oldFeature.properties.efid
@@ -87,6 +95,7 @@ KR.Config = KR.Config || {};
                         oldFeature.properties.provider = 'Folketelling 1910';
                         callback(oldFeature);
                     });
+                    */
                 },
                 mappings: {
                     'title': 'gaardsnavn_gateadr'
@@ -146,10 +155,12 @@ KR.Config = KR.Config || {};
                 hideFromGenerator: true,
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
-                    api.getItem(
+                    /*api.getItem(
                         {api: 'jernbanemuseet', id:  feature.properties.id},
                         callback
-                    );
+                    );*/
+                    console.log("NO API in datasets.js")
+                    callback();
                 },
                 isStatic: true,
                 bbox: false,
@@ -174,7 +185,7 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('musit')
                     },
-                    {
+                   /* {
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -190,7 +201,7 @@ KR.Config = KR.Config || {};
                         isStatic: false,
                         unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly
-                    }
+                    }*/
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
             },
@@ -204,7 +215,7 @@ KR.Config = KR.Config || {};
                     thumbnail: true
                 },
                 datasets: [
-                    {
+                    /*{
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -219,8 +230,13 @@ KR.Config = KR.Config || {};
                         bbox: false,
                         isStatic: false,
                         unclusterCount: 20,
-                        init: kulturminneFunctions.initKulturminnePoly
-                    },
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: true
+                        }
+                    },*/
                     {
                         name: 'DiMu',
                         dataset: {
@@ -230,7 +246,12 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
                         isStatic: false,
-                        bbox: true
+                        bbox: true,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: false
+                        }
                     },
                     {
                         dataset: {
@@ -277,7 +298,12 @@ KR.Config = KR.Config || {};
                             query: 'dc_subject_facet:Kunst'
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                        isStatic: false
+                        isStatic: false,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: false
+                        }
                     }
                 ],
                 description: 'Kunstdata fra Digitalt museum '
@@ -291,7 +317,11 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13,
                 template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Stedfestede artikler fra bokmålswikipedia'
+                description: 'Stedfestede artikler fra bokmålswikipedia',
+                style: {
+                    fillcolor: '#D14020',
+                    thumbnail: true,
+                }
             },
             'wikipediaNN': {
                 name: 'Wikipedia Nynorsk',
@@ -302,7 +332,11 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13,
                 template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Stedfestede artikler fra nynorskwikipedia'
+                description: 'Stedfestede artikler fra nynorskwikipedia',
+                style: {
+                    fillcolor: '#D14020',
+                    thumbnail: true,
+                }
             },
 
             'lokalwiki': {
@@ -352,7 +386,12 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
-                template: KR.Util.getDatasetTemplate('brukerminne')
+                template: KR.Util.getDatasetTemplate('brukerminne'),
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: false
+                }
             },
             'groruddalen': {
                 name: 'Byantikvaren Oslo - Groruddalen',
@@ -558,24 +597,11 @@ KR.Config = KR.Config || {};
             }
         };
 
-        if (!komm && !fylke) {
-            var raParams = {
-                bbox: true,
-                minZoom: 12,
-                isStatic: false,
-                bboxFunc: KR.Util.sparqlBbox
-            };
-            _.extend(list.riksantikvaren, raParams);
-            _.extend(list.ark_hist.datasets[2], raParams);
-            _.extend(list.arkeologi.datasets[1], raParams);
-            _.extend(list.historie.datasets[0], raParams);
-        }
-
         return list;
     };
 
-    ns.getDatasets = function (ids, api, komm, fylke) {
-        var datasetList = ns.getDatasetList(api, komm, fylke);
+    ns.getDatasets = function (ids) {
+        var datasetList = ns.getDatasetList();
         return _.chain(ids)
             .map(function (dataset) {
                 var query;

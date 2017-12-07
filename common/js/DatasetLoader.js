@@ -103,7 +103,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
     function _resetClusterData(clusterLayer, featurecollections) {
         clusterLayer.clearLayers();
         var layers = _.reduce(featurecollections, function (acc, geoJSONLayer) {
-            geoJSONLayer.setMap(map);
+            if (geoJSONLayer.setMap) {
+                geoJSONLayer.setMap(map);
+            }
             return acc.concat(geoJSONLayer.getLayers());
         }, []);
         clusterLayer.addLayers(layers);

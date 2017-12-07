@@ -1696,7 +1696,7 @@ var KR = this.KR || {};
     */
     KR.SidebarContent = function (wrapper, element, top, options) {
 
-        var defaultTemplate = KR.Util.getDatasetTemplate('popup');
+
 
         var positionDisplayer = new PositionDisplayer();
 
@@ -1731,7 +1731,7 @@ var KR = this.KR || {};
                 });
         }
 
-        function _createListCallbacks(feature, index, template, getData, features, close) {
+        function _createListCallbacks(feature, index, dataset, getData, features, close) {
             var prev;
             if (index > 0) {
                 prev = function (e) {
@@ -1740,8 +1740,8 @@ var KR = this.KR || {};
                     }
                     index = index - 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
             var next;
@@ -1752,14 +1752,14 @@ var KR = this.KR || {};
                     }
                     index = index + 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
 
             if (!close) {
                 close = function () {
-                    showFeatures(features, template, getData, options.noListThreshold, true);
+                    showFeatures(features, dataset, getData, options.noListThreshold, true);
                 };
             }
 
@@ -1770,7 +1770,7 @@ var KR = this.KR || {};
             };
         }
 
-        function _createListElement(feature, index, template, getData, features) {
+        function _createListElement(feature, index, dataset, getData, features) {
             var marker;
             var color = KR.Style.colorForFeature(feature, true);
             if (feature.properties.thumbnail) {
@@ -1793,8 +1793,8 @@ var KR = this.KR || {};
 
             li.on('click', function (e) {
                 e.preventDefault();
-                var callbacks = _createListCallbacks(feature, index, template, getData, features);
-                showFeature(feature, template, getData, callbacks, index, features.length);
+                var callbacks = _createListCallbacks(feature, index, dataset, getData, features);
+                showFeature(feature, dataset, getData, callbacks, index, features.length);
                 return false;
             });
             return li;
@@ -1815,7 +1815,8 @@ var KR = this.KR || {};
         }
 
 
-        function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+        function showFeature(feature, dataset, getData, callbacks, index, numFeatures) {
+            var template = dataset.template;
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -1825,12 +1826,10 @@ var KR = this.KR || {};
                 _setContent(content);
                 getData(feature, function (newFeature) {
                     newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                    showFeature(newFeature, template, null, callbacks, index, numFeatures);
+                    showFeature(newFeature, dataset, null, callbacks, index, numFeatures);
                 });
                 return;
             }
-
-            template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
 
             var img = feature.properties.images;
             if (_.isArray(img)) {
@@ -1848,7 +1847,7 @@ var KR = this.KR || {};
             }
 
 
-            var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
+            var color = dataset.style.fillcolor;
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
 
@@ -1906,14 +1905,14 @@ var KR = this.KR || {};
             element.scrollTop(0);
         }
 
-        function showFeatures(features, template, getData, noListThreshold, forceList) {
+        function showFeatures(features, dataset, getData, noListThreshold, forceList) {
             noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
             var shouldSkipList = (features.length <= noListThreshold);
             if (shouldSkipList && forceList !== true) {
                 var feature = features[0];
                 element.html('');
-                var callbacks = _createListCallbacks(feature, 0, template, getData, features);
-                this.showFeature(feature, template, getData, callbacks, 0, features.length);
+                var callbacks = _createListCallbacks(feature, 0, dataset, getData, features);
+                this.showFeature(feature, dataset, getData, callbacks, 0, features.length);
                 return;
             }
 
@@ -1931,7 +1930,7 @@ var KR = this.KR || {};
                         var index = _.findIndex(features, function (a) {
                             return a === feature;
                         });
-                        return _createListElement(feature, index, template, getData, features);
+                        return _createListElement(feature, index, dataset, getData, features);
                     }, this);
 
                     list.append(elements);
@@ -2059,7 +2058,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
     function _resetClusterData(clusterLayer, featurecollections) {
         clusterLayer.clearLayers();
         var layers = _.reduce(featurecollections, function (acc, geoJSONLayer) {
-            geoJSONLayer.setMap(map);
+            if (geoJSONLayer.setMap) {
+                geoJSONLayer.setMap(map);
+            }
             return acc.concat(geoJSONLayer.getLayers());
         }, []);
         clusterLayer.addLayers(layers);
@@ -2693,7 +2694,7 @@ KR.Config = KR.Config || {};
 
 
         var _polygonsLoaded = function (geoJson) {
-
+//            console.log("??????", geoJson)
             _polygonLayer.clearLayers().addData(geoJson);
             if (_selectedPoly) {
                 _highlightPolygonById(_selectedPoly);
@@ -2738,13 +2739,15 @@ KR.Config = KR.Config || {};
         };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
+//            console.log("!???")
             _dataset = dataset;
             _vectorLayer = vectorLayer;
             _map = map;
-            _vectorLayer.on('hide', _hidePolygonLayer);
-            _vectorLayer.on('show', _showPolygonLayer);
+            //_vectorLayer.on('hide', _hidePolygonLayer);
+            //_vectorLayer.on('show', _showPolygonLayer);
+//            console.log("-------------")
             _polygonLayer = _createPolygonLayer(dataset);
-
+//            console.log(_polygonLayer)
             _vectorLayer.on('dataloaded', _reloadPoly);
             _vectorLayer.on('click', _markerClicked);
             _map.on('layerDeselect', _deselectPolygons);
@@ -2806,15 +2809,11 @@ KR.Config = KR.Config || {};
 (function (ns) {
     'use strict';
 
-    ns.getDatasetList = function (api, komm, fylke) {
+    ns.getDatasetList = function (api) {
 
+        var komm = null;
+        var fylke = null;
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
-        if (komm && komm.length === 3) {
-            komm = '0' + komm;
-        }
-
-
-
 
         var list = {
             'difo': {
@@ -2826,7 +2825,12 @@ KR.Config = KR.Config || {};
                 description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
                 allowTopic: true,
                 feedbackForm: true,
-                isStatic: false
+                isStatic: false,
+                style: {
+                    fillcolor: '#F69730',
+                    circle: false,
+                    thumbnail: true
+                }
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -2839,10 +2843,13 @@ KR.Config = KR.Config || {};
                 name: 'Verneområder',
                 template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
-                    api.getItem(
+                    /*api.getItem(
                         {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
                         callback
-                    );
+                    );*/
+                    console.log("NO API in datasets.js")
+                    callback();
+
                 },
                 toPoint: {
                     showAlways: true,
@@ -2875,7 +2882,11 @@ KR.Config = KR.Config || {};
                 minZoom: 14,
                 template: KR.Util.getDatasetTemplate('folketelling'),
                 getFeatureData: function (oldFeature, callback) {
-                    api.getData({
+
+                    console.log("NO API in datasets.js")
+                    callback();
+
+                    /*api.getData({
                         api: 'folketelling',
                         type: 'propertyData',
                         propertyId: oldFeature.properties.efid
@@ -2884,6 +2895,7 @@ KR.Config = KR.Config || {};
                         oldFeature.properties.provider = 'Folketelling 1910';
                         callback(oldFeature);
                     });
+                    */
                 },
                 mappings: {
                     'title': 'gaardsnavn_gateadr'
@@ -2943,10 +2955,12 @@ KR.Config = KR.Config || {};
                 hideFromGenerator: true,
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
-                    api.getItem(
+                    /*api.getItem(
                         {api: 'jernbanemuseet', id:  feature.properties.id},
                         callback
-                    );
+                    );*/
+                    console.log("NO API in datasets.js")
+                    callback();
                 },
                 isStatic: true,
                 bbox: false,
@@ -2971,7 +2985,7 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('musit')
                     },
-                    {
+                   /* {
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -2987,7 +3001,7 @@ KR.Config = KR.Config || {};
                         isStatic: false,
                         unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly
-                    }
+                    }*/
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
             },
@@ -3001,7 +3015,7 @@ KR.Config = KR.Config || {};
                     thumbnail: true
                 },
                 datasets: [
-                    {
+                    /*{
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -3016,8 +3030,13 @@ KR.Config = KR.Config || {};
                         bbox: false,
                         isStatic: false,
                         unclusterCount: 20,
-                        init: kulturminneFunctions.initKulturminnePoly
-                    },
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: true
+                        }
+                    },*/
                     {
                         name: 'DiMu',
                         dataset: {
@@ -3027,7 +3046,12 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
                         isStatic: false,
-                        bbox: true
+                        bbox: true,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: false
+                        }
                     },
                     {
                         dataset: {
@@ -3074,7 +3098,12 @@ KR.Config = KR.Config || {};
                             query: 'dc_subject_facet:Kunst'
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                        isStatic: false
+                        isStatic: false,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: false
+                        }
                     }
                 ],
                 description: 'Kunstdata fra Digitalt museum '
@@ -3088,7 +3117,11 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13,
                 template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Stedfestede artikler fra bokmålswikipedia'
+                description: 'Stedfestede artikler fra bokmålswikipedia',
+                style: {
+                    fillcolor: '#D14020',
+                    thumbnail: true,
+                }
             },
             'wikipediaNN': {
                 name: 'Wikipedia Nynorsk',
@@ -3099,7 +3132,11 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13,
                 template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Stedfestede artikler fra nynorskwikipedia'
+                description: 'Stedfestede artikler fra nynorskwikipedia',
+                style: {
+                    fillcolor: '#D14020',
+                    thumbnail: true,
+                }
             },
 
             'lokalwiki': {
@@ -3149,7 +3186,12 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
-                template: KR.Util.getDatasetTemplate('brukerminne')
+                template: KR.Util.getDatasetTemplate('brukerminne'),
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: false
+                }
             },
             'groruddalen': {
                 name: 'Byantikvaren Oslo - Groruddalen',
@@ -3355,24 +3397,11 @@ KR.Config = KR.Config || {};
             }
         };
 
-        if (!komm && !fylke) {
-            var raParams = {
-                bbox: true,
-                minZoom: 12,
-                isStatic: false,
-                bboxFunc: KR.Util.sparqlBbox
-            };
-            _.extend(list.riksantikvaren, raParams);
-            _.extend(list.ark_hist.datasets[2], raParams);
-            _.extend(list.arkeologi.datasets[1], raParams);
-            _.extend(list.historie.datasets[0], raParams);
-        }
-
         return list;
     };
 
-    ns.getDatasets = function (ids, api, komm, fylke) {
-        var datasetList = ns.getDatasetList(api, komm, fylke);
+    ns.getDatasets = function (ids) {
+        var datasetList = ns.getDatasetList();
         return _.chain(ids)
             .map(function (dataset) {
                 var query;

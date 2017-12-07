@@ -58,20 +58,19 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         return L.Control.Sidebar.prototype.addTo.apply(this, arguments);
     },
 
-    showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
-        console.log(feature)
-        this.show();
-        this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
+    showFeature: function (feature, dataset, callbacks, index, numFeatures) {
 
+        this.show();
+        this.sidebar.showFeature(feature, dataset, dataset.getFeatureData, callbacks, index, numFeatures);
 
         if (KR.UrlFunctions) {
             var div = $('<div></div>');
             var params = {
                 id: feature.id,
                 url: KR.UrlFunctions.getFeatureLink(feature),
-                provider: feature.properties.provider
+                provider: dataset.provider
             };
-            if (feature.properties.feedbackForm) {
+            if (dataset.feedbackForm) {
                 $(this._contentContainer).append(div);
                 KR.ResponseForm(div, params);
             }
@@ -80,11 +79,12 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 KR.UrlFunctions.setFeatureHash(feature.id);
             }
         }
+
     },
 
-    showFeatures: function (features, template, getData, noListThreshold, forceList) {
+    showFeatures: function (features, dataset, forceList) {
         this.show();
-        this.sidebar.showFeatures(features, template, getData, noListThreshold, forceList);
+        this.sidebar.showFeatures(features, dataset, dataset.getFeatureData, dataset.noListThreshold, forceList);
     },
 
     _removeContent: function () {

@@ -175,7 +175,7 @@ KR.Config = KR.Config || {};
 
 
         var _polygonsLoaded = function (geoJson) {
-
+//            console.log("??????", geoJson)
             _polygonLayer.clearLayers().addData(geoJson);
             if (_selectedPoly) {
                 _highlightPolygonById(_selectedPoly);
@@ -220,13 +220,15 @@ KR.Config = KR.Config || {};
         };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
+//            console.log("!???")
             _dataset = dataset;
             _vectorLayer = vectorLayer;
             _map = map;
-            _vectorLayer.on('hide', _hidePolygonLayer);
-            _vectorLayer.on('show', _showPolygonLayer);
+            //_vectorLayer.on('hide', _hidePolygonLayer);
+            //_vectorLayer.on('show', _showPolygonLayer);
+//            console.log("-------------")
             _polygonLayer = _createPolygonLayer(dataset);
-
+//            console.log(_polygonLayer)
             _vectorLayer.on('dataloaded', _reloadPoly);
             _vectorLayer.on('click', _markerClicked);
             _map.on('layerDeselect', _deselectPolygons);

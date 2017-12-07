@@ -7,8 +7,11 @@ KR.UrlFunctions = {};
 
     ns.setupLocationUrl = function (map) {
         var moved = function () {
+            try {
             var c = map.getCenter();
-
+            } catch(e) {
+                return;
+            }
             var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
 
             var hash = window.location.hash.split(':');
@@ -18,7 +21,6 @@ KR.UrlFunctions = {};
             }
             window.location.hash = locationHash;
         };
-
         map.on('moveend', moved);
         moved();
     };

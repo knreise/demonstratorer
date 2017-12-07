@@ -32,18 +32,23 @@
                     style: {fillcolor: '#333333'}
                 },
                 {
-		            name: 'Riksantikvaren',
-		            provider: 'Riksantikvaren',
+                    name: 'Riksantikvaren',
+                    provider: 'Riksantikvaren',
+                    /*
 		            dataset: {
-		                api: 'kulturminnedataSparql',
+		                /api: 'kulturminnedataSparql',
 		                kommune: '1601'
-		            },
-                    getFeatureData: kulturminneFunctions.getRaFeatureData,
-		            template: KR.Util.getDatasetTemplate('ra_sparql'),
-		            bbox: false,
+		            },*/
+                    dataset: {
+                        api: 'kulturminne',
+                        dataset: 'lokaliteter'
+                    },
+                    //getFeatureData: kulturminneFunctions.getRaFeatureData,
+		            //template: KR.Util.getDatasetTemplate('ra_sparql'),
+		            //bbox: false,
 		            style: {fillcolor: '#728224'}
-		        },	
-        	],
+		        },
+            ],
             isStatic: false,
             style: {thumbnail: true},
             minZoom: 8

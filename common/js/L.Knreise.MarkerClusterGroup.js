@@ -61,7 +61,10 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
         var bounds = this._map.getBounds();
         return _.chain(layers)
             .filter(function (layer) {
-                return bounds.contains(layer.getLatLng());
+                if (layer.getLatLng) {
+                    return bounds.contains(layer.getLatLng());
+                }
+                return true;
             })
             .value()
     },

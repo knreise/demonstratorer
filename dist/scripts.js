@@ -1114,7 +1114,10 @@ L.Knreise.MarkerClusterGroup = L.MarkerClusterGroup.extend({
         var bounds = this._map.getBounds();
         return _.chain(layers)
             .filter(function (layer) {
-                return bounds.contains(layer.getLatLng());
+                if (layer.getLatLng) {
+                    return bounds.contains(layer.getLatLng());
+                }
+                return true;
             })
             .value()
     },
@@ -1555,20 +1558,19 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         return L.Control.Sidebar.prototype.addTo.apply(this, arguments);
     },
 
-    showFeature: function (feature, template, getData, callbacks, index, numFeatures) {
-        console.log(feature)
-        this.show();
-        this.sidebar.showFeature(feature, template, getData, callbacks, index, numFeatures);
+    showFeature: function (feature, dataset, callbacks, index, numFeatures) {
 
+        this.show();
+        this.sidebar.showFeature(feature, dataset, dataset.getFeatureData, callbacks, index, numFeatures);
 
         if (KR.UrlFunctions) {
             var div = $('<div></div>');
             var params = {
                 id: feature.id,
                 url: KR.UrlFunctions.getFeatureLink(feature),
-                provider: feature.properties.provider
+                provider: dataset.provider
             };
-            if (feature.properties.feedbackForm) {
+            if (dataset.feedbackForm) {
                 $(this._contentContainer).append(div);
                 KR.ResponseForm(div, params);
             }
@@ -1577,11 +1579,12 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
                 KR.UrlFunctions.setFeatureHash(feature.id);
             }
         }
+
     },
 
-    showFeatures: function (features, template, getData, noListThreshold, forceList) {
+    showFeatures: function (features, dataset, forceList) {
         this.show();
-        this.sidebar.showFeatures(features, template, getData, noListThreshold, forceList);
+        this.sidebar.showFeatures(features, dataset, dataset.getFeatureData, dataset.noListThreshold, forceList);
     },
 
     _removeContent: function () {
@@ -1606,8 +1609,11 @@ KR.UrlFunctions = {};
 
     ns.setupLocationUrl = function (map) {
         var moved = function () {
+            try {
             var c = map.getCenter();
-
+            } catch(e) {
+                return;
+            }
             var locationHash = KR.Util.getPositionHash(c.lat, c.lng, map.getZoom());
 
             var hash = window.location.hash.split(':');
@@ -1617,7 +1623,6 @@ KR.UrlFunctions = {};
             }
             window.location.hash = locationHash;
         };
-
         map.on('moveend', moved);
         moved();
     };
@@ -1927,7 +1932,7 @@ var KR = this.KR || {};
     */
     KR.SidebarContent = function (wrapper, element, top, options) {
 
-        var defaultTemplate = KR.Util.getDatasetTemplate('popup');
+
 
         var positionDisplayer = new PositionDisplayer();
 
@@ -1962,7 +1967,7 @@ var KR = this.KR || {};
                 });
         }
 
-        function _createListCallbacks(feature, index, template, getData, features, close) {
+        function _createListCallbacks(feature, index, dataset, getData, features, close) {
             var prev;
             if (index > 0) {
                 prev = function (e) {
@@ -1971,8 +1976,8 @@ var KR = this.KR || {};
                     }
                     index = index - 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
             var next;
@@ -1983,14 +1988,14 @@ var KR = this.KR || {};
                     }
                     index = index + 1;
                     feature = features[index];
-                    var callbacks = _createListCallbacks(feature, index, template, getData, features, close);
-                    showFeature(feature, template, getData, callbacks, index, features.length);
+                    var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
+                    showFeature(feature, dataset, getData, callbacks, index, features.length);
                 };
             }
 
             if (!close) {
                 close = function () {
-                    showFeatures(features, template, getData, options.noListThreshold, true);
+                    showFeatures(features, dataset, getData, options.noListThreshold, true);
                 };
             }
 
@@ -2001,7 +2006,7 @@ var KR = this.KR || {};
             };
         }
 
-        function _createListElement(feature, index, template, getData, features) {
+        function _createListElement(feature, index, dataset, getData, features) {
             var marker;
             var color = KR.Style.colorForFeature(feature, true);
             if (feature.properties.thumbnail) {
@@ -2024,8 +2029,8 @@ var KR = this.KR || {};
 
             li.on('click', function (e) {
                 e.preventDefault();
-                var callbacks = _createListCallbacks(feature, index, template, getData, features);
-                showFeature(feature, template, getData, callbacks, index, features.length);
+                var callbacks = _createListCallbacks(feature, index, dataset, getData, features);
+                showFeature(feature, dataset, getData, callbacks, index, features.length);
                 return false;
             });
             return li;
@@ -2046,7 +2051,8 @@ var KR = this.KR || {};
         }
 
 
-        function showFeature(feature, template, getData, callbacks, index, numFeatures) {
+        function showFeature(feature, dataset, getData, callbacks, index, numFeatures) {
+            var template = dataset.template;
             if (getData) {
                 var content = '';
                 if (feature.properties.title) {
@@ -2056,12 +2062,10 @@ var KR = this.KR || {};
                 _setContent(content);
                 getData(feature, function (newFeature) {
                     newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                    showFeature(newFeature, template, null, callbacks, index, numFeatures);
+                    showFeature(newFeature, dataset, null, callbacks, index, numFeatures);
                 });
                 return;
             }
-
-            template = template || feature.template || KR.Util.templateForDataset(feature.properties.dataset) || defaultTemplate;
 
             var img = feature.properties.images;
             if (_.isArray(img)) {
@@ -2079,7 +2083,7 @@ var KR = this.KR || {};
             }
 
 
-            var color = feature.properties.color || KR.Style.colorForFeature(feature, true, true);
+            var color = dataset.style.fillcolor;
             var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
 
@@ -2137,14 +2141,14 @@ var KR = this.KR || {};
             element.scrollTop(0);
         }
 
-        function showFeatures(features, template, getData, noListThreshold, forceList) {
+        function showFeatures(features, dataset, getData, noListThreshold, forceList) {
             noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
             var shouldSkipList = (features.length <= noListThreshold);
             if (shouldSkipList && forceList !== true) {
                 var feature = features[0];
                 element.html('');
-                var callbacks = _createListCallbacks(feature, 0, template, getData, features);
-                this.showFeature(feature, template, getData, callbacks, 0, features.length);
+                var callbacks = _createListCallbacks(feature, 0, dataset, getData, features);
+                this.showFeature(feature, dataset, getData, callbacks, 0, features.length);
                 return;
             }
 
@@ -2162,7 +2166,7 @@ var KR = this.KR || {};
                         var index = _.findIndex(features, function (a) {
                             return a === feature;
                         });
-                        return _createListElement(feature, index, template, getData, features);
+                        return _createListElement(feature, index, dataset, getData, features);
                     }, this);
 
                     list.append(elements);
@@ -2200,7 +2204,7 @@ var KR = this.KR || {};
 
     L.Knreise = L.Knreise || {};
     L.Knreise.Control = L.Knreise.Control || {};
-
+/*
     var Label = function (dataset, layer) {
         var enabled = layer.enabled;
         var _error = null;
@@ -2322,6 +2326,11 @@ var KR = this.KR || {};
             }
         };
     };
+
+
+
+
+
 
 
     L.Control.Datasets = L.Control.extend({
@@ -2533,6 +2542,208 @@ var KR = this.KR || {};
     L.control.datasets = function (layers, options) {
         return new L.Control.Datasets(layers, options);
     };
+*/
+
+    function _getLabel(dataset) {
+        var label = document.createElement('label');
+
+        if (!dataset.isAvailable) {
+            label.className = 'disabled';
+        }
+        var icon = document.createElement('i');
+        icon.className = 'layericon fa';
+        if (dataset.isEnabled) {
+            icon.className += ' fa-check-square-o';
+        } else {
+            icon.className += ' fa-square-o';
+        }
+        /*if (iconAppend) {
+            icon.className += ' ' + iconAppend;
+        }*/
+
+        if (dataset.isLoading) {
+            icon.className = 'layericon fa fa-spinner fa-pulse';
+        }
+
+        if (dataset.isAvailable) {
+            icon.style.color = dataset.style.fillcolor; //KR.Style.colorForDataset(dataset, true, true);
+        } else {
+            icon.style.color = '#ddd';
+        }
+        label.appendChild(icon);
+
+        var name = document.createElement('span');
+        name.innerHTML = ' ' + dataset.name;
+        label.appendChild(name);
+
+        return label;
+    }
+
+    L.Control.Datasets2 = L.Control.extend({
+
+        initialize: function (loader, options) {
+            L.setOptions(this, options);
+            this.loader = loader;
+            this.numLoading = 0;
+            loader.onLoadStart(_.bind(function(datasetId) {
+                this.numLoading += 1;
+                this._update();
+            }, this));
+            loader.onLoadEnd(_.bind(function(datasetId) {
+                this.numLoading -= 1;
+                this._update();
+            }, this));
+            loader.onEnabledChange(_.bind(function(datasetId) {
+                this._update();
+            }, this));
+            loader.onAvailableChange(_.bind(function(datasetId) {
+                this._update();
+            }, this))
+        },
+
+        onAdd: function (map) {
+            this._map = map;
+            this._initLayout();
+            this._update();
+            //this._expand()
+            return this._container;
+        },
+
+        _checkSpinner: function () {
+            if (!this._btnIcon) {
+                return;
+            }
+            if (this.numLoading === 0) {
+                this._btnIcon.className = this._btnIcon.className.replace(
+                    ' fa-spinner fa-pulse',
+                    ' fa-bars'
+                );
+            } else {
+                if (this._errorIcon.className.indexOf('hidden') < 0) {
+                    this._errorIcon.className += ' hidden';
+                }
+                this._btnIcon.className = this._btnIcon.className.replace(
+                    ' fa-bars',
+                    ' fa-spinner fa-pulse'
+                );
+            }
+        },
+
+        _update: function () {
+            if (!this._container) {
+                return;
+            }
+            this._checkSpinner();
+            //this._overlaysList.innerHTML = 'test';
+            var fragment = document.createDocumentFragment();
+            _.each(this.loader.getLayers(), function (dataset) {
+                var label = _getLabel(dataset);
+                fragment.appendChild(label);
+                label.addEventListener('click', _.bind(function (e){
+                    this.loader.toggleEnabled(dataset._id);
+                }, this));
+            }, this);
+            while (this._overlaysList.firstChild) {
+                var child = this._overlaysList.firstChild;
+                this._overlaysList.removeChild(child);
+            }
+            this._overlaysList.appendChild(fragment);
+        },
+
+        _initLayout: function () {
+            var className = 'leaflet-control-layers';
+            this._container = L.DomUtil.create('div', '');
+
+            //Makes this work on IE10 Touch devices by stopping it 
+            //from firing a mouseout event when the touch is released
+            this._container.setAttribute('aria-haspopup', true);
+
+            if (!L.Browser.touch) {
+                L.DomEvent
+                    .disableClickPropagation(this._container)
+                    .disableScrollPropagation(this._container);
+            } else {
+                L.DomEvent.on(
+                    this._container,
+                    'click',
+                    L.DomEvent.stopPropagation
+                );
+            }
+
+            this._form = L.DomUtil.create('form', className + '-list');
+
+            this._map.on('click', this._collapse, this);
+            this._overlaysList = L.DomUtil.create(
+                'div',
+                className + '-overlays',
+                this._form
+            );
+
+            this._closeDiv = L.DomUtil.create('div', 'clearfix');
+            var closeBtn = L.DomUtil.create(
+                'button',
+                'btn btn-default pull-right',
+                this._closeDiv
+            );
+            closeBtn.title = 'Kartlag';
+            L.DomEvent.on(closeBtn, 'click', function () {
+                this._toggle();
+            }, this);
+
+            this._errorIcon = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle hidden', closeBtn);
+            closeBtn.appendChild(document.createTextNode(' '));
+            if (this.numLoading > 0) {
+                this._btnIcon = L.DomUtil.create('i', 'fa fa-spinner fa-pulse', closeBtn);
+            } else {
+                this._btnIcon = L.DomUtil.create('i', 'fa fa-bars', closeBtn);
+            }
+
+            this._container.appendChild(this._closeDiv);
+
+            this._listContainer = L.DomUtil.create('div', className + ' hidden');
+            this._listContainer.appendChild(this._form);
+            this._container.appendChild(this._listContainer);
+        },
+
+        _toggle: function () {
+            if (this.expanded) {
+                this._collapse();
+            } else {
+                this._expand();
+            }
+        },
+
+        _expand: function () {
+            L.DomUtil.addClass(
+                this._listContainer,
+                'leaflet-control-layers-expanded'
+            );
+            this.expanded = true;
+            this._listContainer.className = this._listContainer.className.replace(
+                ' hidden',
+                ''
+            );
+        },
+
+        _collapse: function () {
+            this._listContainer.className = this._listContainer.className.replace(
+                ' leaflet-control-layers-expanded',
+                ''
+            );
+            L.DomUtil.addClass(
+                this._listContainer,
+                'hidden'
+            );
+            this.expanded = false;
+        }
+
+    });
+
+    L.control.datasets2 = function (loader, options) {
+        return new L.Control.Datasets2(loader, options);
+    };
+
+
 }());
 
 /*global L:false */
@@ -2653,7 +2864,9 @@ KR.DatasetLoader = function (api, map, sidebar, errorCallback, useCommonCluster,
     function _resetClusterData(clusterLayer, featurecollections) {
         clusterLayer.clearLayers();
         var layers = _.reduce(featurecollections, function (acc, geoJSONLayer) {
-            geoJSONLayer.setMap(map);
+            if (geoJSONLayer.setMap) {
+                geoJSONLayer.setMap(map);
+            }
             return acc.concat(geoJSONLayer.getLayers());
         }, []);
         clusterLayer.addLayers(layers);
@@ -3466,7 +3679,7 @@ KR.Config = KR.Config || {};
 
 
         var _polygonsLoaded = function (geoJson) {
-
+//            console.log("??????", geoJson)
             _polygonLayer.clearLayers().addData(geoJson);
             if (_selectedPoly) {
                 _highlightPolygonById(_selectedPoly);
@@ -3511,13 +3724,15 @@ KR.Config = KR.Config || {};
         };
 
         var initKulturminnePoly = function (map, dataset, vectorLayer) {
+//            console.log("!???")
             _dataset = dataset;
             _vectorLayer = vectorLayer;
             _map = map;
-            _vectorLayer.on('hide', _hidePolygonLayer);
-            _vectorLayer.on('show', _showPolygonLayer);
+            //_vectorLayer.on('hide', _hidePolygonLayer);
+            //_vectorLayer.on('show', _showPolygonLayer);
+//            console.log("-------------")
             _polygonLayer = _createPolygonLayer(dataset);
-
+//            console.log(_polygonLayer)
             _vectorLayer.on('dataloaded', _reloadPoly);
             _vectorLayer.on('click', _markerClicked);
             _map.on('layerDeselect', _deselectPolygons);
@@ -3579,15 +3794,11 @@ KR.Config = KR.Config || {};
 (function (ns) {
     'use strict';
 
-    ns.getDatasetList = function (api, komm, fylke) {
+    ns.getDatasetList = function (api) {
 
+        var komm = null;
+        var fylke = null;
         var kulturminneFunctions = ns.getKulturminneFunctions(api);
-        if (komm && komm.length === 3) {
-            komm = '0' + komm;
-        }
-
-
-
 
         var list = {
             'difo': {
@@ -3599,7 +3810,12 @@ KR.Config = KR.Config || {};
                 description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
                 allowTopic: true,
                 feedbackForm: true,
-                isStatic: false
+                isStatic: false,
+                style: {
+                    fillcolor: '#F69730',
+                    circle: false,
+                    thumbnail: true
+                }
             },
             'verneomr': {
                 id: 'verneomraader',
@@ -3612,10 +3828,13 @@ KR.Config = KR.Config || {};
                 name: 'Verneområder',
                 template: KR.Util.getDatasetTemplate('verneomraader'),
                 getFeatureData: function (feature, callback) {
-                    api.getItem(
+                    /*api.getItem(
                         {api: 'norvegiana', id: 'kulturnett_Naturbase_' + feature.properties.iid},
                         callback
-                    );
+                    );*/
+                    console.log("NO API in datasets.js")
+                    callback();
+
                 },
                 toPoint: {
                     showAlways: true,
@@ -3648,7 +3867,11 @@ KR.Config = KR.Config || {};
                 minZoom: 14,
                 template: KR.Util.getDatasetTemplate('folketelling'),
                 getFeatureData: function (oldFeature, callback) {
-                    api.getData({
+
+                    console.log("NO API in datasets.js")
+                    callback();
+
+                    /*api.getData({
                         api: 'folketelling',
                         type: 'propertyData',
                         propertyId: oldFeature.properties.efid
@@ -3657,6 +3880,7 @@ KR.Config = KR.Config || {};
                         oldFeature.properties.provider = 'Folketelling 1910';
                         callback(oldFeature);
                     });
+                    */
                 },
                 mappings: {
                     'title': 'gaardsnavn_gateadr'
@@ -3716,10 +3940,12 @@ KR.Config = KR.Config || {};
                 hideFromGenerator: true,
                 template: KR.Util.getDatasetTemplate('jernbanemuseet'),
                 getFeatureData: function (feature, callback) {
-                    api.getItem(
+                    /*api.getItem(
                         {api: 'jernbanemuseet', id:  feature.properties.id},
                         callback
-                    );
+                    );*/
+                    console.log("NO API in datasets.js")
+                    callback();
                 },
                 isStatic: true,
                 bbox: false,
@@ -3744,7 +3970,7 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('musit')
                     },
-                    {
+                   /* {
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -3760,7 +3986,7 @@ KR.Config = KR.Config || {};
                         isStatic: false,
                         unclusterCount: 20,
                         init: kulturminneFunctions.initKulturminnePoly
-                    }
+                    }*/
                 ],
                 description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
             },
@@ -3774,7 +4000,7 @@ KR.Config = KR.Config || {};
                     thumbnail: true
                 },
                 datasets: [
-                    {
+                    /*{
                         id: 'riksantikvaren',
                         name: 'Riksantikvaren',
                         provider: 'Riksantikvaren',
@@ -3789,8 +4015,13 @@ KR.Config = KR.Config || {};
                         bbox: false,
                         isStatic: false,
                         unclusterCount: 20,
-                        init: kulturminneFunctions.initKulturminnePoly
-                    },
+                        init: kulturminneFunctions.initKulturminnePoly,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: true
+                        }
+                    },*/
                     {
                         name: 'DiMu',
                         dataset: {
@@ -3800,7 +4031,12 @@ KR.Config = KR.Config || {};
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
                         isStatic: false,
-                        bbox: true
+                        bbox: true,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: false
+                        }
                     },
                     {
                         dataset: {
@@ -3847,7 +4083,12 @@ KR.Config = KR.Config || {};
                             query: 'dc_subject_facet:Kunst'
                         },
                         template: KR.Util.getDatasetTemplate('digitalt_museum'),
-                        isStatic: false
+                        isStatic: false,
+                        style: {
+                            fillcolor: '#436978',
+                            circle: false,
+                            thumbnail: false
+                        }
                     }
                 ],
                 description: 'Kunstdata fra Digitalt museum '
@@ -3861,7 +4102,11 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13,
                 template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Stedfestede artikler fra bokmålswikipedia'
+                description: 'Stedfestede artikler fra bokmålswikipedia',
+                style: {
+                    fillcolor: '#D14020',
+                    thumbnail: true,
+                }
             },
             'wikipediaNN': {
                 name: 'Wikipedia Nynorsk',
@@ -3872,7 +4117,11 @@ KR.Config = KR.Config || {};
                 style: {thumbnail: true},
                 minZoom: 13,
                 template: KR.Util.getDatasetTemplate('wikipedia'),
-                description: 'Stedfestede artikler fra nynorskwikipedia'
+                description: 'Stedfestede artikler fra nynorskwikipedia',
+                style: {
+                    fillcolor: '#D14020',
+                    thumbnail: true,
+                }
             },
 
             'lokalwiki': {
@@ -3922,7 +4171,12 @@ KR.Config = KR.Config || {};
                 isStatic: false,
                 style: {thumbnail: true},
                 description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
-                template: KR.Util.getDatasetTemplate('brukerminne')
+                template: KR.Util.getDatasetTemplate('brukerminne'),
+                style: {
+                    fillcolor: '#436978',
+                    circle: false,
+                    thumbnail: false
+                }
             },
             'groruddalen': {
                 name: 'Byantikvaren Oslo - Groruddalen',
@@ -4128,24 +4382,11 @@ KR.Config = KR.Config || {};
             }
         };
 
-        if (!komm && !fylke) {
-            var raParams = {
-                bbox: true,
-                minZoom: 12,
-                isStatic: false,
-                bboxFunc: KR.Util.sparqlBbox
-            };
-            _.extend(list.riksantikvaren, raParams);
-            _.extend(list.ark_hist.datasets[2], raParams);
-            _.extend(list.arkeologi.datasets[1], raParams);
-            _.extend(list.historie.datasets[0], raParams);
-        }
-
         return list;
     };
 
-    ns.getDatasets = function (ids, api, komm, fylke) {
-        var datasetList = ns.getDatasetList(api, komm, fylke);
+    ns.getDatasets = function (ids) {
+        var datasetList = ns.getDatasetList();
         return _.chain(ids)
             .map(function (dataset) {
                 var query;
@@ -4372,6 +4613,522 @@ KR.ResponseForm = function (div, baseData) {
     Utility for setting up a Leaflet map based on config
 */
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function _loadDatasetMock(datasetId, bbox, callback) {
+    setTimeout(function(){ 
+        callback(null, datasetId);
+    }, getRandomInt(500, 3000));
+}
+
+function toDict(arr, key, trans) {
+    return _.reduce(arr, function(acc, element) {
+        acc[element[key]] = _.isFunction(trans) ? trans(element) : trans;
+        return acc;
+    }, {});
+}
+
+function ApiLoader(api, flattenedDatasets) {
+    return function(datasetId, requestedBbox, callback) {
+        var dataset = flattenedDatasets[datasetId];
+
+        if (dataset.bbox || (dataset.isStatic && dataset.fixedBbox)) {
+            var bbox = (!!dataset.fixedBbox) ? dataset.fixedBbox : requestedBbox;
+            api.getBbox(
+                dataset.dataset,
+                bbox,
+                function (data) {
+                    callback(null, data);
+                },
+                function (error) {
+                    callback(error, null);
+                }
+            );
+        } else {
+            api.getData(
+                dataset.dataset,
+                function (data) {
+                    callback(null, data);
+                },
+                function (error) {
+                    callback(error, null);
+                }
+            );
+        }
+    }
+}
+
+var DATASET_DEFAULTS = {
+    bbox: true,
+    cluster: true,
+    style: {
+        fillcolor: '#38A9DC',
+        circle: false,
+        thumbnail: true
+    }
+}
+
+function DatasetLoader(datasets, map, api, initBounds, filter) {
+    var currentBounds = initBounds;
+    datasets = _setDefaults(datasets);
+    console.log(datasets)
+    var currentZoom = map.getZoom();
+    _ensureId(datasets);
+    
+
+    var datasetIdMapping = _getDatasetMapping(datasets);
+    var flattenedDatasets = _flattenDatasets(datasets);
+
+    var _loadDatasetFromApi = ApiLoader(api, flattenedDatasets);
+
+    var enabledDatsets = toDict(datasets, '_id', true);
+    var currentlyLoading = toDict(datasets, '_id', false);
+    var availableDatasets = toDict(datasets, '_id', _datasetAvailable);
+    var prevBounds = toDict(datasets, '_id', initBounds);
+    var currentData = toDict(flattenedDatasets, '_id', null);
+    var currentErrors = toDict(flattenedDatasets, '_id', null);
+
+    var onLoadStarts = [];
+    var onLoadEnds = [];
+    var onEnabledChanges = [];
+    var onAvailableChanges = [];
+    var onInduvidualLoadEnds = [];
+
+    map.on('moveend', _mapMoved);
+
+    function _loadDataset(children, datasetId, bounds, initialLoad) {
+
+        if (!enabledDatsets[datasetId]) {
+            return;
+        }
+        if (!availableDatasets[datasetId]) {
+            return;
+        }
+
+        var toLoad = _.chain(children)
+            .map(function (datasetId) {
+                return flattenedDatasets[datasetId];
+            })
+            .filter(function (dataset) {
+                return initialLoad || !dataset.static;
+            })
+            .value();
+        if (toLoad.length === 0) {
+            return;
+        }
+        currentlyLoading[datasetId] = true;
+        prevBounds[datasetId] = bounds;
+
+        //trigger datasetId
+        _.each(onLoadStarts, function(callback) {
+            callback(datasetId);
+        });
+
+        var completed = _.after(toLoad.length, function () {
+            currentlyLoading[datasetId] = false;
+            //trigger onLoadEnd
+            _.each(onLoadEnds, function(callback) {
+                callback(datasetId);
+            });
+        });
+
+        var bbox = bounds.toBBoxString();
+        _.each(toLoad, function (dataset) {
+            _loadDatasetFromApi(dataset._id, bbox, function (error, data) {
+                _datasetUpdated(dataset._id, data, error)
+                completed();
+            });
+        });
+    }
+
+    function _loadDatasets(bounds, initialLoad) {
+        _.each(datasetIdMapping, _.partial(_loadDataset, _, _,bounds, initialLoad));
+    }
+
+    function _datasetAvailable(d) {
+        return (d.minZoom) 
+            ? (currentZoom > d.minZoom)
+            : true;
+    }
+
+    function _shouldGetNewData(prevBbox, newBbox) {
+
+        var prevBounds = (_.isString(prevBbox))
+            ? L.latLngBounds.fromBBoxString(prevBbox)
+            : prevBbox;
+        var newBounds = (_.isString(prevBbox))
+            ? L.latLngBounds.fromBBoxString(newBbox)
+            : newBbox;
+
+        if (prevBounds.equals(newBounds) || prevBounds.contains(newBounds)) {
+            return false;
+        }
+        return true;
+    }
+
+    function _toggleEnabled(datasetId) {
+        var wasEnabled = enabledDatsets[datasetId];
+        enabledDatsets[datasetId] = !wasEnabled;
+        _.each(onEnabledChanges, function(callback) {
+            callback(datasetId, !wasEnabled);
+        });
+        if (!wasEnabled && _shouldGetNewData(prevBounds[datasetId], currentBounds)) {
+            _loadDataset(datasetIdMapping[datasetId], datasetId, currentBounds, false);
+        }
+    }
+
+    function _datasetUpdated(datasetId, data, error) {
+        if (error) {
+            currentErrors[datasetId] = error;
+        } else {
+            currentErrors[datasetId] = null;
+            currentData[datasetId] = data;
+        }
+
+        _.each(onInduvidualLoadEnds, function (callback) {
+            callback(error, datasetId, data);
+        });
+    }
+
+    function _checkAvailable() {
+        _.each(datasets,  function (dataset) {
+            var isAvailable = _datasetAvailable(dataset);
+            if (isAvailable !== availableDatasets[dataset._id]) {
+                availableDatasets[dataset._id] = isAvailable;
+                 _.each(onAvailableChanges, function(callback) {
+                    callback(dataset._id, isAvailable);
+                });
+            }
+            return isAvailable;
+        });
+    }
+
+    function _mapMoved(e) {
+        if (map.getZoom() !== currentZoom) {
+            currentZoom = map.getZoom();
+            _checkAvailable();
+        }
+
+        var newBounds = map.getBounds();
+        if (_shouldGetNewData(currentBounds, newBounds)) {
+            _loadDatasets(newBounds, false);
+        }
+        currentBounds = newBounds;
+    }
+
+    function _ensureId(datasets) {
+        _.each(datasets, function (dataset, i) {
+            if (dataset.grouped) {
+                _.each(dataset.datasets, function(sub, j) {
+                    sub._id = 'dataset_' + i + '_' + j;
+                });
+            }
+            dataset._id = 'dataset_' + i;
+        });
+    }
+
+    function _flattenDatasets(datasets) {
+        return _.reduce(datasets, function (acc, dataset) {
+            if (dataset.grouped) {
+                acc = _.extend({}, acc, _.reduce(dataset.datasets, function (acc2, subdataset) {
+                    subdataset.group = dataset._id;
+                    acc2[subdataset._id] = subdataset;
+                    return acc2;
+                }, {}));
+
+            } else {
+                acc[dataset._id] = dataset;
+            }
+            return acc;
+        }, {});
+    }
+
+    function _getDatasetMapping(datasets) {
+        return _.reduce(datasets, function (acc, dataset) {
+            acc[dataset._id] = (dataset.grouped) 
+                ? _.pluck(dataset.datasets, '_id')
+                : [dataset._id];
+            return acc;
+        }, {});
+    }
+
+    function extend(a, b) {
+        var allKeys = _.uniq(_.keys(a).concat(_.keys(b)));
+        return _.reduce(allKeys, function (acc, key) {
+            if (!_.has(a, key)) {
+                acc[key] = _.clone(b[key]);
+            } else if (_.isObject(a[key]) && _.has(b, key)) {
+                acc[key] = extend(a[key], b[key]);
+            } else {
+                acc[key] = a[key];
+            }
+            return acc;
+        }, {});
+    }
+
+
+    function _setDefaults(datasets, parent) {
+        return _.map(datasets, function (dataset) {
+            if (dataset.datasets) {
+                dataset.datasets = _setDefaults(dataset.datasets, dataset);
+            }
+            if (parent) {
+                return extend(extend(dataset, _.omit(parent, 'datasets', 'grouped')), DATASET_DEFAULTS);
+            } else {
+                return extend(dataset, DATASET_DEFAULTS);
+            }
+            
+        });
+    }
+
+    function _transforDataset(dataset) {
+
+        return {
+            _id: dataset._id,
+            name: dataset.name,
+            isLoading: currentlyLoading[dataset._id],
+            isAvailable: availableDatasets[dataset._id], // are we within the range?
+            isEnabled: enabledDatsets[dataset._id], // has the user checked it?
+            style: dataset.style,
+            template: !!dataset.template ? dataset.template : KR.Util.getDatasetTemplate('popup'),
+            description: dataset.description,
+            provider: dataset.provider,
+            feedbackForm: dataset.feedbackForm,
+            getFeatureData: dataset.getFeatureData,
+            noListThreshold: dataset.noListThreshold
+        };
+    }
+
+    return {
+        onLoadStart: function (callback) {
+            onLoadStarts.push(callback);
+        },
+        onLoadEnd: function (callback) {
+            onLoadEnds.push(callback);
+        },
+        onDataLoadEnd: function (callback) {
+            onInduvidualLoadEnds.push(callback);
+        },
+        onEnabledChange: function (callback) {
+            onEnabledChanges.push(callback);
+        },
+        onAvailableChange: function (callback) {
+            onAvailableChanges.push(callback);
+        },
+        init: function () {
+            _loadDatasets(currentBounds, true);
+        },
+        toggleEnabled: _toggleEnabled,
+        getData: function (datasetId) {
+            return {
+                error: currentErrors[datasetId],
+                data: currentData[datasetId]
+            };
+        },
+        datasetIdMapping: _.extend({}, datasetIdMapping),
+        getLayers: function () {
+            return _.map(datasets, _transforDataset);
+        },
+        getDataset: function(datasetId) {
+            var dataset = _.find(flattenedDatasets, function (d) {return d._id === datasetId});
+            if (dataset) {
+                return _transforDataset(dataset);
+            }
+            return null;
+        }
+    };
+}
+
+
+var Style = function(style) {
+
+    var fallbacks = {
+        bordercolor: 'fillcolor'
+    };
+
+    var defaults = {
+        bordercolor: '#38A9DC',
+        fillcolor: '#38A9DC',
+        radius: 9,
+        clickable: true,
+        weight: 2,
+        fillOpacity: 0.2
+    };
+
+    var selectOverrides = {
+        bordercolor: '#72B026',
+        fillcolor: '#72B026'
+    };
+
+    function get(type, feature, selected) {
+        if (selected) {
+            return getSelected(type, feature);
+        }
+        var value;
+        if (_.has(style, type)) {
+            value = style[type]
+        } else if (_.has(fallbacks, type) && _.has(style, fallbacks[type])) {
+            value = style[fallbacks[type]];
+        } else {
+            value = defaults[type];
+        }
+        if (_.isFunction(value)) {
+            return value(feature);
+        }
+        return value;
+    }
+
+    function getSelected(type, feature) {
+        if (_.has(selectOverrides, type)) {
+            return selectOverrides[type];
+        }
+        return get(type, feature, false);
+    }
+
+    return {
+        get: get,
+        getSelected: getSelected,
+        isCircle: style.circle,
+        isThumbnail: style.thumbnail
+    };
+}
+
+function getMarker(feature, latlng, styleFunc, selected) {
+
+    var title;
+    if (feature.properties && feature.properties.title) {
+        title = feature.properties.title;
+    }
+
+    if (styleFunc.isThumbnail && feature.properties && feature.properties.thumbnail) {
+        var color = styleFunc.get('fillcolor', feature, selected);
+        var thumbnail = KR.Util.getImageCache(feature.properties.thumbnail, 50, 50);
+
+        var html = '<div class="outer">' +
+            '<div class="circle" style="background-image: url(\'' + thumbnail + '\');border-color:' + color + ';"></div>' +
+            '</div>';
+
+        return L.marker(latlng, {
+            icon: new L.DivIcon({
+                className: 'leaflet-marker-circle',
+                html: html,
+                iconSize: [50, 50],
+                iconAnchor: [25, 25]
+            }),
+            title: title,
+            clickable: styleFunc.get('clickable', feature, selected)
+        });
+    }
+
+    if (styleFunc.isCircle) {
+        return L.circleMarker(latlng, {
+            radius: styleFunc.get('radius', feature, selected),
+            weight: 1,
+            opacity: 1,
+            color: styleFunc.get('bordercolor', feature, selected),
+            fillColor: styleFunc.get('fillcolor', feature, selected),
+            fillOpacity: 0.4,
+            title: title,
+            clickable: styleFunc.get('clickable', feature, selected)
+        });
+    }
+
+    return L.marker(latlng, {
+        icon: L.Knreise.icon({
+            markerColor: styleFunc.get('fillcolor', feature, selected)
+        }),
+        title: title,
+        clickable: styleFunc.get('clickable', feature, selected)
+    });
+
+}
+
+function LayerManager(map, loader, onclick) {
+
+    var layerGroups = {};
+
+
+    function init() {
+        loader.onDataLoadEnd(_dataLoaded);
+
+        loader.onEnabledChange(_toggleEnabled);
+
+        layerGroups = _.reduce(loader.datasetIdMapping, function (acc, sublayers, groupId) {
+            return _.extend(acc,  _.reduce(sublayers, function(acc, layerId) {
+                acc[layerId] = L.featureGroup([]).addTo(map);
+                return acc;
+            }, {}));
+        }, {});
+    }
+
+    function _dataLoaded(error, datasetId, data) {
+        if (error) {
+            //console.error("11", error, datasetId);
+            console.log('err', datasetId);
+        } else {
+            //console.log('loadEnd', datasetId, data);
+            _addData(datasetId, data);
+        }
+    }
+
+    function _toggleEnabled(datasetId, enabled) {
+        _.each(loader.datasetIdMapping[datasetId], function (datasetId) {
+            var layerGroup = layerGroups[datasetId];
+            if (enabled && !map.hasLayer(layerGroup)) {
+                map.addLayer(layerGroup);
+            }
+            if (!enabled && map.hasLayer(layerGroup)) {
+                map.removeLayer(layerGroup);
+            }
+        });
+
+    }
+
+    function _featureClicked(e, feature, datasetId) {
+        console.log('click', e, feature, datasetId)
+        onclick(feature, loader.getDataset(datasetId));
+    }
+
+    function _addData(datasetId, data) {
+        var dataset = loader.getDataset(datasetId);
+        if (!dataset) {
+            console.error("did not find dataset", datasetId);
+            return;
+        }
+        var styleFunc = Style(dataset.style);
+        var layerGroup = layerGroups[datasetId];
+        map.removeLayer(layerGroup);
+        layerGroups[datasetId] = L.geoJson(data, {
+                pointToLayer: function (feature, latlng) {
+                    return getMarker(feature, latlng, styleFunc, false);
+                },
+                style: function (feature) {
+                    return {
+                        fillColor: styleFunc.get('fillcolor', feature, false),
+                        color: styleFunc.get('bordercolor', feature, false),
+                        weight: styleFunc.get('weight', feature, false),
+                        fillOpacity: styleFunc.get('fillOpacity', feature, false),
+                        title: 'test'
+                    };
+                },
+                onEachFeature: function (feature, layer) {
+                    layer.on('click', function (e) {
+                        return _featureClicked(e, feature, datasetId);
+                    });
+                }
+            })
+            .addTo(map);
+    }
+
+
+    return {
+        init: init
+    };
+}
+
+
 var KR = this.KR || {};
 (function (ns) {
     'use strict';
@@ -4383,145 +5140,29 @@ var KR = this.KR || {};
         featureHash: true
     };
 
-
-    function _getFilter(buffer) {
-        return function (featureCollection) {
-
-            if (!featureCollection || !featureCollection.features.length) {
-                return featureCollection;
-            }
-
-            var type = featureCollection.features[0].geometry.type;
-
-            if (type.indexOf('Polygon') > -1) {
-                var intersects =  _.filter(featureCollection.features, function (feature) {
-                    var bbox = turf.extent(feature);
-                    var bboxPolygon = turf.bboxPolygon(bbox);
-                    return !!turf.intersect(bboxPolygon, buffer.features[0]);
-                });
-                return KR.Util.createFeatureCollection(intersects);
-            }
-
-            if (type.indexOf('MultiLineString') > -1) {
-                var intersects =  _.filter(featureCollection.features, function (feature) {
-                    var bbox = turf.extent(feature);
-                    var bboxPolygon = turf.bboxPolygon(bbox);
-                    return !!turf.intersect(bboxPolygon, buffer.features[0]);
-                });
-                return KR.Util.createFeatureCollection(intersects);
-            }
-
-            return turf.within(featureCollection, buffer);
-
-        };
-    }
-
-    function _loadDatasets(api, datasets, fromUrl, komm, fylke) {
-        if (fromUrl) {
-            datasets = KR.Config.getDatasets(datasets, api, komm, fylke);
-        }
-        return datasets;
-    }
-
-
-    function _addInverted(map, geoJson) {
+    function _addInverted(map, layer) {
         var style = {
             stroke: false,
             fillColor: '#ddd',
             fillOpacity: 0.8
         };
 
-        var data = _.reduce(geoJson.features, function (geom, feature) {
-            return turf.erase(geom, feature);
+        var data = _.reduce(layer.getLayers(), function (geom, layer) {
+            return turf.erase(geom, layer.toGeoJSON());
         }, KR.Util.WORLD);
         L.geoJson(data, style).addTo(map);
     }
 
-
-    function _getloader(options, api, datasets, boundsFunc, id, paramName, callback, initPos) {
-        if (options.geomFilter) {
-            var dataset = {
-                api: 'cartodb'
-            };
-            dataset[paramName] = id;
-            api.getData(dataset, function (geoJson) {
-                if (options.showGeom) {
-                    _addInverted(options.map, geoJson);
-                }
-                var layer = L.geoJson(geoJson);
-
-                var filter = _getFilter(geoJson);
-
-                callback(layer.getBounds(), datasets, filter, null, initPos);
-            });
-        } else {
-            boundsFunc(id, function (bbox) {
-                var bounds = L.latLngBounds.fromBBoxString(bbox);
-                callback(bounds, datasets, null, null, initPos);
-            });
-        }
-    }
-
-
-
-    function _municipalityHandler(options, api, datasets, fromUrl, callback, initPos) {
-        datasets = _loadDatasets(api, datasets, fromUrl, options.komm);
-
-        if (_.isString(options.komm)) {
-            options.komm = options.komm.split(',');
-        }
-
-        _getloader(
-            options,
-            api,
-            datasets,
-            api.getMunicipalityBounds,
-            options.komm,
-            'municipality',
-            callback,
-            initPos
-        );
-    }
-
-    function _countyHandler(options, api, datasets, fromUrl, callback, initPos) {
-        datasets = _loadDatasets(api, datasets, fromUrl, null, options.fylke);
-
-        if (_.isString(options.fylke)) {
-            options.fylke = options.fylke.split(',');
-        }
-
-        _getloader(
-            options,
-            api,
-            datasets,
-            api.getCountyBounds,
-            options.fylke,
-            'county',
-            callback,
-            initPos
-        );
-    }
-
-    function _bboxHandler(options, api, datasets, fromUrl, callback, initPos) {
-        datasets = _loadDatasets(api, datasets, fromUrl);
-        var bounds = L.latLngBounds.fromBBoxString(options.bbox);
-        callback(bounds, datasets, null, null, initPos);
-    }
-
-    function _flattenCollections(featureCollection) {
-
-        var features = [];
-
-        _.each(featureCollection.features, function (feature) {
-            if (feature.geometry.type === 'GeometryCollection') {
-                _.each(feature.geometry.geometries, function (geometry) {
-                    features.push(KR.Util.createGeoJSONFeatureFromGeom(geometry, feature.properties));
-                });
-            } else {
-                features.push(feature);
-            }
-        });
-        return KR.Util.createFeatureCollection(features);
+    function boundsToPoly(bounds) {
+        return KR.Util.createFeatureCollection([
+            L.polygon([
+                bounds.getSouthWest(),
+                bounds.getNorthWest(),
+                bounds.getNorthEast(),
+                bounds.getSouthEast(),
+                bounds.getSouthWest()
+            ]).toGeoJSON()
+        ]);
     }
 
     function _simplify(featureCollection) {
@@ -4529,86 +5170,6 @@ var KR = this.KR || {};
             return turf.simplify(feature, 0.01, false);
         });
         return KR.Util.createFeatureCollection(features);
-    }
-
-    function _gotLine(line, api, options, datasets, fromUrl, callback, initPos) {
-        var lineOptions = {};
-        if (options.linecolor) {
-            lineOptions.color = options.linecolor;
-        }
-        var lineLayer = L.geoJson(line, lineOptions);
-        var bounds = lineLayer.getBounds();
-        datasets = _loadDatasets(api, datasets, fromUrl);
-
-        var filter;
-        if (line && options.buffer) {
-            line = _flattenCollections(line);
-            if (line.features.length > 5) {
-                line = _simplify(line);
-            }
-            var buffer = turf.buffer(line, options.buffer, 'kilometers');
-            filter = _getFilter(buffer);
-        }
-        callback(bounds, datasets, filter, lineLayer, initPos);
-    }
-
-    function _lineHandler(options, api, datasets, fromUrl, callback, initPos) {
-
-        KR.Util.getLine(api, options.line, function (line) {
-            _gotLine(line, api, options, datasets, fromUrl, callback, initPos);
-        });
-    }
-
-    function _checkLoadItemFromUrl(featurecollections) {
-        var featureId = KR.UrlFunctions.getHashFeature();
-
-        if (featureId) {
-            var findLayer = function (l) {
-                return (decodeURIComponent(l.feature.id) === decodeURIComponent(featureId) || l.feature.id === decodeURIComponent(featureId));
-            };
-
-            var datasetLayer = _.find(_.flatten(featurecollections), function (layer) {
-                return _.find(layer.getLayers(), findLayer);
-            });
-
-            if (datasetLayer) {
-                var selectedLayer = _.find(datasetLayer.getLayers(), findLayer);
-                selectedLayer.fire('click');
-                datasetLayer.setLayerSelected(selectedLayer);
-            }
-        }
-    }
-
-
-    function _addBBox(datasets, bbox) {
-        return _.map(datasets, function (dataset) {
-            if (dataset.isStatic) {
-                dataset.fixedBbox = bbox;
-            }
-            if (dataset.datasets) {
-                dataset.datasets = _.map(dataset.datasets, function (dataset) {
-                    if (dataset.isStatic) {
-                        dataset.fixedBbox = bbox;
-                    }
-                    return dataset;
-                });
-            }
-            return dataset;
-        });
-    }
-
-
-    function _setAllStatic(datasets) {
-        return _.map(datasets, function (dataset) {
-            dataset.isStatic = true;
-            if (dataset.datasets) {
-                dataset.datasets = _.map(dataset.datasets, function (dataset) {
-                    dataset.isStatic = true;
-                    return dataset;
-                });
-            }
-            return dataset;
-        });
     }
 
     function freezeMap(map) {
@@ -4639,130 +5200,194 @@ var KR = this.KR || {};
         }
     }
 
-    ns.setupMap = function (api, datasetIds, options, fromUrl) {
-        options = options || {};
-        options = _.extend({}, DEFAULT_OPTIONS, options);
+    function extendOptions(options) {
+        return _.extend({}, DEFAULT_OPTIONS, options || {});
+    }
 
-        var map = KR.Util.createMap('map', options);
-        freezeMap(map);
+    function addExtraLayers(map, options) {
         if (_.has(options, 'extraLayers') && _.isArray(options.extraLayers)) {
             _.each(options.extraLayers, function (extraLayer) {
                 map.addLayer(extraLayer);
             });
         }
+    }
+
+    function setupSplashScreen(map, options) {
+        if (options.title) {
+            return KR.SplashScreen(map, options.title, options.description, options.image, null, false);
+        }
+    }
+
+    function addLocateButton(map) {
+        var locateBtn = L.Knreise.LocateButton(null, null, {bounds: null});
+        locateBtn.addTo(map);
+        return locateBtn;
+    }
+
+    function getInitBounds(api, options, callback) {
+
+        //The three two cases requires an api call
+        var boundsFunc = null;
+        var boundsParam = null;
+        if (options.komm) {
+            boundsParam = _.isString(options.komm) ? options.komm.split(',') : options.komm;
+            boundsFunc = function (komm, callback) {
+                var dataset = {
+                    api: 'cartodb',
+                    municipality: komm
+                };
+                api.getData(dataset, function (geoJson) {
+                    var layer = L.geoJson(geoJson);
+                    var bounds = layer.getBounds();
+                    callback(bounds, layer);
+                });
+            }
+        } else if (options.fylke) {
+            boundsParam = _.isString(options.fylke) ? options.fylke.split(',') : options.fylke;
+            boundsFunc = function (county, callback) {
+                var dataset = {
+                    api: 'cartodb',
+                    county: county
+                };
+                api.getData(dataset, function (geoJson) {
+                    var layer = L.geoJson(geoJson);
+                    var bounds = layer.getBounds();
+                    callback(bounds, layer);
+                });
+            }
+        } else if (options.line) {
+            boundsParam = options.line;
+            boundsFunc = function (line, callback) {
+                KR.Util.getLine(api, options.line, function (line) {
+                    var lineLayer = L.geoJson(line,{
+                        color: !!options.linecolor ? options.linecolor: '#03f',
+                        clickable: false
+                    });
+                    var bounds = lineLayer.getBounds();
+                    callback(bounds, lineLayer);
+                });
+            }
+        }
+        //do the actual api call
+        if (boundsFunc && boundsParam) {
+            boundsFunc(boundsParam, function (bbox, filterGeom) {
+                var bounds = _.isString(bbox) ? L.latLngBounds.fromBBoxString(bbox) : bbox;
+                callback(null, bounds, filterGeom);
+            });
+            return;
+        }
+        //line is a bit special, since we need to add the line to the map as well
+        if (options.bbox) { //or get bounds from options
+            var bounds = L.latLngBounds.fromBBoxString(options.bbox);
+            callback(null, bounds);
+        } else {
+            callback('Missing parameters!');
+        }
+    }
+
+    function getUserPos(map, options, callback) {
+        var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
+
+        if (!options.initUserPos) {
+            callback(locationFromUrl);
+            return;
+        }
+        if (!navigator.geolocation) {
+            callback(null);
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude,
+                    zoom: 16
+                };
+                callback(pos);
+            },
+            function () {
+                callback(null);
+            }
+        );
+    }
+
+    function createGeomFilter(geom, buffer) {
+        var fc = KR.Util.createFeatureCollection(
+            _.map(geom.getLayers(), function (layer) {
+                return layer.toGeoJSON();
+            })
+        );
+        return turf.buffer(
+            (fc.features.length > 5) ? _simplify(fc) : fc,
+            buffer,
+            'kilometers'
+        );
+    }
+
+    ns.setupMap = function (api, datasets, options, fromUrl) {
+        options = extendOptions(options);
+        var map = KR.Util.createMap('map', options);
+        freezeMap(map);
+        addExtraLayers(map, options);
+        var splashScreen = setupSplashScreen(map, options)
+        var locateBtn = addLocateButton(map);
 
         var sidebar = KR.Util.setupSidebar(map, {featureHash: options.featureHash});
-        var datasetLoader = new KR.DatasetLoader(api, map, sidebar, null, options.cluster, options.clusterRadius);
-
-        //HACK: in order for enkeltminner to trigger sidebar I have to expose this here.. 
-        map.sidebar = sidebar;
-
-        var splashScreen;
-        if (options.title) {
-            splashScreen = KR.SplashScreen(map, options.title, options.description, options.image, null, false);
+        function onFeatureClick(feature, dataset) {
+            sidebar.showFeature(feature, dataset);
         }
 
-        function showDatasets(bounds, datasets, filter, lineLayer, initPos) {
-            if (options.allstatic) {
-                datasets = _setAllStatic(datasets);
+        if (options.loactionHash) {
+            KR.UrlFunctions.setupLocationUrl(map);
+        }
+
+        getInitBounds(api, options, function (err, bounds, filterGeom) {
+            if (err) {
+                alert(err);
+                return;
             }
-            datasets = _addBBox(datasets, bounds.toBBoxString());
-
-            var locateBtn = L.Knreise.LocateButton(null, null, {bounds: bounds});
-            locateBtn.addTo(map);
-
-            var initMapPos = function (initPos) {
+            getUserPos(map, options, function(initPos) {
                 unFreezeMap(map);
-                if (initPos) {
+                if (initPos && bounds.contains(L.latLng(initPos.lat, initPos.lon))) {
                     map.setView([initPos.lat, initPos.lon], initPos.zoom);
-                    bounds = map.getBounds();
                 } else {
                     map.fitBounds(bounds);
                 }
+                //restrict the map
+                map.setMaxBounds(bounds);
+                map.options.minZoom = map.getBoundsZoom(bounds);
 
-                if (options.loactionHash) {
-                    KR.UrlFunctions.setupLocationUrl(map);
+                if (filterGeom && options.line) {
+                    filterGeom.addTo(map);
+                } 
+                if (filterGeom && options.showGeom) {
+                     _addInverted(map, filterGeom);
                 }
 
-                var datasetsLoaded = function (featurecollections) {
-                    _checkLoadItemFromUrl(featurecollections);
-
-                    if (splashScreen) {
-                        splashScreen.finishedLoading();
-                    }
-                };
-
-                var skipLoadOutside;
-                if (options.geomFilter && bounds) {
-                    skipLoadOutside = bounds.toBBoxString();
+                var filter;
+                if (filterGeom && options.buffer) {
+                    filter = createGeomFilter(filterGeom, options.buffer);
+                } else if (options.geomFilter) {
+                    filter = boundsToPoly(bounds);
                 }
 
+                var loader = DatasetLoader(datasets, map, api, bounds, filter);
 
-                var layers = datasetLoader.loadDatasets(
-                    datasets,
-                    bounds.toBBoxString(),
-                    filter,
-                    datasetsLoaded,
-                    skipLoadOutside
-                );
+                var layerManager = LayerManager(map, loader, onFeatureClick);
 
-                if (lineLayer) {
-                    lineLayer.addTo(map);
-                }
-                if (datasets.length > 1 || options.showLayerList) {
-                    L.control.datasets(layers).addTo(map);
-                }
-            };
+                L.control.datasets2(loader).addTo(map);
 
-            if (options.initUserPos) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            var pos = {
-                                lat: position.coords.latitude,
-                                lon: position.coords.longitude,
-                                zoom: 16
-                            };
-                            initMapPos(pos);
-                        },
-                        function () {
-                            initMapPos(initPos);
-                        }
-                    );
-                } else {
-                    initMapPos(initPos);
-                }
-            } else {
-                initMapPos(initPos);
-            }
+                layerManager.init();
+                loader.init();
 
-        }
-
-        var locationFromUrl = KR.UrlFunctions.getLocationUrl(map);
-
-        var initPos;
-        if (!options.initUserPos) {
-            initPos = locationFromUrl;
-        }
-
-        options.map = map;
-        if (options.komm) {
-            _municipalityHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
-        } else if (options.fylke) {
-            _countyHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
-        } else if (options.line) {
-            _lineHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
-        } else if (options.bbox) {
-            _bboxHandler(options, api, datasetIds, fromUrl, showDatasets, initPos);
-        } else {
-            alert('Missing parameters!');
-        }
+            });
+        });
 
         return map;
     };
 
     ns.setupMapFromUrl = function (api, datasetIds, options) {
-        ns.setupMap(api, datasetIds, options, true);
+        ns.setupMap(api, ns.Config.getDatasets(datasetIds), options, true);
     };
 
 }(KR));
