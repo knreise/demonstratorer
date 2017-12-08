@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>KNReise - demonstratorer</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+
+    <body>
+
+        <div id='sidebar'></div>
+        <div id='map'></div>
+
+        <script src="../knreiseApi.js" type="text/javascript"></script>
+        <script type='text/javascript' src='../../dist/setupMap.bundle.js'></script>
+        <script type='text/javascript'>
+
+            (function () {
+
+                var title = 'Turistvegen over Folgefonna';
+                var image = '';
+
+                var api = new KR.API({
+                    flickr: {
+                        apikey: 'ab1f664476dabf83a289735f97a6d56c'
+                    },
+                    jernbanemuseet: {
+                        apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
+                    }
+                });
+
+                var params = {
+    "datasets": [
+        "difo",
+        "arkeologi",
+        "historie",
+        "riksantikvaren",
+        "brukerminner",
+        "wikipedia"
+    ],
+    "allstatic": true,
+    "line": "utno/2.8158",
+    "buffer": 2,
+    "linecolor": "#000",
+    "layer": "norges_grunnkart",
+    "image": "http://dms07.dimu.org/image/012wWX5cXPto?dimension=600x380",
+    "description": "<p>Turistvegen over Folgefonna er en klassisk bretur, fra Sunndalen over Fonnabu/Folgefonna til Tokheim ved Sørfjorden.</p><p>«Folgefonnens is dækker det ujevne lands overflade, men selve fonnen er forholdsvis jevn i overflaten, og den syder sin rand udover til siderne og tildels sender den sin is langt ned i dalene». Slik ble Folgefonna skildret i «Norges Land og folk i 1896». Turistvegen over Folgefonna er en fottur som følger i sporene etter de europeiske turistene som flokket til fjord-Norge fra midten av 1800-tallet.</p></br>",
+    "title": "Turistvegen over Folgefonna"
+};
+
+                window.setupMapFromUrl(api, params.datasets, params);
+
+            }());
+
+        </script>
+    </body>
+</html>

@@ -1,5 +1,6 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
+import './boundsUtil';
 import 'leaflet/dist/leaflet.css';
 import '../css/fullscreenmap.css';
 

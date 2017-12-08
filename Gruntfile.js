@@ -1,28 +1,40 @@
 module.exports = function (grunt) {
 
+        var knreiseApiConfig = require('./knreiseApi.config.js');
+        var demoConfig = require('./demonstratorer.config.js');
 
         function getTemplateFromFile(filename, fs) {
             return grunt.util._.template(fs.readFileSync(filename, 'utf8'));
         }
 
-        var knreiseApiConfig = require('./knreiseApi.config.js');
+        function setTemplateSettings() {
+            grunt.util._.templateSettings.interpolate = /\{\{=(.+?)\}\}/g;
+            grunt.util._.templateSettings.evaluate = /\{\{(.+?)\}\}/g;
+        }
+
+        function resetTemplateSettings() {
+            grunt.util._.templateSettings.interpolate =/<%=([\s\S]+?)%>/g;
+            grunt.util._.templateSettings.evaluate = /<%([\s\S]+?)%>/g;
+        }
+
+        function getNonUrlDemos() {
+
+            var demos = []
+                .concat(demoConfig.demonstrators)
+                .concat(demoConfig.demonstrators_extra)
+                .concat(demoConfig.demonstrators_dev);
+
+            return grunt.util._.filter(demos, function (d) {
+                return !d.url;
+            });
+        }
 
         var taskConfig = {
-            watch: {
-                scripts: {
-                    files: ['templates/**/*.tmpl'],
-                    tasks: ['file-creator:folder'],
-                    options: {
-                        atBegin: true,
-                        spawn: false
-                    }
-                }
-            },
             'file-creator': {
                 options: {
                     openFlags: 'w'
                 },
-                'folder': {
+                'create-template-import': {
                     'src/templates_gen.js': function (fs, fd, done) {
                         var glob = grunt.file.glob;
                         var _ = grunt.util._;
@@ -44,15 +56,86 @@ module.exports = function (grunt) {
                             done();
                         });
                     }
+                },
+                'build-demos': {
+                    files: grunt.util._.map(getNonUrlDemos(), function (demonstrator) {
+                        var _ = grunt.util._;
+
+                        var method;
+                        if (_.has(demonstrator, 'params')) {
+                            method = function (fs, fd, done) {
+                                setTemplateSettings();
+                                if (demonstrator.name && !demonstrator.params.title) {
+                                    demonstrator.params.title = demonstrator.name;
+                                }
+                                var d = {
+                                    name: demonstrator.name || null,
+                                    desc: demonstrator.desc || null,
+                                    image: demonstrator.image || null,
+                                    params: JSON.stringify(demonstrator.params, null, 4),
+                                };
+
+                                var pageTemplate = getTemplateFromFile('./grunt_templates/demonstratorTemplateWithParams.html.tpl', fs);
+                                fs.writeSync(fd, pageTemplate({data: d}));
+                                resetTemplateSettings();
+                                done();
+                            };
+                        } else {
+                            method = function (fs, fd, done) {
+
+                                setTemplateSettings();
+
+                                if (!demonstrator.image) {
+                                    demonstrator.image = null;
+                                }
+
+                                try {
+                                    demonstrator.desc = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.txt', 'utf8');
+                                } catch (e) {
+                                    demonstrator.desc = '';
+                                }
+
+                                demonstrator.inline_js = fs.readFileSync('demonstratorer_content/' + demonstrator.id + '.js', 'utf8');
+
+                                var pageTemplate = getTemplateFromFile('./grunt_templates/demonstratorTemplateWithCode.html.tpl', fs);
+                                fs.writeSync(fd, pageTemplate({data: demonstrator}));
+                                resetTemplateSettings();
+                                done();
+                            };
+                        }
+
+                        return {
+                            file: 'public/demonstratorer/' + demonstrator.id + '.html',
+                            method: method
+                        };
+                    })
                 }
             },
             concat: {
                 options: {
                     separator: '\n'
                 },
-                script_external: {
+                'build-knreise-api': {
                     src: knreiseApiConfig.scripts,
                     dest: 'public/knreiseApi.js'
+                }
+            },
+            watch: {
+                'create-template-import': {
+                    files: ['templates/**/*.tmpl'],
+                    tasks: ['create-template-import'],
+                    options: {
+                        atBegin: true,
+                        spawn: false
+                    }
+                },
+                'build-demos': {
+                    files: ['demonstratorer_content/**/*.*', 'demonstratorer.config.js'],
+                    tasks: ['build-demos'],
+                    options: {
+                        atBegin: true,
+                        spawn: false
+                    }
                 }
             }
         };
@@ -62,7 +145,11 @@ module.exports = function (grunt) {
         grunt.loadNpmTasks('grunt-contrib-concat');
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.loadNpmTasks('grunt-file-creator');
-        grunt.registerTask('default', [
-            'file-creator:folder'
-        ]);
+
+        grunt.registerTask('create-template-import', ['file-creator:create-template-import']);
+        grunt.registerTask('build-demos', ['file-creator:build-demos']);
+        grunt.registerTask('build-knreise-api', ['concat:build-knreise-api']);
+
+        grunt.registerTask('watch-create-template-import', ['watch:create-template-import']);
+        grunt.registerTask('watch-build-demos', ['watch:build-demos']);
 };

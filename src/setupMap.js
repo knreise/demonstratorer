@@ -54,9 +54,11 @@ function setupMap(api, datasets, options) {
             } else {
                 map.fitBounds(bounds);
             }
-            //restrict the map
-            map.setMaxBounds(bounds);
-            map.options.minZoom = map.getBoundsZoom(bounds);
+            if (options.restrictMap) {
+                //restrict the map
+                map.setMaxBounds(bounds);
+                map.options.minZoom = map.getBoundsZoom(bounds);
+            }
 
             if (filterGeom && options.line) {
                 filterGeom.addTo(map);

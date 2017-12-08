@@ -209,7 +209,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         /*
         var mediaContainer = element.find('.media-container');
         if (mediaContainer.length) {
-            KR.MediaCarousel.SetupMediaCarousel(mediaContainer, setupFullscreenClick);
+            //KR.MediaCarousel.SetupMediaCarousel(mediaContainer, setupFullscreenClick);
         }
         if (typeof audiojs !== 'undefined') {
             audiojs.createAll();

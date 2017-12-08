@@ -8,7 +8,7 @@ module.exports = {
     devServer: {
         publicPath: '/dist/',
         port: 9000,
-        contentBase: path.join(__dirname, "public")
+        contentBase: path.join(__dirname, 'public')
     },
     output: {
          path: path.resolve(__dirname, 'dist'),

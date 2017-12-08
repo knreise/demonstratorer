@@ -232,7 +232,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             isAvailable: availableDatasets[dataset._id], // are we within the range?
             isEnabled: enabledDatsets[dataset._id], // has the user checked it?
             style: dataset.style,
-            template: !!dataset.template ? dataset.template : getDatasetTemplate('popup'),
+            template: !!dataset.template ? getDatasetTemplate(dataset.template) : getDatasetTemplate('popup'),
             description: dataset.description,
             provider: dataset.provider,
             feedbackForm: dataset.feedbackForm,

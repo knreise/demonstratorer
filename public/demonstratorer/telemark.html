@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>KNReise - demonstratorer</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+
+    <body>
+
+
+        <div id='sidebar'></div>
+        <div id='map'></div>
+
+        <script type="text/template" id="description_template">
+            Innhold fra hele Telemark med fokus p&aring; ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnes&oring;k, brukerregistrert innhold i Kulturminnes&oring;k, Digitalt fortalt, Wikipedia og Lokalhistoriewiki.</br></br>
+        </script>
+
+        <script src="../knreiseApi.js" type="text/javascript"></script>
+        <script type='text/javascript' src='../../dist/setupMap.bundle.js'></script>
+        <script type='text/javascript'>
+
+            var title = 'Telemark';
+            var image = 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200';
+
+            (function () {
+    'use strict';
+
+    var fylke = '8';
+
+    var api = new KR.API({
+        flickr: {
+            apikey: 'ab1f664476dabf83a289735f97a6d56c'
+        }
+    });
+
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+
+    //The datasets in use
+    var datasets = [
+        {
+            thumbnails: true,
+            name: 'Digitalt fortalt',
+            dataset: {dataset: 'difo', api: 'norvegiana'},
+            template: KR.Util.getDatasetTemplate('digitalt_fortalt')
+        },
+        {
+            thumbnails: true,
+            name: 'Kulturminnesøk',
+            provider: 'Riksantikvaren',
+            dataset: {
+                api: 'kulturminnedataSparql',
+                fylke: fylke
+            },
+            template: KR.Util.getDatasetTemplate('ra_sparql'),
+            getFeatureData: kulturminneFunctions.getRaFeatureData,
+            bbox: false,
+            isStatic: true,
+            unclusterCount: 20,
+            init: kulturminneFunctions.initKulturminnePoly,
+        },
+        {
+            provider: 'Riksantikvaren',
+            name: 'Kulturminnesøk - brukerregistrering',
+            dataset: {
+                api: 'kulturminnedata',
+                layer: 2
+            },
+            template: KR.Util.getDatasetTemplate('brukerminne'),
+        },
+        {
+            thumbnails: true,
+            name: 'Universitetsmuseene (Musit)',
+            dataset: {
+                api: 'norvegiana',
+                dataset: 'MUSIT'
+            },
+            template: KR.Util.getDatasetTemplate('musit'),
+            minZoom: 12,
+            style: {thumbnail: true}
+        },
+        {
+            thumbnails: true,
+            name: 'Digitalt Museum',
+            dataset: {
+                api: 'norvegiana',
+                dataset: 'DiMu'
+            },
+            template: KR.Util.getDatasetTemplate('digitalt_museum'),
+            minZoom: 12,
+            style: {thumbnail: true}
+        },
+        {
+            thumbnails: true,
+            name: 'Wikipedia',
+            provider: 'Wikipedia',
+            dataset: {
+                api: 'wikipedia'
+            },
+            template: KR.Util.getDatasetTemplate('wikipedia'),
+            style: {template: true},
+            minZoom: 13
+        },
+        {
+            name: 'Lokalhistoriewiki',
+            provider: 'Lokalhistoriewiki',
+            dataset: {
+                api: 'lokalhistoriewiki'
+            },
+            style: {thumbnail: true},
+            minZoom: 13,
+        },
+        {
+            name: 'Nasjonalbiblioteket',
+            hideFromGenerator: true,
+            provider: 'Nasjonalbiblioteket',
+            dataset: {
+                api: 'cartodb',
+                table: 'bygdebok_telemark'
+            },
+            bbox: false,
+            isStatic: false,
+            template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
+            style: {
+	            thumbnail: false,
+	            fillcolor: '#744700',
+				circle: true,
+				opacity: 0.8,
+				radius: 20},
+            description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
+        }
+
+
+    ];
+
+
+    KR.setupMap(api, datasets, {
+        fylke: fylke,
+        geomFilter: true,
+        showGeom: true,
+        title: title,
+        image: image,
+        description: $('#description_template').html(),
+        maxZoom: 18,
+        minZoom: 9
+    });
+}());
+        </script>
+    </body>
+</html>

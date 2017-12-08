@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>KNReise - demonstratorer</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+
+    <body>
+
+
+        <div id='sidebar'></div>
+        <div id='map'></div>
+
+        <script type="text/template" id="description_template">
+            
+        </script>
+
+        <script src="../knreiseApi.js" type="text/javascript"></script>
+        <script type='text/javascript' src='../../dist/setupMap.bundle.js'></script>
+        <script type='text/javascript'>
+
+            var title = 'Arkitektur i Drammen';
+            var image = '';
+
+            (function () {
+    'use strict';
+
+    var api = new KR.API();
+
+    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+
+    var kommune = '0602';
+
+    //The datasets in use
+    var datasets = [
+        /*{
+            name: 'Wikipedia',
+            provider: 'Wikipedia',
+            dataset: {
+                api: 'wikipedia',
+                category: 'Kulturminner_i_Drammen'
+            },
+            template: KR.Util.getDatasetTemplate('wikipedia'),
+            style: {thumbnail: true},
+            bbox: false,
+            isStatic: true,
+            getFeatureData: function (feature, callback) {
+                api.getItem(
+                    {api: 'wikipedia', id: feature.properties.id},
+                    callback
+                );
+            }
+        },*/
+                {
+            name: 'Wikipedia',
+            provider: 'Wikipedia',
+            dataset: {
+                api: 'wikipedia',
+                 category: 'Kulturminner_i_Drammen'
+            },
+            style: {thumbnail: true},
+
+            template: KR.Util.getDatasetTemplate('wikipedia')
+        },
+                {
+            name: 'Lokalhistoriewiki',
+            provider: 'Lokalhistoriewiki',
+            dataset: {
+                api: 'lokalhistoriewiki'
+            },
+            style: {thumbnail: true}
+        }
+
+    ];
+    
+
+    KR.setupMap(api, datasets, {
+        komm: kommune,
+        title: title,
+        image: image,
+        geomFilter: true,
+        layer: 'norges_grunnkart',
+        description: $('#description_template').html()
+    });
+}());
+        </script>
+    </body>
+</html>

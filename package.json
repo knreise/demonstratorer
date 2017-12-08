@@ -47,9 +47,13 @@
   },
   "homepage": "https://github.com/knreise/demonstratorer",
   "scripts": {
-    "start": "concurrently --kill-others \"npm run grunt-templates\" \"npm run webpack-dev-server\"",
-    "grunt-templates": "grunt watch",
-    "build-knreise": "grunt concat",
+    "start": "concurrently --kill-others \"npm run grunt-watch-build-demos\" \"npm run grunt-watch-create-template-import\" \"npm run webpack-dev-server\"",
+    "grunt-watch-create-template-import": "grunt watch-create-template-import",
+    "grunt-watch-build-demos": "grunt watch-build-demos",
+    "build-knreise-api": "grunt build-knreise-api",
+    "build-demos": "grunt file-creator:build-demos",
+    "create-template-import": "grunt create-template-import",
+    "build-demos": "grunt build-demos",
     "webpack-dev-server": "webpack-dev-server --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
