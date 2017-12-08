@@ -1,0 +1,420 @@
+#sidebar {
+    overflow: none;
+    padding: 0;
+    position: relative;
+    height: 100%
+}
+
+#sidebar .fullwidth {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#sidebar .sidebar-content {
+    bottom: 0;
+    overflow: auto;
+    padding: 15px;
+    position: absolute;
+    top: 50px;
+    width: 100%;
+}
+
+#sidebar .sidebar-content h5{
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.knreise-sidebar .awesome-marker {
+    position: relative;
+}
+
+.knreise-sidebar .thumbnail {
+    margin-bottom: 0;
+    padding: 0;
+    border-width: 2px;
+}
+
+.knreise-sidebar .list-btn {
+    margin-top: 15px;
+    color: #333;
+    margin-left: 15px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.knreise-sidebar .top-text {
+    margin-left: 15px;
+    margin-top: 15px;
+    color: #333;
+}
+
+
+.knreise-sidebar .prev-next-arrows {
+    position: absolute;
+    top: 50%;
+    z-index: 4000;
+}
+
+.knreise-sidebar .prev-next-arrows .glyphicon{
+    top: 2px;
+}
+
+
+.knreise-sidebar .prev {
+    color: white !important;
+    left: -10px;
+}
+
+
+.knreise-sidebar .next {
+    color: white !important;
+    right: -10px;
+}
+
+@media (max-width: 770px) {
+ .knreise-sidebar .prev {
+    left: -5px;
+ }
+}
+
+@media (max-width: 770px) {
+ .knreise-sidebar .next {
+    right: 5px;
+ }
+}
+
+@media (max-width: 770px) {
+.leaflet-sidebar .close {
+    top: 12px;
+ }
+}
+
+.knreise-sidebar .next.active, .knreise-sidebar .prev.active {
+    background-color: #A5A5A5;
+    cursor: pointer;
+}
+
+
+.knreise-sidebar .circle {
+    background-color: #ddd;
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px #888888;
+    color: black;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    height: 30px;
+    line-height: 26px;
+    text-align: center;
+    width: 30px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.knreise-sidebar .top-menu .circle {
+    background-color: #fff;
+}
+
+
+.knreise-sidebar .headertext {
+    color: black;
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.knreise-sidebar .providertext {
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.fa-bars:hover {
+    color: black;
+}
+
+.knreise-sidebar .top-menu {
+    background: #F6F6F6 none repeat scroll 0 0;
+    height: 50px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 2000;
+}
+
+.knreise-sidebar .close {
+    position: relative;
+    margin-right: 10px;
+    margin-top: 10px;
+    top: 0;
+    right: 0;
+    background: white none repeat scroll 0 0;
+    border-radius: 16px;
+    color: #333;
+    cursor: pointer;
+    font-size: 25px;
+    height: 31px;
+    text-align: center;
+    width: 31px;
+    z-index: 8;
+    line-height: 25px;
+}
+
+.knreise-sidebar .sidebar-content h3 {
+    margin-top: 0;
+}
+
+.knreise-sidebar .sidebar-link {
+    color: #333;
+}
+
+.knreise-sidebar .list-group-item {
+  border: 0px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.knreise-sidebar .media-body {
+  font-weight: 500;
+}
+
+
+.knreise-sidebar .images-list img {
+    margin-bottom: 0 !important;
+}
+
+.knreise-sidebar .media-navigation {
+    position:relative;
+    background: ; height:50px;
+    margin-bottom: 20px;
+}
+
+.knreise-sidebar .media-navigation .circle {
+    border-color: #dedede;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.knreise-sidebar .media-navigation .prev {
+    position: absolute;
+    color: #e0e0e0 !important;
+    left: 35%;
+}
+
+.knreise-sidebar .media-navigation .next {
+    position: absolute;
+    color: #e0e0e0 !important;
+    right: 35%;
+}
+
+.knreise-sidebar .media-navigation .next.active {
+    color: #898989 !important;
+    cursor: pointer;
+}
+
+.knreise-sidebar .media-navigation .prev.active {
+    color: #898989 !important;
+    cursor: pointer;
+}
+
+.sidebar-table {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.sidebar-table tr td:first-child {
+    font-weight: bold;
+    padding-right: 10px;
+    vertical-align: top;
+}
+
+.sidebar-image-text {
+    margin-bottom: 20px;
+    color: grey;
+}
+
+
+.leaflet-sidebar.center {
+    right: -500px;
+    transition: right 0.5s, width 0.5s;
+    padding-left: 0;
+    margin-right: -500px;
+}
+
+.leaflet-sidebar.center.visible {
+    left:0;
+    right:0;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.leaflet-sidebar .gray {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: black;
+    opacity: 0.4;
+}
+
+.leaflet-sidebar .splash-image {
+    width: 100%;
+}
+
+.leaflet-sidebar .distance {
+    color: #6F6F6F;
+}
+
+.leaflet-sidebar .close {
+    font-size: 25px;
+    line-height: 25px;
+}
+
+#splashscreen {
+    padding-left: 0;
+    padding-right: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #E6E6E6;
+}
+
+#splashscreen h2, #splashscreen .splash-content {
+    margin-top: 12px; 
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+#splashscreen .footer {
+    margin-top: 40px;
+    color: rgba(255, 255, 255, 0.8)
+}
+
+#splashscreen a {
+    color: #E6E6E6;
+    text-decoration: underline;
+}
+
+#splashscreen h2 {
+    text-transform: uppercase;
+    margin-top: 6px;
+    font-size: 25px;
+    font-weight: 400;
+    padding-left: 18px;
+}
+
+#splashscreen .close {
+    background: black;
+}
+
+@media (min-width: 770px) and (max-width:1000px) {
+    #splashscreen h2 {
+    font-size: 18px;
+    font-weight: 600;
+        }
+    .center .close {
+    top:15px;
+        }
+}
+
+
+/*the feedback form*/
+.feedback-form {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #6F6F6F;
+}
+
+.feedback-form label {
+    font-weight: 100;
+}
+
+.feedback-form .btn-default {
+    color: #6F6F6F;
+}
+
+.feedback-form .show-more {
+    cursor: pointer;
+}
+
+.wikipedia-content h2 {
+    font-size: 18px;
+}
+
+.image.with-caption {
+    display: inline-block;
+    background: #f5f5f5;
+    margin-bottom: 15px;
+}
+.image.with-caption p {
+    margin: 0;
+    padding-bottom: 0.5em;
+    color: #999;
+    font-size: 90%;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.image.with-caption .thumbnail {
+    margin-bottom: 5px;
+}
+
+
+#overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #000;
+    background: rgb(0, 0, 0); /* Fall-back for browsers that don't support rgba */
+    background: rgba(0, 0, 0, .9);
+    z-index: 8000;
+    text-align: center
+}
+
+#overlay::after { 
+    content: "\f057";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #fff;
+    font-family: FontAwesome;
+    font-size: 20px;
+}
+
+#overlay img {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.image-fullscreen-link:before {
+    content: "\f0b2";
+    font-family: FontAwesome;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 100;
+    right: 5px;
+    padding-right: 0.5em;
+    padding-top: 0.5em;
+    position: absolute;
+    text-decoration: inherit;
+    color: #fff;
+    }
+
+.image-fullscreen-link { 
+    position: relative;
+    cursor: pointer;
+}

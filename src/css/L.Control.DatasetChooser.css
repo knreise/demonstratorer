@@ -1,0 +1,30 @@
+.leaflet-container .leaflet-control-dataset {
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.leaflet-control-layers {
+    margin-top: 10px;
+}
+
+
+.leaflet-control-layers .layericon {
+    margin-left: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.leaflet-control-layers label.disabled {
+    color: #ddd;
+}
+
+
+.leaflet-control-layers i.fa-square-o {
+    padding-right: 3px !important;
+}
+
+i.error-icon {
+    color: #a94442;
+}
