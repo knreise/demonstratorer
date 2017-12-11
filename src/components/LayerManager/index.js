@@ -27,6 +27,13 @@ export default function LayerManager(map, loader) {
         }, {});
     }
 
+    function _getParent(datasetId) {
+        var parentId = _.findKey(loader.datasetIdMapping, function (children) {
+            return children.indexOf(datasetId) !== -1;
+        });
+        return parentId;
+    }
+
     function _dataLoaded(error, datasetId, data) {
         if (error) {
             //console.error("11", error, datasetId);
@@ -37,18 +44,29 @@ export default function LayerManager(map, loader) {
         }
     }
 
+
+    function _toggleLayer(layerId, enabled) {
+        var layerGroup = layerGroups[layerId];
+        if (enabled && !map.hasLayer(layerGroup)) {
+            map.addLayer(layerGroup);
+        }
+        if (!enabled && map.hasLayer(layerGroup)) {
+            map.removeLayer(layerGroup);
+            if (selectedDataset === layerId) {
+                _deselectLayer();
+            }
+        }
+    }
+
     function _toggleEnabled(datasetId, enabled) {
+
+        if (_.has(layerGroups, datasetId)) {
+            _toggleLayer(datasetId, enabled);
+            return;
+        }
+
         _.each(loader.datasetIdMapping[datasetId], function (datasetId) {
-            var layerGroup = layerGroups[datasetId];
-            if (enabled && !map.hasLayer(layerGroup)) {
-                map.addLayer(layerGroup);
-            }
-            if (!enabled && map.hasLayer(layerGroup)) {
-                map.removeLayer(layerGroup);
-                if (selectedDataset === datasetId) {
-                    _deselectLayer();
-                }
-            }
+            _toggleLayer(datasetId, enabled);
         });
 
     }
@@ -63,7 +81,6 @@ export default function LayerManager(map, loader) {
     function _clusterClicked(e, datasetId) {
         var features = _.map(e.layer.getAllChildMarkers(), function (child) {
             var feature = _.clone(child.feature);
-            feature.dataset = loader.getDataset(datasetId);
             return feature;
         });
         _.each(onSelects, function (callback) {
@@ -115,17 +132,62 @@ export default function LayerManager(map, loader) {
         selectedDataset = datasetId;
     }
 
-    function _addData(datasetId, data) {
-        var dataset = loader.getDataset(datasetId);
-        if (!dataset) {
-            console.error('did not find dataset', datasetId);
-            return;
-        }
-        var styleFunc = Style(dataset.style);
-        var layerGroup = layerGroups[datasetId];
-        map.removeLayer(layerGroup);
+    function _getClusterLayer(styleFunc) {
+        return L.markerClusterGroup({
+            zoomToBoundsOnClick: false,
+            spiderfyOnMaxZoom: false,
+            polygonOptions: {fillColor: '#ddd', weight: 2, color: '#999', fillOpacity: 0.6},
+            iconCreateFunction: function (cluster) {
+                return getClusterIcon(cluster, styleFunc, false);
+            }
+        });
+    }
 
-        var layerGroup = L.geoJson(data, {
+    function _addClusteredData(dataset, data) {
+        var parentId = _getParent(dataset._id);
+        var commonCluster = false;
+        if (parentId !== dataset._id) {
+            var parent = loader.getDataset(parentId);
+            commonCluster = !!parent.commonCluster;
+        }
+        if (commonCluster) {
+            if (!_.has(layerGroups, parentId)) {
+                var commonClusterLayer = _getClusterLayer(Style(parent.style));
+                map.addLayer(commonClusterLayer);
+                commonClusterLayer.on('clusterclick', function (e) {
+                    return _clusterClicked(e, parentId);
+                });
+                layerGroups[parentId] = commonClusterLayer;
+            }
+            layerGroups[parentId].clearLayers();
+            _.each(loader.datasetIdMapping[parentId], function (datasetId) {
+
+                var data = loader.getData(datasetId).data;
+                if (data && data.features) {
+                    var dataset = loader.getDataset(datasetId);
+                    var styleFunc = Style(dataset.style);
+                    var newLayerGroup = _createGeoJsonLayer(data, dataset, styleFunc);
+                    layerGroups[parentId].addLayers(newLayerGroup.getLayers());
+                }
+            });
+
+        } else {
+            var styleFunc = Style(dataset.style);
+            var clusterLayer = _getClusterLayer(styleFunc);
+            var layerGroup = layerGroups[dataset._id];
+            map.removeLayer(layerGroup);
+            var newLayerGroup = _createGeoJsonLayer(data, dataset, styleFunc);
+            clusterLayer.addLayers(newLayerGroup.getLayers());
+            map.addLayer(clusterLayer);
+            clusterLayer.on('clusterclick', function (e) {
+                return _clusterClicked(e, dataset._id);
+            });
+            layerGroups[dataset._id] = clusterLayer;
+        }
+    }
+
+    function _createGeoJsonLayer(data, dataset, styleFunc) {
+        return L.geoJson(data, {
             pointToLayer: function (feature, latlng) {
                 return getMarker(feature, latlng, styleFunc, false);
             },
@@ -139,31 +201,31 @@ export default function LayerManager(map, loader) {
                 };
             },
             onEachFeature: function (feature, layer) {
-                layer.datasetId = datasetId;
+                layer.feature.dataset = dataset;
                 layer.on('click', function (e) {
-                    return _featureClicked(e, feature, datasetId);
+                    return _featureClicked(e, feature, dataset._id);
                 });
             }
         });
+    }
+
+    function _addData(datasetId, data) {
+        var dataset = loader.getDataset(datasetId);
+
+        if (!dataset) {
+            console.error('did not find dataset', datasetId);
+            return;
+        }
 
         if (dataset.cluster) {
-            var markers = L.markerClusterGroup({
-                zoomToBoundsOnClick: false,
-                spiderfyOnMaxZoom: false,
-                polygonOptions: {fillColor: '#ddd', weight: 2, color: '#999', fillOpacity: 0.6},
-                iconCreateFunction: function (cluster) {
-                    return getClusterIcon(cluster, styleFunc, false);
-                }
-            });
-            markers.addLayers(layerGroup.getLayers());
-            map.addLayer(markers);
-            markers.on('clusterclick', function (e) {
-                return _clusterClicked(e, datasetId);
-            });
-            layerGroups[datasetId] = markers;
+            _addClusteredData(dataset, data);
         } else {
-            layerGroups[datasetId] = layerGroup;
-            layerGroup.addTo(map);
+            var styleFunc = Style(dataset.style);
+            var layerGroup = layerGroups[datasetId];
+            map.removeLayer(layerGroup);
+            var newLayerGroup = _createGeoJsonLayer(data, datasetId, styleFunc);
+            layerGroups[datasetId] = newLayerGroup;
+            newLayerGroup.addTo(map);
         }
     }
 

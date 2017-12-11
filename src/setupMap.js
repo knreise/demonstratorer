@@ -72,7 +72,6 @@ function setupMap(api, datasets, options) {
                 filterGeom.addTo(map);
             }
             if (filterGeom && options.showGeom) {
-                 //_addInverted(map, filterGeom);
                  var inverted = getInverted(filterGeom);
                  inverted.addTo(map);
             }

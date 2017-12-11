@@ -13,6 +13,7 @@
         {
             grouped: true,
             name: 'Historie',
+            commonCluster: true,
             datasets: [
                 {
                     name: 'MUSIT',

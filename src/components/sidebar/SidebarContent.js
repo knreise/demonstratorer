@@ -83,8 +83,9 @@ export default function SidebarContent(wrapper, element, top, options) {
         };
     }
 
-    function _createListElement(feature, index, dataset, getData, features) {
+    function _createListElement(feature, index, none, getData, features) {
         var marker;
+        var dataset = feature.dataset;
         //TODO get color for feature
         //var color = KR.Style.colorForFeature(feature, true);
         var color = dataset.style.fillcolor;
@@ -130,7 +131,8 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
 
-    function showFeature(feature, dataset, getData, callbacks, index, numFeatures) {
+    function showFeature(feature, none, getData, callbacks, index, numFeatures) {
+        var dataset = feature.dataset;
         var template = dataset.template;
         if (getData) {
             var content = '';
@@ -223,15 +225,16 @@ export default function SidebarContent(wrapper, element, top, options) {
         element.scrollTop(0);
     }
 
-    function showFeatures(features, dataset, getData, noListThreshold, forceList) {
+    function showFeatures(features, none, getData, noListThreshold, forceList) {
+        
         noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
 
         var shouldSkipList = (features.length <= noListThreshold);
         if (shouldSkipList && forceList !== true) {
             var feature = features[0];
             element.html('');
-            var callbacks = _createListCallbacks(feature, 0, dataset, getData, features);
-            this.showFeature(feature, dataset, getData, callbacks, 0, features.length);
+            var callbacks = _createListCallbacks(feature, 0, null, getData, features);
+            this.showFeature(feature, null, getData, callbacks, 0, features.length);
             return;
         }
 
@@ -249,7 +252,7 @@ export default function SidebarContent(wrapper, element, top, options) {
                     var index = _.findIndex(features, function (a) {
                         return a === feature;
                     });
-                    return _createListElement(feature, index, dataset, getData, features);
+                    return _createListElement(feature, index, null, getData, features);
                 }, this);
 
                 list.append(elements);

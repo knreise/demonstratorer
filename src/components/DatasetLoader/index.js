@@ -223,7 +223,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         });
     }
 
-    function _transforDataset(dataset) {
+    function _transformDataset(dataset) {
 
         return {
             _id: dataset._id,
@@ -238,7 +238,8 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             feedbackForm: dataset.feedbackForm,
             getFeatureData: dataset.getFeatureData,
             noListThreshold: dataset.noListThreshold,
-            cluster: dataset.cluster
+            cluster: dataset.cluster,
+            commonCluster: dataset.commonCluster
         };
     }
 
@@ -270,15 +271,22 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         },
         datasetIdMapping: _.extend({}, datasetIdMapping),
         getLayers: function () {
-            return _.map(datasets, _transforDataset);
+            return _.map(datasets, _transformDataset);
         },
         getDataset: function (datasetId) {
             var dataset = _.find(flattenedDatasets, function (d) {
                 return d._id === datasetId;
             });
             if (dataset) {
-                return _transforDataset(dataset);
+                return _transformDataset(dataset);
             }
+            dataset = _.find(datasets, function (d) {
+                return d._id === datasetId;
+            });
+            if (dataset) {
+                return _transformDataset(dataset);
+            }
+
             return null;
         }
     };
