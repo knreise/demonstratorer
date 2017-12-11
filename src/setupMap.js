@@ -1,6 +1,7 @@
 //import 'babel-polyfill';
 import 'font-awesome/css/font-awesome.css';
 import L from 'leaflet';
+import * as _ from 'underscore';
 
 import getDatasets from './datasets';
 import {extendOptions} from './util';
@@ -35,7 +36,14 @@ function setupMap(api, datasets, options) {
     var sidebar = setupSidebar(map, {featureHash: options.featureHash});
 
     function onFeatureClick(feature, dataset) {
-        sidebar.showFeature(feature, dataset);
+        if (_.isArray(feature)) {
+            sidebar.showFeatures(feature, dataset);
+        } else {
+            sidebar.showFeature(feature, dataset);
+        }
+    }
+    function onDeSelect() {
+        sidebar.hide();
     }
 
     if (options.loactionHash) {
@@ -78,7 +86,9 @@ function setupMap(api, datasets, options) {
 
             var loader = DatasetLoader(datasets, map, api, bounds, filter);
 
-            var layerManager = LayerManager(map, loader, onFeatureClick);
+            var layerManager = LayerManager(map, loader);
+            layerManager.onSelect(onFeatureClick);
+            layerManager.onDeSelect(onDeSelect);
 
             L.control.datasetChooser(loader).addTo(map);
 

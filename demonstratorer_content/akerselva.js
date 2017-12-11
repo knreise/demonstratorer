@@ -32,8 +32,9 @@
                     style: {fillcolor: '#333333'}
                 },
                 {
-                    name: 'Riksantikvaren',
+                    name: 'Kulturminner',
                     provider: 'Riksantikvaren',
+                    template: 'kulturminne2',
                     /*
 		            dataset: {
 		                /api: 'kulturminnedataSparql',

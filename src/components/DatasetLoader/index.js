@@ -237,7 +237,8 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             provider: dataset.provider,
             feedbackForm: dataset.feedbackForm,
             getFeatureData: dataset.getFeatureData,
-            noListThreshold: dataset.noListThreshold
+            noListThreshold: dataset.noListThreshold,
+            cluster: dataset.cluster
         };
     }
 

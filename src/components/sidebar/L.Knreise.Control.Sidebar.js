@@ -49,8 +49,10 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         container.appendChild(content);
         this.on('hide', function () {
             if (this._map) {
-                this._map.fire('layerSelected');
-                this._map.fire('layerDeselect');
+                /*this._map.fire('layerSelected');
+                this._map.fire('layerDeselect');*/
+
+                this._map.fire('sidebarClosed');
             }
 
         }, this);

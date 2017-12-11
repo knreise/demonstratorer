@@ -66,6 +66,21 @@ export function getImageCache(imageUrl, width, height) {
     return imageUrl;
 };
 
+export function hexToRgba(hex, transparency) {
+    transparency = transparency || 1;
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    if (!result) {
+        return 0;
+    }
+    var rgb = {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    };
+    return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
+};
+
 function createFeatureCollection(features) {
     return {
         'type': 'FeatureCollection',

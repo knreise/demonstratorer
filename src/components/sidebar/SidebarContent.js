@@ -21,7 +21,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function _setupSwipe(callbacks) {
-        if (!callbacks) {
+        /*if (!callbacks) {
             return;
         }
         element
@@ -41,6 +41,7 @@ export default function SidebarContent(wrapper, element, top, options) {
                     callbacks.prev();
                 }
             });
+        */
     }
 
     function _createListCallbacks(feature, index, dataset, getData, features, close) {
@@ -160,14 +161,17 @@ export default function SidebarContent(wrapper, element, top, options) {
             feature.properties.license = feature.properties.license;
         }
 
-
         var color = dataset.style.fillcolor;
-        var content = '<span class="providertext" style="color:' + color + ';">' + feature.properties.provider + '</span>';
 
-        content += template(_.extend({image: null}, feature.properties));
+        var provider = dataset.provider || dataset.name;
+        var content = '<span class="providertext" style="color:' + color + ';">' + provider + '</span>';
 
-        if (options.footerTemplate && feature.properties.link) {
-            content += options.footerTemplate(feature.properties);
+        var properties = _.clone(feature.properties);
+        properties.provider = provider;
+        content += template(_.extend({image: null}, properties));
+
+        if (options.footerTemplate && properties.link) {
+            content += options.footerTemplate(properties);
         }
 
         content = $(['<div>', content, '</div>'].join(' '));
@@ -221,6 +225,7 @@ export default function SidebarContent(wrapper, element, top, options) {
 
     function showFeatures(features, dataset, getData, noListThreshold, forceList) {
         noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
+
         var shouldSkipList = (features.length <= noListThreshold);
         if (shouldSkipList && forceList !== true) {
             var feature = features[0];
@@ -235,7 +240,7 @@ export default function SidebarContent(wrapper, element, top, options) {
 
         var grouped = _.chain(features)
             .groupBy(function (feature) {
-                return feature.properties.provider;
+                return feature.dataset.name;
             })
             .map(function (featuresInGroup, key) {
                 var wrap = $('<div></div>');
