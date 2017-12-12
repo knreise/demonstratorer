@@ -5,6 +5,8 @@
   "main": "Gruntfile.js",
   "dependencies": {
     "@turf/bearing": "^5.1.0",
+    "@turf/boolean-contains": "^5.1.5",
+    "@turf/boolean-overlap": "^5.1.5",
     "@turf/buffer": "^5.1.0",
     "@turf/difference": "^5.1.0",
     "@turf/distance": "^5.1.0",
@@ -51,9 +53,8 @@
     "grunt-watch-create-template-import": "grunt watch-create-template-import",
     "grunt-watch-build-demos": "grunt watch-build-demos",
     "build-knreise-api": "grunt build-knreise-api",
-    "build-demos": "grunt file-creator:build-demos",
-    "create-template-import": "grunt create-template-import",
     "build-demos": "grunt build-demos",
+    "create-template-import": "grunt create-template-import",
     "webpack-dev-server": "webpack-dev-server --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   }

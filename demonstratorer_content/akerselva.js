@@ -7,8 +7,6 @@
         }
     });
 
-    //var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
-
     var datasets = [
         {
             grouped: true,

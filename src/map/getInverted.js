@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 import WORLD from '../config/world';
 import difference from '@turf/difference';
 
-export default function getInverted(map, layer) {
+export default function getInverted(layer) {
     var style = {
         stroke: false,
         fillColor: '#ddd',

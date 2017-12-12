@@ -16,6 +16,9 @@ export default function createGeomFilter(geom, bufferDist) {
             return layer.toGeoJSON();
         })
     );
+    if (buffer >= 0) {
+        return fc;
+    }
     return buffer(
         (fc.features.length > 5) ? _simplify(fc) : fc,
         bufferDist,

@@ -1,9 +1,16 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
+import booleanContains from '@turf/boolean-contains';
+import booleanOverlap from '@turf/boolean-overlap';
 
 import ApiLoader from './ApiLoader';
 import DATASET_DEFAULTS from '../../config/datasetDefaults';
-import {getDatasetTemplate} from '../../util';
+import {
+    getDatasetTemplate,
+    createFeatureCollection,
+    boundsToPoly
+} from '../../util';
+
 
 function toDict(arr, key, trans) {
     return _.reduce(arr, function (acc, element) {
@@ -24,6 +31,25 @@ function extend(a, b) {
         }
         return acc;
     }, {});
+}
+
+function filterData(filterGeom, data) {
+    var insideFeatures = _.filter(data.features, function (feature) {
+        var inside = _.map(filterGeom.features, function (filter) {
+            if (feature.geometry.type === 'Polygon') {
+                return booleanContains(filter, feature) || booleanOverlap(filter, feature);
+            }
+            return booleanContains(filter, feature);
+        });
+        return inside.indexOf(true) > -1;
+    });
+    return createFeatureCollection(insideFeatures);
+}
+
+function isInside(filterGeom, bounds) {
+    var boundsPoly = boundsToPoly(bounds);
+    var inside = filterData(filterGeom, boundsPoly);
+    return inside.features.length > 0;
 }
 
 export default function DatasetLoader(datasets, map, api, initBounds, filter) {
@@ -73,6 +99,12 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         if (toLoad.length === 0) {
             return;
         }
+        if (filter) {
+            if (!isInside(filter, bounds)) {
+                return;
+            }
+        }
+
         currentlyLoading[datasetId] = true;
         prevBounds[datasetId] = bounds;
 
@@ -141,6 +173,11 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             currentErrors[datasetId] = error;
         } else {
             currentErrors[datasetId] = null;
+
+            if (filter) {
+                data = filterData(filter, data);
+            }
+
             currentData[datasetId] = data;
         }
         _.each(onInduvidualLoadEnds, function (callback) {

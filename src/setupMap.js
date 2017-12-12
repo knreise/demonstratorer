@@ -80,7 +80,9 @@ function setupMap(api, datasets, options) {
             if (filterGeom && options.buffer) {
                 filter = createGeomFilter(filterGeom, options.buffer);
             } else if (options.geomFilter) {
-                filter = boundsToPoly(bounds);
+                filter = !!filterGeom
+                    ? createGeomFilter(filterGeom, options.buffer || 0)
+                    : boundsToPoly(bounds);
             }
 
             var loader = DatasetLoader(datasets, map, api, bounds, filter);

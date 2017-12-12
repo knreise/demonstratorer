@@ -9,7 +9,7 @@
         }
     });
 
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+    //r kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
     //The datasets in use
     var datasets = [
@@ -17,8 +17,8 @@
             thumbnails: true,
             name: 'Digitalt fortalt',
             dataset: {dataset: 'difo', api: 'norvegiana'},
-            template: KR.Util.getDatasetTemplate('digitalt_fortalt')
-        },
+            template: 'digitalt_fortalt'
+        },/*
         {
             thumbnails: true,
             name: 'Kulturminnesøk',
@@ -33,7 +33,7 @@
             isStatic: true,
             unclusterCount: 20,
             init: kulturminneFunctions.initKulturminnePoly,
-        },
+        },*/
         {
             provider: 'Riksantikvaren',
             name: 'Kulturminnesøk - brukerregistrering',
@@ -41,7 +41,7 @@
                 api: 'kulturminnedata',
                 layer: 2
             },
-            template: KR.Util.getDatasetTemplate('brukerminne'),
+            template: 'brukerminne',
         },
         {
             thumbnails: true,
@@ -50,7 +50,7 @@
                 api: 'norvegiana',
                 dataset: 'MUSIT'
             },
-            template: KR.Util.getDatasetTemplate('musit'),
+            template: 'musit',
             minZoom: 12,
             style: {thumbnail: true}
         },
@@ -61,7 +61,7 @@
                 api: 'norvegiana',
                 dataset: 'DiMu'
             },
-            template: KR.Util.getDatasetTemplate('digitalt_museum'),
+            template: 'digitalt_museum',
             minZoom: 12,
             style: {thumbnail: true}
         },
@@ -72,7 +72,7 @@
             dataset: {
                 api: 'wikipedia'
             },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
+            template: 'wikipedia',
             style: {template: true},
             minZoom: 13
         },
@@ -95,7 +95,7 @@
             },
             bbox: false,
             isStatic: false,
-            template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
+            template: 'nasjonalbiblioteket',
             style: {
 	            thumbnail: false,
 	            fillcolor: '#744700',
@@ -109,7 +109,7 @@
     ];
 
 
-    KR.setupMap(api, datasets, {
+    window.setupMap(api, datasets, {
         fylke: fylke,
         geomFilter: true,
         showGeom: true,
