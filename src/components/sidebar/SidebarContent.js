@@ -3,6 +3,7 @@ import * as _ from 'underscore';
 import {getImageCache, isInIframe} from '../../util';
 
 import PositionDisplayer from './PositionDisplayer';
+import MediaCarousel from './MediaCarousel';
 
 /*
     Handles display of content in a sidebar
@@ -44,7 +45,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         */
     }
 
-    function _createListCallbacks(feature, index, dataset, getData, features, close) {
+    function _createListCallbacks(feature, index, features, close) {
         var prev;
         if (index > 0) {
             prev = function (e) {
@@ -53,8 +54,8 @@ export default function SidebarContent(wrapper, element, top, options) {
                 }
                 index = index - 1;
                 feature = features[index];
-                var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
-                showFeature(feature, dataset, getData, callbacks, index, features.length);
+                var callbacks = _createListCallbacks(feature, index, features, close);
+                showFeature2(feature, callbacks, index, features.length);
             };
         }
         var next;
@@ -65,14 +66,14 @@ export default function SidebarContent(wrapper, element, top, options) {
                 }
                 index = index + 1;
                 feature = features[index];
-                var callbacks = _createListCallbacks(feature, index, dataset, getData, features, close);
-                showFeature(feature, dataset, getData, callbacks, index, features.length);
+                var callbacks = _createListCallbacks(feature, index, features, close);
+                showFeature2(feature, callbacks, index, features.length);
             };
         }
 
         if (!close) {
             close = function () {
-                showFeatures(features, dataset, getData, options.noListThreshold, true);
+                showFeatures2(features, options.noListThreshold, true);
             };
         }
 
@@ -83,7 +84,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         };
     }
 
-    function _createListElement(feature, index, none, getData, features) {
+    function _createListElement(feature, index, features) {
         var marker;
         var dataset = feature.dataset;
         //TODO get color for feature
@@ -109,8 +110,8 @@ export default function SidebarContent(wrapper, element, top, options) {
 
         li.on('click', function (e) {
             e.preventDefault();
-            var callbacks = _createListCallbacks(feature, index, dataset, getData, features);
-            showFeature(feature, dataset, getData, callbacks, index, features.length);
+            var callbacks = _createListCallbacks(feature, index, features);
+            showFeature2(feature, callbacks, index, features.length);
             return false;
         });
         return li;
@@ -130,24 +131,32 @@ export default function SidebarContent(wrapper, element, top, options) {
         });
     }
 
-
-    function showFeature(feature, none, getData, callbacks, index, numFeatures) {
-        var dataset = feature.dataset;
-        var template = dataset.template;
-        if (getData) {
+    function showFeature2(feature, callbacks, index, numFeatures) {
+        var getItem = feature.dataset.getItem;
+        if (getItem) {
             var content = '';
             if (feature.properties.title) {
                 content += '<h3>' + feature.properties.title + '</h3>';
             }
             content += '<i class="fa fa-spinner fa-pulse fa-3x"></i>';
             _setContent(content);
-            getData(feature, function (newFeature) {
+            getItem(feature, function (newFeature) {
                 newFeature.properties = _.extend(feature.properties, newFeature.properties);
-                showFeature(newFeature, dataset, null, callbacks, index, numFeatures);
+                _doShowFeature(newFeature, callbacks, index, numFeatures);
             });
-            return;
+        } else {
+            _doShowFeature(feature, callbacks, index, numFeatures);
         }
+    }
 
+    function _showImages(container, images) {
+        MediaCarousel(container, images);
+    }
+
+    function _doShowFeature(feature, callbacks, index, numFeatures) {
+
+        var dataset = feature.dataset;
+        var template = dataset.template;
         var img = feature.properties.images;
         if (_.isArray(img)) {
             img = img[0];
@@ -183,11 +192,20 @@ export default function SidebarContent(wrapper, element, top, options) {
 
         positionDisplayer.selectFeature(feature, content);
         _setContent(content);
+
+        var mediaContainer = element.find('#image-strip');
+        if (mediaContainer.length && feature.media.length) {
+            //images.append($("<p>test</p>"));
+            MediaCarousel(mediaContainer, feature.media);
+        }
+
+
         _setupSwipe(callbacks);
 
         wrapper.find('.prev-next-arrows').remove();
 
         top.html('');
+
         if (callbacks) {
             var list = $('<a class="pull-left list-btn"><i class="fa fa-bars"></i></a>');
             top.append(list);
@@ -224,17 +242,17 @@ export default function SidebarContent(wrapper, element, top, options) {
 
         element.scrollTop(0);
     }
-
-    function showFeatures(features, none, getData, noListThreshold, forceList) {
-        
+  
+    function showFeatures2(features, noListThreshold, forceList) {
         noListThreshold = (noListThreshold === undefined) ? options.noListThreshold : noListThreshold;
 
         var shouldSkipList = (features.length <= noListThreshold);
         if (shouldSkipList && forceList !== true) {
             var feature = features[0];
             element.html('');
-            var callbacks = _createListCallbacks(feature, 0, null, getData, features);
-            this.showFeature(feature, null, getData, callbacks, 0, features.length);
+
+            var callbacks = _createListCallbacks(feature, 0, features);
+            this.showFeature2(feature, callbacks, 0, features.length);
             return;
         }
 
@@ -252,7 +270,7 @@ export default function SidebarContent(wrapper, element, top, options) {
                     var index = _.findIndex(features, function (a) {
                         return a === feature;
                     });
-                    return _createListElement(feature, index, null, getData, features);
+                    return _createListElement(feature, index, features);
                 }, this);
 
                 list.append(elements);
@@ -266,8 +284,8 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     return {
-        showFeature: showFeature,
-        showFeatures: showFeatures,
+        showFeature2: showFeature2,
+        showFeatures2: showFeatures2,
         setMap: function (_map) {
             positionDisplayer.setMap(_map);
         }

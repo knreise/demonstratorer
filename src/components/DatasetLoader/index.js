@@ -170,6 +170,9 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
     function _datasetUpdated(datasetId, data, error) {
         if (error) {
+            if (error.statusText === 'abort') {
+                error = null;
+            }
             currentErrors[datasetId] = error;
         } else {
             currentErrors[datasetId] = null;
@@ -260,6 +263,24 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         });
     }
 
+    function _loadItem(feature, dataset, callback) {
+
+        var itemDataset = _.extend({feature: feature}, dataset.dataset);
+        api.getItem(
+            itemDataset,
+            function (data) {
+                //console.log(data);
+                callback(_.extend({}, feature, data));
+            },
+            function (err) {
+                console.log(err);
+                callback(feature);
+            }
+        );
+
+        //setTimeout(function (){ callback(feature)}, 2000);
+    }
+
     function _transformDataset(dataset) {
 
         return {
@@ -273,10 +294,14 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             description: dataset.description,
             provider: dataset.provider,
             feedbackForm: dataset.feedbackForm,
-            getFeatureData: dataset.getFeatureData,
             noListThreshold: dataset.noListThreshold,
             cluster: dataset.cluster,
-            commonCluster: dataset.commonCluster
+            commonCluster: dataset.commonCluster,
+            getItem: dataset.loadExtraData
+                ? function (feature, callback) {
+                    _loadItem(feature, dataset, callback);
+                }
+                : undefined
         };
     }
 
@@ -305,6 +330,18 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
                 error: currentErrors[datasetId],
                 data: currentData[datasetId]
             };
+        },
+        getErrors: function (parentId) {
+            return _.compact(_.map(datasetIdMapping[parentId], function (datasetId) {
+                if (currentErrors[datasetId]) {
+                    return {
+                        parent: parentId,
+                        id: datasetId,
+                        error: currentErrors[datasetId]
+                    };
+                }
+                return null;
+            }));
         },
         datasetIdMapping: _.extend({}, datasetIdMapping),
         getLayers: function () {

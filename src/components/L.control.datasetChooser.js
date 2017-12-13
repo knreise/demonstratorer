@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 
 import '../css/L.Control.DatasetChooser.css';
 
-function _getLabel(dataset) {
+function _getLabel(dataset, errors) {
     var label = document.createElement('label');
 
     if (!dataset.isAvailable) {
@@ -30,6 +30,16 @@ function _getLabel(dataset) {
         icon.style.color = '#ddd';
     }
     label.appendChild(icon);
+
+    if (errors) {
+        var fragment = document.createDocumentFragment();
+        _.each(errors, function (error) {
+            var errorIcon = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
+            errorIcon.setAttribute('title', error.error);
+            fragment.appendChild(errorIcon);
+        });
+        label.insertBefore(fragment, label.childNodes[0]);
+    }
 
     var name = document.createElement('span');
     name.innerHTML = ' ' + dataset.name;
@@ -88,20 +98,38 @@ L.Control.DatasetChooser = L.Control.extend({
         }
     },
 
+    _toggleError: function (hasError) {
+        if (hasError) {
+            this._errorIcon.className = this._errorIcon.className.replace(
+                ' hidden',
+                ''
+            );
+        } else {
+            if (this._errorIcon.className.indexOf('hidden') < 0) {
+                this._errorIcon.className += ' hidden';
+            }
+        }
+    },
+
     _update: function () {
         if (!this._container) {
             return;
         }
         this._checkSpinner();
-        //this._overlaysList.innerHTML = 'test';
         var fragment = document.createDocumentFragment();
+        var hasError = 0;
         _.each(this.loader.getLayers(), function (dataset) {
-            var label = _getLabel(dataset);
+            var errors = this.loader.getErrors(dataset._id);
+            if (errors.length && dataset.isAvailable && dataset.isEnabled) {
+                hasError = true;
+            }
+            var label = _getLabel(dataset, errors);
             fragment.appendChild(label);
             label.addEventListener('click', _.bind(function (e) {
                 this.loader.toggleEnabled(dataset._id);
             }, this));
         }, this);
+        this._toggleError(hasError);
         while (this._overlaysList.firstChild) {
             var child = this._overlaysList.firstChild;
             this._overlaysList.removeChild(child);

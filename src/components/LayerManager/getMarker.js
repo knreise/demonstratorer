@@ -101,7 +101,6 @@ function _getClusterThumbnail(images, numMarkers, color, borderWidth) {
 function getClusterIcon(cluster, styleFunc, selected) {
     var markers = cluster.getAllChildMarkers();
 
-    //console.log(features);
     var images = _.chain(markers)
             .filter(function (marker) {
                 return !!marker.feature.properties.thumbnail;

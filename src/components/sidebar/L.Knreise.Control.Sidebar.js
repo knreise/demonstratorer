@@ -65,11 +65,10 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
     },
 
     showFeature: function (feature, dataset, callbacks, index, numFeatures) {
-
         this.show();
-        this.sidebar.showFeature(feature, dataset, dataset.getFeatureData, callbacks, index, numFeatures);
-
+        this.sidebar.showFeature2(feature, callbacks, index, numFeatures);
         if (UrlFunctions) {
+            var dataset = feature.dataset;
             var div = $('<div></div>');
             var params = {
                 id: feature.id,
@@ -90,7 +89,7 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
 
     showFeatures: function (features, dataset, forceList) {
         this.show();
-        this.sidebar.showFeatures(features, dataset, dataset.getFeatureData, dataset.noListThreshold, forceList);
+        this.sidebar.showFeatures2(features, dataset.noListThreshold, forceList);
     },
 
     _removeContent: function () {

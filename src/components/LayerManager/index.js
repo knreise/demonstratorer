@@ -35,12 +35,11 @@ export default function LayerManager(map, loader) {
     }
 
     function _dataLoaded(error, datasetId, data) {
-        if (error) {
-            //console.error("11", error, datasetId);
-            console.log('err', datasetId, error);
-        } else {
-            //console.log('loadEnd', datasetId, data);
+        if (!error) {
             _addData(datasetId, data);
+            
+        } else {
+            //console.log('err', datasetId, error);
         }
     }
 

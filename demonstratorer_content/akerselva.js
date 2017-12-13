@@ -36,13 +36,14 @@
                     template: 'kulturminne2',
                     /*
 		            dataset: {
-		                /api: 'kulturminnedataSparql',
+		                api: 'kulturminnedataSparql',
 		                kommune: '1601'
 		            },*/
                     dataset: {
                         api: 'kulturminne',
                         dataset: 'lokaliteter'
                     },
+                    loadExtraData: true,
                     //getFeatureData: kulturminneFunctions.getRaFeatureData,
                 //template: KR.Util.getDatasetTemplate('ra_sparql'),
                     //bbox: false,
