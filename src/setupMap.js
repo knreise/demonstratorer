@@ -3,7 +3,7 @@ import 'font-awesome/css/font-awesome.css';
 import L from 'leaflet';
 import * as _ from 'underscore';
 
-import getDatasets from './datasets';
+import {getDatasets, getDataset} from './datasets';
 import {extendOptions} from './util';
 import {createMap, freezeMap, unFreezeMap, addExtraLayers} from './map/index';
 import {UrlFunctions, boundsToPoly} from './util';
@@ -21,7 +21,20 @@ import LayerManager from './components/LayerManager';
 import './components/L.control.datasetChooser';
 
 
+function lookupDatasets(datasets) {
+    return _.map(datasets, function (dataset) {
+        if (_.isString(dataset)) {
+            return getDataset(dataset);
+        }
+        return dataset;
+    });
+}
+
+
 function setupMap(api, datasets, options) {
+
+    datasets = lookupDatasets(datasets);
+
     options = extendOptions(options);
 
     var map = createMap('map', options);

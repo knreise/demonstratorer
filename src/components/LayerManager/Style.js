@@ -2,6 +2,20 @@ import * as _ from 'underscore';
 
 import {STYLE_DEFAULTS, SELECTED_STYLE} from '../../config/style';
 
+function evaluate(rule, feature) {
+    if (!feature) {
+        return rule['default'];
+    }
+    var value = feature.properties[rule.lookup];
+    var match = _.find(rule.cases, function (instance) {
+        return instance.values.indexOf(value) > -1;
+    });
+    if (match) {
+        return match.value;
+    }
+    return rule['default'];
+}
+
 export default function Style(style) {
 
     var fallbacks = {
@@ -22,6 +36,9 @@ export default function Style(style) {
         }
         if (_.isFunction(value)) {
             return value(feature);
+        }
+        if (_.isObject(value)) {
+            return evaluate(value, feature);
         }
         return value;
     }

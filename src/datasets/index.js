@@ -2,7 +2,12 @@ import * as _ from 'underscore';
 
 import getDatasetList from './datasetList';
 
-export default function getDatasets(ids) {
+export function getDataset(id) {
+    var datasetList = getDatasetList();
+    return datasetList[id];
+}
+
+export function getDatasets(ids) {
     var datasetList = getDatasetList();
     return _.chain(ids)
         .map(function (dataset) {

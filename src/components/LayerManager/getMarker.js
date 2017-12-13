@@ -129,4 +129,17 @@ function getClusterIcon(cluster, styleFunc, selected) {
     });
 }
 
-export {getIcon, getMarker, getClusterIcon};
+function getLeafletStyleFunction(styleFunc, selected) {
+    return function (feature) {
+        return {
+            fillColor: styleFunc.get('fillcolor', feature, selected),
+            color: styleFunc.get('bordercolor', feature, selected),
+            weight: styleFunc.get('weight', feature, selected),
+            fillOpacity: styleFunc.get('fillOpacity', feature, selected),
+            clickable: styleFunc.get('clickable', feature, selected),
+        };
+    };
+}
+
+
+export {getIcon, getMarker, getClusterIcon, getLeafletStyleFunction};

@@ -25,7 +25,7 @@ function _getLabel(dataset, errors) {
     }
 
     if (dataset.isAvailable) {
-        icon.style.color = dataset.style.fillcolor;
+        icon.style.color = dataset.color;
     } else {
         icon.style.color = '#ddd';
     }

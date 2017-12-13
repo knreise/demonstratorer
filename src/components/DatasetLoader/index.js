@@ -3,7 +3,9 @@ import L from 'leaflet';
 import booleanContains from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
 
+import itemLoaders from './itemLoaders';
 import ApiLoader from './ApiLoader';
+import Style from '../LayerManager/Style';
 import DATASET_DEFAULTS from '../../config/datasetDefaults';
 import {
     getDatasetTemplate,
@@ -36,6 +38,13 @@ function extend(a, b) {
 function filterData(filterGeom, data) {
     var insideFeatures = _.filter(data.features, function (feature) {
         var inside = _.map(filterGeom.features, function (filter) {
+            if (!feature.geometry) {
+                return false;
+            }
+            if (feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'MultiLineString') {
+                //TODO: turf does not handle multi geoms
+                return true;
+            }
             if (feature.geometry.type === 'Polygon') {
                 return booleanContains(filter, feature) || booleanOverlap(filter, feature);
             }
@@ -93,7 +102,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
                 return flattenedDatasets[datasetId];
             })
             .filter(function (dataset) {
-                return initialLoad || !dataset.static;
+                return initialLoad || !dataset.isStatic;
             })
             .value();
         if (toLoad.length === 0) {
@@ -264,25 +273,30 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
     }
 
     function _loadItem(feature, dataset, callback) {
-
-        var itemDataset = _.extend({feature: feature}, dataset.dataset);
-        api.getItem(
-            itemDataset,
-            function (data) {
-                //console.log(data);
-                callback(_.extend({}, feature, data));
-            },
-            function (err) {
-                console.log(err);
-                callback(feature);
+        function success(data) {
+            if (data.type === 'Feature') {
+                feature.properties = _.extend({}, feature.properties, data.properties);
+            } else {
+                feature.properties = _.extend({}, feature.properties, data);
             }
-        );
 
-        //setTimeout(function (){ callback(feature)}, 2000);
+            callback(feature);
+        }
+        function error(err) {
+            console.error(err);
+            callback(feature);
+        }
+
+        if (dataset.getItem && _.has(itemLoaders, dataset.getItem)) {
+            itemLoaders[dataset.getItem](api, feature, success, error);
+        } else {
+            var itemDataset = _.extend({feature: feature}, dataset.dataset);
+            api.getItem(itemDataset, success, error);
+        }
     }
 
     function _transformDataset(dataset) {
-
+        var styleFunc = Style(dataset.style);
         return {
             _id: dataset._id,
             name: dataset.name,
@@ -290,6 +304,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             isAvailable: availableDatasets[dataset._id], // are we within the range?
             isEnabled: enabledDatsets[dataset._id], // has the user checked it?
             style: dataset.style,
+            color: styleFunc.get('fillcolor', null, false),
             template: !!dataset.template ? getDatasetTemplate(dataset.template) : getDatasetTemplate('popup'),
             description: dataset.description,
             provider: dataset.provider,

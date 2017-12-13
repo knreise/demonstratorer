@@ -3,7 +3,7 @@ import L from 'leaflet';
 import '../../../bower_components/leaflet.markercluster/dist/leaflet.markercluster-src.js';
 
 import Style from './Style';
-import {getIcon, getMarker, getClusterIcon} from './getMarker';
+import {getIcon, getMarker, getClusterIcon, getLeafletStyleFunction} from './getMarker';
 
 export default function LayerManager(map, loader) {
 
@@ -37,9 +37,8 @@ export default function LayerManager(map, loader) {
     function _dataLoaded(error, datasetId, data) {
         if (!error) {
             _addData(datasetId, data);
-            
         } else {
-            //console.log('err', datasetId, error);
+            //pass
         }
     }
 
@@ -101,7 +100,7 @@ export default function LayerManager(map, loader) {
                 selectedLayer.setIcon(getIcon(selectedLayer.feature, styleFunc, false));
                 selectedLayer.setZIndexOffset(0);
             } else if (selectedLayer.setStyle) {
-
+                selectedLayer.setStyle(getLeafletStyleFunction(styleFunc, false)(selectedLayer.feature));
             }
             if (!silent) {
                 _.each(onDeSelects, function (callback) {
@@ -125,7 +124,7 @@ export default function LayerManager(map, loader) {
             layer.setIcon(getIcon(layer.feature, styleFunc, true));
             layer.setZIndexOffset(1000);
         } else if (layer.setStyle) {
-
+            layer.setStyle(getLeafletStyleFunction(styleFunc, true)(layer.feature));
         }
         selectedLayer = layer;
         selectedDataset = datasetId;
@@ -190,15 +189,7 @@ export default function LayerManager(map, loader) {
             pointToLayer: function (feature, latlng) {
                 return getMarker(feature, latlng, styleFunc, false);
             },
-            style: function (feature) {
-                return {
-                    fillColor: styleFunc.get('fillcolor', feature, false),
-                    color: styleFunc.get('bordercolor', feature, false),
-                    weight: styleFunc.get('weight', feature, false),
-                    fillOpacity: styleFunc.get('fillOpacity', feature, false),
-                    title: 'test'
-                };
-            },
+            style: getLeafletStyleFunction(styleFunc, false),
             onEachFeature: function (feature, layer) {
                 layer.feature.dataset = dataset;
                 layer.on('click', function (e) {
@@ -222,7 +213,7 @@ export default function LayerManager(map, loader) {
             var styleFunc = Style(dataset.style);
             var layerGroup = layerGroups[datasetId];
             map.removeLayer(layerGroup);
-            var newLayerGroup = _createGeoJsonLayer(data, datasetId, styleFunc);
+            var newLayerGroup = _createGeoJsonLayer(data, dataset, styleFunc);
             layerGroups[datasetId] = newLayerGroup;
             newLayerGroup.addTo(map);
         }

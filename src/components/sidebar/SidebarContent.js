@@ -89,7 +89,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         var dataset = feature.dataset;
         //TODO get color for feature
         //var color = KR.Style.colorForFeature(feature, true);
-        var color = dataset.style.fillcolor;
+        var color = dataset.color;
         if (feature.properties.thumbnail) {
             marker = options.thumbnailTemplate({
                 thumbnail: getImageCache(feature.properties.thumbnail, 80, 60),
@@ -154,7 +154,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function _doShowFeature(feature, callbacks, index, numFeatures) {
-
+        console.log(feature);
         var dataset = feature.dataset;
         var template = dataset.template;
         var img = feature.properties.images;
@@ -171,8 +171,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         } else {
             feature.properties.license = feature.properties.license;
         }
-
-        var color = dataset.style.fillcolor;
+        var color = dataset.color;
 
         var provider = dataset.provider || dataset.name;
         var content = '<span class="providertext" style="color:' + color + ';">' + provider + '</span>';
@@ -194,9 +193,8 @@ export default function SidebarContent(wrapper, element, top, options) {
         _setContent(content);
 
         var mediaContainer = element.find('#image-strip');
-        if (mediaContainer.length && feature.media.length) {
-            //images.append($("<p>test</p>"));
-            MediaCarousel(mediaContainer, feature.media);
+        if (mediaContainer.length && feature.properties.media.length) {
+            MediaCarousel(mediaContainer, feature.properties.media);
         }
 
 
@@ -228,17 +226,6 @@ export default function SidebarContent(wrapper, element, top, options) {
         }
 
         setupFullscreenClick(wrapper);
-
-        //TODO: Fix these
-        /*
-        var mediaContainer = element.find('.media-container');
-        if (mediaContainer.length) {
-            //KR.MediaCarousel.SetupMediaCarousel(mediaContainer, setupFullscreenClick);
-        }
-        if (typeof audiojs !== 'undefined') {
-            audiojs.createAll();
-        }
-        */
 
         element.scrollTop(0);
     }
