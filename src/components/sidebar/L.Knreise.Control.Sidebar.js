@@ -1,5 +1,7 @@
 import L from 'leaflet';
 import $ from 'jquery';
+import 'leaflet-sidebar';
+import 'leaflet-sidebar/src/L.Control.Sidebar.css';
 
 import {UrlFunctions} from '../../util';
 import ResponseForm from '../ResponseForm';

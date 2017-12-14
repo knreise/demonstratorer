@@ -1,7 +1,7 @@
 import L from 'leaflet';
+import 'leaflet-knreise-markers';
+import 'leaflet-knreise-markers/dist/leaflet.knreise-markers.css';
 import '../../css/markers.css';
-import '../../../bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.js';
-import '../../../bower_components/leaflet.knreise-markers/dist/leaflet.knreise-markers.css';
 
 L.Knreise = L.Knreise || {};
 L.Knreise.Icon = L.KNreiseMarkers.Icon.extend({

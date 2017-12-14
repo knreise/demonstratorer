@@ -1,12 +1,10 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
+import 'tilelayer-kartverket';
+
 import './boundsUtil';
 import 'leaflet/dist/leaflet.css';
 import '../css/fullscreenmap.css';
-
-import '../../bower_components/L.TileLayer.Kartverket/L.TileLayer.Kartverket.js';
-
-
 import WORLD from '../config/world';
 
 

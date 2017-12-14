@@ -1,9 +1,11 @@
 import L from 'leaflet';
 import * as _ from 'underscore';
 import $ from 'jquery';
-import '../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js';
-import '../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css';
-//import '../../bower_components/L.EasyButton/easy-button.js';
+
+import 'leaflet-sidebar';
+import 'leaflet-sidebar/src/L.Control.Sidebar.css';
+
+
 import 'leaflet-easybutton';
 import 'leaflet-easybutton/src/easy-button.css';
 
