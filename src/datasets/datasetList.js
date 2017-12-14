@@ -463,7 +463,7 @@ var arkiv_nordland = {
 
 //other datasets
 
-var kulturminner = {
+var ra_lokalitet = {
     name: 'Kulturminner',
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
@@ -473,12 +473,41 @@ var kulturminner = {
     },
     loadExtraData: true,
     polygonsAsPoints: true,
+    loadSubLayer: true,
+    sublayerConfig: {
+        name: 'Enkeltminner',
+        provider: 'Riksantikvaren',
+        cluster: false,
+        useCentroid: true,
+        template: 'enkeltminne',
+        style: {
+            fillcolor: '#728224'
+        }
+    },
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
         fillcolor: '#728224'
     }
 };
+
+var ra_kulturmiljo = {
+    name: 'Kulturmiljø',
+    provider: 'Riksantikvaren',
+    template: 'kulturmiljo',
+    dataset: {
+        api: 'kulturminne',
+        dataset: 'kulturmiljoer'
+    },
+    loadExtraData: true,
+    polygonsAsPoints: true,
+    polygonsAsPointsPixelThreshold: 50,
+    polygonsAsPointsZoomThreshold: 18,
+    style: {
+        fillcolor: '#0000cc'
+    }
+};
+
 
 var kulturminner_arkeologisk = {
     id: 'riksantikvaren',
@@ -793,7 +822,7 @@ var ark_hist = {
     datasets: [
         musit,
         dimu,
-        kulturminner
+        ra_lokalitet
     ],
     description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
 };
@@ -810,7 +839,7 @@ var arkeologi = {
     },
     datasets: [
         musit,
-        kulturminner
+        ra_lokalitet
     ],
     description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
 };
@@ -826,7 +855,7 @@ var historie = {
         thumbnail: true
     },
     datasets: [
-        kulturminner,
+        ra_lokalitet,
         dimu_not_kunst,
         industrimuseum,
         foto_sf,
@@ -931,7 +960,8 @@ export default function getDatasetList(api) {
         'wikipediaNN': wikipediaNN,
         'lokalwiki': lokalwiki,
         'wikipedia_krig': wikipedia_krig,
-        'riksantikvaren': kulturminner,
+        'ra_lokalitet': ra_lokalitet,
+        'ra_kulturmiljo': ra_kulturmiljo,
         'brukerminner': brukerminner,
         'brukerminner_ww2': brukerminner_ww2,
         'groruddalen': groruddalen,

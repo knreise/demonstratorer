@@ -31,7 +31,7 @@ module.exports = {
             params: {
                 'datasets': [
                     'difo',
-                    //'riksantikvaren', //TODO: this is slow/fails
+                    //'ra_lokalitet', //TODO: this is slow/fails
                     'musit',
                     'dimu',
                     'wikipedia',
@@ -96,7 +96,7 @@ module.exports = {
                     'difo',
                     'arkeologi',
                     'historie',
-                    'riksantikvaren',
+                    'ra_lokalitet',
                     'brukerminner',
                     'wikipedia'
                 ],
@@ -118,7 +118,7 @@ module.exports = {
                     'difo',
                     'arkeologi',
                     'historie',
-                    'riksantikvaren',
+                    'ra_lokalitet',
                     'brukerminner',
                     'wikipedia'
                 ],
@@ -140,7 +140,7 @@ module.exports = {
                     'difo',
                     'arkeologi',
                     'historie',
-                    'riksantikvaren',
+                    'ra_lokalitet',
                     'brukerminner',
                     'wikipedia'
                 ],
@@ -182,17 +182,33 @@ module.exports = {
             description: 'Historie og kulturminner langs Akerselva i Oslo.',
             params: {
                 datasets: [
-                    //'difo',
-                    //'arkeologi',
-                    'historie'
-                    //'riksantikvaren',
-                    //'brukerminner',
-                    //'wikipedia'
+                    'difo',
+                    'arkeologi',
+                    'historie',
+                    'ra_lokalitet',
+                    'brukerminner',
+                    'wikipedia'
                 ],
                 bbox: '10.749607086181639,59.91590263019011,10.759949684143066,59.922355662817154',
                 description: '<p class="small">Foto: Neupert, Herman Christian / Norsk Folkemuseum</p><p>Kulturminner og historie langs Akerselva og ved DOGA.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewiki og Wikipedia.</p></br>',
                 layer: 'https://{s}.tiles.mapbox.com/v4/havardgj.9013e600/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaGF2YXJkZ2oiLCJhIjoiQTlGM3A3NCJ9.fDQKmxi1WcYfBUWm0cQrGg',
                 image: 'http://dms08.dimu.org/image/03VVkE6ET9?dimension=600x380',
+                geomFilter: true,
+                maxZoom: 18,
+                minZoom: 12
+            }
+        },
+           {
+            id: 'riksantikvaren-test',
+            name: 'Riksantikvaren Test',
+            description: 'Historie og kulturminner langs Akerselva i Oslo.',
+            params: {
+                datasets: [
+                    'ra_kulturmiljo',
+                    'ra_lokalitet'
+                ],
+                bbox: '10.749607086181639,59.91590263019011,10.759949684143066,59.922355662817154',
+                description: 'tester',
                 geomFilter: true,
                 maxZoom: 18,
                 minZoom: 12

@@ -253,6 +253,9 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
                 });
             }
             dataset._id = 'dataset_' + i;
+            if (dataset.sublayerConfig) {
+                dataset.sublayerConfig._id = dataset._id + '_sub';
+            }
         });
     }
 
@@ -286,6 +289,9 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             if (dataset.datasets) {
                 dataset.datasets = _setDefaults(dataset.datasets, dataset);
             }
+            if (dataset.sublayerConfig) {
+                dataset.sublayerConfig = extend(dataset.sublayerConfig, DATASET_DEFAULTS);
+            }
             if (parent) {
                 return extend(extend(dataset, _.omit(parent, 'datasets', 'grouped')), DATASET_DEFAULTS);
             } else {
@@ -316,14 +322,32 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         }
     }
 
+    function loadSubLayer(datasetId, feature, callback) {
+        var dataset = flattenedDatasets[datasetId];
+        var itemDataset = _.extend({feature: feature}, dataset.dataset);
+
+        function success(data) {
+            callback(null, data);
+        }
+        function error(err) {
+            callback(err);
+        }
+
+        api.getSublayer(itemDataset, success, error);
+    }
+
     function _transformDataset(dataset) {
         var styleFunc = Style(dataset.style);
+        var sublayerConfig;
+        if (dataset.sublayerConfig) {
+            //sublayerConfig = _transformDataset(dataset.sublayerConfig);
+        }
         return {
             _id: dataset._id,
             name: dataset.name,
-            isLoading: currentlyLoading[dataset._id],
-            isAvailable: availableDatasets[dataset._id], // are we within the range?
-            isEnabled: enabledDatsets[dataset._id], // has the user checked it?
+            isLoading: _.has(currentlyLoading, dataset._id) ? currentlyLoading[dataset._id] : null,
+            isAvailable: _.has(availableDatasets, dataset._id) ? availableDatasets[dataset._id] : null, // are we within the range?
+            isEnabled: _.has(enabledDatsets, dataset._id) ? enabledDatsets[dataset._id] : null, // has the user checked it?
             style: dataset.style,
             color: styleFunc.get('fillcolor', null, false),
             template: !!dataset.template ? getDatasetTemplate(dataset.template) : getDatasetTemplate('popup'),
@@ -336,12 +360,39 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             commonCluster: dataset.commonCluster,
             polygonsAsPointsPixelThreshold: dataset.polygonsAsPointsPixelThreshold,
             polygonsAsPointsZoomThreshold: dataset.polygonsAsPointsZoomThreshold,
+            loadSubLayer: dataset.loadSubLayer,
+            sublayerConfig: dataset.sublayerConfig,
+            useCentroid: dataset.useCentroid,
             getItem: dataset.loadExtraData
                 ? function (feature, callback) {
                     _loadItem(feature, dataset, callback);
                 }
                 : undefined
         };
+    }
+
+    function getDataset (datasetId) {
+        var dataset = _.find(flattenedDatasets, function (d) {
+            return d._id === datasetId;
+        });
+        if (dataset) {
+            return _transformDataset(dataset);
+        }
+        dataset = _.find(datasets, function (d) {
+            return d._id === datasetId;
+        });
+        if (dataset) {
+            return _transformDataset(dataset);
+        }
+
+        if (datasetId.endsWith('_sub')) {
+            dataset = getDataset(datasetId.replace('_sub', ''));
+            if (dataset && dataset.sublayerConfig) {
+                return _transformDataset(dataset.sublayerConfig);
+            }
+        }
+
+        return null;
     }
 
     return {
@@ -363,6 +414,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         init: function () {
             _loadDatasets(currentBounds, true);
         },
+        loadSubLayer: loadSubLayer,
         toggleEnabled: _toggleEnabled,
         getData: function (datasetId) {
             return {
@@ -389,21 +441,6 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         getDatasets: function () {
             return _.map(flattenedDatasets, _transformDataset);
         },
-        getDataset: function (datasetId) {
-            var dataset = _.find(flattenedDatasets, function (d) {
-                return d._id === datasetId;
-            });
-            if (dataset) {
-                return _transformDataset(dataset);
-            }
-            dataset = _.find(datasets, function (d) {
-                return d._id === datasetId;
-            });
-            if (dataset) {
-                return _transformDataset(dataset);
-            }
-
-            return null;
-        }
+        getDataset: getDataset
     };
 }

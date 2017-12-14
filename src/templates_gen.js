@@ -8,6 +8,7 @@ const byantikvaren_oslo_template = require('!!raw-loader!../templates/datasets/b
 const digitalt_fortalt_template = require('!!raw-loader!../templates/datasets/digitalt_fortalt.tmpl');
 const digitalt_museum_template = require('!!raw-loader!../templates/datasets/digitalt_museum.tmpl');
 const emigrantprotokoller_template = require('!!raw-loader!../templates/datasets/emigrantprotokoller.tmpl');
+const enkeltminne_template = require('!!raw-loader!../templates/datasets/enkeltminne.tmpl');
 const europeana_art_carto_template = require('!!raw-loader!../templates/datasets/europeana_art_carto.tmpl');
 const europeana_art_template = require('!!raw-loader!../templates/datasets/europeana_art.tmpl');
 const europeana280_2_template = require('!!raw-loader!../templates/datasets/europeana280_2.tmpl');
@@ -21,6 +22,7 @@ const historiskeBrev_template = require('!!raw-loader!../templates/datasets/hist
 const husmann_template = require('!!raw-loader!../templates/datasets/husmann.tmpl');
 const jernbanemuseet_template = require('!!raw-loader!../templates/datasets/jernbanemuseet.tmpl');
 const ksamsok_template = require('!!raw-loader!../templates/datasets/ksamsok.tmpl');
+const kulturmiljo_template = require('!!raw-loader!../templates/datasets/kulturmiljo.tmpl');
 const kulturminne_template = require('!!raw-loader!../templates/datasets/kulturminne.tmpl');
 const kulturminne2_template = require('!!raw-loader!../templates/datasets/kulturminne2.tmpl');
 const musit_template = require('!!raw-loader!../templates/datasets/musit.tmpl');
@@ -69,6 +71,8 @@ export default function getTemplateString(templateId) {
             return digitalt_museum_template;
         case 'emigrantprotokoller_template':
             return emigrantprotokoller_template;
+        case 'enkeltminne_template':
+            return enkeltminne_template;
         case 'europeana_art_carto_template':
             return europeana_art_carto_template;
         case 'europeana_art_template':
@@ -95,6 +99,8 @@ export default function getTemplateString(templateId) {
             return jernbanemuseet_template;
         case 'ksamsok_template':
             return ksamsok_template;
+        case 'kulturmiljo_template':
+            return kulturmiljo_template;
         case 'kulturminne_template':
             return kulturminne_template;
         case 'kulturminne2_template':

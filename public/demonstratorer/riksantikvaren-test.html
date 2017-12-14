@@ -19,7 +19,7 @@
 
             (function () {
 
-                var title = 'Flyktningeruta gjennom Østmarka til Sverige';
+                var title = 'Riksantikvaren Test';
                 var image = '';
 
                 var api = new KR.API({
@@ -33,21 +33,15 @@
 
                 var params = {
     "datasets": [
-        "difo",
-        "arkeologi",
-        "historie",
-        "ra_lokalitet",
-        "brukerminner",
-        "wikipedia"
+        "ra_kulturmiljo",
+        "ra_lokalitet"
     ],
-    "allstatic": true,
-    "line": "utno/2.11234",
-    "buffer": 2,
-    "linecolor": "#deb238",
-    "layer": "norges_grunnkart_graatone",
-    "image": "https://gfx.nrk.no/WzBhldVq62wY6EAlgNRIPwoDLjogR3DINIdh_Vw2LY9Q",
-    "description": "<p>Foto: Dag Olav Brækkan</p><p>Flyktningeruta går fra Skullerudstua i Oslo og helt til Grenselosmuseet ved vannet Skjervangen i Eidskog. En tur på borti 120 km. Det fins flere flyktningeruter i Norge, men denne tar utgangspunkt i trafikken som gikk ut fra Oslo og østover til Sverige.</p></br>",
-    "title": "Flyktningeruta gjennom Østmarka til Sverige"
+    "bbox": "10.749607086181639,59.91590263019011,10.759949684143066,59.922355662817154",
+    "description": "tester",
+    "geomFilter": true,
+    "maxZoom": 18,
+    "minZoom": 12,
+    "title": "Riksantikvaren Test"
 };
 
                 window.setupMapFromUrl(api, params.datasets, params);

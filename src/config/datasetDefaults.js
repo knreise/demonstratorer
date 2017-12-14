@@ -7,6 +7,7 @@ const DATASET_DEFAULTS = {
     getItem: null,
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
+    useCentroid: false,
     style: {
         fillcolor: '#38A9DC',
         circle: false,

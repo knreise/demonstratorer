@@ -132,6 +132,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function showFeature2(feature, callbacks, index, numFeatures) {
+        console.log(feature);
         var getItem = feature.dataset.getItem;
         if (getItem) {
             var content = '';
@@ -193,7 +194,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         _setContent(content);
 
         var mediaContainer = element.find('#image-strip');
-        if (mediaContainer.length && feature.properties.media.length) {
+        if (mediaContainer.length && feature.properties.media && feature.properties.media.length) {
             MediaCarousel(mediaContainer, feature.properties.media);
         }
 
