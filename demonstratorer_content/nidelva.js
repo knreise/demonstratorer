@@ -7,9 +7,18 @@
         }
     });
 
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+    
 
     var datasets = [
+        'verneomr',
+        'historie',
+        'difo',
+       // 'trondheimbyarkiv',
+        'wikipedia',
+        'lokalwiki'
+    ];
+/*
+    var datasets2 = [
         {
             id: 'verneomraader',
             dataset: {
@@ -110,10 +119,10 @@
             minZoom: 13
         }
     ];
-
+*/
 	var layer = L.tileLayer('https://{s}.tiles.mapbox.com/v4/havardgj.9013e600/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaGF2YXJkZ2oiLCJhIjoiQTlGM3A3NCJ9.fDQKmxi1WcYfBUWm0cQrGg');
 
-    KR.setupMap(api, datasets, {
+    window.setupMap(api, datasets, {
         title: title,
         image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
         description: $('#description_template').html(),

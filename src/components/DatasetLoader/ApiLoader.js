@@ -1,6 +1,5 @@
 export default function ApiLoader(api, flattenedDatasets) {
     return function (datasetId, requestedBbox, callback) {
-        console.log('load', datasetId);
         var dataset = flattenedDatasets[datasetId];
         try {
             if (dataset.bbox || (dataset.isStatic && dataset.fixedBbox)) {

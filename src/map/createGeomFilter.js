@@ -5,7 +5,7 @@ import {createFeatureCollection} from '../util';
 
 function _simplify(featureCollection) {
     var features = _.map(featureCollection.features, function (feature) {
-        return simplify(feature, 0.01, false);
+        return simplify(feature, {tolerance: 0.01, highQuality:false});
     });
     return createFeatureCollection(features);
 }

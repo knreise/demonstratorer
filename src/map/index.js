@@ -23,10 +23,12 @@ function getBaseLayer(layerName, callback) {
     };
     if (_.has(layers, layerName)) {
         layers[layerName](callback);
-    } else {
+    } else if (L.tileLayer.kartverket.getLayers().indexOf(layerName) > -1) {
         var isSafari = navigator.userAgent.indexOf('Safari') > -1;
         var useCache = !isSafari;
         callback(L.tileLayer.kartverket(layerName, {useCache: useCache}));
+    } else {
+        callback(L.tileLayer(layerName));
     }
 }
 

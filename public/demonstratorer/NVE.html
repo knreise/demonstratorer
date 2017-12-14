@@ -19,7 +19,7 @@
 
             (function () {
 
-                var title = 'Gudbrandsdalsleden';
+                var title = 'NVE - "kulturminner i kart"';
                 var image = '';
 
                 var api = new KR.API({
@@ -33,18 +33,17 @@
 
                 var params = {
     "datasets": [
-        "verneomr",
-        "historie",
-        "difo",
-        "trondheimbyarkiv",
-        "wikipedia"
+        "nve_dammer",
+        "nve_kraftverk",
+        "nve_kraftledninger",
+        "nve_transformatorstasjoner",
+        "nve_anlegg"
     ],
-    "line": "http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml",
-    "image": "http://pilegrimsleden.no/uploads/made/uploads/images/Bilder_Gudbrandsdalsleden/RogerJensen_1000_575_90_s_c1.jpg",
-    "description": "<p>Foto: Roger Jensen</p><p>Gudbrandsdalsleden - fra Oslo til Trondheim er en del av St. Olavsveiene til Trondheim.</p><p>Pilegrimsledene i Norge er turveger basert p&aring; tradisjonen for &aring; dra p&aring; pilegrimsvandring som oppstod etter Olav den Helliges d&oslash;d i 1030, og fortsatte utover middelalderen. Ledene bindes sammen av natur- og kulturminner med religi&oslash;s tilknytning til middelalderen, samt minner knyttet til Olavstradisjonen.</p></br>",
-    "buffer": 2,
-    "linecolor": "#000000",
-    "title": "Gudbrandsdalsleden"
+    "bbox": "-4.5703125,56.9449741808516,35.5078125,80.70399666821143",
+    "layer": "europa",
+    "minZoom": 3,
+    "maxZoom": 13,
+    "title": "NVE - \"kulturminner i kart\""
 };
 
                 window.setupMapFromUrl(api, params.datasets, params);

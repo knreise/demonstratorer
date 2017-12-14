@@ -16,6 +16,21 @@ var difo = {
     }
 };
 
+var difo_krig = {
+    name: 'Digitalt fortalt',
+    dataset: {
+        dataset: 'difo',
+        api: 'norvegiana',
+        query: ['dc_subject_text:krig', 'dc_subject_text:andre-verdskrigen', 'dc_subject_text:krigsminne', 'dc_subject_text:andre-verdenskrig', 'dc_subject_text:ww2', 'dc_subject_text:krigsminneforteljingar', 'dc_subject_text:krigen', 'dc_subject_text:krigsminnelandskap-troms', 'dc_subject_text:krigsminner', 'dc_subject_text:ww2-nord', 'dc_subject_text:ww2-troms', 'dc_subject_text:krigshistorie', 'dc_subject_text:krigsminneprosjekt-sør-troms', 'dc_subject_text:verdenskrig', 'dc_subject_text:2.-verdenskrig', 'dc_subject_text:2.-verdenskrigen']
+    },
+    cluster: true,
+    template: 'digitalt_fortalt',
+    noListThreshold: Infinity,
+    isStatic: true,
+    bbox: false,
+    feedbackForm: true
+};
+
 var dimu = {
     name: 'Digitalt Museum',
     hideFromGenerator: false,
@@ -42,6 +57,20 @@ var dimufoto = {
     template: 'digitalt_museum',
     //TODO: add style
     noListThreshold: Infinity
+};
+
+var dimu_stillimage = {
+    name: 'Digitalt museum',
+    dataset: {
+        dataset: 'DiMu',
+        api: 'norvegiana',
+        query: 'abm_type_text:StillImage'
+    },
+    cluster: true,
+    template: 'digitalt_museum',
+    noListThreshold: Infinity,
+    isStatic: false
+    //TODO: add style
 };
 
 var dimu_kunst = {
@@ -76,9 +105,22 @@ var dimu_not_kunst = {
     }
 };
 
+var dimu_krig = {
+    name: 'Digitalt Museum',
+    dataset: {
+        api: 'norvegiana',
+        dataset: 'DiMu',
+        query: 'dc_subject_facet:Krig'
+    },
+    template: 'digitalt_museum',
+    isStatic: true,
+    bbox: true
+    //TODO: add style
+};
+
 
 var musit = {
-    name: 'Universitetsmuseene',
+    name: 'Universitetsmuseene (Musit)',
     hideFromGenerator: false,
     provider: 'Universitetsmuseene',
     dataset: {dataset: 'MUSIT', api: 'norvegiana'},
@@ -252,6 +294,26 @@ var pilegrimsleden = {
     bbox: false
 };
 
+var nasjonalbiblioteket_bygdebok = {
+    name: 'Nasjonalbiblioteket, Bygdebøker',
+    hideFromGenerator: true,
+    provider: 'Nasjonalbiblioteket',
+    dataset: {
+        api: 'cartodb',
+        table: 'bygdebok_telemark'
+    },
+    bbox: false,
+    isStatic: false,
+    template: 'nasjonalbiblioteket',
+    style: {
+        thumbnail: false,
+        fillcolor: '#744700',
+        circle: true,
+        opacity: 0.8,
+        radius: 20},
+    description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
+};
+
 
 //flicker datasets
 var kulturminnesok_flickr = {
@@ -310,6 +372,21 @@ var oslobyarkiv_flickr = {
     //TODO: add style
     description: 'Bilder fra Oslo byarkiv sin Flickr-konto'
 };
+
+var trondheimbyarkiv_flickr = {
+    name: 'Trondheim byarkiv',
+
+    provider: 'Trondheim byarkiv',
+    dataset:  {
+        api: 'flickr',
+        user_id: 'trondheim_byarkiv'
+    },
+    template: 'flickr',
+    style: {
+        fillcolor: '#D252B9'
+    }
+};
+
 
 var nasjonalmuseet_flickr = {
     name: 'Nasjonalmuseet',
@@ -370,6 +447,19 @@ var perspektivet_flickr = {
     description: 'Bilder fra Perspektivet Museum sin Flickr-konto'
 };
 
+var arkiv_nordland = {
+    name: 'Arkiv i Nordland',
+    provider: 'Arkiv i Nordland',
+    dataset: {
+            api: 'flickr',
+            user_id: 'arkivinordland',
+            accuracy: '10'
+        },
+    template: 'flickr',
+    //TODO: add style
+    minZoom: 8
+};
+
 
 //other datasets
 
@@ -410,6 +500,36 @@ var kulturminner_arkeologisk = {
     }
 };
 
+var kulturminner_krig = {
+    id: 'riksantikvaren',
+    name: 'Riksantikvaren',
+    hideFromGenerator: true,
+    provider: 'Riksantikvaren',
+    dataset: {
+        api: 'kulturminnedataSparql',
+        sparqlQuery: ' select distinct ?id ?name ?description ?loccatlabel ?img (SAMPLE(?point) as ?point)  {' +
+        ' ?id a ?type ;' +
+        '    rdfs:label ?name ;' +
+        ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
+        ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
+        ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
+        ' ?loccat rdfs:label ?loccatlabel .' +
+        ' FILTER regex(?description, "#andreverdenskrig", "i" )' +
+        ' optional {' +
+        ' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
+        ' ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
+        ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
+        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
+        '    }' +
+        ' }'
+    },
+    template: 'ra_sparql',
+    //getFeatureData: kulturminneFunctions.getRaFeatureData,
+    bbox: false,
+    isStatic: true,
+    unclusterCount: 20,
+    //init: kulturminneFunctions.initKulturminnePoly,
+};
 
 var brukerminner = {
     name: 'Kulturminnesøk - brukerregistreringer',
@@ -536,17 +656,26 @@ var jernbane = {
     hideFromGenerator: true,
     template: getDatasetTemplate('jernbanemuseet'),
     //TODO: add style
-    getFeatureData: function (feature, callback) {
-        /*api.getItem(
-            {api: 'jernbanemuseet', id:  feature.properties.id},
-            callback
-        );*/
-        console.log("NO API in datasets.js");
-        callback();
-    },
+    loadExtraData: true,
+    getItem: 'jernbanemuseet',
     isStatic: true,
     bbox: false,
     description: 'Jernbanemuseet'
+};
+
+var jernbane_krig = {
+    id: 'jernbane',
+    dataset: {
+        api: 'jernbanemuseet',
+        presentation: 732
+    },
+    provider: 'Jernbanemuseet',
+    name: 'Jernbanemuseet',
+    template: 'jernbanemuseet',
+    loadExtraData: true,
+    getItem: 'jernbanemuseet_krig',
+    isStatic: true,
+    bbox: false
 };
 
 
@@ -567,6 +696,90 @@ var fangstgroper = {
         radius: 1.5
     }
 };
+
+var brukerminner_ww2 = {
+    provider: 'Riksantikvaren',
+    name: 'Kulturminnesøk - brukerregistrering',
+    dataset: {
+        api: 'kulturminnedata',
+        layer: 2,
+        query: 'Beskrivelse LIKE \'%#andreverdenskrig%\''
+    },
+    template: 'brukerminne'
+};
+
+
+//geojsom
+var nve_dammer = {
+    name: 'Dammer',
+    provider: 'NVE',
+    dataset: {
+      api: 'geojson',
+      url: 'https://www.nve.no/vann-vassdrag-og-miljo/nves-utvalgte-kulturminner/dammer/GeoJsonAPI'
+    },
+    template: 'NVEtp',
+    style: {thumbnail: true, color: '#ff0000', fillcolor: '#ff0000'},
+    bbox: false,
+    isStatic: true,
+    cluster: true
+};
+
+var nve_kraftverk = {
+    name: 'Kraftverk',
+    provider: 'NVE',
+    dataset: {
+      api: 'geojson',
+      url: 'https://www.nve.no/vann-vassdrag-og-miljo/nves-utvalgte-kulturminner/kraftverk/GeoJsonAPI'
+    },
+    template: 'NVEtp',
+    style: {thumbnail: true, color: '#FF9933', fillcolor: '#FF9933'},
+    bbox: false,
+    isStatic: true,
+    cluster: true
+};
+
+var nve_kraftledninger = {
+    name: 'Kraftledninger',
+    provider: 'NVE',
+    dataset: {
+      api: 'geojson',
+      url: 'https://www.nve.no/vann-vassdrag-og-miljo/nves-utvalgte-kulturminner/kraftledninger/GeoJsonAPI'
+    },
+    template: 'NVEtp',
+    style: {thumbnail: true, color: '#A0A0A0', fillcolor: '#A0A0A0'},
+    bbox: false,
+    isStatic: true,
+    cluster: true
+};
+
+var nve_transformatorstasjoner = {
+    name: 'Transformatorstasjoner',
+    provider: 'NVE',
+    dataset: {
+      api: 'geojson',
+      url: 'https://www.nve.no/vann-vassdrag-og-miljo/nves-utvalgte-kulturminner/transformatorstasjoner/GeoJsonAPI'
+    },
+    template: 'NVEtp',
+    style: {thumbnail: true, color: '#00FF66', fillcolor: '#00FF66'},
+    bbox: false,
+    isStatic: true,
+    cluster: true
+};
+
+var nve_anlegg = {
+    name: 'Vassdragstekniske anlegg',
+    provider: 'NVE',
+    dataset: {
+      api: 'geojson',
+      url: 'https://www.nve.no/vann-vassdrag-og-miljo/nves-utvalgte-kulturminner/vassdragstekniske-anlegg/GeoJsonAPI'
+    },
+    template: 'NVEtp',
+    style: {thumbnail: true, color: '#165075', fillcolor: '#165075'},
+    bbox: false,
+    isStatic: true,
+    cluster: true
+};
+
 
 //groups
 var ark_hist = {
@@ -620,6 +833,7 @@ var historie = {
 };
 var kunst = {
     grouped: true,
+    commonCluster: true,
     name: 'Kunst',
     style: {
         fillcolor: '#72B026',
@@ -632,38 +846,113 @@ var kunst = {
     description: 'Kunstdata fra Digitalt museum '
 };
 
+var wikipedia_krig = {
+    grouped: true,
+    commonCluster: true,
+    name: 'Wikipedia',
+    datasets: [
+    {
+        name: 'Wikipedia',
+        provider: 'Wikipedia',
+        dataset: {
+            api: 'wikipedia',
+            category: 'Kulturminner_i_Norge_fra_andre_verdenskrig'
+        },
+        template: 'wikipedia',
+        bbox: false,
+        isStatic: true
+        /*getFeatureData: function (feature, callback) {
+            api.getItem(
+                {api: 'wikipedia', id: feature.properties.id},
+                callback
+            );
+        }*/
+    },
+    {
+        name: 'Wikipedia',
+        provider: 'Wikipedia',
+        dataset: {
+            api: 'wikipedia',
+            category: 'Fort_i_Norge_fra_andre_verdenskrig'
+        },
+        template: 'wikipedia',
+        bbox: false,
+        isStatic: true
+        /*getFeatureData: function (feature, callback) {
+            api.getItem(
+                {api: 'wikipedia', id: feature.properties.id},
+                callback
+            );
+        }*/
+    },
+    {
+        name: 'Wikipedia',
+        provider: 'Wikipedia',
+        dataset: {
+            api: 'wikipedia',
+            category: 'Norge_under_andre_verdenskrig'
+        },
+        template: 'wikipedia',
+        style: {template: true},
+        bbox: false,
+        isStatic: true
+        /*getFeatureData: function (feature, callback) {
+            api.getItem(
+                {api: 'wikipedia', id: feature.properties.id},
+                callback
+            );
+        }*/
+    }
+    ]
+};
+
 export default function getDatasetList(api) {
 
 
     var list = {
         'difo': difo,
+        'difo_krig': difo_krig,
         'verneomr': verneomr,
         'artobs': artobs,
         'folketelling': folketelling,
         'jernbane': jernbane,
+        'jernbane_krig': jernbane_krig,
         'dimu': dimu,
         'musit': musit,
         'industrimuseum': industrimuseum,
         'kystreise': kystreise,
         'dimufoto': dimufoto,
+        'dimu_stillimage': dimu_stillimage,
+        'dimu_krig': dimu_krig,
         'wikipedia': wikipedia,
         'wikipediaNN': wikipediaNN,
         'lokalwiki': lokalwiki,
+        'wikipedia_krig': wikipedia_krig,
         'riksantikvaren': kulturminner,
         'brukerminner': brukerminner,
+        'brukerminner_ww2': brukerminner_ww2,
         'groruddalen': groruddalen,
         'norgerundt': norgerundt,
         'arkivverket_bensinstasjoner': arkivverket_bensinstasjoner,
+        'nasjonalbiblioteket_bygdebok': nasjonalbiblioteket_bygdebok,
         'pilegrimsleden': pilegrimsleden,
         'fangstgroper': fangstgroper,
+        'foto_sf': foto_sf,
+        'arkiv_nordland': arkiv_nordland,
         'kulturminnesok_flickr': kulturminnesok_flickr,
         'riksarkivet': riksarkivet_flickr,
         'nasjonalbiblioteket': nasjonalbiblioteket_flickr,
         'oslobyarkiv': oslobyarkiv_flickr,
+        'trondheimbyarkiv': trondheimbyarkiv_flickr,
         'nasjonalmuseet': nasjonalmuseet_flickr,
         'nve': nve_flickr,
         'vestfoldmuseene': vestfoldmuseene_flickr,
         'perspektivet': perspektivet_flickr,
+        'nve_dammer': nve_dammer,
+        'nve_kraftverk': nve_kraftverk,
+        'nve_kraftledninger': nve_kraftledninger,
+        'nve_transformatorstasjoner': nve_transformatorstasjoner,
+        'nve_anlegg': nve_anlegg,
         'ark_hist': ark_hist,
         'arkeologi': arkeologi,
         'historie': historie,

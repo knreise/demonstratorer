@@ -26,6 +26,7 @@ const kulturminne2_template = require('!!raw-loader!../templates/datasets/kultur
 const musit_template = require('!!raw-loader!../templates/datasets/musit.tmpl');
 const nasjonalbiblioteket_template = require('!!raw-loader!../templates/datasets/nasjonalbiblioteket.tmpl');
 const nordkirker_template = require('!!raw-loader!../templates/datasets/nordkirker.tmpl');
+const NVEtp_template = require('!!raw-loader!../templates/datasets/NVEtp.tmpl');
 const popup_template = require('!!raw-loader!../templates/datasets/popup.tmpl');
 const ra_enkeltminne_template = require('!!raw-loader!../templates/datasets/ra_enkeltminne.tmpl');
 const ra_sparql_template = require('!!raw-loader!../templates/datasets/ra_sparql.tmpl');
@@ -104,6 +105,8 @@ export default function getTemplateString(templateId) {
             return nasjonalbiblioteket_template;
         case 'nordkirker_template':
             return nordkirker_template;
+        case 'NVEtp_template':
+            return NVEtp_template;
         case 'popup_template':
             return popup_template;
         case 'ra_enkeltminne_template':

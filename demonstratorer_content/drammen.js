@@ -3,7 +3,7 @@
 
     var api = new KR.API();
 
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
+    
 
     var kommune = '0602';
 
@@ -36,7 +36,7 @@
             },
             style: {thumbnail: true},
 
-            template: KR.Util.getDatasetTemplate('wikipedia')
+            template: 'wikipedia'
         },
                 {
             name: 'Lokalhistoriewiki',
@@ -50,7 +50,7 @@
     ];
     
 
-    KR.setupMap(api, datasets, {
+    window.setupMap(api, datasets, {
         komm: kommune,
         title: title,
         image: image,
