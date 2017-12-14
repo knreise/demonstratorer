@@ -67,6 +67,7 @@ L.Knreise.LocateButton2 = function (map) {
         btn.state('position-active');
         _showMarker(position);
         map.setView(position, 16);
+        map.userPosition = position;
         map.fire('locationChange');
     }
 
@@ -102,6 +103,8 @@ L.Knreise.LocateButton2 = function (map) {
         tracker.stop();
         btn.state('position-inactive');
         _removeMarker();
+        map.userPosition = null;
+        map.fire('locationChange');
     }
 
     var btn = L.easyButton({

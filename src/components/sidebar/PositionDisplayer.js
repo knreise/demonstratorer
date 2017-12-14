@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import {getTemplate, round, distanceAndBearing} from '../../util';
-import turfHelpers from '@turf/helpers';
+import {point} from '@turf/helpers';
 
 export default function PositionDisplayer() {
     var map, div, feature, content;
@@ -9,7 +9,7 @@ export default function PositionDisplayer() {
 
     function _distanceAndBearing(feature) {
         if (map && map.userPosition) {
-            var pos = turfHelpers.point([
+            var pos = point([
                 map.userPosition.lng,
                 map.userPosition.lat
             ]);
@@ -29,11 +29,10 @@ export default function PositionDisplayer() {
 
 
     function _showPosition() {
+        if (content) {
+            content.remove();
+        }
         if (div && map && map.userPosition && feature) {
-
-            if (content) {
-                content.remove();
-            }
 
             var header = div.find('h3').eq(0);
             var distBear = _distanceAndBearing(feature);

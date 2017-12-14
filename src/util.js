@@ -47,7 +47,7 @@ export function getDatasetTemplate(name) {
 
 export function distanceAndBearing(point1, point2) {
     return {
-        distance: distance(point1, point2, 'kilometers') * 1000,
+        distance: distance(point1, point2, {units: 'kilometers'}) * 1000,
         bearing: bearing(point1, point2)
     };
 };
