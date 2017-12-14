@@ -4,6 +4,10 @@ import getDatasetList from './datasetList';
 
 export function getDataset(id) {
     var datasetList = getDatasetList();
+    if (!_.has(datasetList, id)) {
+        console.error('missing datasetId: ', id);
+        return null;
+    }
     return datasetList[id];
 }
 

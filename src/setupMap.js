@@ -22,12 +22,20 @@ import './components/L.control.datasetChooser';
 
 
 function lookupDatasets(datasets) {
-    return _.map(datasets, function (dataset) {
-        if (_.isString(dataset)) {
-            return getDataset(dataset);
-        }
-        return dataset;
-    });
+    return _.chain(datasets)
+        .map(function (dataset) {
+            if (_.isString(dataset)) {
+                return getDataset(dataset);
+            }
+            return dataset;
+        })
+        .filter(function (dataset) {
+            if (!_.isObject(dataset)) {
+                return false;
+            }
+            return true;
+        })
+        .value();
 }
 
 

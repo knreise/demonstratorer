@@ -24,7 +24,7 @@
         },*/
         'wikipedia',
         'trondheimbyarkiv',
-        'riksantikvaren',
+        'ra_lokalitet',
         'musit',
         'dimu'
     ];

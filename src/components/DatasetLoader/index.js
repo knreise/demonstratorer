@@ -59,7 +59,7 @@ function filterData(filterGeom, data) {
 
 function getBounds(filterFc, bounds) {
     if (filterFc.features.length > 1) {
-        console.log("large filter!");
+        console.warn('large filter!');
     }
     var filterPoly = filterFc.features[0];
     var boundsPoly = boundsToPoly(bounds).features[0];
@@ -338,10 +338,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
     function _transformDataset(dataset) {
         var styleFunc = Style(dataset.style);
-        var sublayerConfig;
-        if (dataset.sublayerConfig) {
-            //sublayerConfig = _transformDataset(dataset.sublayerConfig);
-        }
+
         return {
             _id: dataset._id,
             name: dataset.name,

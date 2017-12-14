@@ -600,7 +600,7 @@ var folketelling = {
     //TODO: add style
     getFeatureData: function (oldFeature, callback) {
 
-        console.log("NO API in datasets.js")
+        console.error("NO API in datasets.js")
         callback();
 
         /*api.getData({
