@@ -183,6 +183,9 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
                 error = null;
             }
             currentErrors[datasetId] = error;
+            if (error) {
+                console.error(error);
+            }
         } else {
             currentErrors[datasetId] = null;
 
@@ -279,7 +282,6 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             } else {
                 feature.properties = _.extend({}, feature.properties, data);
             }
-
             callback(feature);
         }
         function error(err) {

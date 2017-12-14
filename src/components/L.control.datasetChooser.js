@@ -2,6 +2,8 @@ import L from 'leaflet';
 import * as _ from 'underscore';
 
 import '../css/L.Control.DatasetChooser.css';
+import parseError from '../util';
+
 
 function _getLabel(dataset, errors) {
     var label = document.createElement('label');
@@ -35,7 +37,7 @@ function _getLabel(dataset, errors) {
         var fragment = document.createDocumentFragment();
         _.each(errors, function (error) {
             var errorIcon = L.DomUtil.create('i', 'error-icon fa fa-exclamation-triangle');
-            errorIcon.setAttribute('title', error.error);
+            errorIcon.setAttribute('title', parseError(error));
             fragment.appendChild(errorIcon);
         });
         label.insertBefore(fragment, label.childNodes[0]);

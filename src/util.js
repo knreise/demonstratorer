@@ -81,6 +81,31 @@ export function hexToRgba(hex, transparency) {
     return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + transparency + ')';
 };
 
+
+export function parseError(error) {
+    if (error.responseJSON) {
+        if (error.responseJSON.error) {
+            return error.responseJSON.error.join(', ');
+        }
+        if (error.responseJSON.status) {
+            return error.responseJSON.status;
+        }
+    }
+    if (error.statusText) {
+        return error.statusText;
+    }
+    if (error.error) {
+        if (error.error.info) {
+            return error.error.info;
+        }
+        if (error.error.error) {
+            return error.error.error;
+        }
+        return error.error;
+    }
+    return 'Unknown error';
+};
+
 function createFeatureCollection(features) {
     return {
         'type': 'FeatureCollection',
