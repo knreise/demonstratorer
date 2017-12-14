@@ -3,7 +3,9 @@ import * as _ from 'underscore';
 import $ from 'jquery';
 import '../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.js';
 import '../../bower_components/leaflet-sidebar/src/L.Control.Sidebar.css';
-import '../../bower_components/L.EasyButton/easy-button.js';
+//import '../../bower_components/L.EasyButton/easy-button.js';
+import 'leaflet-easybutton';
+import 'leaflet-easybutton/src/easy-button.css';
 
 import '../css/L.Knreise.Control.Sidebar.css';
 import {isInIframe, getTemplate} from '../util';
@@ -89,11 +91,22 @@ var SplashScreen = function (map, title, description, image, creator, showSpinne
     }
 
     function createButton(callback) {
+        //L.easyButton('fa-info-circle', callback, {title: 'Om', position: 'topright'}).addTo(map);
+        L.easyButton({
+            position: 'topright',
+            states: [{
+                stateName: 'def',
+                icon: 'fa-info-circle',
+                title: 'Om',
+                onClick: callback
+            }]
+        }).addTo(map);
+        /*
         return L.easyButton(map, callback, {
             position: 'topright',
             icon: 'fa-info-circle',
             title: 'Om'
-        });
+        });*/
     }
 
     var sidebar = createSidebar();

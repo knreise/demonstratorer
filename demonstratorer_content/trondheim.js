@@ -8,17 +8,10 @@
         }
     });
 
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
-
     //The datasets in use
     var datasets = [
-        {
-            thumbnails: true,
-            name: 'Digitalt fortalt',
-            dataset: {dataset: 'difo', api: 'norvegiana'},
-            template: KR.Util.getDatasetTemplate('digitalt_fortalt')
-        },
-        {
+        'difo',
+        /*{
             name: 'Kulturminner',
             dataset_name_override: 'Kulturminnesok',
             dataset: {
@@ -28,69 +21,18 @@
             },
             template: KR.Util.getDatasetTemplate('kulturminne'),
             smallMarker: true
-        },
-        {
-            name: 'Wikipedia',
-            provider: 'Wikipedia',
-            dataset: {
-                api: 'wikipedia'
-            },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
-            style: {template: true},
-            minZoom: 13
-        },
-        {
-            name: 'Trondheim byarkiv',
-            dataset_name_override: 'Trondheim byarkiv',
-            provider: 'Trondheim byarkiv',
-            dataset:  {
-                api: 'flickr',
-                user_id: 'trondheim_byarkiv',
-                accuracy: 16 //street level
-            },
-            template: KR.Util.getDatasetTemplate('flickr'),
-            style: {fillcolor: '#D252B9'}
-        },
-        {
-            name: 'Riksantikvaren',
-            provider: 'Riksantikvaren',
-            dataset: {
-                api: 'kulturminnedataSparql',
-                kommune: '1601'
-            },
-            template: KR.Util.getDatasetTemplate('ra_sparql'),
-            getFeatureData: kulturminneFunctions.getRaFeatureData,
-            unclusterCount: 20,
-            init: kulturminneFunctions.initKulturminnePoly,
-            bbox: false,
-            style: {fillcolor: '#728224'}
-        },
-        {
-            name: 'MUSIT',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'MUSIT'
-            },
-            template: KR.Util.getDatasetTemplate('musit'),
-            minZoom: 12,
-            style: {thumbnail: true}
-        },
-        {
-            name: 'DiMu',
-            dataset: {
-                api: 'norvegiana',
-                dataset: 'DiMu'
-            },
-            template: KR.Util.getDatasetTemplate('digitalt_museum'),
-            minZoom: 12,
-            style: {thumbnail: true}
-        }
+        },*/
+        /*'wikipedia',
+        'trondheimbyarkiv',
+        'riksantikvaren',
+        'musit',
+        'dimu'*/
     ];
 
 
-    var bbox = '10.338650,63.408816,10.555458,63.462016';
-    KR.setupMap(api, datasets, {
-        bbox: bbox,
+
+    window.setupMap(api, datasets, {
+        bbox: '10.338650,63.408816,10.555458,63.462016',
         title: title,
         image: image,
         showScaleBar: true,

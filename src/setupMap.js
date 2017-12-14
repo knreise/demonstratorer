@@ -44,7 +44,7 @@ function setupMap(api, datasets, options) {
 
     /*var splashScreen =*/ setupSplashScreen(map, options);
 
-    /*var locateBtn =*/ addLocateButton(map);
+    var locateBtn = addLocateButton(map);
 
     var sidebar = setupSidebar(map, {featureHash: options.featureHash});
 
@@ -82,6 +82,8 @@ function setupMap(api, datasets, options) {
                 map.setMaxBounds(bounds);
                 map.options.minZoom = map.getBoundsZoom(bounds);
             }
+            locateBtn.setBounds(bounds);
+
 
             if (filterGeom && options.line) {
                 filterGeom.addTo(map);
@@ -90,7 +92,7 @@ function setupMap(api, datasets, options) {
                  var inverted = getInverted(filterGeom);
                  inverted.addTo(map);
             }
-            console.log(options.geomFilter)
+
             var filter;
             if (filterGeom && options.buffer) {
                 filter = createGeomFilter(filterGeom, options.buffer);
@@ -99,7 +101,6 @@ function setupMap(api, datasets, options) {
                     ? createGeomFilter(filterGeom, options.buffer || 0)
                     : boundsToPoly(bounds);
             }
-            console.log(filter)
 
             var loader = DatasetLoader(datasets, map, api, bounds, filter);
 

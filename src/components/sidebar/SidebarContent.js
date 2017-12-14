@@ -154,7 +154,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function _doShowFeature(feature, callbacks, index, numFeatures) {
-        console.log(feature);
+
         var dataset = feature.dataset;
         var template = dataset.template;
         var img = feature.properties.images;

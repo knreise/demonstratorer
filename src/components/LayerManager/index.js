@@ -1,6 +1,6 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
-import '../../../bower_components/leaflet.markercluster/dist/leaflet.markercluster-src.js';
+import 'leaflet.markercluster';
 
 import Style from './Style';
 import {getIcon, getMarker, getClusterIcon, getLeafletStyleFunction} from './getMarker';

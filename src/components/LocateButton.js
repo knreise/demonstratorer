@@ -1,141 +1,150 @@
 import L from 'leaflet';
-import * as _ from 'underscore';
-import $ from 'jquery';
+import 'leaflet-easybutton';
+import 'leaflet-fa-markers';
+import 'leaflet-fa-markers/L.Icon.FontAwesome.css';
+import '../css/locate-btn.css';
 
-import {messageDisplayer} from '../util';
-import '../../bower_components/L.EasyButton/easy-button.js';
-import '../../bower_components/cilogi-marker/dist/cilogi-marker.js';
-import '../../bower_components/cilogi-marker/dist/cilogi-marker.css';
+//TODO: show error!
+//import {messageDisplayer} from '../util';
 
-
-L.Control.EasyButtons2 = L.Control.EasyButtons.extend({
-    _addImage: function () {
-        var extraClasses = this.options.icon.lastIndexOf('fa', 0) === 0
-            ? ' fa fa-lg'
-            : ' glyphicon';
-
-        this._icon = L.DomUtil.create('i', this.options.icon + extraClasses, this.link);
-        if (this.options.id) {
-            this._icon.id = this.options.id;
-        }
-    },
-
-    changeIcon: function (icon) {
-        var extraClasses = this.options.icon.lastIndexOf('fa', 0) === 0
-            ? ' fa fa-lg'
-            : ' glyphicon';
-        this._icon.className = icon + extraClasses;
+function PositionTracker() {
+    var callback, watchId;
+    if (!navigator.geolocation) {
+        return null;
     }
-});
-
-L.Knreise = L.Knreise || {};
-
-L.Knreise.LocateButton = function (callback, error, options) {
-    options = options || {};
-    options.zoom = options.zoom || 10;
-    var isLocating = false;
-    var marker;
-    var _map;
-    var _btn;
-    var defaultIcon = options.icon || 'fa-user';
-    var messageDisplayerInstance = messageDisplayer($('#message_template').html());
-    var watchId;
-
-
-    function _createMarker(pos) {
-        return new cilogi.L.Marker(pos, {
-            fontIconSize: 3,
-            fontIconName: '\uf05b',
-            altIconName: '\uf05b',
-            fontIconColor: '#FF0000',
-            fontIconFont: 'awesome',
-            opacity: 1
-        });
-    }
-
-    function _showPosition(pos) {
-        var p = L.latLng(pos.coords.latitude, pos.coords.longitude);
-        _btn.changeIcon(defaultIcon);
-        if (options.bounds && !options.bounds.contains(p)) {
-            messageDisplayerInstance(
-                'warning',
-                'Du befinner deg utenfor området til denne demonstratoren. Viser ikke din posisjon'
-            );
-            _map.fire('locationError');
-            stopLocation();
-            return;
-        }
-
-        _map.userPosition = p;
-        _map.fire('locationChange');
+    function _gotPosition(position) {
         if (callback) {
-            callback(p);
-        } else {
-            _map.setView(p, 16);
-            if (!marker) {
-                marker = _createMarker(p);
-                _map.addLayer(marker);
-            } else {
-                marker.setLatLng(p);
-            }
+            var posFeature = {
+                lon: position.coords.longitude,
+                lat: position.coords.latitude
+            };
+            callback(null, posFeature);
         }
     }
-
-    function _positionError() {
-        _map.fire('locationError');
-        _btn.changeIcon(defaultIcon);
-        _btn.getContainer().className = _btn.getContainer().className.replace(' active', '');
-    }
-
-    function stopLocation() {
-        isLocating = false;
-        if (!_.isUndefined(watchId)) {
-            navigator.geolocation.clearWatch(watchId);
-            _btn.getContainer().className = _btn.getContainer().className.replace(' active', '');
-            _map.removeLayer(marker);
-            marker = undefined;
-            watchId = undefined;
+    function _positionError(err) {
+        if (callback) {
+            callback(err);
         }
-    }
-
-    function getLocation() {
-        isLocating = true;
-        if (navigator.geolocation) {
-            _btn.changeIcon('fa-spinner fa-pulse');
-            _btn.getContainer().className += ' active';
-            watchId = navigator.geolocation.watchPosition(_showPosition, _positionError);
-        } else {
-            if (error) {
-                error();
-            }
-        }
-    }
-
-    function toggleLocation() {
-        if (isLocating) {
-            stopLocation();
-            return;
-        }
-        getLocation();
-    }
-
-    function addTo(map) {
-        var title = options.title || 'Følg min posisjon';
-
-        _map = map;
-        _btn = new L.Control.EasyButtons2(toggleLocation, {icon: defaultIcon, title: title});
-        _map.addControl(_btn);
-        return _btn;
     }
 
     return {
-        addTo: addTo,
-        getLocation: getLocation
+        stop: function () {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = undefined;
+            callback = undefined;
+        },
+        start: function (_callback) {
+            callback = _callback;
+            watchId = navigator.geolocation.watchPosition(_gotPosition, _positionError);
+        }
+    };
+}
+
+L.Knreise.LocateButton2 = function (map) {
+
+    var tracker = PositionTracker();
+    var marker;
+    var bounds;
+    if (!tracker) {
+        return null;
+    }
+
+    function _gotLocation(err, location) {
+        if (err) {
+            btn.state('position-error');
+            _removeMarker();
+            return;
+        }
+        var position = L.latLng(location.lat, location.lon);
+        if (bounds && !bounds.contains(position)) {
+            console.warn('Du er utenfor!');
+            _stopLoacating();
+            return;
+        }
+
+        btn.state('position-active');
+        _showMarker(position);
+        map.setView(position, 16);
+        map.fire('locationChange');
+    }
+
+    function _getLocation() {
+        btn.state('position-loading');
+        tracker.start(_gotLocation);
+    }
+
+
+    function _showMarker(position) {
+        if (!marker) {
+             marker = L.marker(position, {
+                clickable: false,
+                icon: L.icon.fontAwesome({
+                    iconClasses: 'fa fa-user',
+                    markerColor: '#FF0000',
+                    iconColor: '#FFF'
+                })
+            }).addTo(map);
+        } else {
+            marker.setLatLng(position);
+        }
+    }
+
+    function _removeMarker() {
+        if (marker) {
+            map.removeLayer(marker);
+            marker = undefined;
+        }
+    }
+
+    function _stopLoacating() {
+        tracker.stop();
+        btn.state('position-inactive');
+        _removeMarker();
+    }
+
+    var btn = L.easyButton({
+        position: 'topleft',
+        states: [
+            {
+                stateName: 'position-inactive',
+                icon: 'fa-user',
+                title: 'Følg min posisjon',
+                onClick: _getLocation
+            },
+            {
+                stateName: 'position-loading',
+                icon: 'fa-spinner fa-pulse',
+                title: 'Henter posisjon'
+            },
+            {
+                stateName: 'position-active',
+                icon: 'fa-user',
+                title: 'Følger posisjon',
+                onClick: _stopLoacating
+            },
+            {
+                stateName: 'position-error',
+                icon: 'fa-warning ',
+                title: 'Feil',
+                onClick: _getLocation
+            }
+        ]
+    });
+
+    return {
+        setBounds: function (_bounds) {
+            console.log(_bounds);
+            bounds = _bounds;
+        },
+        btn: btn
     };
 };
 
+
 export function addLocateButton(map) {
-    var locateBtn = L.Knreise.LocateButton(null, null, {bounds: null});
-    locateBtn.addTo(map);
+    var locateBtn = L.Knreise.LocateButton2(map);
+    if (locateBtn) {
+        locateBtn.btn.addTo(map);
+    }
     return locateBtn;
 }
