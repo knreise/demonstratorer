@@ -36,9 +36,6 @@
         }
     });
 
-    var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
-
-
     //The datasets in use
     var datasets = [
 
@@ -53,7 +50,7 @@
             },
             bbox: false,
             isStatic: false,
-            template: KR.Util.getDatasetTemplate('3d_sketchfab'),
+            template: '3d_sketchfab',
             style: {
 	            thumbnail: false,
 	            fillcolor: '#744700'
@@ -112,7 +109,7 @@
             dataset: {
                 api: 'wikipedia'
             },
-            template: KR.Util.getDatasetTemplate('wikipedia'),
+            template: 'wikipedia',
             style: {template: true,
 	            fillcolor: '#145993'
             },
@@ -128,7 +125,7 @@
             },
             bbox: false,
             isStatic: false,
-            template: KR.Util.getDatasetTemplate('nasjonalbiblioteket'),
+            template: 'nasjonalbiblioteket',
             style: {
 	            thumbnail: false,
 	            fillcolor: '#c10027',
@@ -136,11 +133,11 @@
 				opacity: 0.8,
 				radius: 20},
             description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
-        }        
+        }
     ];
 
 
-    KR.setupMap(api, datasets, {
+    window.setupMap(api, datasets, {
         bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
         image: 'http://knreise.no/demonstratorer/common/img/heddal_3D.png',

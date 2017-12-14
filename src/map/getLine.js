@@ -8,7 +8,7 @@ function _stringEndsWith(a, str) {
 export default function getLine(api, line, callback) {
     if (_.isFunction(line)) {
         line(function (res) {
-            callback(res);
+            callback(null, res);
         });
         return;
     }
@@ -39,9 +39,15 @@ export default function getLine(api, line, callback) {
         }
     }
     if (lineData) {
-        api.getData(lineData, function (line) {
-            callback(line);
-        });
+        api.getData(
+            lineData,
+            function (line) {
+                callback(null, line);
+            },
+            function (err) {
+                callback(err);
+            }
+        );
     } else {
         alert('Kunne ikke laste linjegeometri');
     }

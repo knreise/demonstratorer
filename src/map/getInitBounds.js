@@ -15,11 +15,17 @@ export default function getInitBounds(api, options, callback) {
                 api: 'cartodb',
                 municipality: komm
             };
-            api.getData(dataset, function (geoJson) {
-                var layer = L.geoJson(geoJson);
-                var bounds = layer.getBounds();
-                callback(bounds, layer);
-            });
+            api.getData(
+                dataset,
+                function (geoJson) {
+                    var layer = L.geoJson(geoJson);
+                    var bounds = layer.getBounds();
+                    callback(null, bounds, layer);
+                },
+                function (err) {
+                    callback(err);
+                }
+            );
         };
     } else if (options.fylke) {
         boundsParam = _.isString(options.fylke) ? options.fylke.split(',') : options.fylke;
@@ -28,30 +34,44 @@ export default function getInitBounds(api, options, callback) {
                 api: 'cartodb',
                 county: county
             };
-            api.getData(dataset, function (geoJson) {
-                var layer = L.geoJson(geoJson);
-                var bounds = layer.getBounds();
-                callback(bounds, layer);
-            });
+            api.getData(
+                dataset,
+                function (geoJson) {
+                    var layer = L.geoJson(geoJson);
+                    var bounds = layer.getBounds();
+                    callback(null, bounds, layer);
+                },
+                function (err) {
+                    callback(err);
+                }
+            );
         };
     } else if (options.line) {
         boundsParam = options.line;
         boundsFunc = function (line, callback) {
-            getLine(api, options.line, function (line) {
+            getLine(api, options.line, function (err, line) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
                 var lineLayer = L.geoJson(line, {
                     color: !!options.linecolor ? options.linecolor : '#03f',
                     clickable: false
                 });
                 var bounds = lineLayer.getBounds();
-                callback(bounds, lineLayer);
+                callback(null, bounds, lineLayer);
             });
         };
     }
     //do the actual api call
     if (boundsFunc && boundsParam) {
-        boundsFunc(boundsParam, function (bbox, filterGeom) {
+        boundsFunc(boundsParam, function (err, bbox, filterGeom) {
+            if (err) {
+                callback(err);
+                return;
+            }
             var bounds = _.isString(bbox) ? L.latLngBounds.fromBBoxString(bbox) : bbox;
-            callback(null, bounds, filterGeom);
+            callback(err, bounds, filterGeom);
         });
         return;
     }

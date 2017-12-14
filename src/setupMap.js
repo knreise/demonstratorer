@@ -64,10 +64,12 @@ function setupMap(api, datasets, options) {
     }
 
     getInitBounds(api, options, function (err, bounds, filterGeom) {
+
         if (err) {
-            alert(err);
+            console.error(err);
             return;
         }
+
         getUserPos(map, options, function (initPos) {
             unFreezeMap(map);
             if (initPos && bounds.contains(L.latLng(initPos.lat, initPos.lon))) {
