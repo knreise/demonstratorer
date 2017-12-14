@@ -472,6 +472,9 @@ var kulturminner = {
         dataset: 'lokaliteter'
     },
     loadExtraData: true,
+    polygonsAsPoints: true,
+    polygonsAsPointsPixelThreshold: 50,
+    polygonsAsPointsZoomThreshold: 18,
     style: {
         fillcolor: '#728224'
     }

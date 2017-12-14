@@ -331,8 +331,11 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             provider: dataset.provider,
             feedbackForm: dataset.feedbackForm,
             noListThreshold: dataset.noListThreshold,
+            polygonsAsPoints: dataset.polygonsAsPoints,
             cluster: dataset.cluster,
             commonCluster: dataset.commonCluster,
+            polygonsAsPointsPixelThreshold: dataset.polygonsAsPointsPixelThreshold,
+            polygonsAsPointsZoomThreshold: dataset.polygonsAsPointsZoomThreshold,
             getItem: dataset.loadExtraData
                 ? function (feature, callback) {
                     _loadItem(feature, dataset, callback);
@@ -382,6 +385,9 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         datasetIdMapping: _.extend({}, datasetIdMapping),
         getLayers: function () {
             return _.map(datasets, _transformDataset);
+        },
+        getDatasets: function () {
+            return _.map(flattenedDatasets, _transformDataset);
         },
         getDataset: function (datasetId) {
             var dataset = _.find(flattenedDatasets, function (d) {

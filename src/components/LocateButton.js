@@ -7,6 +7,8 @@ import '../css/locate-btn.css';
 //TODO: show error!
 //import {messageDisplayer} from '../util';
 
+L.Knreise = L.Knreise || {};
+
 function PositionTracker() {
     var callback, watchId;
     if (!navigator.geolocation) {
@@ -133,7 +135,6 @@ L.Knreise.LocateButton2 = function (map) {
 
     return {
         setBounds: function (_bounds) {
-            console.log(_bounds);
             bounds = _bounds;
         },
         btn: btn

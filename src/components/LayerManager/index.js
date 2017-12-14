@@ -1,15 +1,38 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
 import 'leaflet.markercluster';
+import centroid from '@turf/centroid';
 
 import Style from './Style';
 import {getIcon, getMarker, getClusterIcon, getLeafletStyleFunction} from './getMarker';
 
+function getPixelSize(map, bounds) {
+
+    var swLL = bounds.getSouthWest();
+    var nwLL = bounds.getNorthWest();
+    var seLL = bounds.getSouthEast();
+
+    var swP = map.project(swLL);
+    var nwP = map.project(nwLL);
+    var seP = map.project(seLL);
+
+    var height = swP.distanceTo(nwP);
+    var width = swP.distanceTo(seP);
+
+    return _.min([height, width]);
+}
+
+
 export default function LayerManager(map, loader) {
+
+    var currentZoom = map.getZoom();
+
+    map.on('zoomend', _mapZoomed);
 
     var selectedLayer = null;
     var selectedDataset = null;
     var layerGroups = {};
+    var polygonToPoints = [];
 
     var onSelects = [];
     var onDeSelects = [];
@@ -25,6 +48,64 @@ export default function LayerManager(map, loader) {
                 return acc;
             }, {}));
         }, {});
+
+        polygonToPoints = _.chain(loader.getDatasets())
+            .filter(function (dataset) {
+                return dataset.polygonsAsPoints;
+            })
+            .map(function (dataset) {
+                return dataset._id;
+            })
+            .value();
+    }
+
+    function _mapZoomed() {
+        var newZoom = map.getZoom();
+        if (newZoom === currentZoom) {
+            return;
+        }
+        currentZoom = newZoom;
+        _.each(polygonToPoints, function (datasetId) {
+            var dataset = loader.getDataset(datasetId);
+            if (dataset.cluster && dataset.commonCluster) {
+                var layers = _getLayersFromCommonCluster(dataset);
+                _updateInCommonCluster(dataset, _polygonToPoints(layers, dataset));
+            } else {
+                var layer = layerGroups[datasetId];
+                var newLayerGroup = _polygonToPoints(layer, dataset);
+                if (dataset.cluster) {
+                    _updateSingleCluser(dataset, newLayerGroup);
+                } else {
+                    _updateUnclustered(dataset, newLayerGroup);
+                }
+            }
+        });
+    }
+
+    function _polygonToPoints(layerGroup, dataset) {
+        var layers = _.isArray(layerGroup)
+            ? layerGroup
+            : layerGroup.getLayers();
+
+        var newLayerGroup = _geoJsonLayer(null, dataset);
+
+        var newLayers = _.map(layers, function (layer) {
+
+            var bounds = L.geoJson(layer.originalFeature).getBounds();
+            if (currentZoom >= dataset.polygonsAsPointsZoomThreshold || getPixelSize(map, bounds) > dataset.polygonsAsPointsPixelThreshold) {
+                var polygonLayer = _geoJsonLayer(layer.originalFeature, dataset).getLayers()[0];
+                polygonLayer.originalFeature = layer.originalFeature;
+                return polygonLayer;
+            }
+
+            var center = centroid(layer.originalFeature);
+            center.properties = _.clone(layer.originalFeature.properties);
+            var centerLayer = _geoJsonLayer(center, dataset).getLayers()[0];
+            centerLayer.originalFeature = layer.originalFeature;
+            return centerLayer;
+        });
+        newLayerGroup._layers = newLayers;
+        return newLayerGroup;
     }
 
     function _getParent(datasetId) {
@@ -130,7 +211,8 @@ export default function LayerManager(map, loader) {
         selectedDataset = datasetId;
     }
 
-    function _getClusterLayer(styleFunc) {
+    function _getClusterLayer(dataset) {
+        var styleFunc = Style(dataset.style);
         return L.markerClusterGroup({
             zoomToBoundsOnClick: false,
             spiderfyOnMaxZoom: false,
@@ -141,6 +223,56 @@ export default function LayerManager(map, loader) {
         });
     }
 
+    function _updateUnclustered(dataset, newLayerGroup) {
+        var layerGroup = layerGroups[dataset._id];
+        map.removeLayer(layerGroup);
+        layerGroups[dataset._id] = newLayerGroup;
+        newLayerGroup.addTo(map);
+    }
+
+    function _updateSingleCluser(dataset, newLayerGroup) {
+        var clusterLayer = _getClusterLayer(dataset);
+        var layerGroup = layerGroups[dataset._id];
+        map.removeLayer(layerGroup);
+        clusterLayer.addLayers(newLayerGroup.getLayers());
+        map.addLayer(clusterLayer);
+        clusterLayer.on('clusterclick', function (e) {
+            return _clusterClicked(e, dataset._id);
+        });
+        layerGroups[dataset._id] = clusterLayer;
+    }
+
+    function _createCommonCluster(parent) {
+        if (!_.has(layerGroups, parent._id)) {
+            var commonClusterLayer = _getClusterLayer(parent);
+            map.addLayer(commonClusterLayer);
+            commonClusterLayer.on('clusterclick', function (e) {
+                return _clusterClicked(e, parent._id);
+            });
+            layerGroups[parent._id] = commonClusterLayer;
+        }
+    }
+
+    function _getLayersFromCommonCluster(dataset) {
+        var clusterLayer = layerGroups[_getParent(dataset._id)];
+        var prevLayers = [];
+        clusterLayer.eachLayer(function (layer) {
+            if (layer.feature.dataset._id === dataset._id) {
+                prevLayers.push(layer);
+            }
+        });
+        return prevLayers;
+    }
+
+    function _updateInCommonCluster(dataset, newLayerGroup) {
+        var clusterLayer = layerGroups[_getParent(dataset._id)];
+        var prevLayers = _getLayersFromCommonCluster(dataset);
+        clusterLayer.removeLayers(prevLayers);
+        var newLayers = newLayerGroup.getLayers();
+        //console.log(dataset._id, 'add', newLayers.length);
+        clusterLayer.addLayers(newLayers);
+    }
+
     function _addClusteredData(dataset, data) {
         var parentId = _getParent(dataset._id);
         var commonCluster = false;
@@ -148,43 +280,18 @@ export default function LayerManager(map, loader) {
             var parent = loader.getDataset(parentId);
             commonCluster = !!parent.commonCluster;
         }
+        var newLayerGroup = _createGeoJsonLayer(data, dataset);
         if (commonCluster) {
-            if (!_.has(layerGroups, parentId)) {
-                var commonClusterLayer = _getClusterLayer(Style(parent.style));
-                map.addLayer(commonClusterLayer);
-                commonClusterLayer.on('clusterclick', function (e) {
-                    return _clusterClicked(e, parentId);
-                });
-                layerGroups[parentId] = commonClusterLayer;
-            }
-            layerGroups[parentId].clearLayers();
-            _.each(loader.datasetIdMapping[parentId], function (datasetId) {
-
-                var data = loader.getData(datasetId).data;
-                if (data && data.features) {
-                    var dataset = loader.getDataset(datasetId);
-                    var styleFunc = Style(dataset.style);
-                    var newLayerGroup = _createGeoJsonLayer(data, dataset, styleFunc);
-                    layerGroups[parentId].addLayers(newLayerGroup.getLayers());
-                }
-            });
-
+            _createCommonCluster(parent);
+            console.log('update', dataset._id);
+            _updateInCommonCluster(dataset, newLayerGroup);
         } else {
-            var styleFunc = Style(dataset.style);
-            var clusterLayer = _getClusterLayer(styleFunc);
-            var layerGroup = layerGroups[dataset._id];
-            map.removeLayer(layerGroup);
-            var newLayerGroup = _createGeoJsonLayer(data, dataset, styleFunc);
-            clusterLayer.addLayers(newLayerGroup.getLayers());
-            map.addLayer(clusterLayer);
-            clusterLayer.on('clusterclick', function (e) {
-                return _clusterClicked(e, dataset._id);
-            });
-            layerGroups[dataset._id] = clusterLayer;
+            _updateSingleCluser(dataset, newLayerGroup);
         }
     }
 
-    function _createGeoJsonLayer(data, dataset, styleFunc) {
+    function _geoJsonLayer(data, dataset) {
+        var styleFunc = Style(dataset.style);
         return L.geoJson(data, {
             pointToLayer: function (feature, latlng) {
                 return getMarker(feature, latlng, styleFunc, false);
@@ -199,6 +306,17 @@ export default function LayerManager(map, loader) {
         });
     }
 
+    function _createGeoJsonLayer(data, dataset) {
+        var layer = _geoJsonLayer(data, dataset);
+        if (dataset.polygonsAsPoints) {
+            layer.eachLayer(function (layer) {
+                layer.originalFeature = layer.feature;
+            });
+            return _polygonToPoints(layer, dataset);
+        }
+        return layer;
+    }
+
     function _addData(datasetId, data) {
         var dataset = loader.getDataset(datasetId);
 
@@ -210,15 +328,10 @@ export default function LayerManager(map, loader) {
         if (dataset.cluster) {
             _addClusteredData(dataset, data);
         } else {
-            var styleFunc = Style(dataset.style);
-            var layerGroup = layerGroups[datasetId];
-            map.removeLayer(layerGroup);
-            var newLayerGroup = _createGeoJsonLayer(data, dataset, styleFunc);
-            layerGroups[datasetId] = newLayerGroup;
-            newLayerGroup.addTo(map);
+            var newLayerGroup = _createGeoJsonLayer(data, dataset);
+            _updateUnclustered(dataset, newLayerGroup);
         }
     }
-
 
     return {
         init: init,
