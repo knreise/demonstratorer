@@ -127,6 +127,10 @@ export function boundsToPoly(bounds) {
     ]);
 }
 
+export function polyToBounds(poly) {
+    return L.geoJson(poly).getBounds();
+}
+
 function round(number, decimals) {
     if (_.isUndefined(decimals)) {
         decimals = 2;

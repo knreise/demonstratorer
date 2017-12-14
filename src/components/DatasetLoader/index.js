@@ -2,6 +2,7 @@ import * as _ from 'underscore';
 import L from 'leaflet';
 import booleanContains from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
+import intersect from '@turf/intersect';
 
 import itemLoaders from './itemLoaders';
 import ApiLoader from './ApiLoader';
@@ -10,7 +11,8 @@ import DATASET_DEFAULTS from '../../config/datasetDefaults';
 import {
     getDatasetTemplate,
     createFeatureCollection,
-    boundsToPoly
+    boundsToPoly,
+    polyToBounds
 } from '../../util';
 
 
@@ -55,13 +57,29 @@ function filterData(filterGeom, data) {
     return createFeatureCollection(insideFeatures);
 }
 
-function isInside(filterGeom, bounds) {
-    var boundsPoly = boundsToPoly(bounds);
-    var inside = filterData(filterGeom, boundsPoly);
-    return inside.features.length > 0;
+function getBounds(filterFc, bounds) {
+    if (filterFc.features.length > 1) {
+        console.log("large filter!");
+    }
+    var filterPoly = filterFc.features[0];
+    var boundsPoly = boundsToPoly(bounds).features[0];
+    if (booleanContains(filterPoly, boundsPoly)) {
+        //bounds are inside the filter: use bounds
+        return bounds;
+    }
+    if (booleanContains(boundsPoly, filterPoly)) {
+        //bounds contains the filter: use the filter
+        return polyToBounds(filterPoly);
+    }
+    if (booleanOverlap(filterPoly, boundsPoly)) {
+        //poly and bounds overlap: use the intersection
+        return polyToBounds(intersect(filterPoly, boundsPoly));
+    }
+    return null;
 }
 
 export default function DatasetLoader(datasets, map, api, initBounds, filter) {
+
     var currentBounds = initBounds;
     datasets = _setDefaults(datasets);
 
@@ -109,7 +127,8 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             return;
         }
         if (filter) {
-            if (!isInside(filter, bounds)) {
+            bounds = getBounds(filter, bounds);
+            if (!bounds) {
                 return;
             }
         }
