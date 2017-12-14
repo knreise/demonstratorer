@@ -477,11 +477,16 @@ var ra_lokalitet = {
     sublayerConfig: {
         name: 'Enkeltminner',
         provider: 'Riksantikvaren',
+        loadExtraData: true,
         cluster: false,
         useCentroid: true,
         template: 'enkeltminne',
         style: {
             fillcolor: '#728224'
+        },
+        dataset: {
+            api: 'kulturminne',
+            dataset: 'enkeltminner'
         }
     },
     polygonsAsPointsPixelThreshold: 50,
