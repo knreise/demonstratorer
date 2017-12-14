@@ -6,13 +6,12 @@ import '../css/fullscreenmap.css';
 
 import '../../bower_components/L.TileLayer.Kartverket/L.TileLayer.Kartverket.js';
 
-import getNibLayer from './norgeibilder';
+
 import WORLD from '../config/world';
 
 
 function getBaseLayer(layerName, callback) {
     var layers = {
-        'nib': getNibLayer,
         'hist': function (callback) {
             callback(L.tileLayer.wms('http://wms.geonorge.no/skwms1/wms.historiskekart', {
                 layers: 'historiskekart',
