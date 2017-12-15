@@ -19,7 +19,6 @@
 <p>Kj&aelig;rlighetsstien g&aring;r i et naturskj&oslash;nt omr&aring;de langs bredden av Gvarvelva og gjennom Gamlegate i Gvarv sentrum som med sine gamle fine trehus er i en severdighet i seg selv. </p>
         </script>
 
-        <script src="../knreiseApi.js" type="text/javascript"></script>
         <script type='text/javascript' src='../../dist/setupMap.bundle.js'></script>
         <script type='text/javascript'>
 
@@ -28,8 +27,6 @@
 
             (function () {
     'use strict';
-
-    var api = new KR.API();
 
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
     var datasets = [
@@ -78,7 +75,7 @@
     };
 
 
-    KR.setupMap(api, datasets, options, false);
+    window.setupMap(null, datasets, options, false);
 }());
 
         </script>

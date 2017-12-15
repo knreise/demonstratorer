@@ -3,12 +3,6 @@
 	
     var fylke = '8';
 
-    var api = new KR.API({
-        flickr: {
-            apikey: 'ab1f664476dabf83a289735f97a6d56c'
-        }
-    });
-
     //The datasets in use
     var datasets = [
 
@@ -110,7 +104,7 @@
     ];
 
 
-    window.setupMap(api, datasets, {
+    window.setupMap(null, datasets, {
         bbox: '2.4609375,56.9449741808516,16.69921875,65.73062649311031',
         title: title,
         image: 'http://knreise.no/demonstratorer/common/img/heddal_3D.png',

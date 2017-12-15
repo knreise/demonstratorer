@@ -1,8 +1,6 @@
 (function () {
     'use strict';
 
-    var api = new KR.API();
-
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
     var datasets = [
         {
@@ -50,5 +48,5 @@
     };
 
 
-    KR.setupMap(api, datasets, options, false);
+    window.setupMap(null, datasets, options, false);
 }());

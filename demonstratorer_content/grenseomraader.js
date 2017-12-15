@@ -3,11 +3,7 @@
 	
     var kommune = '0101';
 
-    var api = new KR.API({
-        flickr: {
-            apikey: 'ab1f664476dabf83a289735f97a6d56c'
-        }
-    });
+  
 
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
@@ -76,7 +72,7 @@
 	 
 	 
 
-    KR.setupMap(api, datasets, {
+    KR.setupMap(null, datasets, {
         bbox: '10.107421874999998,58.48220919993362,12.63427734375,59.64554025144323',
         title: title,
         image: 'http://dms09.dimu.org/image/032uL2dsjx7o?dimension=600x380',

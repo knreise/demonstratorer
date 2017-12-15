@@ -10,6 +10,14 @@ module.exports = {
         port: 9000,
         contentBase: path.join(__dirname, 'public')
     },
+    node: {
+        console: true,
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        dns: 'empty',
+        dgram: 'empty'
+    },
     output: {
          path: path.resolve(__dirname, 'dist'),
          filename: '[name].bundle.js'

@@ -39,9 +39,7 @@
 
     ];
 
-    var api = new KR.API();
-
-    KR.setupMap(api, datasets, {
+    KR.setupMap(null, datasets, {
         komm: '822,821',
         title: title,
         image: image,

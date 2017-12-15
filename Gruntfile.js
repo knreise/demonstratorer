@@ -1,6 +1,5 @@
 module.exports = function (grunt) {
 
-        var knreiseApiConfig = require('./knreiseApi.config.js');
         var demoConfig = require('./demonstratorer.config.js');
 
         function getTemplateFromFile(filename, fs) {
@@ -111,15 +110,6 @@ module.exports = function (grunt) {
                     })
                 }
             },
-            concat: {
-                options: {
-                    separator: '\n'
-                },
-                'build-knreise-api': {
-                    src: knreiseApiConfig.scripts,
-                    dest: 'public/knreiseApi.js'
-                }
-            },
             watch: {
                 'create-template-import': {
                     files: ['templates/**/*.tmpl'],
@@ -148,8 +138,6 @@ module.exports = function (grunt) {
 
         grunt.registerTask('create-template-import', ['file-creator:create-template-import']);
         grunt.registerTask('build-demos', ['file-creator:build-demos']);
-        grunt.registerTask('build-knreise-api', ['concat:build-knreise-api']);
-
         grunt.registerTask('watch-create-template-import', ['watch:create-template-import']);
         grunt.registerTask('watch-build-demos', ['watch:build-demos']);
 };

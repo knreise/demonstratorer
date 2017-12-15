@@ -19,7 +19,7 @@ import createGeomFilter from './map/createGeomFilter';
 import DatasetLoader from './components/DatasetLoader/index';
 import LayerManager from './components/LayerManager';
 import './components/L.control.datasetChooser';
-
+import KNreiseAPI from 'knreise-api';
 
 function lookupDatasets(datasets) {
     return _.chain(datasets)
@@ -38,8 +38,26 @@ function lookupDatasets(datasets) {
         .value();
 }
 
+function getApi() {
+    return KNreiseAPI({
+        flickr: {
+            apikey: 'ab1f664476dabf83a289735f97a6d56c'
+        },
+        jernbanemuseet: {
+            apikey: '336a8e06-78d9-4d2c-84c9-ac4fab6e8871'
+        },
+        europeana: {
+            apikey: 'pYEaya4fK'
+        }
+    });
+}
 
 function setupMap(api, datasets, options) {
+
+    if (!api) {
+        console.log('create api');
+        api = getApi();
+    }
 
     datasets = lookupDatasets(datasets);
 
@@ -128,7 +146,8 @@ function setupMap(api, datasets, options) {
 };
 
 
-function setupMapFromUrl(api, datasetIds, options) {
+function setupMapFromUrl(datasetIds, options) {
+    var api = getApi();
     setupMap(api, getDatasets(datasetIds), options);
 };
 

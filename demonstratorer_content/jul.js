@@ -1,11 +1,7 @@
 (function () {
     'use strict';
     
-    var api = new KR.API({
-        flickr: {
-            apikey: 'ab1f664476dabf83a289735f97a6d56c'
-        }
-    });
+
 
     var kulturminneFunctions = KR.Config.getKulturminneFunctions(api);
 
@@ -57,7 +53,7 @@
 
     var snowLayer = L.snowLayer('rgba(255, 255, 255, 1.0)');
 
-    KR.setupMap(api, datasets, {
+    KR.setupMap(null, datasets, {
         bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
         title: title,
         image: 'http://dms10.dimu.org/image/032uKXXfZSh3?dimension=600x380',

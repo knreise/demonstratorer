@@ -1,8 +1,7 @@
 (function () {
     'use strict';
     
-    var api = new KR.API();    
-
+ \
     //The datasets in use
     var datasets = [
     		{
@@ -354,7 +353,7 @@
 	
 
 
-    KR.setupMap(api, datasets, {
+    KR.setupMap(null, datasets, {
         title: title,
         bbox: '-28.828125,46.40625,34.1618181612,71.9653876991',
         /*bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',*/

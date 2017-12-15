@@ -1,10 +1,6 @@
 (function () {
     'use strict';
 
-    var api = new KR.API();
-
-    
-
     var kommune = '0602';
 
     //The datasets in use
@@ -50,7 +46,7 @@
     ];
     
 
-    window.setupMap(api, datasets, {
+    window.setupMap(null, datasets, {
         komm: kommune,
         title: title,
         image: image,
