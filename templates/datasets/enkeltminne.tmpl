@@ -1,4 +1,8 @@
+<% if(!_.isUndefined(arguments[0].Navn)) { %>
 <h3><%= Navn %></h3>
+<% } else { %>
+<h3><%= Enkeltminneart %></h3>
+<% } %>
 
 <div id="image-strip"></div>
 
