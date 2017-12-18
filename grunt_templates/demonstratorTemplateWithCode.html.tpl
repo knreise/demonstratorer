@@ -18,7 +18,7 @@
             {{= data.desc }}
         </script>
 
-        <script type='text/javascript' src='../../dist/setupMap.bundle.js'></script>
+        <script type='text/javascript' src='../setupMap.bundle.js'></script>
         <script type='text/javascript'>
 
             var title = '{{= data.name }}';

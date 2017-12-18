@@ -5,3 +5,5 @@ divshot.json
 node_modules
 norgeibilder.txt
 *.tar.gz
+dist
+public/demonstratorer

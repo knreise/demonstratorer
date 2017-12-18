@@ -13,7 +13,7 @@
         <div id='sidebar'></div>
         <div id='map'></div>
 
-        <script type='text/javascript' src='../../dist/setupMap.bundle.js'></script>
+        <script type='text/javascript' src='../setupMap.bundle.js'></script>
         <script type='text/javascript'>
 
             (function () {

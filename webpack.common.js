@@ -2,13 +2,9 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        setupMap: './src/setupMap.js'
-    },
-    devtool: 'inline-source-map',
-    devServer: {
-        publicPath: '/dist/',
-        port: 9000,
-        contentBase: path.join(__dirname, 'public')
+        setupMap: './src/setupMap.js',
+        index: './src/frontPage.js',
+        generator: './src/generator.js'
     },
     node: {
         console: true,

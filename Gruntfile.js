@@ -130,7 +130,7 @@ module.exports = function (grunt) {
             }
         };
 
-        grunt.initConfig(grunt.util._.extend(taskConfig, knreiseApiConfig));
+        grunt.initConfig(grunt.util._.extend(taskConfig));
 
         grunt.loadNpmTasks('grunt-contrib-concat');
         grunt.loadNpmTasks('grunt-contrib-watch');
