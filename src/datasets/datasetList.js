@@ -471,13 +471,13 @@ var ra_lokalitet = {
         api: 'kulturminne',
         dataset: 'lokaliteter'
     },
-    loadExtraData: true,
+    //loadExtraData: true,
     polygonsAsPoints: true,
     loadSubLayer: true,
     sublayerConfig: {
         name: 'Enkeltminner',
         provider: 'Riksantikvaren',
-        loadExtraData: true,
+        //loadExtraData: true,
         cluster: false,
         useCentroid: true,
         template: 'enkeltminne',

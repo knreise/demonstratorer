@@ -3,5 +3,19 @@
 <div id="image-strip"></div>
 
 <dl>
+    <% if(!_.isUndefined(arguments[0].Kulturminnesok)) { %>
+    <dt>Beskrivelse</dt>
+    <dd><%= Kulturminnesok %></dd>
+    <% } %>
+    <dt>Kategori</dt>
+    <dd><%= Kategori %></dd>
+    <% if(!_.isNull(arguments[0].Vernetype)) { %>
+    <dt>Vernetype</dt>
+    <dd><%= Vernetype %></dd>
+    <% } %>
     
 </dl>
+
+<a class="sidebar-link" href="https://kulturminnesok.no/minne/?queryString=https://data.kulturminne.no/askeladden/kulturmiljo/K<%= KulturmiljoID %>" target="_blank">
+  <i class="fa fa-external-link-square"></i> Vis i Kulturminnesøk
+</a>

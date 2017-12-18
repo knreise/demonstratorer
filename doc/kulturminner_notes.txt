@@ -1,0 +1,51 @@
+
+
+Lokalitet
+
+    i.  Navn/tittel
+        Ligger som "Navn" i respons fra API
+    ii. Beskrivelse – først kmsøk-beskr., hvis denne ikke finnes askeladden-beskr., maks 100 tegn (hvis beskrivelsen er veldig lang)    
+        "Kulturminnesok"
+    iii. Lokalitetskategori
+        "LokalitetskategoriID" fra API mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_EA3E13CE_534E_42eb_9244_3C948DAE5610
+    iv. Lokalitetsart
+        "LokalitetsartID" fra API mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_B9963A75_8175_4c3c_8DE3_A4C5C8F05F3F
+    v. Url
+        https://kulturminnesok.no/minne/?queryString=https://data.kulturminne.no/askeladden/lokalitet/{LokalitetID}
+
+
+Enkeltminne
+    i.   Navn/tittel
+        Ligger som "Navn" i respons fra API
+    ii.  Beskrivelse – først kmsøk-beskr., hvis denne ikke finnes askeladden-beskr., maks 100 tegn (hvis beskrivelsen er veldig lang)
+            "Kulturminnesok"
+    iii. Enkeltminne-kategori
+        "EnkeltminnekategoriID" fra API mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_AF72A9C7_037E_4812_BEB5_5B0A7325D46E
+    iv.  Enkeltminne-art
+        "EnkeltminneartID" fra API, mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_E773C5CD_E1CD_48e9_800C_1FC0FC81E1F5
+    v.   Datering
+        "DateringsID" fra API, mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_5E343CA1_9C08_4b23_924C_165D06BEE271
+    vi.  Vernestatus
+        "VernetypeID" fra API, mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_E4FECDDE_0211_4514_AC3B_500D35708101
+    vii. Ansvarlig organisasjon
+        Finnes ikke i APIet akkurat nå (Christer?)
+    viii. Url
+        Samme som for Lokaliteten (alle Enkeltminner ligger inn under en Lokalitet og har samme landningsida som dem (altså ikke egen slik med egen URL)
+        https://kulturminnesok.no/minne/?queryString=https://data.kulturminne.no/askeladden/lokalitet/{LokalitetID}
+
+Kulturmiljø (samme som lokalitet?)
+    i.  Navn/tittel
+        Ligger som "Navn" i respons fra API
+    ii. Beskrivelse – først kmsøk-beskr., hvis denne ikke finnes askeladden-beskr., maks 100 tegn (hvis beskrivelsen er veldig lang)    
+        "Kulturminnesok"
+    iii. Kulturmiljøkategori
+        "KategoriID" fra API, mappes via https://objektkatalog.geonorge.no/Objekttype/Index/EAID_6315C6E1_BB47_4573_89DD_969089119D4C
+    iv. Kulturmiljøart
+        "KategoriID", fra API, mappes via
+    v. vernetype
+        "VernetypeID", fra API, mappes via
+    vi. Url
+        https://kulturminnesok.no/minne/?queryString=https://data.kulturminne.no/askeladden/kulturmiljo/K{KulturmiljoID}
+    
+
+
