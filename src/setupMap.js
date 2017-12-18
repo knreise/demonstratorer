@@ -1,5 +1,6 @@
 //import 'babel-polyfill';
 import 'font-awesome/css/font-awesome.css';
+import 'bootstrap/dist/css/bootstrap.css';
 import L from 'leaflet';
 import * as _ from 'underscore';
 

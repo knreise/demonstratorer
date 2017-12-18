@@ -4,7 +4,6 @@ import 'leaflet-sidebar';
 import 'leaflet-sidebar/src/L.Control.Sidebar.css';
 
 import {UrlFunctions} from '../../util';
-import ResponseForm from '../ResponseForm';
 import SidebarContent from './SidebarContent';
 
 L.Knreise = L.Knreise || {};
@@ -51,9 +50,6 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         container.appendChild(content);
         this.on('hide', function () {
             if (this._map) {
-                /*this._map.fire('layerSelected');
-                this._map.fire('layerDeselect');*/
-
                 this._map.fire('sidebarClosed');
             }
 
@@ -70,23 +66,10 @@ L.Knreise.Control.Sidebar = L.Control.Sidebar.extend({
         this.show();
         this.sidebar.showFeature2(feature, callbacks, index, numFeatures);
         if (UrlFunctions) {
-            var dataset = feature.dataset;
-            var div = $('<div></div>');
-            var params = {
-                id: feature.id,
-                url: UrlFunctions.getFeatureLink(feature),
-                provider: dataset.provider
-            };
-            if (dataset.feedbackForm) {
-                $(this._contentContainer).append(div);
-                ResponseForm(div, params);
-            }
-
             if (feature.id && this.options.featureHash) {
                 UrlFunctions.setFeatureHash(feature.id);
             }
         }
-
     },
 
     showFeatures: function (features, dataset, forceList) {
