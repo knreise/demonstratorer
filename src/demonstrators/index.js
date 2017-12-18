@@ -1,4 +1,6 @@
 /* eslint max-len: off*/
+
+//DO NOT CHANGE THIS TO export default, grunt is stupid!
 module.exports = {
     demonstrators: [
         {

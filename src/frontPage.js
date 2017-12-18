@@ -6,7 +6,7 @@ import 'font-awesome/css/font-awesome.css';
 
 import {Collapse} from 'reactstrap';
 
-import config from '../demonstratorer.config.js';
+import config from './demonstrators';
 
 import './css/FrontPage.css';
 import ra1 from './images/samarbeidspartnere_ra1.png';

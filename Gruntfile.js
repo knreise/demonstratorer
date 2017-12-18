@@ -1,6 +1,6 @@
 module.exports = function (grunt) {
 
-        var demoConfig = require('./demonstratorer.config.js');
+        var demoConfig = require('./src/demonstrators/index.js');
 
         function getTemplateFromFile(filename, fs) {
             return grunt.util._.template(fs.readFileSync(filename, 'utf8'));
@@ -122,7 +122,7 @@ module.exports = function (grunt) {
                     }
                 },
                 'build-demos': {
-                    files: ['demonstratorer_content/**/*.*', 'demonstratorer.config.js'],
+                    files: ['demonstratorer_content/**/*.*', './src/demonstrators/index.js'],
                     tasks: ['build-demos'],
                     options: {
                         atBegin: true,
