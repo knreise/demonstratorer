@@ -1,5 +1,5 @@
 /*THIS FILE IS AUTO_GENERATED!*/
-<% _.forEach(templates, function(template) { %>const <%- template.id %> = require('!!raw-loader!../<%- template.filename %>');
+<% _.forEach(templates, function(template) { %>const <%- template.id %> = require('!!raw-loader!./templates/<%- template.filename %>');
 <% }); %>
 
 

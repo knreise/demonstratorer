@@ -6,7 +6,7 @@ import bearing from '@turf/bearing';
 
 import {imageCacheUrl} from './config';
 import DEFAULT_OPTIONS from './config/defaultOptions';
-import getTemplateString from './templates_gen';
+import getTemplateString from './templates/list';
 
 export function extendOptions(options) {
     return _.extend({}, DEFAULT_OPTIONS, options || {});

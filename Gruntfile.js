@@ -34,15 +34,17 @@ module.exports = function (grunt) {
                     openFlags: 'w'
                 },
                 'create-template-import': {
-                    'src/templates_gen.js': function (fs, fd, done) {
+                    'src/templates/list.js': function (fs, fd, done) {
                         var glob = grunt.file.glob;
                         var _ = grunt.util._;
-                        glob('templates/**/*.tmpl', function (err, files) {
+                        glob('src/templates/templates/**/*.tmpl', function (err, files) {
 
                             var templates = _.map(files, function (filename) {
+                                filename = filename.replace('src/templates/templates/', '');
                                 var parts = filename.split('/');
+
                                 var id = parts[parts.length - 1].split('.')[0];
-                                if (parts[1] === 'datasets') {
+                                if (parts[0] === 'datasets') {
                                     id += '_template';
                                 }
                                 return {

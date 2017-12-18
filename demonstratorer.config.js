@@ -379,19 +379,6 @@ module.exports = {
     ],
     demonstrators_dev: [
         //place demonstrators that will not be listed here
-        //obsolete demonstrators
-        {
-            id: 'gudbrandsdalsleden_line',
-            name: 'Gudbrandsdalsleden - "guidet tur"',
-            description: 'Velkommen til en guidet tur langs Gudbrandsdalsleden. Mens du beveger deg langs leden vil vi vise deg relevant innhold.',
-            url: 'demonstratorer/linemap.html'
-        },
-        {
-            id: 'keiserstien3d',
-            name: 'Turistvegen over Folgefonna - 3D',
-            description: '3D-visning av <b>Turistvegen over Folgefonna</b> - selve ruta sammen med data fra aktuelle kilder i nærheten av denne.',
-            url: 'demonstratorer/keiserstien3d.html'
-        },
         //under development
         {
             id: 'nasjonale_turistveger',
