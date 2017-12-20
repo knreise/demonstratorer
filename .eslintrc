@@ -22,6 +22,7 @@
         "no-multi-spaces": "error",
         "no-mixed-spaces-and-tabs": "error",
         "no-trailing-spaces": "warn",
-        "max-len": ["warn", 100, 4]
+        "max-len": ["warn", 100, 4],
+        "indent": ["warn", 4]
     }
 }

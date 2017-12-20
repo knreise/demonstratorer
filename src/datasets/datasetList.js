@@ -18,6 +18,7 @@ var difo = {
 
 var difo_krig = {
     name: 'Digitalt fortalt',
+    hideFromGenerator: true,
     dataset: {
         dataset: 'difo',
         api: 'norvegiana',
@@ -61,6 +62,7 @@ var dimufoto = {
 
 var dimu_stillimage = {
     name: 'Digitalt museum',
+    hideFromGenerator: true,
     dataset: {
         dataset: 'DiMu',
         api: 'norvegiana',
@@ -75,6 +77,7 @@ var dimu_stillimage = {
 
 var dimu_kunst = {
     name: 'DiMu',
+    hideFromGenerator: true,
     dataset: {
         api: 'norvegiana',
         dataset: 'DiMu',
@@ -91,6 +94,7 @@ var dimu_kunst = {
 
 var dimu_not_kunst = {
     name: 'DiMu',
+    hideFromGenerator: true,
     dataset: {
         api: 'norvegiana',
         dataset: 'DiMu',
@@ -107,6 +111,7 @@ var dimu_not_kunst = {
 
 var dimu_krig = {
     name: 'Digitalt Museum',
+    hideFromGenerator: true,
     dataset: {
         api: 'norvegiana',
         dataset: 'DiMu',
@@ -181,6 +186,7 @@ var foto_sf = {
     },
     isStatic: false,
     bbox: false,
+    hideFromGenerator: true,
     //TODO: add style
     template: 'foto_sf'
 };
@@ -278,6 +284,7 @@ var arkivverket_bensinstasjoner = {
 
 
 var pilegrimsleden = {
+    hideFromGenerator: true,
     dataset: {
         api: 'cartodb',
         table: 'pilegrimsleden_dovre'
@@ -375,9 +382,9 @@ var oslobyarkiv_flickr = {
 
 var trondheimbyarkiv_flickr = {
     name: 'Trondheim byarkiv',
-
     provider: 'Trondheim byarkiv',
-    dataset:  {
+    hideFromGenerator: true,
+    dataset: {
         api: 'flickr',
         user_id: 'trondheim_byarkiv'
     },
@@ -450,6 +457,7 @@ var perspektivet_flickr = {
 var arkiv_nordland = {
     name: 'Arkiv i Nordland',
     provider: 'Arkiv i Nordland',
+    hideFromGenerator: true,
     dataset: {
             api: 'flickr',
             user_id: 'arkivinordland',
@@ -570,7 +578,7 @@ var kulturminner_krig = {
 
 var brukerminner = {
     name: 'Kulturminnesøk - brukerregistreringer',
-    hideFromGenerator: false,
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     dataset: {
         api: 'kulturminnedata',
@@ -691,7 +699,7 @@ var jernbane = {
     provider: 'Jernbanemuseet',
     name: 'Jernbanemuseet',
     hideFromGenerator: true,
-    template: getDatasetTemplate('jernbanemuseet'),
+    template: 'jernbanemuseet',
     //TODO: add style
     loadExtraData: true,
     getItem: 'jernbanemuseet',
@@ -702,6 +710,7 @@ var jernbane = {
 
 var jernbane_krig = {
     id: 'jernbane',
+    hideFromGenerator: true,
     dataset: {
         api: 'jernbanemuseet',
         presentation: 732
@@ -718,6 +727,7 @@ var jernbane_krig = {
 
 var fangstgroper = {
     provider: 'kulturminnedata',
+    hideFromGenerator: true,
     name: 'Fangstgroper',
     dataset: {
         query: 'Navn=\'Fangstgrop\'',
@@ -736,6 +746,7 @@ var fangstgroper = {
 
 var brukerminner_ww2 = {
     provider: 'Riksantikvaren',
+    hideFromGenerator: true,
     name: 'Kulturminnesøk - brukerregistrering',
     dataset: {
         api: 'kulturminnedata',
@@ -749,6 +760,7 @@ var brukerminner_ww2 = {
 //geojsom
 var nve_dammer = {
     name: 'Dammer',
+    hideFromGenerator: true,
     provider: 'NVE',
     dataset: {
       api: 'geojson',
@@ -763,6 +775,7 @@ var nve_dammer = {
 
 var nve_kraftverk = {
     name: 'Kraftverk',
+    hideFromGenerator: true,
     provider: 'NVE',
     dataset: {
       api: 'geojson',
@@ -777,6 +790,7 @@ var nve_kraftverk = {
 
 var nve_kraftledninger = {
     name: 'Kraftledninger',
+    hideFromGenerator: true,
     provider: 'NVE',
     dataset: {
       api: 'geojson',
@@ -791,6 +805,7 @@ var nve_kraftledninger = {
 
 var nve_transformatorstasjoner = {
     name: 'Transformatorstasjoner',
+    hideFromGenerator: true,
     provider: 'NVE',
     dataset: {
       api: 'geojson',
@@ -805,6 +820,7 @@ var nve_transformatorstasjoner = {
 
 var nve_anlegg = {
     name: 'Vassdragstekniske anlegg',
+    hideFromGenerator: true,
     provider: 'NVE',
     dataset: {
       api: 'geojson',
@@ -885,6 +901,7 @@ var kunst = {
 
 var wikipedia_krig = {
     grouped: true,
+    hideFromGenerator: true,
     commonCluster: true,
     name: 'Wikipedia',
     datasets: [

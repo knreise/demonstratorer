@@ -4,7 +4,7 @@ module.exports = {
     entry: {
         setupMap: './src/setupMap.js',
         index: './src/frontPage.js',
-        generator: './src/generator.js'
+        generator: './src/generator'
     },
     node: {
         console: true,

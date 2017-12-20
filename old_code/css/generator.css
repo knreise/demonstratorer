@@ -1,7 +1,8 @@
 .map {
     width: 100%;
     height: 300px;
-    margin-top: 10px;
+    position: inherited;
+    display: table-cell;
 }
 
 .generatorfooter{

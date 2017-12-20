@@ -5,9 +5,13 @@ import L from 'leaflet';
 import * as _ from 'underscore';
 
 import {getDatasets, getDataset} from './datasets';
-import {extendOptions} from './util';
+import {
+    UrlFunctions,
+    boundsToPoly,
+    extendOptions,
+    parseQueryString
+} from './util';
 import {createMap, freezeMap, unFreezeMap, addExtraLayers} from './map/index';
-import {UrlFunctions, boundsToPoly} from './util';
 
 import {addLocateButton} from './components/LocateButton';
 import setupSplashScreen from './components/splashscreen';
@@ -56,7 +60,6 @@ function getApi() {
 function setupMap(api, datasets, options) {
 
     if (!api) {
-        console.log('create api');
         api = getApi();
     }
 
@@ -152,6 +155,15 @@ function setupMapFromUrl(datasetIds, options) {
     setupMap(api, getDatasets(datasetIds), options);
 };
 
+function setupMapFromQueryString(queryString) {
+    var api = getApi();
+    var params = parseQueryString(queryString);
+    var datasets = getDatasets(params.datasets);
+    var options = _.omit(params, 'datasets');
+    setupMap(api, datasets, options);
+};
+
 
 window.setupMap = setupMap;
 window.setupMapFromUrl = setupMapFromUrl;
+window.setupMapFromQueryString = setupMapFromQueryString;

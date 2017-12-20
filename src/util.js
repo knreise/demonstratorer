@@ -106,6 +106,31 @@ export function parseError(error) {
     return 'Unknown error';
 };
 
+export function createQueryParameterString(params) {
+    return _.map(params, function (value, key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(value);
+    }).join('&');
+};
+
+export function parseQueryString(qs) {
+    var queryString = decodeURIComponent(qs);
+    if (queryString === '') {
+        return;
+    }
+    return _.reduce(queryString.replace('?', '').split('&'), function (acc, qs) {
+        qs = qs.split('=');
+        var value = qs[1];
+        if (value === 'true') {
+            value = true;
+        } else if (value === 'false') {
+            value = false;
+        }
+        acc[qs[0]] = value;
+        return acc;
+    }, {});
+}
+
+
 function createFeatureCollection(features) {
     return {
         'type': 'FeatureCollection',

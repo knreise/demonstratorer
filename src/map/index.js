@@ -60,7 +60,9 @@ export function freezeMap(map) {
     map.doubleClickZoom.disable();
     map.scrollWheelZoom.disable();
     map.keyboard.disable();
-
+    if (map.zoomControl) {
+        map.zoomControl.removeFrom(map);
+    }
     // Disable tap handler, if present.
     if (map.tap) {
         map.tap.disable();
@@ -68,12 +70,15 @@ export function freezeMap(map) {
 }
 
 export function unFreezeMap(map) {
-        // enable drag and zoom handlers.
+    // enable drag and zoom handlers.
     map.dragging.enable();
     map.touchZoom.enable();
     map.doubleClickZoom.enable();
     map.scrollWheelZoom.enable();
     map.keyboard.enable();
+    if (map.zoomControl) {
+        map.zoomControl.addTo(map);
+    }
 
     // enable tap handler, if present.
     if (map.tap) {

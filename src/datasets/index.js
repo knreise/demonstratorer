@@ -12,6 +12,10 @@ export function getDataset(id) {
 }
 
 export function getDatasets(ids) {
+    if (_.isString(ids)) {
+        ids = ids.split(',');
+    }
+
     var datasetList = getDatasetList();
     return _.chain(ids)
         .map(function (dataset) {
