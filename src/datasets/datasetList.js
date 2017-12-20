@@ -1,5 +1,3 @@
-import {getDatasetTemplate} from '../util';
-
 //norvegiana Datasets
 var difo = {
     name: 'Digitalt fortalt',

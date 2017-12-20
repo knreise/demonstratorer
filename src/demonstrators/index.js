@@ -171,7 +171,7 @@ module.exports = {
                 image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
                 description: '<p>Kulturminner og historie langs Nidelva i Trondheim kommune.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Trondheim byarkiv, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Milj&oslash;direktoratets verneomr&aring;der, Lokalhistoriewiki og Wikipedia.</p></br>',
                 /*line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',*/
-                line: 'http://knreise.no/data/nidelva.kml',
+                line: 'http://localhost:9000/data/nidelva.kml',
                 buffer: 0.5,
                 layer: 'https://{s}.tiles.mapbox.com/v4/havardgj.9013e600/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaGF2YXJkZ2oiLCJhIjoiQTlGM3A3NCJ9.fDQKmxi1WcYfBUWm0cQrGg',
                 maxZoom: 18,
@@ -295,17 +295,17 @@ module.exports = {
                 minZoom: 3,
                 maxZoom: 13
             }
-        },
+        }/*,
         {
             id: 'europeana_art_carto',
             name: 'Europeana 280',
             description: 'Map showing the locations of all works of art in the Europeana 280 collection. Data has been harvested from the Europeana API but has been manually refined for this presentation.'
-        }
+        }*/
 
     ],
     demonstrators_extra: [
         //place demonstrators for 'flere demonstratorer' here
-        {
+        /*{
             id: 'kjaerlighetsstien',
             name: 'Kjærlighetsstien og Gamlegata',
             description: 'Brukergenerert og bearbeidet innhold langs turrunden Kjærlighetsstien gjennomg Gamlegata i Gvarv i Telemark',
@@ -377,7 +377,7 @@ module.exports = {
             id: 'sparql_debug',
             name: 'Test av API',
             description: 'Forskjellige tester av Riksantikvarens API'
-        }
+        }*/
     ],
     demonstrators_dev: [
         //place demonstrators that will not be listed here

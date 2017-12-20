@@ -24,16 +24,19 @@ export default function getLine(api, line, callback) {
         if (_stringEndsWith(line, 'kml')) {
             lineData = {
                 api: 'kml',
+                corsProxy: false,
                 url: line
             };
         } else if (_stringEndsWith(line, 'gpx') || line.indexOf('http://ut.no/tur/') !== -1) {
             lineData = {
                 api: 'gpx',
+                corsProxy: false,
                 url: line
             };
         } else if (_stringEndsWith(line, 'geojson')) {
             lineData = {
                 api: 'geojson',
+                corsProxy: false,
                 url: line
             };
         }
