@@ -488,7 +488,10 @@ var ra_lokalitet = {
         useCentroid: true,
         template: 'enkeltminne',
         style: {
-            fillcolor: '#86592d'
+            fillcolor: '#86592d',
+            bordercolor: '#ffffff',
+            icon: 'triangle',
+            weight: 15
         },
         dataset: {
             api: 'kulturminne',
