@@ -160,7 +160,7 @@ module.exports = {
                 image: 'https://gfx.nrk.no/WzBhldVq62wY6EAlgNRIPwoDLjogR3DINIdh_Vw2LY9Q',
                 description: '<p>Foto: Dag Olav Brækkan</p><p>Flyktningeruta går fra Skullerudstua i Oslo og helt til Grenselosmuseet ved vannet Skjervangen i Eidskog. En tur på borti 120 km. Det fins flere flyktningeruter i Norge, men denne tar utgangspunkt i trafikken som gikk ut fra Oslo og østover til Sverige.</p></br>'
             }
-        },/*
+        }, /*
         {
             id: 'brudleruta',
             name: 'Brudleruta mellom Sirdal og Kvinesdal',
@@ -194,7 +194,9 @@ module.exports = {
                     'difo',
                     'trondheimbyarkiv',
                     'wikipedia',
-                    'lokalwiki'
+                    'lokalwiki',
+                    'ra_kulturmiljo',
+                    'ra_lokalitet'
                 ],
                 image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
                 description: '<p>Kulturminner og historie langs Nidelva i Trondheim kommune.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Trondheim byarkiv, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Milj&oslash;direktoratets verneomr&aring;der, Lokalhistoriewiki og Wikipedia.</p></br>',
