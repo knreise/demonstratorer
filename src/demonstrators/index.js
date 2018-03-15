@@ -37,7 +37,8 @@ module.exports = {
             params: {
                 'datasets': [
                     'difo',
-                    //'ra_lokalitet', //TODO: this is slow/fails
+                    'ra_kulturmiljo',
+                    'ra_lokalitet',
                     'musit',
                     'dimu',
                     'wikipedia',
