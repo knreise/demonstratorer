@@ -52,6 +52,28 @@ module.exports = {
                 'description': 'Innhold fra hele Telemark med fokus p&aring; ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnes&oring;k, brukerregistrert innhold i Kulturminnes&oring;k, Digitalt fortalt, Wikipedia og Lokalhistoriewiki.</br></br>'
             }
         },
+        {
+            id: 'trondheim',
+            name: 'Trondheim kommune',
+            description: 'Historie og kulturminner i Trondheim.',
+            params: {
+                datasets: [
+                    'verneomr',
+                    'historie',
+                    'difo',
+                    'trondheimbyarkiv',
+                    'wikipedia',
+                    'lokalwiki'
+                ],
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
+                description: '<p>Kulturminner og historie i Trondheim kommune.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Trondheim byarkiv, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Milj&oslash;direktoratets verneomr&aring;der, Lokalhistoriewiki og Wikipedia.</p></br>',
+                /*line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',*/
+                komm: '1601',
+                geomFilter: true,
+                showGeom: true,
+                layer: 'norges_grunnkart_graatone'
+            }
+        },
         /*{
             id: 'gudbrandsdalsleden',
             name: 'Gudbrandsdalsleden',
