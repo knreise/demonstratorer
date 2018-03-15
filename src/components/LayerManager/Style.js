@@ -53,6 +53,7 @@ export default function Style(style) {
     return {
         get: get,
         getSelected: getSelected,
+        icon: style.icon || 'marker',
         isCircle: style.circle,
         isThumbnail: style.thumbnail
     };
