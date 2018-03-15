@@ -488,7 +488,7 @@ var ra_lokalitet = {
         useCentroid: true,
         template: 'enkeltminne',
         style: {
-            fillcolor: '#728224'
+            fillcolor: '#86592d'
         },
         dataset: {
             api: 'kulturminne',
@@ -498,7 +498,7 @@ var ra_lokalitet = {
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
-        fillcolor: '#728224'
+        fillcolor: '#86592d'
     }
 };
 
