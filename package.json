@@ -24,7 +24,7 @@
     "leaflet-draw": "^0.4.13",
     "leaflet-easybutton": "^1.1.2",
     "leaflet-fa-markers": "0.0.5",
-    "leaflet-knreise-markers": "^1.0.0",
+    "leaflet-knreise-markers": "^1.0.3",
     "leaflet-sidebar": "^0.2.0",
     "leaflet.markercluster": "^0.4.0",
     "npm": "^5.6.0",
