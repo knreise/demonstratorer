@@ -330,7 +330,18 @@ module.exports = {
             id: 'europeana_art_carto',
             name: 'Europeana 280',
             description: 'Map showing the locations of all works of art in the Europeana 280 collection. Data has been harvested from the Europeana API but has been manually refined for this presentation.'
-        }*/
+        }*/,
+        {
+            id: 'kulturminnedata',
+            name: 'Kulturminnedata fra Riksantikvaren',
+            description: 'Kulturminner fra Riksantikvaren.',
+            params: {
+                datasets: [
+                    'ra_kulturmiljo'
+                ],
+                'bbox': '4.0223174095,57.6773017445,30.9705657959,71.4034238089'
+            }
+        }
 
     ],
     demonstrators_extra: [
