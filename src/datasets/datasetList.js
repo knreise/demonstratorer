@@ -178,9 +178,10 @@ var industrimuseum = {
 };
 
 var foto_sf = {
+    name: 'Fylkesfoto Sogn og Fjordane',
     dataset: {
         api: 'norvegiana',
-        dataset: 'Foto-SF'
+        dataset: 'Fylkesfoto Sogn og Fjordane'
     },
     isStatic: false,
     bbox: false,

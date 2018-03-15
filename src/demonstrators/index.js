@@ -14,9 +14,13 @@ module.exports = {
                     'folketelling',
                     'wikipedia',
                     'lokalwiki',
-                    'arkeologi',
-                    'historie',
-                    'kunst'
+                    'musit',
+                    'industrimuseum',
+                    'foto_sf',
+                    'kystreise',
+                    'dimu',
+                    'ra_kulturmiljo',
+                    'ra_lokalitet'
                 ],
                 'initUserPos': true,
                 'bbox': '4.0223174095,57.6773017445,30.9705657959,71.4034238089',
@@ -178,7 +182,7 @@ module.exports = {
                 maxZoom: 18,
                 minZoom: 12
             }
-        }/*,
+        },/*,
         {
             id: 'akerselva',
             name: 'Akerselva',
