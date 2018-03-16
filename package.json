@@ -19,7 +19,7 @@
     "font-awesome": "^4.7.0",
     "install": "^0.10.2",
     "jquery": "^2.1.4",
-    "knreise-api": "^2.0.7",
+    "knreise-api": "^2.0.8",
     "leaflet": "^0.7.7",
     "leaflet-draw": "^0.4.13",
     "leaflet-easybutton": "^1.1.2",

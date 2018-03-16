@@ -1,22 +1,20 @@
-<% if(!_.isUndefined(arguments[0].Navn)) { %>
-<h3><%= Navn %></h3>
+<% if(!_.isUndefined(data.Navn)) { %>
+<h3><%= data.Navn %></h3>
 <% } else { %>
-<h3><%= Enkeltminneart %></h3>
+<h3>Uten navn</h3>
 <% } %>
 
 <div id="image-strip"></div>
 
 <dl>
-    <% if(!_.isUndefined(arguments[0].Kulturminnesok)) { %>
     <dt>Beskrivelse</dt>
-    <dd><%= Kulturminnesok %></dd>
-    <% } %>
+    <dd><%= shorten(data.Beskrivelse, 300) || '--' %></dd>
     <dt>Enkeltminne-kategori</dt>
     <dd><%= Enkeltminnekategori %></dd>
     <dt>Enkeltminne-art</dt>
     <dd><%= Enkeltminneart %></dd>
     <dt>Datering</dt>
-    <dd><%= Datering %></dd>
+    <dd><%= data.Datering || '--' %></dd>
     <dt>Vernestatus</dt>
     <dd><%= Vernetype %></dd>
 </dl>
