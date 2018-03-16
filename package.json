@@ -4,6 +4,7 @@
   "description": "Kultur- og naturreise - kartdemonstratorer",
   "main": "Gruntfile.js",
   "dependencies": {
+    "@turf/bbox": "^5.1.5",
     "@turf/bearing": "^5.1.0",
     "@turf/boolean-contains": "^5.1.5",
     "@turf/boolean-overlap": "^5.1.5",

@@ -203,7 +203,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             }
             currentErrors[datasetId] = error;
             if (error) {
-                console.error(error);
+                console.error(error, data);
             }
         } else {
             currentErrors[datasetId] = null;
@@ -224,7 +224,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             var isAvailable = _datasetAvailable(dataset);
             if (isAvailable !== availableDatasets[dataset._id]) {
                 availableDatasets[dataset._id] = isAvailable;
-                 _.each(onAvailableChanges, function (callback) {
+                _.each(onAvailableChanges, function (callback) {
                     callback(dataset._id, isAvailable);
                 });
             }
@@ -293,7 +293,10 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
                 dataset.sublayerConfig = extend(dataset.sublayerConfig, DATASET_DEFAULTS);
             }
             if (parent) {
-                return extend(extend(dataset, _.omit(parent, 'datasets', 'grouped')), DATASET_DEFAULTS);
+                return extend(
+                    extend(dataset, _.omit(parent, 'datasets', 'grouped')),
+                    DATASET_DEFAULTS
+                );
             } else {
                 return extend(dataset, DATASET_DEFAULTS);
             }
@@ -368,7 +371,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         };
     }
 
-    function getDataset (datasetId) {
+    function getDataset(datasetId) {
         var dataset = _.find(flattenedDatasets, function (d) {
             return d._id === datasetId;
         });

@@ -17,10 +17,10 @@ export default function createGeomFilter(geom, bufferDist) {
         })
     );
     if (buffer >= 0) {
-        return fc;
+        return _simplify(fc);
     }
     return buffer(
-        (fc.features.length > 5) ? _simplify(fc) : fc,
+        _simplify(fc) : fc,
         bufferDist,
         {units: 'kilometers'}
     );

@@ -119,7 +119,7 @@ L.Control.DatasetChooser = L.Control.extend({
         }
         this._checkSpinner();
         var fragment = document.createDocumentFragment();
-        var hasError = 0;
+        var hasError = false;
         _.each(this.loader.getLayers(), function (dataset) {
             var errors = this.loader.getErrors(dataset._id);
             if (errors.length && dataset.isAvailable && dataset.isEnabled) {
@@ -131,6 +131,12 @@ L.Control.DatasetChooser = L.Control.extend({
                 this.loader.toggleEnabled(dataset._id);
             }, this));
         }, this);
+
+        var isLoading = this.numLoading > 0;
+        if (!isLoading) {
+            //hasError = false;
+        }
+
         this._toggleError(hasError);
         while (this._overlaysList.firstChild) {
             var child = this._overlaysList.firstChild;
