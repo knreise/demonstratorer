@@ -215,7 +215,7 @@ var wikipediaNN = {
     template: 'wikipedia',
     description: 'Stedfestede artikler fra nynorskwikipedia',
     style: {
-        fillcolor: '#D14020',
+        fillcolor: '#542788',
         thumbnail: true
     }
 };
