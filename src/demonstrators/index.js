@@ -223,7 +223,10 @@ module.exports = {
             description: 'Kulturminner fra Riksantikvaren.',
             params: {
                 datasets: [
-                    'ra_kulturmiljo'
+                    'ra_kulturmiljo',
+                    'ra_lokalitet_arkeologisk',
+                    'ra_lokalitet_kirkesteder',
+                    'ra_lokalitet_bebyggelse'
                 ],
                 'bbox': '4.0223174095,57.6773017445,30.9705657959,71.4034238089'
             }
