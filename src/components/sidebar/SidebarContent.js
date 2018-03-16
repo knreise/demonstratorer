@@ -13,7 +13,7 @@ window.shorten = function (str, maxLen) {
         return str;
     }
     return str.substr(0, str.lastIndexOf(' ', maxLen)) + '&hellip;';
-}
+};
 
 /*
     Handles display of content in a sidebar
@@ -142,7 +142,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function showFeature2(feature, callbacks, index, numFeatures) {
-        console.log(feature);
+
         var getItem = feature.dataset.getItem;
         if (getItem) {
             var content = '';
@@ -165,7 +165,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function _doShowFeature(feature, callbacks, index, numFeatures) {
-        console.log(feature);
+
         var dataset = feature.dataset;
         var template = dataset.template;
         var img = feature.properties.images;
