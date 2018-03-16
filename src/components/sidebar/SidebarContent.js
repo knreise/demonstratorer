@@ -5,6 +5,16 @@ import {getImageCache, isInIframe} from '../../util';
 import PositionDisplayer from './PositionDisplayer';
 import MediaCarousel from './MediaCarousel';
 
+window.shorten = function (str, maxLen) {
+    if (!str) {
+        return str;
+    }
+    if (str.length <= maxLen) {
+        return str;
+    }
+    return str.substr(0, str.lastIndexOf(' ', maxLen)) + '&hellip;';
+}
+
 /*
     Handles display of content in a sidebar
 */
@@ -155,7 +165,7 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function _doShowFeature(feature, callbacks, index, numFeatures) {
-
+        console.log(feature);
         var dataset = feature.dataset;
         var template = dataset.template;
         var img = feature.properties.images;
@@ -179,7 +189,9 @@ export default function SidebarContent(wrapper, element, top, options) {
 
         var properties = _.clone(feature.properties);
         properties.provider = provider;
-        content += template(_.extend({image: null}, properties));
+        var templateData = _.extend({image: null}, properties);
+        templateData.data = templateData;
+        content += template(templateData);
 
         if (options.footerTemplate && properties.link) {
             content += options.footerTemplate(properties);

@@ -1,5 +1,5 @@
-<% if(!_.isUndefined(arguments[0].Navn)) { %>
-<h3><%= Navn %></h3>
+<% if(!_.isUndefined(data.Navn)) { %>
+<h3><%= data.Navn %></h3>
 <% } else { %>
 <h3>Uten navn</h3>
 <% } %>
@@ -7,6 +7,8 @@
 <div id="image-strip"></div>
 
 <dl>
+    <dt>Beskrivelse</dt>
+    <dd><%= shorten(data.Kulturminnesok, 300) || shorten(data.Beskrivelse, 300) %></dd>
     <dt>Kategori</dt>
     <dd><%= Lokalitetskategori %></dd>
     <dt>Lokalitetsart</dt>

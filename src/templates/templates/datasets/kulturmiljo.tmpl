@@ -1,22 +1,19 @@
-<% if(!_.isUndefined(arguments[0].Navn)) { %>
-<h3><%= Navn %></h3>
+<% if(!_.isUndefined(data.Navn)) { %>
+<h3><%= data.Navn %></h3>
 <% } else { %>
 <h3>Uten navn</h3>
 <% } %>
 <div id="image-strip"></div>
 
 <dl>
-    <% if(!_.isUndefined(arguments[0].Kulturminnesok)) { %>
     <dt>Beskrivelse</dt>
-    <dd><%= Kulturminnesok %></dd>
-    <% } %>
+    <dd><%= shorten(data.Beskrivelse, 300) || shorten(data.Beskrivelse2, 300)  || '' %></dd>
     <dt>Kategori</dt>
     <dd><%= Kategori %></dd>
-    <% if(!_.isNull(arguments[0].Vernetype)) { %>
+    <% if(!_.isNull(data.Vernetype)) { %>
     <dt>Vernetype</dt>
-    <dd><%= Vernetype %></dd>
+    <dd><%= data.Vernetype %></dd>
     <% } %>
-    
 </dl>
 
 <a class="sidebar-link" href="https://kulturminnesok.no/minne/?queryString=https://data.kulturminne.no/askeladden/kulturmiljo/K<%= KulturmiljoID %>" target="_blank">
