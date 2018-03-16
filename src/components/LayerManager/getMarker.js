@@ -21,7 +21,13 @@ function getIcon(feature, styleFunc, selected) {
             iconAnchor: [25, 25]
         });
     }
+
     return L.Knreise.icon({
+        iconSize: [25, 32],
+        iconAnchor: [12, 30],
+        popupAnchor: [1, -32],
+        shadowAnchor: [10, 12],
+        shadowSize: [36, 16],
         markerColor: styleFunc.get('fillcolor', feature, selected)
     });
 }
@@ -70,31 +76,31 @@ function createStyleString(styleDict) {
 
 function _getClusterThumbnail(images, numMarkers, color, borderWidth) {
 
-        var thumbnail = getImageCache(images[0], 50, 50);
+    var thumbnail = getImageCache(images[0], 50, 50);
 
-        var styleDict = {
-            'border-color': color,
-            'border-width': borderWidth,
-            'background-image': 'url(\'' + thumbnail + '\');'
-        };
-        if (images.length > 1) {
-            styleDict['box-shadow'] = _.map(_.rest(images), function (c, index) {
-                var width = (index + 1) * 2;
-                return '0 0 0 ' + width + 'px ' + c;
-            }).join(',') + ';';
-        }
+    var styleDict = {
+        'border-color': color,
+        'border-width': borderWidth,
+        'background-image': 'url(\'' + thumbnail + '\');'
+    };
+    if (images.length > 1) {
+        styleDict['box-shadow'] = _.map(_.rest(images), function (c, index) {
+            var width = (index + 1) * 2;
+            return '0 0 0 ' + width + 'px ' + c;
+        }).join(',') + ';';
+    }
 
-        var html = '<div class="outer">' +
-            '<div class="circle" style="' + createStyleString(styleDict) + '"></div>' +
-            '</div>' +
-            '<b>' + numMarkers + '</b>';
+    var html = '<div class="outer">' +
+        '<div class="circle" style="' + createStyleString(styleDict) + '"></div>' +
+        '</div>' +
+        '<b>' + numMarkers + '</b>';
 
-        return new L.DivIcon({
-            className: 'leaflet-marker-photo',
-            html: html,
-            iconSize: [60, 60],
-            iconAnchor: [30, 30]
-        });
+    return new L.DivIcon({
+        className: 'leaflet-marker-photo',
+        html: html,
+        iconSize: [60, 60],
+        iconAnchor: [30, 30]
+    });
 }
 
 
@@ -102,13 +108,13 @@ function getClusterIcon(cluster, styleFunc, selected) {
     var markers = cluster.getAllChildMarkers();
 
     var images = _.chain(markers)
-            .filter(function (marker) {
-                return !!marker.feature.properties.thumbnail;
-            })
-            .map(function (marker) {
-                return marker.feature.properties.thumbnail;
-            })
-            .value();
+        .filter(function (marker) {
+            return !!marker.feature.properties.thumbnail;
+        })
+        .map(function (marker) {
+            return marker.feature.properties.thumbnail;
+        })
+        .value();
 
     if (styleFunc.isThumbnail && images.length) {
 
@@ -124,8 +130,8 @@ function getClusterIcon(cluster, styleFunc, selected) {
     return new L.DivIcon({
         className: 'leaflet-marker-circle',
         html: '<div class="outer"><div class="circle" style="background-color: ' + hexToRgba(fillcolor, 0.4) + ';border-color:' + bordercolor + ';"></div></div><b>' + markers.length + '</b>',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
     });
 }
 
