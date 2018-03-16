@@ -8,7 +8,7 @@
 
 <dl>
     <dt>Beskrivelse</dt>
-    <dd><%= shorten(data.Kulturminnesok, 300) || shorten(data.Beskrivelse, 300) %></dd>
+    <dd><%= shorten(data.Kulturminnesok, 300) || shorten(data.Beskrivelse, 300) || '--' %></dd>
     <dt>Kategori</dt>
     <dd><%= Lokalitetskategori %></dd>
     <dt>Lokalitetsart</dt>

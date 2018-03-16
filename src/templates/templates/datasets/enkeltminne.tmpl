@@ -8,13 +8,13 @@
 
 <dl>
     <dt>Beskrivelse</dt>
-    <dd><%= shorten(data.Beskrivelse, 300) || '' %></dd>
+    <dd><%= shorten(data.Beskrivelse, 300) || '--' %></dd>
     <dt>Enkeltminne-kategori</dt>
     <dd><%= Enkeltminnekategori %></dd>
     <dt>Enkeltminne-art</dt>
     <dd><%= Enkeltminneart %></dd>
     <dt>Datering</dt>
-    <dd><%= Datering %></dd>
+    <dd><%= data.Datering || '--' %></dd>
     <dt>Vernestatus</dt>
     <dd><%= Vernetype %></dd>
 </dl>
