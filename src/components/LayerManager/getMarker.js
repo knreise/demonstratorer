@@ -5,6 +5,29 @@ import '../../css/Leaflet.Photo.css';
 import './L.Knreise.icon';
 import {getImageCache, hexToRgba} from '../../util';
 
+
+
+
+var icons = {
+    marker: function (feature, styleFunc, selected) {
+        return L.Knreise.icon({
+            iconSize: [25, 32],
+            iconAnchor: [12, 30],
+            popupAnchor: [1, -32],
+            shadowAnchor: [10, 12],
+            shadowSize: [36, 16],
+            markerColor: styleFunc.get('fillcolor', feature, selected)
+        });
+    },
+    triangle: function (feature, styleFunc, selected) {
+        return L.divIcon({
+            className: '',
+            html: '<svg width="' + styleFunc.get('weight', feature, selected) + 'px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><polygon points="0,0 64,0 32,64" style="fill:' + styleFunc.get('fillcolor', feature, selected) + ';stroke:' + styleFunc.get('bordercolor', feature, selected) + ';stroke-width:4" /></svg>'
+        });
+    }
+};
+
+
 function getIcon(feature, styleFunc, selected) {
     if (styleFunc.isThumbnail && feature.properties && feature.properties.thumbnail) {
         var color = styleFunc.get('fillcolor', feature, selected);
@@ -21,10 +44,16 @@ function getIcon(feature, styleFunc, selected) {
             iconAnchor: [25, 25]
         });
     }
-    return L.Knreise.icon({
-        markerColor: styleFunc.get('fillcolor', feature, selected)
-    });
+
+    var iconFunc = (!!icons[styleFunc.icon])
+        ? icons[styleFunc.icon]
+        : icons['marker'];
+
+    return iconFunc(feature, styleFunc, selected);
 }
+
+
+
 
 function getMarker(feature, latlng, styleFunc, selected) {
 
@@ -34,14 +63,13 @@ function getMarker(feature, latlng, styleFunc, selected) {
     }
 
     if (styleFunc.isThumbnail && feature.properties && feature.properties.thumbnail) {
-
         return L.marker(latlng, {
             icon: getIcon(feature, styleFunc, selected),
             title: title,
             clickable: styleFunc.get('clickable', feature, selected)
         });
     }
-
+    
     if (styleFunc.isCircle) {
         return L.circleMarker(latlng, {
             radius: styleFunc.get('radius', feature, selected),
@@ -70,31 +98,31 @@ function createStyleString(styleDict) {
 
 function _getClusterThumbnail(images, numMarkers, color, borderWidth) {
 
-        var thumbnail = getImageCache(images[0], 50, 50);
+    var thumbnail = getImageCache(images[0], 50, 50);
 
-        var styleDict = {
-            'border-color': color,
-            'border-width': borderWidth,
-            'background-image': 'url(\'' + thumbnail + '\');'
-        };
-        if (images.length > 1) {
-            styleDict['box-shadow'] = _.map(_.rest(images), function (c, index) {
-                var width = (index + 1) * 2;
-                return '0 0 0 ' + width + 'px ' + c;
-            }).join(',') + ';';
-        }
+    var styleDict = {
+        'border-color': color,
+        'border-width': borderWidth,
+        'background-image': 'url(\'' + thumbnail + '\');'
+    };
+    if (images.length > 1) {
+        styleDict['box-shadow'] = _.map(_.rest(images), function (c, index) {
+            var width = (index + 1) * 2;
+            return '0 0 0 ' + width + 'px ' + c;
+        }).join(',') + ';';
+    }
 
-        var html = '<div class="outer">' +
-            '<div class="circle" style="' + createStyleString(styleDict) + '"></div>' +
-            '</div>' +
-            '<b>' + numMarkers + '</b>';
+    var html = '<div class="outer">' +
+        '<div class="circle" style="' + createStyleString(styleDict) + '"></div>' +
+        '</div>' +
+        '<b>' + numMarkers + '</b>';
 
-        return new L.DivIcon({
-            className: 'leaflet-marker-photo',
-            html: html,
-            iconSize: [60, 60],
-            iconAnchor: [30, 30]
-        });
+    return new L.DivIcon({
+        className: 'leaflet-marker-photo',
+        html: html,
+        iconSize: [60, 60],
+        iconAnchor: [30, 30]
+    });
 }
 
 
@@ -102,13 +130,13 @@ function getClusterIcon(cluster, styleFunc, selected) {
     var markers = cluster.getAllChildMarkers();
 
     var images = _.chain(markers)
-            .filter(function (marker) {
-                return !!marker.feature.properties.thumbnail;
-            })
-            .map(function (marker) {
-                return marker.feature.properties.thumbnail;
-            })
-            .value();
+        .filter(function (marker) {
+            return !!marker.feature.properties.thumbnail;
+        })
+        .map(function (marker) {
+            return marker.feature.properties.thumbnail;
+        })
+        .value();
 
     if (styleFunc.isThumbnail && images.length) {
 
@@ -124,8 +152,8 @@ function getClusterIcon(cluster, styleFunc, selected) {
     return new L.DivIcon({
         className: 'leaflet-marker-circle',
         html: '<div class="outer"><div class="circle" style="background-color: ' + hexToRgba(fillcolor, 0.4) + ';border-color:' + bordercolor + ';"></div></div><b>' + markers.length + '</b>',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
     });
 }
 
@@ -136,7 +164,7 @@ function getLeafletStyleFunction(styleFunc, selected) {
             color: styleFunc.get('bordercolor', feature, selected),
             weight: styleFunc.get('weight', feature, selected),
             fillOpacity: styleFunc.get('fillOpacity', feature, selected),
-            clickable: styleFunc.get('clickable', feature, selected),
+            clickable: styleFunc.get('clickable', feature, selected)
         };
     };
 }

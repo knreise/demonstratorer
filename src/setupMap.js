@@ -3,6 +3,7 @@ import 'font-awesome/css/font-awesome.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import L from 'leaflet';
 import * as _ from 'underscore';
+import turfBbox from '@turf/bbox';
 
 import {getDatasets, getDataset} from './datasets';
 import {
@@ -58,7 +59,7 @@ function getApi() {
 }
 
 function setupMap(api, datasets, options) {
-
+    console.log(options)
     if (!api) {
         api = getApi();
     }
@@ -119,8 +120,8 @@ function setupMap(api, datasets, options) {
                 filterGeom.addTo(map);
             }
             if (filterGeom && options.showGeom) {
-                 var inverted = getInverted(filterGeom);
-                 inverted.addTo(map);
+                var inverted = getInverted(filterGeom);
+                inverted.addTo(map);
             }
 
             var filter;
@@ -130,6 +131,17 @@ function setupMap(api, datasets, options) {
                 filter = !!filterGeom
                     ? createGeomFilter(filterGeom, options.buffer || 0)
                     : boundsToPoly(bounds);
+            }
+
+            var bbox = (!!filter)
+                ? turfBbox(filter)
+                : null;
+            if (bbox) {
+
+                map.setMaxBounds([
+                    [bbox[1], bbox[0]],
+                    [bbox[3], bbox[2]]
+                ]);
             }
 
             var loader = DatasetLoader(datasets, map, api, bounds, filter);
@@ -158,6 +170,10 @@ function setupMapFromUrl(datasetIds, options) {
 function setupMapFromQueryString(queryString) {
     var api = getApi();
     var params = parseQueryString(queryString);
+    if (params.komm || params.fylke) {
+        params.showGeom = params.showGeom || true;
+        params.geomFilter = params.geomFilter || true;
+    }
     var datasets = getDatasets(params.datasets);
     var options = _.omit(params, 'datasets');
     setupMap(api, datasets, options);

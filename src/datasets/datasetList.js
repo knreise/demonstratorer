@@ -216,7 +216,7 @@ var wikipediaNN = {
     template: 'wikipedia',
     description: 'Stedfestede artikler fra nynorskwikipedia',
     style: {
-        fillcolor: '#D14020',
+        fillcolor: '#542788',
         thumbnail: true
     }
 };
@@ -489,7 +489,10 @@ var ra_lokalitet = {
         useCentroid: true,
         template: 'enkeltminne',
         style: {
-            fillcolor: '#86592d'
+            fillcolor: '#86592d',
+            bordercolor: '#ffffff',
+            icon: 'triangle',
+            weight: 15
         },
         dataset: {
             api: 'kulturminne',
