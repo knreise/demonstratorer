@@ -190,7 +190,10 @@ export default function SidebarContent(wrapper, element, top, options) {
         var properties = _.clone(feature.properties);
         properties.provider = provider;
         var templateData = _.extend({image: null}, properties);
+
         templateData.data = templateData;
+
+        console.log(templateData)
         content += template(templateData);
 
         if (options.footerTemplate && properties.link) {

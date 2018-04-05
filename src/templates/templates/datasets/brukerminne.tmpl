@@ -1,40 +1,18 @@
-<h3><%= title %></h3>
 
-<% if(!_.isUndefined(arguments[0].extra)) { %>
-  <img class="fullwidth img-thumbnail" src="<%= extra.UrlTilBilde %>" />
-  <p class="small sidebar-image-text grey">
-  	<b><%= extra.Tittel %></b> - Foto: <%= extra.OpphavspersonFotograf %><br>
-  	<%= extra.Copyright %>
-  </p>
-  
-<% } %>
+<h3><%= data.name %></h3>
+
+<div id="image-strip"></div>
+
+<p>
+  <%= data.description.replace(/\n/g, '<br/>') %>
+
+  <% if(data.creator.type === 'Person') { %>
+  Lagt inn av: <%= data.creator.givenName %> <%= data.creator.familyName %>
+  <% } %>
+</p>
 
 
-<% if(!_.isUndefined(arguments[0].KortBeskrivelse)) { %>
-  <p><%= KortBeskrivelse %></p>
-<% } %>
+<a class="sidebar-link" href="<%= data.url %>" target="_blank">
+  <i class="fa fa-external-link-square"></i> Vis i Kulturminnesøk
+</a>
 
-<p><%= Beskrivelse %></p>
-
-<table class="sidebar-table">
-    <tr>
-      <td>Datering</td>
-      <td><%= Datering %></td>
-    </tr>
-    <tr>
-      <td>Opprinnelig funksjon</td>
-      <td><%= OpprinneligFunksjon %></td>
-    </tr>
-    <% if(!_.isUndefined(arguments[0].NåværendeFunksjon)) { %>
-    <tr>
-      <td>Nåværende funksjon</td>
-      <td><%= NåværendeFunksjon %></td>
-    </tr>
-    <% } %>
-    <% if(!_.isUndefined(arguments[0].Kilder)) { %>
-    <tr>
-      <td>Kilder</td>
-      <td><%= Kilder %></td>
-    </tr>
-    <% } %>
-</table>
