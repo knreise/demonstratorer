@@ -687,25 +687,21 @@ var kulturminner_krig = {
     //getFeatureData: kulturminneFunctions.getRaFeatureData,
     bbox: false,
     isStatic: true,
-    unclusterCount: 20,
+    unclusterCount: 20
     //init: kulturminneFunctions.initKulturminnePoly,
 };
 
 var brukerminner = {
-    name: 'Kulturminnesøk - brukerregistreringer',
-    hideFromGenerator: true,
+    name: 'Kulturminner - brukerminner',
+    hideFromGenerator: false,
     provider: 'Riksantikvaren',
     dataset: {
-        api: 'kulturminnedata',
-        layer: 2,
-        getExtraData: true,
-        extraDataLayer: 6,
-        matchId: 'KulturminnesokID'
+        api: 'brukerminner'
     },
     description: 'Brukerregistrerte data fra Riksantikvarens kulturminnesøk',
     template: 'brukerminne',
     style: {
-        fillcolor: '#436978',
+        fillcolor: '#38A9DC',
         circle: false,
         thumbnail: false
     }
