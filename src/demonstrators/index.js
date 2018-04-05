@@ -113,8 +113,7 @@ module.exports = {
                 ],
                 image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
                 description: '<p>Kulturminner og historie langs Nidelva i Trondheim kommune.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Trondheim byarkiv, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Milj&oslash;direktoratets verneomr&aring;der, Lokalhistoriewiki og Wikipedia.</p></br>',
-                /*line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',*/
-                line: 'http://localhost:9000/data/nidelva.kml',
+                line: 'http://kd-miniproxy.ra.no/miniProxy.php/http://knreise.no/demonstratorer/data/nidelva.kml',
                 buffer: 0.5,
                 layer: 'https://{s}.tiles.mapbox.com/v4/havardgj.9013e600/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaGF2YXJkZ2oiLCJhIjoiQTlGM3A3NCJ9.fDQKmxi1WcYfBUWm0cQrGg',
                 maxZoom: 18,
