@@ -14,9 +14,13 @@ module.exports = {
                     'folketelling',
                     'wikipedia',
                     'lokalwiki',
-                    'arkeologi',
-                    'historie',
-                    'kunst'
+                    'musit',
+                    'industrimuseum',
+                    'foto_sf',
+                    'kystreise',
+                    'dimu',
+                    'ra_kulturmiljo',
+                    'ra_lokalitet'
                 ],
                 'initUserPos': true,
                 'bbox': '4.0223174095,57.6773017445,30.9705657959,71.4034238089',
@@ -33,7 +37,8 @@ module.exports = {
             params: {
                 'datasets': [
                     'difo',
-                    //'ra_lokalitet', //TODO: this is slow/fails
+                    'ra_kulturmiljo',
+                    'ra_lokalitet',
                     'musit',
                     'dimu',
                     'wikipedia',
@@ -48,67 +53,25 @@ module.exports = {
             }
         },
         {
-            id: 'gudbrandsdalsleden',
-            name: 'Gudbrandsdalsleden',
-            description: 'Pilegrimsleden fra Oslo til Trondheim, med alt relevant innhold langs denne. Et bredt utvalg kilder med tanke på både de som følger leden og de som ferdes i områder der leden går.',
+            id: 'trondheim',
+            name: 'Trondheim kommune',
+            description: 'Historie og kulturminner i Trondheim.',
             params: {
                 datasets: [
                     'verneomr',
                     'historie',
                     'difo',
                     'trondheimbyarkiv',
-                    'wikipedia'
+                    'wikipedia',
+                    'lokalwiki'
                 ],
-                line: 'http://pilegrimsleden.no/assets/kml/gudbrands_062015_d.kml',
-                image: 'http://pilegrimsleden.no/uploads/made/uploads/images/Bilder_Gudbrandsdalsleden/RogerJensen_1000_575_90_s_c1.jpg',
-                description: '<p>Foto: Roger Jensen</p><p>Gudbrandsdalsleden - fra Oslo til Trondheim er en del av St. Olavsveiene til Trondheim.</p><p>Pilegrimsledene i Norge er turveger basert p&aring; tradisjonen for &aring; dra p&aring; pilegrimsvandring som oppstod etter Olav den Helliges d&oslash;d i 1030, og fortsatte utover middelalderen. Ledene bindes sammen av natur- og kulturminner med religi&oslash;s tilknytning til middelalderen, samt minner knyttet til Olavstradisjonen.</p></br>',
-                buffer: 2,
-                linecolor: '#000000'
-            }
-        },
-        {
-            id: 'dovre',
-            name: 'Dovre',
-            description: 'Kart med fokus på ett område og spesielt på arbeidet som er gjort med produksjon og bearbeiding av innhold og samarbeidet med Statens naturoppsyn om naturdata. Delvis en overlapp med Gudbrandsdalsleden, men en mulighet for å vise litt annet utvalg av innhold og en større bredde i innhold på grunn av begrensning til ett mer definert geografisk område.',
-            params: {
-                datasets: [
-                    'verneomr',
-                    'pilegrimsleden',
-                    'difo',
-                    'fangstgroper',
-                    'historie',
-                    'arkeologi',
-                    'artobs'
-                ],
-
-                komm: '0511',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
+                description: '<p>Kulturminner og historie i Trondheim kommune.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Trondheim byarkiv, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Milj&oslash;direktoratets verneomr&aring;der, Lokalhistoriewiki og Wikipedia.</p></br>',
+                /*line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',*/
+                komm: '1601',
                 geomFilter: true,
                 showGeom: true,
-                layer: 'norges_grunnkart',
-                image: 'http://media31.dimu.no/media/image/H-DF/DF.5444/13948?width=800&height=580',
-                description: '<p>Kart over Dovre med fokus på arbeid som er gjort med produksjon og bearbeiding av innhold og på samarbeidet med SNO om naturdata. Innhold fra Digitalt fortalt, Digitalt Museum, Riksantikvaren og Miljødirektoratet.</p>'
-            }
-        },
-        {
-            id: 'keiserstien',
-            name: 'Turistvegen over Folgefonna',
-            description: 'Historiske vandreruter er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. Turistvegen over Folgefonna er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
-            params: {
-                datasets: [
-                    'difo',
-                    'arkeologi',
-                    'historie',
-                    'ra_lokalitet',
-                    'brukerminner',
-                    'wikipedia'
-                ],
-                allstatic: true,
-                line: 'utno/2.8158',
-                buffer: 2,
-                linecolor: '#000',
-                layer: 'norges_grunnkart',
-                image: 'http://dms07.dimu.org/image/012wWX5cXPto?dimension=600x380',
-                description: '<p>Turistvegen over Folgefonna er en klassisk bretur, fra Sunndalen over Fonnabu/Folgefonna til Tokheim ved Sørfjorden.</p><p>«Folgefonnens is dækker det ujevne lands overflade, men selve fonnen er forholdsvis jevn i overflaten, og den syder sin rand udover til siderne og tildels sender den sin is langt ned i dalene». Slik ble Folgefonna skildret i «Norges Land og folk i 1896». Turistvegen over Folgefonna er en fottur som følger i sporene etter de europeiske turistene som flokket til fjord-Norge fra midten av 1800-tallet.</p></br>'
+                layer: 'norges_grunnkart_graatone'
             }
         },
         {
@@ -134,28 +97,6 @@ module.exports = {
             }
         },
         {
-            id: 'brudleruta',
-            name: 'Brudleruta mellom Sirdal og Kvinesdal',
-            description: 'Historiske vandreruter er et samarbeid mellom Den Norske Turistforening (DNT) og Riksantikvaren med mål om å øke kjennskapen til og bruken av gamle ferdselsruter med kulturhistoriske og friluftslivsmessige kvaliteter. Brudleruta er en av de utvalgte rutene og her vises ruta sammen med data fra aktuelle kilder i nærheten av denne.',
-            params: {
-                datasets: [
-                    'difo',
-                    'arkeologi',
-                    'historie',
-                    'ra_lokalitet',
-                    'brukerminner',
-                    'wikipedia'
-                ],
-                allstatic: true,
-                line: 'utno/2.17280',
-                buffer: 2,
-                linecolor: '#deb238',
-                layer: 'norges_grunnkart_graatone',
-                image: 'https://lokalhistoriewiki.no/images/thumb/Brudler.jpeg/320px-Brudler.jpeg',
-                description: '<p>Flyfoto av Brudelene på Josdalsheii i Sirdal kommune.</p><p>Foto: Torill Folkestad, fylkeskonservatoren i Vest-Agder. Lisens: CC BY SA</p><p>Brudleruta er en gammel ferdselsvei mellom Sirdal og Kvinesdal. Turen går gjennom et vakkert heielandskap med mange interessante kulturhistoriske spor.Underveis kan du se de historiske Brudlene. Navnet "brudle" betyr fra gammelt av "et brudefølge"</p></br>'
-            }
-        },
-        {
             id: 'nidelva',
             name: 'Nidelva',
             description: 'Historie og kulturminner langs Nidelva i Trondheim.',
@@ -166,12 +107,13 @@ module.exports = {
                     'difo',
                     'trondheimbyarkiv',
                     'wikipedia',
-                    'lokalwiki'
+                    'lokalwiki',
+                    'ra_kulturmiljo',
+                    'ra_lokalitet'
                 ],
                 image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',
                 description: '<p>Kulturminner og historie langs Nidelva i Trondheim kommune.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Trondheim byarkiv, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Milj&oslash;direktoratets verneomr&aring;der, Lokalhistoriewiki og Wikipedia.</p></br>',
-                /*line: 'http://www.knreise.no/miniProxy/miniProxy.php/http://knreise.no/demonstratorer/demonstratorer/nidelva.kml',*/
-                line: 'http://localhost:9000/data/nidelva.kml',
+                line: 'http://kd-miniproxy.ra.no/miniProxy.php/http://knreise.no/demonstratorer/data/nidelva.kml',
                 buffer: 0.5,
                 layer: 'https://{s}.tiles.mapbox.com/v4/havardgj.9013e600/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaGF2YXJkZ2oiLCJhIjoiQTlGM3A3NCJ9.fDQKmxi1WcYfBUWm0cQrGg',
                 maxZoom: 18,
@@ -179,28 +121,6 @@ module.exports = {
             }
         },
         {
-            id: 'akerselva',
-            name: 'Akerselva',
-            description: 'Historie og kulturminner langs Akerselva i Oslo.',
-            params: {
-                datasets: [
-                    'difo',
-                    'arkeologi',
-                    'historie',
-                    'ra_lokalitet',
-                    'brukerminner',
-                    'wikipedia'
-                ],
-                bbox: '10.749607086181639,59.91590263019011,10.759949684143066,59.922355662817154',
-                description: '<p class="small">Foto: Neupert, Herman Christian / Norsk Folkemuseum</p><p>Kulturminner og historie langs Akerselva og ved DOGA.</p><p>Denne kartl&oslash;sningen inkluderer data fra Riksantikvarens kulturminnes&oslash;k, Digitalt museum, Universitetsmuseene, Digitalt fortalt, Lokalhistoriewiki og Wikipedia.</p></br>',
-                layer: 'https://{s}.tiles.mapbox.com/v4/havardgj.9013e600/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaGF2YXJkZ2oiLCJhIjoiQTlGM3A3NCJ9.fDQKmxi1WcYfBUWm0cQrGg',
-                image: 'http://dms08.dimu.org/image/03VVkE6ET9?dimension=600x380',
-                geomFilter: true,
-                maxZoom: 18,
-                minZoom: 12
-            }
-        },
-           {
             id: 'riksantikvaren-test',
             name: 'Riksantikvaren Test',
             description: 'Historie og kulturminner langs Akerselva i Oslo.',
@@ -295,12 +215,21 @@ module.exports = {
                 minZoom: 3,
                 maxZoom: 13
             }
-        }/*,
+        },
         {
-            id: 'europeana_art_carto',
-            name: 'Europeana 280',
-            description: 'Map showing the locations of all works of art in the Europeana 280 collection. Data has been harvested from the Europeana API but has been manually refined for this presentation.'
-        }*/
+            id: 'kulturminnedata',
+            name: 'Kulturminnedata fra Riksantikvaren',
+            description: 'Kulturminner fra Riksantikvaren.',
+            params: {
+                datasets: [
+                    'ra_kulturmiljo',
+                    'ra_lokalitet_arkeologisk',
+                    'ra_lokalitet_kirkesteder',
+                    'ra_lokalitet_bebyggelse'
+                ],
+                'bbox': '4.0223174095,57.6773017445,30.9705657959,71.4034238089'
+            }
+        }
 
     ],
     demonstrators_extra: [

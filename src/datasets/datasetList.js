@@ -178,9 +178,10 @@ var industrimuseum = {
 };
 
 var foto_sf = {
+    name: 'Fylkesfoto Sogn og Fjordane',
     dataset: {
         api: 'norvegiana',
-        dataset: 'Foto-SF'
+        dataset: 'Fylkesfoto Sogn og Fjordane'
     },
     isStatic: false,
     bbox: false,
@@ -457,10 +458,10 @@ var arkiv_nordland = {
     provider: 'Arkiv i Nordland',
     hideFromGenerator: true,
     dataset: {
-            api: 'flickr',
-            user_id: 'arkivinordland',
-            accuracy: '10'
-        },
+        api: 'flickr',
+        user_id: 'arkivinordland',
+        accuracy: '10'
+    },
     template: 'flickr',
     //TODO: add style
     minZoom: 8
@@ -505,6 +506,119 @@ var ra_lokalitet = {
     }
 };
 
+
+var ra_lokalitet_arkeologisk = {
+    name: 'Arkeologiske kulturminner',
+    provider: 'Riksantikvaren',
+    template: 'kulturminne2',
+    dataset: {
+        api: 'kulturminne',
+        dataset: 'lokaliteter',
+        query: 'LokalitetskategoriID IN (\'L-ARK\')'
+    },
+    loadExtraData: true,
+    polygonsAsPoints: true,
+    loadSubLayer: true,
+    sublayerConfig: {
+        name: 'Enkeltminner',
+        provider: 'Riksantikvaren',
+        loadExtraData: true,
+        cluster: false,
+        useCentroid: true,
+        template: 'enkeltminne',
+        style: {
+            fillcolor: '#1D4953',
+            bordercolor: '#ffffff',
+            icon: 'triangle',
+            weight: 15
+        },
+        dataset: {
+            api: 'kulturminne',
+            dataset: 'enkeltminner'
+        }
+    },
+    polygonsAsPointsPixelThreshold: 50,
+    polygonsAsPointsZoomThreshold: 18,
+    style: {
+        fillcolor: '#1D4953'
+    }
+};
+
+var ra_lokalitet_kirkesteder = {
+    name: 'Kirkesteder',
+    provider: 'Riksantikvaren',
+    template: 'kulturminne2',
+    dataset: {
+        api: 'kulturminne',
+        dataset: 'lokaliteter',
+        query: 'LokalitetskategoriID IN (\'L-KRK\')'
+    },
+    loadExtraData: true,
+    polygonsAsPoints: true,
+    loadSubLayer: true,
+    sublayerConfig: {
+        name: 'Enkeltminner',
+        provider: 'Riksantikvaren',
+        loadExtraData: true,
+        cluster: false,
+        useCentroid: true,
+        template: 'enkeltminne',
+        style: {
+            fillcolor: '#866B2D',
+            bordercolor: '#ffffff',
+            icon: 'triangle',
+            weight: 15
+        },
+        dataset: {
+            api: 'kulturminne',
+            dataset: 'enkeltminner'
+        }
+    },
+    polygonsAsPointsPixelThreshold: 50,
+    polygonsAsPointsZoomThreshold: 18,
+    style: {
+        fillcolor: '#866B2D'
+    }
+};
+
+var ra_lokalitet_bebyggelse = {
+    name: 'Bebyggelse',
+    provider: 'Riksantikvaren',
+    template: 'kulturminne2',
+    dataset: {
+        api: 'kulturminne',
+        dataset: 'lokaliteter',
+        query: 'LokalitetskategoriID IN (\'L-BVF\')'
+    },
+    loadExtraData: true,
+    polygonsAsPoints: true,
+    loadSubLayer: true,
+    sublayerConfig: {
+        name: 'Enkeltminner',
+        provider: 'Riksantikvaren',
+        loadExtraData: true,
+        cluster: false,
+        useCentroid: true,
+        template: 'enkeltminne',
+        style: {
+            fillcolor: '#86592D',
+            bordercolor: '#ffffff',
+            icon: 'triangle',
+            weight: 15
+        },
+        dataset: {
+            api: 'kulturminne',
+            dataset: 'enkeltminner'
+        }
+    },
+    polygonsAsPointsPixelThreshold: 50,
+    polygonsAsPointsZoomThreshold: 18,
+    style: {
+        fillcolor: '#86592D'
+    }
+};
+
+
 var ra_kulturmiljo = {
     name: 'Kulturmiljø',
     provider: 'Riksantikvaren',
@@ -518,7 +632,7 @@ var ra_kulturmiljo = {
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
-        fillcolor: '#0000cc'
+        fillcolor: '#26315B'
     }
 };
 
@@ -1008,7 +1122,10 @@ export default function getDatasetList(api) {
         'ark_hist': ark_hist,
         'arkeologi': arkeologi,
         'historie': historie,
-        'kunst': kunst
+        'kunst': kunst,
+        'ra_lokalitet_arkeologisk': ra_lokalitet_arkeologisk,
+        'ra_lokalitet_kirkesteder': ra_lokalitet_kirkesteder,
+        'ra_lokalitet_bebyggelse': ra_lokalitet_bebyggelse
     };
 
     return list;
