@@ -527,7 +527,7 @@ var ra_lokalitet_arkeologisk = {
         useCentroid: true,
         template: 'enkeltminne',
         style: {
-            fillcolor: '#86592d',
+            fillcolor: '#1D4953',
             bordercolor: '#ffffff',
             icon: 'triangle',
             weight: 15
@@ -540,7 +540,7 @@ var ra_lokalitet_arkeologisk = {
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
-        fillcolor: '#86592d'
+        fillcolor: '#1D4953'
     }
 };
 
@@ -564,7 +564,7 @@ var ra_lokalitet_kirkesteder = {
         useCentroid: true,
         template: 'enkeltminne',
         style: {
-            fillcolor: '#86592d',
+            fillcolor: '#866B2D',
             bordercolor: '#ffffff',
             icon: 'triangle',
             weight: 15
@@ -577,7 +577,7 @@ var ra_lokalitet_kirkesteder = {
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
-        fillcolor: '#86592d'
+        fillcolor: '#866B2D'
     }
 };
 
@@ -601,7 +601,7 @@ var ra_lokalitet_bebyggelse = {
         useCentroid: true,
         template: 'enkeltminne',
         style: {
-            fillcolor: '#86592d',
+            fillcolor: '#86592D',
             bordercolor: '#ffffff',
             icon: 'triangle',
             weight: 15
@@ -614,7 +614,7 @@ var ra_lokalitet_bebyggelse = {
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
-        fillcolor: '#86592d'
+        fillcolor: '#86592D'
     }
 };
 
@@ -632,7 +632,7 @@ var ra_kulturmiljo = {
     polygonsAsPointsPixelThreshold: 50,
     polygonsAsPointsZoomThreshold: 18,
     style: {
-        fillcolor: '#0000cc'
+        fillcolor: '#26315B'
     }
 };
 
