@@ -7,7 +7,7 @@
   <%= data.description.replace(/\n/g, '<br/>') %>
 
   <% if(data.creator.type === 'Person') { %>
-  Lagt inn av: <%= data.creator.givenName %> <%= data.creator.familyName %>
+  <br/> Lagt inn av: <%= data.creator.givenName %> <%= data.creator.familyName %>
   <% } %>
 </p>
 
