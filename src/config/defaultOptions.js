@@ -4,6 +4,7 @@ const DEFAULT_OPTIONS = {
     showGeom: false,
     loactionHash: true,
     featureHash: true,
-    restrictMap: false
+    restrictMap: false,
+    initUserPos: false
 };
 export default DEFAULT_OPTIONS;

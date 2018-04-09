@@ -33,7 +33,6 @@ module.exports = {
             id: 'telemark',
             name: 'Telemark',
             description: 'Innhold fra hele Telemark med fokus på ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnesøk, brukerregistrert innhold i Kulturminnesøk, Digitalt fortalt, Wikipedia og Lokalhistoriewiki.',
-            image: 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200',
             params: {
                 'datasets': [
                     'difo',
@@ -48,8 +47,9 @@ module.exports = {
                 fylke: '8',
                 geomFilter: true,
                 showGeom: true,
-                'layer': 'norges_grunnkart_graatone',
-                'description': 'Innhold fra hele Telemark med fokus p&aring; ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnes&oring;k, brukerregistrert innhold i Kulturminnes&oring;k, Digitalt fortalt, Wikipedia og Lokalhistoriewiki.</br></br>'
+                layer: 'norges_grunnkart_graatone',
+                image: 'http://dms05.dimu.org/image/032s7YSB9xFJ?dimension=1200x1200',
+                description: 'Innhold fra hele Telemark med fokus p&aring; ulike former for kulturminner og kulturminnerelatert innhold - data fra Kulturminnes&oring;k, brukerregistrert innhold i Kulturminnes&oring;k, Digitalt fortalt, Wikipedia og Lokalhistoriewiki.</br></br>'
             }
         },
         {

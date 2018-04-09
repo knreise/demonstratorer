@@ -1,9 +1,8 @@
 import * as _ from 'underscore';
 
-import getDatasetList from './datasetList';
+import datasetList from './datasetList';
 
 export function getDataset(id) {
-    var datasetList = getDatasetList();
     if (!_.has(datasetList, id)) {
         console.error('missing datasetId: ', id);
         return null;
@@ -16,9 +15,9 @@ export function getDatasets(ids) {
         ids = ids.split(',');
     }
 
-    var datasetList = getDatasetList();
     return _.chain(ids)
-        .map(function (dataset) {
+        .map(function (datasetOrg) {
+            var dataset = _.clone(datasetOrg);
             var query;
             if (dataset.indexOf(':') > -1) {
                 var parts = dataset.split(':');

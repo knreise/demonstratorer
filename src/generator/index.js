@@ -11,7 +11,7 @@ import knreise_logo from '../images/knreise_logo.png';
 import '../css/generator.css';
 
 import {getCountyList, getMunicipalityList} from './api';
-import getDatasetList from '../datasets/datasetList';
+import datasetList from '../datasets/datasetList';
 
 import BasicInfo from './BasicInfo';
 import AreaChooser from './AreaChooser';
@@ -146,7 +146,7 @@ class Generator extends Component {
 
 ReactDOM.render(
     <Generator
-        datasets={getDatasetList()}
+        datasets={datasetList}
     />,
     document.getElementById('root')
 );
