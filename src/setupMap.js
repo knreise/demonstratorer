@@ -59,7 +59,6 @@ function getApi() {
 }
 
 function setupMap(api, datasets, options) {
-    console.log(options)
     if (!api) {
         api = getApi();
     }

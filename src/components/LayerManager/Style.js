@@ -22,7 +22,17 @@ export default function Style(style) {
         bordercolor: 'fillcolor'
     };
 
+    var mappings = {
+        weight: function (style) {
+            var borderWidth = _.has(style, 'borderWidth') 
+                ? style['borderWidth']
+                : STYLE_DEFAULTS['borderWidth'];
+            return parseInt(borderWidth.replace('px', ''), 10);
+        }
+    }
+
     function get(type, feature, selected) {
+
         if (selected) {
             return getSelected(type, feature);
         }
@@ -31,6 +41,8 @@ export default function Style(style) {
             value = style[type];
         } else if (_.has(fallbacks, type) && _.has(style, fallbacks[type])) {
             value = style[fallbacks[type]];
+        } else if(_.has(mappings, type)) {
+            value = mappings[type](style);
         } else {
             value = STYLE_DEFAULTS[type];
         }
@@ -46,6 +58,9 @@ export default function Style(style) {
     function getSelected(type, feature) {
         if (_.has(SELECTED_STYLE, type)) {
             return SELECTED_STYLE[type];
+        }
+        if (_.has(mappings, type)) {
+            return mappings[type](SELECTED_STYLE);
         }
         return get(type, feature, false);
     }
