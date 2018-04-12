@@ -9,7 +9,6 @@ var difo = {
     feedbackForm: true,
     style: {
         fillcolor: '#F69730',
-        circle: false,
         thumbnail: true
     }
 };
@@ -41,7 +40,6 @@ var dimu = {
     feedbackForm: true,
     style: {
         fillcolor: '#436978',
-        circle: false,
         thumbnail: true
     }
 };
@@ -85,7 +83,6 @@ var dimu_kunst = {
     isStatic: false,
     style: {
         fillcolor: '#436978',
-        circle: false,
         thumbnail: false
     }
 };
@@ -102,7 +99,6 @@ var dimu_not_kunst = {
     isStatic: false,
     style: {
         fillcolor: '#436978',
-        circle: false,
         thumbnail: false
     }
 };
@@ -133,7 +129,6 @@ var musit = {
     feedbackForm: true,
     style: {
         fillcolor: '#436978',
-        circle: false,
         thumbnail: true
     }
 };
@@ -315,8 +310,10 @@ var nasjonalbiblioteket_bygdebok = {
         thumbnail: false,
         fillcolor: '#744700',
         circle: true,
+        weight: 1,
         opacity: 0.8,
-        radius: 20},
+        radius: 20
+    },
     description: 'Bygdebøker og lokalhistorie fra Nasjonalbibliotket'
 };
 
@@ -492,7 +489,7 @@ var ra_lokalitet = {
             fillcolor: '#86592d',
             bordercolor: '#ffffff',
             icon: 'triangle',
-            weight: 15
+            size: 15
         },
         dataset: {
             api: 'kulturminne',
@@ -655,7 +652,6 @@ var kulturminner_arkeologisk = {
     //init: kulturminneFunctions.initKulturminnePoly,
     style: {
         fillcolor: '#436978',
-        circle: false,
         thumbnail: true
     }
 };
@@ -702,7 +698,6 @@ var brukerminner = {
     template: 'brukerminne',
     style: {
         fillcolor: '#38A9DC',
-        circle: false,
         thumbnail: false
     }
 };
@@ -846,11 +841,11 @@ var fangstgroper = {
         api: 'kulturminnedata'
     },
     template: 'fangstgrop',
-    //smallMarker: true,
     cluster: false,
     style: {
         fillcolor: '#000',
         circle: true,
+        weight: 1,
         radius: 1.5
     }
 };
@@ -966,7 +961,6 @@ var arkeologi = {
     minZoom: 14,
     style: {
         fillcolor: '#436978',
-        circle: false,
         thumbnail: true
     },
     datasets: [
@@ -983,7 +977,6 @@ var historie = {
     minZoom: 14,
     style: {
         fillcolor: '#D252B9',
-        circle: false,
         thumbnail: true
     },
     datasets: [
@@ -1001,7 +994,6 @@ var kunst = {
     name: 'Kunst',
     style: {
         fillcolor: '#72B026',
-        circle: false,
         thumbnail: true
     },
     datasets: [
@@ -1071,62 +1063,56 @@ var wikipedia_krig = {
     ]
 };
 
-export default function getDatasetList(api) {
-
-
-    var list = {
-        'difo': difo,
-        'difo_krig': difo_krig,
-        'verneomr': verneomr,
-        'artobs': artobs,
-        'folketelling': folketelling,
-        'jernbane': jernbane,
-        'jernbane_krig': jernbane_krig,
-        'dimu': dimu,
-        'musit': musit,
-        'industrimuseum': industrimuseum,
-        'kystreise': kystreise,
-        'dimufoto': dimufoto,
-        'dimu_stillimage': dimu_stillimage,
-        'dimu_krig': dimu_krig,
-        'wikipedia': wikipedia,
-        'wikipediaNN': wikipediaNN,
-        'lokalwiki': lokalwiki,
-        'wikipedia_krig': wikipedia_krig,
-        'ra_lokalitet': ra_lokalitet,
-        'ra_kulturmiljo': ra_kulturmiljo,
-        'brukerminner': brukerminner,
-        'brukerminner_ww2': brukerminner_ww2,
-        'groruddalen': groruddalen,
-        'norgerundt': norgerundt,
-        'arkivverket_bensinstasjoner': arkivverket_bensinstasjoner,
-        'nasjonalbiblioteket_bygdebok': nasjonalbiblioteket_bygdebok,
-        'pilegrimsleden': pilegrimsleden,
-        'fangstgroper': fangstgroper,
-        'foto_sf': foto_sf,
-        'arkiv_nordland': arkiv_nordland,
-        'kulturminnesok_flickr': kulturminnesok_flickr,
-        'riksarkivet': riksarkivet_flickr,
-        'nasjonalbiblioteket': nasjonalbiblioteket_flickr,
-        'oslobyarkiv': oslobyarkiv_flickr,
-        'trondheimbyarkiv': trondheimbyarkiv_flickr,
-        'nasjonalmuseet': nasjonalmuseet_flickr,
-        'nve': nve_flickr,
-        'vestfoldmuseene': vestfoldmuseene_flickr,
-        'perspektivet': perspektivet_flickr,
-        'nve_dammer': nve_dammer,
-        'nve_kraftverk': nve_kraftverk,
-        'nve_kraftledninger': nve_kraftledninger,
-        'nve_transformatorstasjoner': nve_transformatorstasjoner,
-        'nve_anlegg': nve_anlegg,
-        'ark_hist': ark_hist,
-        'arkeologi': arkeologi,
-        'historie': historie,
-        'kunst': kunst,
-        'ra_lokalitet_arkeologisk': ra_lokalitet_arkeologisk,
-        'ra_lokalitet_kirkesteder': ra_lokalitet_kirkesteder,
-        'ra_lokalitet_bebyggelse': ra_lokalitet_bebyggelse
-    };
-
-    return list;
+export default {
+    'difo': difo,
+    'difo_krig': difo_krig,
+    'verneomr': verneomr,
+    'artobs': artobs,
+    'folketelling': folketelling,
+    'jernbane': jernbane,
+    'jernbane_krig': jernbane_krig,
+    'dimu': dimu,
+    'musit': musit,
+    'industrimuseum': industrimuseum,
+    'kystreise': kystreise,
+    'dimufoto': dimufoto,
+    'dimu_stillimage': dimu_stillimage,
+    'dimu_krig': dimu_krig,
+    'wikipedia': wikipedia,
+    'wikipediaNN': wikipediaNN,
+    'lokalwiki': lokalwiki,
+    'wikipedia_krig': wikipedia_krig,
+    'ra_lokalitet': ra_lokalitet,
+    'ra_kulturmiljo': ra_kulturmiljo,
+    'brukerminner': brukerminner,
+    'brukerminner_ww2': brukerminner_ww2,
+    'groruddalen': groruddalen,
+    'norgerundt': norgerundt,
+    'arkivverket_bensinstasjoner': arkivverket_bensinstasjoner,
+    'nasjonalbiblioteket_bygdebok': nasjonalbiblioteket_bygdebok,
+    'pilegrimsleden': pilegrimsleden,
+    'fangstgroper': fangstgroper,
+    'foto_sf': foto_sf,
+    'arkiv_nordland': arkiv_nordland,
+    'kulturminnesok_flickr': kulturminnesok_flickr,
+    'riksarkivet': riksarkivet_flickr,
+    'nasjonalbiblioteket': nasjonalbiblioteket_flickr,
+    'oslobyarkiv': oslobyarkiv_flickr,
+    'trondheimbyarkiv': trondheimbyarkiv_flickr,
+    'nasjonalmuseet': nasjonalmuseet_flickr,
+    'nve': nve_flickr,
+    'vestfoldmuseene': vestfoldmuseene_flickr,
+    'perspektivet': perspektivet_flickr,
+    'nve_dammer': nve_dammer,
+    'nve_kraftverk': nve_kraftverk,
+    'nve_kraftledninger': nve_kraftledninger,
+    'nve_transformatorstasjoner': nve_transformatorstasjoner,
+    'nve_anlegg': nve_anlegg,
+    'ark_hist': ark_hist,
+    'arkeologi': arkeologi,
+    'historie': historie,
+    'kunst': kunst,
+    'ra_lokalitet_arkeologisk': ra_lokalitet_arkeologisk,
+    'ra_lokalitet_kirkesteder': ra_lokalitet_kirkesteder,
+    'ra_lokalitet_bebyggelse': ra_lokalitet_bebyggelse
 };

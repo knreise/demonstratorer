@@ -271,7 +271,8 @@ export default function LayerManager(map, loader) {
             layer.setIcon(getIcon(layer.feature, styleFunc, true));
             layer.setZIndexOffset(1000);
         } else if (layer.setStyle) {
-            layer.setStyle(getLeafletStyleFunction(styleFunc, true)(layer.feature));
+            var style = getLeafletStyleFunction(styleFunc, true)(layer.feature);
+            layer.setStyle(style);
         }
         selectedLayer = layer;
         selectedDataset = datasetId;

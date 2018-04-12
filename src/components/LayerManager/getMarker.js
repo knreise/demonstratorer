@@ -11,18 +11,23 @@ import {getImageCache, hexToRgba} from '../../util';
 var icons = {
     marker: function (feature, styleFunc, selected) {
         return L.Knreise.icon({
-            iconSize: [25, 32],
-            iconAnchor: [12, 30],
-            popupAnchor: [1, -32],
-            shadowAnchor: [10, 12],
-            shadowSize: [36, 16],
+            size: styleFunc.get('size', feature, selected),
+            borderWidth: styleFunc.get('borderWidth', feature, selected),
+            borderColor: styleFunc.get('bordercolor', feature, selected),
             markerColor: styleFunc.get('fillcolor', feature, selected)
         });
     },
     triangle: function (feature, styleFunc, selected) {
+
+        var style = createStyleString({
+            'fill': styleFunc.get('fillcolor', feature, selected),
+            'stroke': styleFunc.get('bordercolor', feature, selected),
+            'stroke-width': styleFunc.get('weight', feature, selected),
+        });
+
         return L.divIcon({
             className: '',
-            html: '<svg width="' + styleFunc.get('weight', feature, selected) + 'px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><polygon points="0,0 64,0 32,64" style="fill:' + styleFunc.get('fillcolor', feature, selected) + ';stroke:' + styleFunc.get('bordercolor', feature, selected) + ';stroke-width:4" /></svg>'
+            html: '<svg width="' + styleFunc.get('size', feature, selected) + 'px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><polygon points="0,0 64,0 32,64" style="' + style + '" /></svg>'
         });
     }
 };
@@ -30,11 +35,19 @@ var icons = {
 
 function getIcon(feature, styleFunc, selected) {
     if (styleFunc.isThumbnail && feature.properties && feature.properties.thumbnail) {
-        var color = styleFunc.get('fillcolor', feature, selected);
+        var color = styleFunc.get('bordercolor', feature, selected);
+        var borderWidth = styleFunc.get('borderWidth', feature, selected);
         var thumbnail = getImageCache(feature.properties.thumbnail, 50, 50);
 
+        var styleDict = {
+            'border-color': color,
+            'border-width': borderWidth,
+            'background-image': 'url(\'' + thumbnail + '\');'
+        };
+        var styleString = createStyleString(styleDict);
+
         var html = '<div class="outer">' +
-            '<div class="circle" style="background-image: url(\'' + thumbnail + '\');border-color:' + color + ';"></div>' +
+            '<div class="circle" style="' + styleString + '"></div>' +
             '</div>';
 
         return new L.DivIcon({
@@ -71,9 +84,10 @@ function getMarker(feature, latlng, styleFunc, selected) {
     }
     
     if (styleFunc.isCircle) {
+        console.log('circle', styleFunc.get('radius', feature, selected), styleFunc.get('weight', feature, selected))
         return L.circleMarker(latlng, {
             radius: styleFunc.get('radius', feature, selected),
-            weight: 1,
+            weight: styleFunc.get('weight', feature, selected),
             opacity: 1,
             color: styleFunc.get('bordercolor', feature, selected),
             fillColor: styleFunc.get('fillcolor', feature, selected),
@@ -96,9 +110,11 @@ function createStyleString(styleDict) {
     }).join(';');
 }
 
-function _getClusterThumbnail(images, numMarkers, color, borderWidth) {
+function _getClusterThumbnail(images, markers, styleFunc, selected) {
 
     var thumbnail = getImageCache(images[0], 50, 50);
+    var color = styleFunc.get('bordercolor', markers[0].feature, selected);
+    var borderWidth = styleFunc.get('borderWidth', markers[0].feature, selected);
 
     var styleDict = {
         'border-color': color,
@@ -112,10 +128,12 @@ function _getClusterThumbnail(images, numMarkers, color, borderWidth) {
         }).join(',') + ';';
     }
 
+    var styleString = createStyleString(styleDict);
+
     var html = '<div class="outer">' +
-        '<div class="circle" style="' + createStyleString(styleDict) + '"></div>' +
+        '<div class="circle" style="' + styleString + '"></div>' +
         '</div>' +
-        '<b>' + numMarkers + '</b>';
+        '<b>' + markers.length + '</b>';
 
     return new L.DivIcon({
         className: 'leaflet-marker-photo',
@@ -139,19 +157,22 @@ function getClusterIcon(cluster, styleFunc, selected) {
         .value();
 
     if (styleFunc.isThumbnail && images.length) {
-
-        return _getClusterThumbnail(
-            images,
-            markers.length,
-            styleFunc.get('bordercolor', markers[0].feature, selected),
-            styleFunc.get('borderWidth', markers[0].feature, selected)
-        );
+        return _getClusterThumbnail(images, markers, styleFunc, selected);
     }
+
     var fillcolor = styleFunc.get('fillcolor', markers[0].feature, selected);
     var bordercolor = styleFunc.get('bordercolor', markers[0].feature, selected);
+    var borderWidth = styleFunc.get('borderWidth', markers[0].feature, selected);
+
+    var styleString = createStyleString({
+        'background-color': hexToRgba(fillcolor, 0.4),
+        'border-color': bordercolor,
+        'border-width': borderWidth
+    });
+
     return new L.DivIcon({
         className: 'leaflet-marker-circle',
-        html: '<div class="outer"><div class="circle" style="background-color: ' + hexToRgba(fillcolor, 0.4) + ';border-color:' + bordercolor + ';"></div></div><b>' + markers.length + '</b>',
+        html: '<div class="outer"><div class="circle" style="' + styleString + '"></div></div><b>' + markers.length + '</b>',
         iconSize: [30, 30],
         iconAnchor: [15, 15]
     });
@@ -159,13 +180,14 @@ function getClusterIcon(cluster, styleFunc, selected) {
 
 function getLeafletStyleFunction(styleFunc, selected) {
     return function (feature) {
-        return {
+        var style = {
             fillColor: styleFunc.get('fillcolor', feature, selected),
             color: styleFunc.get('bordercolor', feature, selected),
-            weight: styleFunc.get('weight', feature, selected),
             fillOpacity: styleFunc.get('fillOpacity', feature, selected),
-            clickable: styleFunc.get('clickable', feature, selected)
+            clickable: styleFunc.get('clickable', feature, selected),
+            weight: styleFunc.get('weight', feature, selected)
         };
+        return style;
     };
 }
 
