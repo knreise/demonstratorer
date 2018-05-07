@@ -59,6 +59,17 @@ function _createFWImage(mediaObject) {
     return container;
 }
 
+function _createUserImage(mediaObject) {
+    var container = $('<div class="image with-caption"></div>');
+    var img = $('<img class="thumbnail fullwidth" src="' + mediaObject.image + '" />');
+    container.append(img);
+    _createFullsize(mediaObject, img);
+    container.append('<p>Beskrivelse: ' + mediaObject.description + '</p>');
+    container.append('<p>Fotograf: ' + mediaObject.creator + '</p>');
+    container.append('<p>Klausul/ Vilkår for bruk: ' + mediaObject.license + '</p>');
+    return container;
+}
+
 function _createVideo(mediaObject) {
     var src = mediaObject.url;
     if (src.indexOf('mp4') !== -1) {
@@ -84,6 +95,7 @@ function _createCaptionedImage(mediaObject) {
 
 var generators = {
     'image': _createImage,
+    'brukerbilde': _createUserImage,
     'fotoweb_image': _createFWImage,
     'video': _createVideo,
     'sound': _createSound,
@@ -91,6 +103,7 @@ var generators = {
 };
 
 function _getMarkup(mediaObject) {
+    console.log(mediaObject);
     if (_.has(generators, mediaObject.type)) {
         return generators[mediaObject.type](mediaObject);
     }
