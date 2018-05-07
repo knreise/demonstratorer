@@ -114,7 +114,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         }
 
         var li = $(options.listElementTemplate({
-            title: feature.properties.title,
+            title: !!feature.properties.title ? feature.properties.title : 'Uten navn',
             marker: marker
         }));
 
@@ -165,7 +165,6 @@ export default function SidebarContent(wrapper, element, top, options) {
     }
 
     function _doShowFeature(feature, callbacks, index, numFeatures) {
-
         var dataset = feature.dataset;
         var template = dataset.template;
         var img = feature.properties.images;
