@@ -690,6 +690,7 @@ var kulturminner_krig = {
 var brukerminner = {
     name: 'Kulturminner - brukerminner',
     hideFromGenerator: false,
+    loadExtraData: true,
     provider: 'Riksantikvaren',
     dataset: {
         api: 'brukerminner'
