@@ -121,67 +121,6 @@ module.exports = {
             }
         },
         {
-            id: 'riksantikvaren-test',
-            name: 'Riksantikvaren Test',
-            description: 'Historie og kulturminner langs Akerselva i Oslo.',
-            params: {
-                datasets: [
-                    'ra_kulturmiljo',
-                    'ra_lokalitet'
-                ],
-                bbox: '10.749607086181639,59.91590263019011,10.759949684143066,59.922355662817154',
-                description: 'tester',
-                geomFilter: true,
-                maxZoom: 18,
-                minZoom: 12
-            }
-        },
-        {
-            id: 'foto',
-            name: 'Historiske foto fra hele Norge',
-            description: 'Historiske foto fra lokale, regionale og nasjonale fotosamlinger.',
-            params: {
-                datasets: [
-                    'dimu_stillimage',
-                    'riksarkivet',
-                    'nasjonalbiblioteket',
-                    'trondheimbyarkiv',
-                    'oslobyarkiv',
-                    'vestfoldmuseene',
-                    'foto_sf',
-                    'arkiv_nordland',
-                    'nve'
-                ],
-                image: 'http://dms09.dimu.org/image/022s7YYpfm9v?dimension=600x380',
-                description: '<p class="small">Gjendesheim, V&aring;g&aring; 1935. Foto: Neupert, Herman Christian / Norsk Folkemuseum</p><p>Historiske foto fra ulike arkiv og samlinger i hele landet.</p><p>Dette kartet viser bilder fra Digitalt museum, Nasjonalbiblioteket, Riksarkivet, Trondheim byarkiv, Oslo byarkiv, Vestfoldmuseene, Fylkesarkivet i Sogn og Fjordane, Arkiv i Nordland og NVE.</p></br>',
-                bbox: '4.0223174095,57.6773017445,30.9705657959,71.4034238089',
-                layer: 'norges_grunnkart',
-                maxZoom: 18,
-                minZoom: 5
-            }
-        },
-        {
-            id: '2verdenskrig',
-            name: 'Krigens kulturminner',
-            description: 'Kulturminner fra 2. verdenskrig. Eget kartgrunnlag fra Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.',
-            params: {
-                datasets: [
-                    'difo_krig',
-                    'jernbane_krig',
-                    //'kulturminner_krig',
-                    'brukerminner_ww2',
-                    'wikipedia_krig',
-                    'dimu_krig',
-                    'arkiv_nordland'
-                ],
-                bbox: '-3.33984375,53.64463782485651,37.6171875,75.0956327285438',
-                description: '<p class="small"><b>Dombås</b> - Kommer</p><p>Kulturminner fra 2. verdenskrig. Eget kartgrunnlag fra Mapbox og innhold knyttet til 2. verdenskrig fra Digitalt Fortalt, Jernbanemuseet, Riksantikvaren, Wikipedia og Digitalt Museum.</p>',
-                geomFilter: true,
-                showGeom: true,
-                layer: 'https://{s}.tiles.mapbox.com/v4/atlefren.a9d766af/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXRsZWZyZW4iLCJhIjoiblVybXMyYyJ9.tFyswxpRSc5XPLeIzeR29A'
-            }
-        },
-        {
             id: 'bensinstasjoner',
             name: 'Historiske bensinstasjoner',
             description: 'Historiske bensinstasjoner fra Riksarkivets fotosamlinger',
@@ -196,24 +135,6 @@ module.exports = {
                 showGeom: true,
                 showScaleBar: true,
                 minZoom: 5
-            }
-        },
-        {
-            id: 'NVE',
-            name: 'NVE - "kulturminner i kart"',
-            description: 'Kulturminner fra NVE (Norges vassdrags- og energidirektorat).',
-            params: {
-                datasets: [
-                    'nve_dammer',
-                    'nve_kraftverk',
-                    'nve_kraftledninger',
-                    'nve_transformatorstasjoner',
-                    'nve_anlegg'
-                ],
-                bbox: '-4.5703125,56.9449741808516,35.5078125,80.70399666821143', //'-11.25,25.16517336866393,46.40625,82.02137801950887',
-                layer: 'europa',
-                minZoom: 3,
-                maxZoom: 13
             }
         },
         {
