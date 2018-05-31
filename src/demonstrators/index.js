@@ -81,7 +81,7 @@ module.exports = {
             params: {
                 datasets: [
                     'difo',
-                    'arkeologi',
+                    //'arkeologi',
                     'historie',
                     'ra_lokalitet',
                     'brukerminner',

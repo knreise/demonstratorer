@@ -954,7 +954,7 @@ var ark_hist = {
     ],
     description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
 };
-
+/*
 var arkeologi = {
     grouped: true,
     commonCluster: true,
@@ -970,7 +970,7 @@ var arkeologi = {
     ],
     description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
 };
-
+*/
 var historie = {
     grouped: true,
     commonCluster: true,
@@ -1110,7 +1110,7 @@ export default {
     'nve_transformatorstasjoner': nve_transformatorstasjoner,
     'nve_anlegg': nve_anlegg,
     'ark_hist': ark_hist,
-    'arkeologi': arkeologi,
+    //'arkeologi': arkeologi,
     'historie': historie,
     'kunst': kunst,
     'ra_lokalitet_arkeologisk': ra_lokalitet_arkeologisk,
