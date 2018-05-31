@@ -188,11 +188,12 @@ export default function SidebarContent(wrapper, element, top, options) {
         }
         var color = getColor(feature);
 
-        var provider = dataset.provider || dataset.name;
-        var content = '<span class="providertext" style="color:' + color + ';">' + provider + '</span>';
+        var content = (!!dataset.provider)
+            ? `<h4 class="providertext" style="color:${color};">${dataset.name} <small>${dataset.provider}</small></h4>`
+            : `<h4 class="providertext" style="color:${color};">${dataset.name}</h4>`;
 
         var properties = _.clone(feature.properties);
-        properties.provider = provider;
+        properties.provider = dataset.provider;
         var templateData = _.extend({image: null}, properties);
 
         templateData.data = templateData;
