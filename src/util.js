@@ -125,7 +125,14 @@ export function parseQueryString(qs) {
         } else if (value === 'false') {
             value = false;
         }
-        acc[qs[0]] = value;
+        if (_.has(acc, qs[0])) {
+            if (!_.isArray(acc[qs[0]])) {
+                acc[qs[0]] = [acc[qs[0]]];
+            }
+            acc[qs[0]].push(value);
+        } else {
+            acc[qs[0]] = value;
+        }
         return acc;
     }, {});
 }

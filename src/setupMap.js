@@ -169,11 +169,12 @@ function setupMapFromUrl(datasetIds, options) {
 function setupMapFromQueryString(queryString) {
     var api = getApi();
     var params = parseQueryString(queryString);
+
     if (params.komm || params.fylke) {
         params.showGeom = params.showGeom || true;
         params.geomFilter = params.geomFilter || true;
     }
-    var datasets = getDatasets(params.datasets);
+    var datasets = getDatasets(params.datasets || params.dataset);
     var options = _.omit(params, 'datasets');
     setupMap(api, datasets, options);
 };

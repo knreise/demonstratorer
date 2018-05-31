@@ -23,6 +23,12 @@ function createFilterString(selectedDataset, dataset) {
 
 }
 
+function createDatasetParams(datasets) {
+    return _.map(datasets, function (dataset) {
+        return 'dataset=' + encodeURIComponent(dataset);
+    }).join('&');
+}
+
 function getLink(config, datasets) {
     var location = window.location;
     var path = location.pathname.replace('/generator.html', '/config.html');
@@ -39,16 +45,20 @@ function getLink(config, datasets) {
 
     _.extend(params, getAreaParams(config.area));
 
-    params['datasets'] = _.map(config.datasets, function (selectedDataset) {
+    var datasets = _.map(config.datasets, function (selectedDataset) {
         var dataset = datasets[selectedDataset.id];
 
         if (dataset.filterOptions && selectedDataset.filters) {
             return `${selectedDataset.id}:${createFilterString(selectedDataset, dataset)}`;
         }
         return selectedDataset.id;
-    }).join(',');
+    });
 
-    return `${location.protocol}//${location.host}${path}?${createQueryParameterString(params)}`;
+    //params['datasets'] = datasets.join(',');
+
+    var paramString = createQueryParameterString(params);
+    paramString += `&${createDatasetParams(datasets)}`;
+    return `${location.protocol}//${location.host}${path}?${paramString}`;
 }
 
 
