@@ -633,60 +633,6 @@ var ra_kulturmiljo = {
     }
 };
 
-
-var kulturminner_arkeologisk = {
-    id: 'riksantikvaren',
-    name: 'Riksantikvaren',
-    provider: 'Riksantikvaren',
-    dataset: {
-        filter: 'FILTER (!regex(?loccatlabel, "^Arkeologisk", "i"))',
-        api: 'kulturminnedataSparql'
-        //kommune: komm,
-        //fylke: fylke
-    },
-    //getFeatureData: kulturminneFunctions.getRaFeatureData,
-    template: 'ra_sparql',
-    bbox: false,
-    isStatic: false,
-    unclusterCount: 20,
-    //init: kulturminneFunctions.initKulturminnePoly,
-    style: {
-        fillcolor: '#436978',
-        thumbnail: true
-    }
-};
-
-var kulturminner_krig = {
-    id: 'riksantikvaren',
-    name: 'Riksantikvaren',
-    hideFromGenerator: true,
-    provider: 'Riksantikvaren',
-    dataset: {
-        api: 'kulturminnedataSparql',
-        sparqlQuery: ' select distinct ?id ?name ?description ?loccatlabel ?img (SAMPLE(?point) as ?point)  {' +
-        ' ?id a ?type ;' +
-        '    rdfs:label ?name ;' +
-        ' <https://data.kulturminne.no/askeladden/schema/beskrivelse> ?description ;' +
-        ' <https://data.kulturminne.no/askeladden/schema/lokalitetskategori> ?loccat ;' +
-        ' <https://data.kulturminne.no/askeladden/schema/geo/point/etrs89> ?point .' +
-        ' ?loccat rdfs:label ?loccatlabel .' +
-        ' FILTER regex(?description, "#andreverdenskrig", "i" )' +
-        ' optional {' +
-        ' ?picture <https://data.kulturminne.no/bildearkivet/schema/lokalitet> ?id .' +
-        ' ?picture <https://data.kulturminne.no/schema/source-link> ?link' +
-        ' BIND(REPLACE(STR(?id), "https://data.kulturminne.no/askeladden/lokalitet/", "") AS ?lokid)' +
-        ' BIND(bif:concat("http://kulturminnebilder.ra.no/fotoweb/cmdrequest/rest/PreviewAgent.fwx?ar=5001&sz=600&rs=0&pg=0&sr=", ?lokid) AS ?img)' +
-        '    }' +
-        ' }'
-    },
-    template: 'ra_sparql',
-    //getFeatureData: kulturminneFunctions.getRaFeatureData,
-    bbox: false,
-    isStatic: true,
-    unclusterCount: 20
-    //init: kulturminneFunctions.initKulturminnePoly,
-};
-
 var brukerminner = {
     name: 'Kulturminner - brukerminner',
     hideFromGenerator: false,
