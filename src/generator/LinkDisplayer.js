@@ -15,7 +15,15 @@ function getAreaParams(areaConf) {
 
 }
 
-function getLink(config) {
+function createFilterString(selectedDataset, dataset) {
+    return _.map(selectedDataset.filters, function (value, key) {
+        var index = dataset.filterOptions.filterVariables.indexOf(key);
+        return `${index};${value}`;
+    }).join(':');
+
+}
+
+function getLink(config, datasets) {
     var location = window.location;
     var path = location.pathname.replace('/generator.html', '/config.html');
 
@@ -31,11 +39,13 @@ function getLink(config) {
 
     _.extend(params, getAreaParams(config.area));
 
-    params['datasets'] = _.map(config.datasets, function (dataset) {
-        if (dataset.topics) {
-            return `${dataset.id}:${dataset.topics}`;
+    params['datasets'] = _.map(config.datasets, function (selectedDataset) {
+        var dataset = datasets[selectedDataset.id];
+
+        if (dataset.filterOptions && selectedDataset.filters) {
+            return `${selectedDataset.id}:${createFilterString(selectedDataset, dataset)}`;
         }
-        return dataset.id;
+        return selectedDataset.id;
     }).join(',');
 
     return `${location.protocol}//${location.host}${path}?${createQueryParameterString(params)}`;
@@ -44,7 +54,7 @@ function getLink(config) {
 
 export default function LinkDisplayer(props) {
 
-    var link = getLink(props.config);
+    var link = getLink(props.config, props.datasets);
     var linkTag;
     if (link) {
         linkTag = (

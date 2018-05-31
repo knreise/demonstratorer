@@ -5,7 +5,11 @@ var difo = {
     template: 'digitalt_fortalt',
     noListThreshold: Infinity,
     description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
-    allowTopic: true,
+    //allowTopic: true,
+    filterOptions: {
+        'filterVariables': ['emneord'],
+        'filterType': 'norvegiana'
+    },
     feedbackForm: true,
     style: {
         fillcolor: '#F69730',
@@ -474,6 +478,10 @@ var ra_lokalitet = {
     dataset: {
         api: 'kulturminne',
         dataset: 'lokaliteter'
+    },
+    filterOptions: {
+        'filterVariables': ['Lokalitetskategori', 'Lokalitetsart'],
+        'filterType': 'kulturminne'
     },
     loadExtraData: true,
     polygonsAsPoints: true,
