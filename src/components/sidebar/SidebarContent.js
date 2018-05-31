@@ -4,6 +4,7 @@ import {getImageCache, isInIframe} from '../../util';
 
 import PositionDisplayer from './PositionDisplayer';
 import MediaCarousel from './MediaCarousel';
+import {hexToRgba} from '../../util';
 
 window.shorten = function (str, maxLen) {
     if (!str) {
@@ -109,7 +110,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         } else {
             marker = options.markerTemplate({
                 icon: '',
-                color: color
+                color: hexToRgba(color, 0.2)
             });
         }
 
