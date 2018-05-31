@@ -5,6 +5,7 @@ import {getImageCache, isInIframe} from '../../util';
 import PositionDisplayer from './PositionDisplayer';
 import MediaCarousel from './MediaCarousel';
 import {hexToRgba} from '../../util';
+import Style from '../LayerManager/Style';
 
 window.shorten = function (str, maxLen) {
     if (!str) {
@@ -56,6 +57,12 @@ export default function SidebarContent(wrapper, element, top, options) {
         */
     }
 
+    function getColor(feature) {
+        var dataset = feature.dataset;
+        var styleFunc = Style(dataset.style);
+        return styleFunc.get('bordercolor', feature, false);
+    }
+
     function _createListCallbacks(feature, index, features, close) {
         var prev;
         if (index > 0) {
@@ -97,10 +104,7 @@ export default function SidebarContent(wrapper, element, top, options) {
 
     function _createListElement(feature, index, features) {
         var marker;
-        var dataset = feature.dataset;
-        //TODO get color for feature
-        //var color = KR.Style.colorForFeature(feature, true);
-        var color = dataset.color;
+        var color = getColor(feature);
         if (feature.properties.thumbnail) {
             marker = options.thumbnailTemplate({
                 thumbnail: getImageCache(feature.properties.thumbnail, 80, 60),
@@ -182,7 +186,7 @@ export default function SidebarContent(wrapper, element, top, options) {
         } else {
             feature.properties.license = feature.properties.license;
         }
-        var color = dataset.color;
+        var color = getColor(feature);
 
         var provider = dataset.provider || dataset.name;
         var content = '<span class="providertext" style="color:' + color + ';">' + provider + '</span>';
