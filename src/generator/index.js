@@ -136,13 +136,15 @@ class Generator extends Component {
                                 onChange={this.onChange} />
                         </CollapsePanel>
                     </div>
-                    <LinkDisplayer config={this.state.config} />
+                    <LinkDisplayer
+                        datasets={this.props.datasets}
+                        config={this.state.config} />
                 </form>
             </div>
         );
     }
 };
-
+console.log(datasetList)
 
 ReactDOM.render(
     <Generator

@@ -15,7 +15,21 @@ function getAreaParams(areaConf) {
 
 }
 
-function getLink(config) {
+function createFilterString(selectedDataset, dataset) {
+    return _.map(selectedDataset.filters, function (value, key) {
+        var index = dataset.filterOptions.filterVariables.indexOf(key);
+        return `${index};${value}`;
+    }).join(':');
+
+}
+
+function createDatasetParams(datasets) {
+    return _.map(datasets, function (dataset) {
+        return 'dataset=' + encodeURIComponent(dataset);
+    }).join('&');
+}
+
+function getLink(config, datasets) {
     var location = window.location;
     var path = location.pathname.replace('/generator.html', '/config.html');
 
@@ -31,20 +45,26 @@ function getLink(config) {
 
     _.extend(params, getAreaParams(config.area));
 
-    params['datasets'] = _.map(config.datasets, function (dataset) {
-        if (dataset.topics) {
-            return `${dataset.id}:${dataset.topics}`;
-        }
-        return dataset.id;
-    }).join(',');
+    var datasets = _.map(config.datasets, function (selectedDataset) {
+        var dataset = datasets[selectedDataset.id];
 
-    return `${location.protocol}//${location.host}${path}?${createQueryParameterString(params)}`;
+        if (dataset.filterOptions && selectedDataset.filters) {
+            return `${selectedDataset.id}:${createFilterString(selectedDataset, dataset)}`;
+        }
+        return selectedDataset.id;
+    });
+
+    //params['datasets'] = datasets.join(',');
+
+    var paramString = createQueryParameterString(params);
+    paramString += `&${createDatasetParams(datasets)}`;
+    return `${location.protocol}//${location.host}${path}?${paramString}`;
 }
 
 
 export default function LinkDisplayer(props) {
 
-    var link = getLink(props.config);
+    var link = getLink(props.config, props.datasets);
     var linkTag;
     if (link) {
         linkTag = (

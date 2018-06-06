@@ -6,7 +6,10 @@ var difo = {
     template: 'digitalt_fortalt',
     noListThreshold: Infinity,
     description: 'Kulturrådets tjeneste for personlige fortellinger fra kulturinstitusjoner og privatpersoner.',
-    allowTopic: true,
+    filterOptions: {
+        'filterVariables': ['emneord'],
+        'filterType': 'norvegiana'
+    },
     feedbackForm: true,
     style: {
         fillcolor: '#F69730',
@@ -37,7 +40,10 @@ var dimu = {
     dataset: {dataset: 'DiMu', api: 'norvegiana'},
     template: 'digitalt_museum',
     description: 'Alle stedfestede data fra Digitalt Museum',
-    allowTopic: true,
+    filterOptions: {
+        'filterVariables': ['emneord'],
+        'filterType': 'norvegiana'
+    },
     feedbackForm: true,
     style: {
         fillcolor: '#436978',
@@ -126,7 +132,10 @@ var musit = {
     dataset: {dataset: 'MUSIT', api: 'norvegiana'},
     template: 'musit',
     description: 'Arkeologidata fra Universitetsmuseene (Musit)',
-    allowTopic: true,
+    filterOptions: {
+        'filterVariables': ['emneord'],
+        'filterType': 'norvegiana'
+    },
     feedbackForm: true,
     style: {
         fillcolor: '#436978',
@@ -141,7 +150,10 @@ var kystreise = {
     dataset: {dataset: 'Kystreise', api: 'norvegiana'},
     //TODO: add style
     description: 'Alle stedfestede data fra Kystreise',
-    allowTopic: true,
+    filterOptions: {
+        'filterVariables': ['emneord'],
+        'filterType': 'norvegiana'
+    },
     feedbackForm: true
 };
 
@@ -169,7 +181,10 @@ var industrimuseum = {
     dataset: {dataset: 'Industrimuseum', api: 'norvegiana'},
     //TODO: add style
     description: 'Alle stedfestede data fra Industrimuseum',
-    allowTopic: true,
+    filterOptions: {
+        'filterVariables': ['emneord'],
+        'filterType': 'norvegiana'
+    },
     feedbackForm: true
 };
 
@@ -476,6 +491,10 @@ var ra_lokalitet = {
     dataset: {
         api: 'kulturminne',
         dataset: 'lokaliteter'
+    },
+    filterOptions: {
+        'filterVariables': ['Lokalitetskategori', 'Lokalitetsart'],
+        'filterType': 'kulturminne'
     },
     loadExtraData: true,
     polygonsAsPoints: true,

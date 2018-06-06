@@ -1,23 +1,34 @@
 import React, {Component} from 'react';
 import * as _ from 'underscore';
 
-function Dataset(props) {
-    var emneord;
-    if (props.dataset.allowTopic) {
-        emneord = (
-            <p className="list-group-item-text" style={{paddingTop: '5px'}}>
-                <input
-                    className="form-control input-sm"
-                    type="text"
-                    value={props.topics || ''}
-                    onChange={e => props.setTopics(props.dataset.id, e.target.value)}
-                    placeholder="emneord"
-                    disabled={!props.selected} />
-            </p>
-        );
+function FilterList(props) {
+    if (!props.dataset.filterOptions) {
+        return null;
     }
+    var filters = props.filters || {};
     return (
-        <div className="list-group-item" style={{float: 'left', height: '135px', width: '360px'}}>
+        <p className="list-group-item-text" style={{paddingTop: '5px'}}>
+            {_.map(props.dataset.filterOptions.filterVariables, function (f) {
+                return (
+                    <input
+                        className="form-control input-sm"
+                        type="text"
+                        value={filters[f] || ''}
+                        onChange={e => props.setFilter(props.dataset.id, f, e.target.value)}
+                        style={{'marginBottom': '3px'}}
+                        placeholder={f}
+                        key={f}
+                        disabled={!props.selected} />
+                );
+            })}
+        </p>
+    );
+}
+
+function Dataset(props) {
+
+    return (
+        <div className="list-group-item" style={{float: 'left', height: '145px', width: '360px'}}>
             <div className="checkbox">
                 <label>
                     <input
@@ -31,7 +42,11 @@ function Dataset(props) {
             <p className="list-group-item-text">
                 {props.dataset.description}
             </p>
-            {emneord}
+            <FilterList
+                dataset={props.dataset}
+                setFilter={props.setFilter}
+                filters={props.filters}
+                selected={props.selected} />
         </div>
     );
 }
@@ -43,7 +58,7 @@ export default class DatasetChooser extends Component {
     constructor(props) {
         super(props);
         this.toggleDataset = this.toggleDataset.bind(this);
-        this.setTopics = this.setTopics.bind(this);
+        this.setFilter = this.setFilter.bind(this);
     }
 
     toggleDataset(datasetId, isSelected) {
@@ -58,10 +73,13 @@ export default class DatasetChooser extends Component {
         this.props.onChange('datasets', selected);
     }
 
-    setTopics(datasetId, topics) {
+    setFilter(datasetId, filterId, filters) {
         var selected = _.map(this.props.config.datasets, function (ds) {
             if (ds.id === datasetId) {
-                ds.topics = topics;
+                if (!ds.filters) {
+                    ds.filters = {};
+                }
+                ds.filters[filterId] = filters;
             }
             return ds;
         });
@@ -79,7 +97,7 @@ export default class DatasetChooser extends Component {
                                 return {
                                     id: key,
                                     name: dataset.name || key,
-                                    allowTopic: dataset.allowTopic,
+                                    filterOptions: dataset.filterOptions,
                                     description: dataset.description || 'Ingen beskrivelse',
                                     hideFromGenerator: _.has(dataset, 'hideFromGenerator')
                                         ? dataset.hideFromGenerator
@@ -92,8 +110,8 @@ export default class DatasetChooser extends Component {
                                 return (
                                     <Dataset
                                         toggleDataset={this.toggleDataset}
-                                        topics={isSelected ? _.findWhere(this.props.config.datasets, {id: dataset.id}).topics : ''}
-                                        setTopics={this.setTopics}
+                                        filters={isSelected ? _.findWhere(this.props.config.datasets, {id: dataset.id}).filters : {}}
+                                        setFilter={this.setFilter}
                                         selected={isSelected}
                                         key={dataset.id}
                                         dataset={dataset}/>
