@@ -907,6 +907,22 @@ var ark_hist = {
     description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
 };
 
+var kulturminnedata = {
+    grouped: true,
+    commonCluster: true,
+    name: 'Kulturminnedata',
+    style: {
+        fillcolor: '#86592d',
+        thumbnail: true
+    },
+    datasets: [
+        ra_lokalitet,
+        ra_kulturmiljo
+    ],
+    description: 'Kulturminnedata fra Riksantikvaren'
+};
+
+/*
 var arkeologi = {
     grouped: true,
     commonCluster: true,
@@ -923,7 +939,7 @@ var arkeologi = {
     ],
     description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
 };
-
+*/
 var historie = {
     grouped: true,
     hideFromGenerator: true,
@@ -1065,7 +1081,7 @@ export default {
     'nve_transformatorstasjoner': nve_transformatorstasjoner,
     'nve_anlegg': nve_anlegg,
     'ark_hist': ark_hist,
-    'arkeologi': arkeologi,
+    'kulturminnedata': kulturminnedata,
     'historie': historie,
     'kunst': kunst,
     'ra_lokalitet_arkeologisk': ra_lokalitet_arkeologisk,
