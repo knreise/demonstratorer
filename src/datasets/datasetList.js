@@ -1,6 +1,7 @@
 //norvegiana Datasets
 var difo = {
     name: 'Digitalt fortalt',
+    hideFromGenerator: false,
     dataset: {dataset: 'difo', api: 'norvegiana'},
     template: 'digitalt_fortalt',
     noListThreshold: Infinity,
@@ -119,12 +120,12 @@ var dimu_krig = {
 
 
 var musit = {
-    name: 'Universitetsmuseene (Musit)',
+    name: 'Arkeologidata',
     hideFromGenerator: false,
     provider: 'Universitetsmuseene',
     dataset: {dataset: 'MUSIT', api: 'norvegiana'},
     template: 'musit',
-    description: 'Alle stedfestede data fra Universitetsmuseene',
+    description: 'Arkeologidata fra Universitetsmuseene (Musit)',
     allowTopic: true,
     feedbackForm: true,
     style: {
@@ -506,6 +507,7 @@ var ra_lokalitet = {
 
 var ra_lokalitet_arkeologisk = {
     name: 'Arkeologiske kulturminner',
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
     dataset: {
@@ -543,6 +545,7 @@ var ra_lokalitet_arkeologisk = {
 
 var ra_lokalitet_kirkesteder = {
     name: 'Kirkesteder',
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
     dataset: {
@@ -580,6 +583,7 @@ var ra_lokalitet_kirkesteder = {
 
 var ra_lokalitet_bebyggelse = {
     name: 'Bebyggelse',
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
     dataset: {
@@ -634,7 +638,7 @@ var ra_kulturmiljo = {
 };
 
 var brukerminner = {
-    name: 'Kulturminner - brukerminner',
+    name: 'Brukerminner',
     hideFromGenerator: false,
     loadExtraData: true,
     provider: 'Riksantikvaren',
@@ -891,6 +895,7 @@ var nve_anlegg = {
 var ark_hist = {
     grouped: true,
     commonCluster: true,
+    hideFromGenerator: true,
     name: 'Arkeologi og historie',
     minZoom: 14,
     datasets: [
@@ -904,6 +909,7 @@ var ark_hist = {
 var arkeologi = {
     grouped: true,
     commonCluster: true,
+    hideFromGenerator: true,
     name: 'Arkeologi',
     minZoom: 14,
     style: {
@@ -919,6 +925,7 @@ var arkeologi = {
 
 var historie = {
     grouped: true,
+    hideFromGenerator: true,
     commonCluster: true,
     name: 'Historie',
     minZoom: 14,
@@ -937,6 +944,7 @@ var historie = {
 };
 var kunst = {
     grouped: true,
+    hideFromGenerator: true,
     commonCluster: true,
     name: 'Kunst',
     style: {
