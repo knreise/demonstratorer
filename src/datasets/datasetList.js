@@ -225,6 +225,7 @@ var lokalwiki = {
     dataset: {
         api: 'lokalhistoriewiki'
     },
+    template: 'lokalwiki',
     //TODO: add style
     minZoom: 13,
     description: 'Stedfestede artikler fra lokalhistoriewiki.no'
