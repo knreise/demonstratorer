@@ -25,6 +25,7 @@ const ksamsok_template = require('!!raw-loader!./templates/datasets/ksamsok.tmpl
 const kulturmiljo_template = require('!!raw-loader!./templates/datasets/kulturmiljo.tmpl');
 const kulturminne_template = require('!!raw-loader!./templates/datasets/kulturminne.tmpl');
 const kulturminne2_template = require('!!raw-loader!./templates/datasets/kulturminne2.tmpl');
+const lokalwiki_template = require('!!raw-loader!./templates/datasets/lokalwiki.tmpl');
 const musit_template = require('!!raw-loader!./templates/datasets/musit.tmpl');
 const nasjonalbiblioteket_template = require('!!raw-loader!./templates/datasets/nasjonalbiblioteket.tmpl');
 const nordkirker_template = require('!!raw-loader!./templates/datasets/nordkirker.tmpl');
@@ -105,6 +106,8 @@ export default function getTemplateString(templateId) {
             return kulturminne_template;
         case 'kulturminne2_template':
             return kulturminne2_template;
+        case 'lokalwiki_template':
+            return lokalwiki_template;
         case 'musit_template':
             return musit_template;
         case 'nasjonalbiblioteket_template':

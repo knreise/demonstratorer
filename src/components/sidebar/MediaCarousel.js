@@ -59,6 +59,19 @@ function _createFWImage(mediaObject) {
     return container;
 }
 
+function _createWikImage(mediaObject) {
+    var container = $('<div class="image with-caption"></div>');
+    var link = $('<a target="_blank" href="' + mediaObject.href + '"></a>');
+    var img = $('<img class="thumbnail fullwidth" src="' + mediaObject.image + '" />');
+    link.append(img);
+    container.append(link);
+    _createFullsize(mediaObject, img);
+    container.append('<p>Beskrivelse: ' + mediaObject.description + '</p>');
+    container.append('<p>Fotograf: ' + mediaObject.creator + '</p>');
+    return container;
+}
+
+
 function _createUserImage(mediaObject) {
     var container = $('<div class="image with-caption"></div>');
     var img = $('<img class="thumbnail fullwidth" src="' + mediaObject.image + '" />');
@@ -96,6 +109,7 @@ function _createCaptionedImage(mediaObject) {
 var generators = {
     'image': _createImage,
     'brukerbilde': _createUserImage,
+    'wiki_image': _createWikImage,
     'fotoweb_image': _createFWImage,
     'video': _createVideo,
     'sound': _createSound,

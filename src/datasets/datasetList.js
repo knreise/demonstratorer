@@ -1,6 +1,7 @@
 //norvegiana Datasets
 var difo = {
     name: 'Digitalt fortalt',
+    hideFromGenerator: false,
     dataset: {dataset: 'difo', api: 'norvegiana'},
     template: 'digitalt_fortalt',
     noListThreshold: Infinity,
@@ -123,12 +124,12 @@ var dimu_krig = {
 
 
 var musit = {
-    name: 'Universitetsmuseene (Musit)',
+    name: 'Arkeologidata',
     hideFromGenerator: false,
     provider: 'Universitetsmuseene',
     dataset: {dataset: 'MUSIT', api: 'norvegiana'},
     template: 'musit',
-    description: 'Alle stedfestede data fra Universitetsmuseene',
+    description: 'Arkeologidata fra Universitetsmuseene (Musit)',
     allowTopic: true,
     feedbackForm: true,
     style: {
@@ -228,6 +229,7 @@ var lokalwiki = {
     dataset: {
         api: 'lokalhistoriewiki'
     },
+    template: 'lokalwiki',
     //TODO: add style
     minZoom: 13,
     description: 'Stedfestede artikler fra lokalhistoriewiki.no'
@@ -514,6 +516,7 @@ var ra_lokalitet = {
 
 var ra_lokalitet_arkeologisk = {
     name: 'Arkeologiske kulturminner',
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
     dataset: {
@@ -551,6 +554,7 @@ var ra_lokalitet_arkeologisk = {
 
 var ra_lokalitet_kirkesteder = {
     name: 'Kirkesteder',
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
     dataset: {
@@ -588,6 +592,7 @@ var ra_lokalitet_kirkesteder = {
 
 var ra_lokalitet_bebyggelse = {
     name: 'Bebyggelse',
+    hideFromGenerator: true,
     provider: 'Riksantikvaren',
     template: 'kulturminne2',
     dataset: {
@@ -642,7 +647,7 @@ var ra_kulturmiljo = {
 };
 
 var brukerminner = {
-    name: 'Kulturminner - brukerminner',
+    name: 'Brukerminner',
     hideFromGenerator: false,
     loadExtraData: true,
     provider: 'Riksantikvaren',
@@ -899,6 +904,7 @@ var nve_anlegg = {
 var ark_hist = {
     grouped: true,
     commonCluster: true,
+    hideFromGenerator: true,
     name: 'Arkeologi og historie',
     minZoom: 14,
     datasets: [
@@ -909,9 +915,26 @@ var ark_hist = {
     description: 'Data fra Universitetsmuseene, Digitalt museum og Riksantikvaren'
 };
 
+var kulturminnedata = {
+    grouped: true,
+    commonCluster: true,
+    name: 'Kulturminnedata',
+    style: {
+        fillcolor: '#86592d',
+        thumbnail: true
+    },
+    datasets: [
+        ra_lokalitet,
+        ra_kulturmiljo
+    ],
+    description: 'Kulturminnedata fra Riksantikvaren'
+};
+
+/*
 var arkeologi = {
     grouped: true,
     commonCluster: true,
+    hideFromGenerator: true,
     name: 'Arkeologi',
     minZoom: 14,
     style: {
@@ -924,9 +947,10 @@ var arkeologi = {
     ],
     description: 'Arkeologidata fra Universitetsmuseene og Riksantikvaren'
 };
-
+*/
 var historie = {
     grouped: true,
+    hideFromGenerator: true,
     commonCluster: true,
     name: 'Historie',
     minZoom: 14,
@@ -945,6 +969,7 @@ var historie = {
 };
 var kunst = {
     grouped: true,
+    hideFromGenerator: true,
     commonCluster: true,
     name: 'Kunst',
     style: {
@@ -1064,7 +1089,7 @@ export default {
     'nve_transformatorstasjoner': nve_transformatorstasjoner,
     'nve_anlegg': nve_anlegg,
     'ark_hist': ark_hist,
-    'arkeologi': arkeologi,
+    'kulturminnedata': kulturminnedata,
     'historie': historie,
     'kunst': kunst,
     'ra_lokalitet_arkeologisk': ra_lokalitet_arkeologisk,
