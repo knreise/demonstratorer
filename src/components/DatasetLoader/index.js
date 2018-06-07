@@ -220,7 +220,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
     }
 
     function _checkAvailable(newBounds) {
-        console.log('_checkAvailable');
+
         _.each(datasets, function (dataset) {
             var isAvailable = _datasetAvailable(dataset);
             if (isAvailable !== availableDatasets[dataset._id]) {
@@ -228,8 +228,6 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
                 if (isAvailable) {
                     _loadDataset(datasetIdMapping[dataset._id], dataset._id, newBounds, false);
-                } else {
-                    console.log(dataset._id, ' unavailable')
                 }
 
                 _.each(onAvailableChanges, function (callback) {
@@ -242,7 +240,6 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
     function _mapMoved(e) {
         var newBounds = map.getBounds();
-        console.log('moved ', newBounds);
         if (map.getZoom() !== currentZoom) {
             currentZoom = map.getZoom();
             _checkAvailable(newBounds);
