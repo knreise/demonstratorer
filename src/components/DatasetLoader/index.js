@@ -239,6 +239,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
     function _mapMoved(e) {
         var newBounds = map.getBounds();
+        console.log('moved ', newBounds);
         if (map.getZoom() !== currentZoom) {
             currentZoom = map.getZoom();
             _checkAvailable(newBounds);

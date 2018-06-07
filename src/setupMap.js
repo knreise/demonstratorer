@@ -143,7 +143,7 @@ function setupMap(api, datasets, options) {
                 ]);
             }
 
-            var loader = DatasetLoader(datasets, map, api, bounds, filter);
+            var loader = DatasetLoader(datasets, map, api, map.getBounds(), filter);
 
             var layerManager = LayerManager(map, loader);
             layerManager.onSelect(onFeatureClick);
