@@ -219,11 +219,16 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         });
     }
 
-    function _checkAvailable() {
+    function _checkAvailable(newBounds) {
         _.each(datasets, function (dataset) {
             var isAvailable = _datasetAvailable(dataset);
             if (isAvailable !== availableDatasets[dataset._id]) {
                 availableDatasets[dataset._id] = isAvailable;
+
+                if (isAvailable) {
+                    _loadDataset(datasetIdMapping[dataset._id], dataset._id, newBounds, false);
+                }
+
                 _.each(onAvailableChanges, function (callback) {
                     callback(dataset._id, isAvailable);
                 });
@@ -233,12 +238,11 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
     }
 
     function _mapMoved(e) {
+        var newBounds = map.getBounds();
         if (map.getZoom() !== currentZoom) {
             currentZoom = map.getZoom();
-            _checkAvailable();
+            _checkAvailable(newBounds);
         }
-
-        var newBounds = map.getBounds();
         if (_shouldGetNewData(currentBounds, newBounds)) {
             _loadDatasets(newBounds, false);
         }
