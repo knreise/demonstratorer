@@ -40,6 +40,8 @@ export default function LayerManager(map, loader) {
     function init() {
         loader.onDataLoadEnd(_dataLoaded);
         loader.onEnabledChange(_toggleEnabled);
+        loader.onAvailableChange(_toggleAvailable);
+
         map.on('sidebarClosed', _deselectLayerFromSidebar);
 
         layerGroups = _.reduce(loader.datasetIdMapping, function (acc, sublayers, groupId) {
@@ -73,9 +75,11 @@ export default function LayerManager(map, loader) {
             return;
         }
         currentZoom = newZoom;
+
+
         _.each(polygonToPoints, function (datasetId) {
             var dataset = loader.getDataset(datasetId);
-            if (!!dataset.isEnabled || !! dataset.isAvailable) {
+            if (!!dataset.isEnabled || !!dataset.isAvailable) {
                 return;
             }
 
@@ -147,6 +151,19 @@ export default function LayerManager(map, loader) {
             if (selectedDataset === layerId) {
                 _deselectLayer();
             }
+        }
+    }
+
+    function _toggleAvailable(datasetId, isAvailable) {
+        if (!isAvailable) {
+            if (_.has(layerGroups, datasetId)) {
+                _toggleLayer(datasetId, false);
+                return;
+            }
+
+            _.each(loader.datasetIdMapping[datasetId], function (datasetId) {
+                _toggleLayer(datasetId, false);
+            });
         }
     }
 
