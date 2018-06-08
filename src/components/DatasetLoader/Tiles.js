@@ -1,5 +1,7 @@
 import L from 'leaflet';
 
+//adapted from http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
+
 function GlobalMercator() {
 
     var originShift = 2 * Math.PI * 6378137 / 2.0;
@@ -104,7 +106,6 @@ export default function (bbox, startZoom) {
             break;
         }
     }
-    console.log(zoom);
     var mercator = GlobalMercator();
     var res = [];
     for (var i = 0; i < tiles.length; i++) {

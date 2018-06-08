@@ -57,11 +57,14 @@ L.Control.DatasetChooser = L.Control.extend({
         this.loader = loader;
         this.numLoading = 0;
         loader.onLoadStart(_.bind(function (datasetId) {
+            console.log("s",datasetId)
             this.numLoading += 1;
             this._update();
         }, this));
         loader.onLoadEnd(_.bind(function (datasetId) {
-            this.numLoading -= 1;
+            if (this.numLoading >  0) {
+                this.numLoading -= 1;
+            }
             this._update();
         }, this));
         loader.onEnabledChange(_.bind(function (datasetId) {
