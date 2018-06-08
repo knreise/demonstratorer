@@ -198,7 +198,7 @@ export default function SidebarContent(wrapper, element, top, options) {
 
         templateData.data = templateData;
 
-        //console.log(templateData)
+        console.log(templateData)
         content += template(templateData);
 
         if (options.footerTemplate && properties.link) {

@@ -76,7 +76,6 @@ export default function ApiLoader(api, flattenedDatasets) {
 
         var res = [];
         var finished = _.after(tileBounds.length, function () {
-            //console.log(res);
             var features = createFeatureCollection(_.flatten(_.map(res, r=> r.features)));
             callback(null, filter(L.latLngBounds.fromBBoxString(bbox), features));
         });
@@ -85,11 +84,9 @@ export default function ApiLoader(api, flattenedDatasets) {
 
             var fromCache = cache.get(datasetId, tileBound);
             if (fromCache) {
-                console.log('from cache')
                 res.push(fromCache);
                 finished();
             } else {
-            console.log('fetch')
                 api.getBbox(
                     dataset.dataset,
                     tileBound,
