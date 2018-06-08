@@ -3,7 +3,7 @@ import L from 'leaflet';
 import booleanContains from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
 import {createFeatureCollection, boundsToPoly} from '../../util';
-
+import getTiles from './Tiles';
 
 function filter(bounds, fc) {
     var boundsPoly = boundsToPoly(bounds).features[0];
@@ -12,6 +12,8 @@ function filter(bounds, fc) {
     });
     return createFeatureCollection(insideFeatures);
 }
+
+
 
 function List(len) {
 
@@ -53,42 +55,64 @@ function Cache() {
         },
         set: function (datasetId, bbox, data) {
             if (!_.has(cacheData, datasetId)) {
-                cacheData[datasetId] = List(5);
+                cacheData[datasetId] = List(10);
             }
             cacheData[datasetId].set({bbox: bbox, data: data});
         }
     };
 }
 
+
 export default function ApiLoader(api, flattenedDatasets) {
 
     var cache = Cache();
 
-    return function (datasetId, requestedBbox, callback) {
-        var dataset = flattenedDatasets[datasetId];
+    function loadBbox(datasetId, dataset, requestedBbox, callback) {
+        var bbox = (!!dataset.fixedBbox)
+            ? dataset.fixedBbox
+            : requestedBbox;
 
-        if (dataset.bbox || (dataset.isStatic && dataset.fixedBbox)) {
-            var fromCache = cache.get(datasetId, requestedBbox);
+        var tileBounds = getTiles(bbox, dataset.minZoom);
+
+        var res = [];
+        var finished = _.after(tileBounds.length, function () {
+            //console.log(res);
+            var features = createFeatureCollection(_.flatten(_.map(res, r=> r.features)));
+            callback(null, filter(L.latLngBounds.fromBBoxString(bbox), features));
+        });
+
+        _.each(tileBounds, function (tileBound) {
+
+            var fromCache = cache.get(datasetId, tileBound);
             if (fromCache) {
-                callback(null, fromCache);
-                return;
-            }
-        }
-
-        try {
-            if (dataset.bbox || (dataset.isStatic && dataset.fixedBbox)) {
-                var bbox = (!!dataset.fixedBbox) ? dataset.fixedBbox : requestedBbox;
+                console.log('from cache')
+                res.push(fromCache);
+                finished();
+            } else {
+            console.log('fetch')
                 api.getBbox(
                     dataset.dataset,
-                    bbox,
+                    tileBound,
                     function (data) {
-                        cache.set(datasetId, requestedBbox, data);
-                        callback(null, data);
+                        cache.set(datasetId, tileBound, data);
+                        //callback(null, data);
+                        res.push(data);
+                        finished();
                     },
                     function (error) {
                         callback(error, null);
                     }
                 );
+            }
+        });
+    }
+
+    return function (datasetId, requestedBbox, callback) {
+        var dataset = flattenedDatasets[datasetId];
+
+        try {
+            if (dataset.bbox || (dataset.isStatic && dataset.fixedBbox)) {
+                loadBbox(datasetId, dataset, requestedBbox, callback);
             } else {
                 api.getData(
                     dataset.dataset,
