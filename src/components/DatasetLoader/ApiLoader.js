@@ -1,66 +1,9 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
-import booleanContains from '@turf/boolean-contains';
-import booleanOverlap from '@turf/boolean-overlap';
-import {createFeatureCollection, boundsToPoly} from '../../util';
+
+import {createFeatureCollection, filter} from '../../util';
 import getTiles from './Tiles';
-
-function filter(bounds, fc) {
-    var boundsPoly = boundsToPoly(bounds).features[0];
-    var insideFeatures = _.filter(fc.features, function (feature) {
-        return booleanOverlap(boundsPoly, boundsPoly) || booleanContains(boundsPoly, feature);
-    });
-    return createFeatureCollection(insideFeatures);
-}
-
-
-
-function List(len) {
-
-    var data = [];
-
-    return {
-        set: function (item) {
-            if (data.length >= len) {
-                data.shift();
-            }
-            data.push(item);
-        },
-        get: function () {
-            return _.clone(data);
-        }
-    };
-}
-
-function Cache() {
-
-    var cacheData = {};
-
-    return {
-        get: function (datasetId, bbox) {
-            if (!_.has(cacheData, datasetId)) {
-                return null;
-            }
-            var bounds = L.latLngBounds.fromBBoxString(bbox);
-            var cached = cacheData[datasetId].get();
-            var found = _.find(cached, function (c) {
-                var cBounds = L.latLngBounds.fromBBoxString(c.bbox);
-                return bounds.equals(cBounds) || bounds.contains(cBounds);
-            });
-            if (!found) {
- 
-                return null;
-            }
-            return filter(bounds, found.data);
-        },
-        set: function (datasetId, bbox, data) {
-            if (!_.has(cacheData, datasetId)) {
-                cacheData[datasetId] = List(10);
-            }
-            cacheData[datasetId].set({bbox: bbox, data: data});
-        }
-    };
-}
+import Cache from './Cache';
 
 
 export default function ApiLoader(api, flattenedDatasets) {

@@ -3,6 +3,8 @@ import $ from 'jquery';
 import L from 'leaflet';
 import distance from '@turf/distance';
 import bearing from '@turf/bearing';
+import booleanContains from '@turf/boolean-contains';
+import booleanOverlap from '@turf/boolean-overlap';
 
 import {imageCacheUrl} from './config';
 import DEFAULT_OPTIONS from './config/defaultOptions';
@@ -182,13 +184,34 @@ function getPositionHash(lat, lng, zoom) {
     });
 };
 
+
+function multiPolyFilter(mp, boundsPoly) {
+    var coords = mp.geometry.coordinates;
+    return _.filter(coords, function (p) {
+        var g = {type: 'Polygon', coordinates: p};
+        return booleanOverlap(boundsPoly, g) || booleanContains(boundsPoly, g);
+    }).length > 0;
+}
+
+function filter(bounds, fc) {
+    var boundsPoly = boundsToPoly(bounds).features[0];
+    var insideFeatures = _.filter(fc.features, function (feature) {
+        if (feature.geometry.type === 'MultiPolygon') {
+            return multiPolyFilter(feature, boundsPoly);
+        }
+        return booleanOverlap(boundsPoly, feature) || booleanContains(boundsPoly, feature);
+    });
+    return createFeatureCollection(insideFeatures);
+}
+export {filter};
+
 export {getPositionHash};
 
 var UrlFunctions = {};
 UrlFunctions.setupLocationUrl = function (map) {
     var moved = function () {
         try {
-        var c = map.getCenter();
+            var c = map.getCenter();
         } catch (e) {
             return;
         }
