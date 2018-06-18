@@ -10,11 +10,7 @@ export default function ApiLoader(api, flattenedDatasets) {
 
     var cache = Cache();
 
-    function loadBbox(datasetId, dataset, requestedBbox, callback) {
-        var bbox = (!!dataset.fixedBbox)
-            ? dataset.fixedBbox
-            : requestedBbox;
-
+    function loadBboxTiled(bbox, datasetId, dataset, callback) {
         var tileBounds = getTiles(bbox, dataset.minZoom);
 
         var res = [];
@@ -45,10 +41,42 @@ export default function ApiLoader(api, flattenedDatasets) {
                     function (error) {
                         errors.push(error);
                         finished();
-                    }
+                    },
+                    {checkCancel: false}
                 );
             }
         });
+    }
+
+    function loadBboxUntiled(bbox, datasetId, dataset, callback) {
+        var fromCache = cache.get(datasetId, bbox);
+        if (fromCache) {
+            callback(null, fromCache);
+        } else {
+            api.getBbox(
+                dataset.dataset,
+                bbox,
+                function (data) {
+                    cache.set(datasetId, bbox, data);
+                    callback(null, data);
+                },
+                function (error) {
+                    callback(error);
+                }
+            );
+        }
+    }
+
+    function loadBbox(datasetId, dataset, requestedBbox, callback) {
+        var bbox = (!!dataset.fixedBbox)
+            ? dataset.fixedBbox
+            : requestedBbox;
+        var useTiles = true;
+        if (useTiles) {
+            loadBboxTiled(bbox, datasetId, dataset, callback);
+        } else {
+            loadBboxUntiled(bbox, datasetId, dataset, callback);
+        }
     }
 
     return function (datasetId, requestedBbox, callback) {
