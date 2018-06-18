@@ -196,10 +196,16 @@ function multiPolyFilter(mp, boundsPoly) {
 function filter(bounds, fc) {
     var boundsPoly = boundsToPoly(bounds).features[0];
     var insideFeatures = _.filter(fc.features, function (feature) {
+        if (feature.geometry.type === 'Point') {
+            return booleanContains(boundsPoly, feature);
+        }
         if (feature.geometry.type === 'MultiPolygon') {
             return multiPolyFilter(feature, boundsPoly);
         }
-        return booleanOverlap(boundsPoly, feature) || booleanContains(boundsPoly, feature);
+        if (feature.geometry.type === 'Polygon') {
+            return booleanOverlap(boundsPoly, feature) || booleanContains(boundsPoly, feature);
+        }
+        return true;
     });
     return createFeatureCollection(insideFeatures);
 }
