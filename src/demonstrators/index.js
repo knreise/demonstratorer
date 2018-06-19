@@ -59,7 +59,6 @@ module.exports = {
             params: {
                 datasets: [
                     'verneomr',
-                    'historie',
                     'difo',
                     'trondheimbyarkiv',
                     'wikipedia',
@@ -81,8 +80,6 @@ module.exports = {
             params: {
                 datasets: [
                     'difo',
-                    //'arkeologi',
-                    'historie',
                     'ra_lokalitet',
                     'brukerminner',
                     'wikipedia'
@@ -103,7 +100,6 @@ module.exports = {
             params: {
                 datasets: [
                     'verneomr',
-                    'historie',
                     'difo',
                     'trondheimbyarkiv',
                     'wikipedia',
