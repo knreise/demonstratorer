@@ -927,6 +927,7 @@ var ark_hist = {
 };
 
 var kulturminnedata = {
+    hideFromGenerator: true,
     grouped: true,
     commonCluster: true,
     name: 'Kulturminnedata',
