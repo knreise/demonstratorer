@@ -120,7 +120,6 @@ var generators = {
 };
 
 function _getMarkup(mediaObject) {
-    console.log(mediaObject);
     if (_.has(generators, mediaObject.type)) {
         return generators[mediaObject.type](mediaObject);
     }

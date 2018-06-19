@@ -35,6 +35,7 @@ var QUERY_GENERATORS = {
 
 function createQuery(dataset, filter) {
     var filters = _.map(filter.split(':'), function (filter) {
+
         var s = filter.split(';');
         var filterIdx = parseInt(s[0], 10);
         var query = s[1];
@@ -54,7 +55,6 @@ function createQuery(dataset, filter) {
 }
 
 export function getDatasets(ids) {
-
     if (_.isString(ids)) {
         ids = ids.split(',');
     }

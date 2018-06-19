@@ -25,7 +25,7 @@ function createFilterString(selectedDataset, dataset) {
 
 function createDatasetParams(datasets) {
     return _.map(datasets, function (dataset) {
-        return 'dataset=' + encodeURIComponent(dataset);
+        return 'datasets=' + encodeURIComponent(dataset);
     }).join('&');
 }
 

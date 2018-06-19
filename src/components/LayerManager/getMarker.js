@@ -84,7 +84,6 @@ function getMarker(feature, latlng, styleFunc, selected) {
     }
     
     if (styleFunc.isCircle) {
-        console.log('circle', styleFunc.get('radius', feature, selected), styleFunc.get('weight', feature, selected))
         return L.circleMarker(latlng, {
             radius: styleFunc.get('radius', feature, selected),
             weight: styleFunc.get('weight', feature, selected),

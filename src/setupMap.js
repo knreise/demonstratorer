@@ -174,6 +174,9 @@ function setupMapFromQueryString(queryString) {
         params.showGeom = params.showGeom || true;
         params.geomFilter = params.geomFilter || true;
     }
+    if (params.datasets && _.isString(params.datasets)) {
+        params.datasets = [params.datasets];
+    }
     var datasets = getDatasets(params.datasets || params.dataset);
     var options = _.omit(params, 'datasets');
     setupMap(api, datasets, options);

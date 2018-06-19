@@ -144,7 +144,6 @@ class Generator extends Component {
         );
     }
 };
-console.log(datasetList)
 
 ReactDOM.render(
     <Generator
