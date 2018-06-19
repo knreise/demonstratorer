@@ -100,11 +100,8 @@ export default function (bbox, startZoom) {
     var ne = bounds.getNorthEast();
 
     var tiles;
-    for (var zoom = startZoom || 6; zoom < 21; zoom++) {
+    for (var zoom = startZoom || 6; zoom <= 14; zoom++) {
         tiles = getTiles(zoom, sw.lat, sw.lng, ne.lat, ne.lng);
-        if (tiles.length > 1) {
-            break;
-        }
     }
     var mercator = GlobalMercator();
     var res = [];
