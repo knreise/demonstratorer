@@ -94,15 +94,23 @@ function getTiles(zoomlevel, lat, lon, latmax, lonmax) {
     return res;
 }
 
-export default function (bbox, startZoom) {
+function getTilesBestFit(zoom, sw, ne) {
+    var tiles = getTiles(zoom, sw.lat, sw.lng, ne.lat, ne.lng);
+    if (tiles.length <= 20 || zoom === 2) {
+        return tiles;
+    }
+    return getTilesBestFit(zoom - 1, sw, ne);
+}
+
+export default function (bbox, zoom) {
     var bounds = L.latLngBounds.fromBBoxString(bbox);
     var sw = bounds.getSouthWest();
     var ne = bounds.getNorthEast();
 
-    var tiles;
-    for (var zoom = startZoom || 6; zoom <= 14; zoom++) {
-        tiles = getTiles(zoom, sw.lat, sw.lng, ne.lat, ne.lng);
-    }
+    //var tiles = getTiles(zoom, sw.lat, sw.lng, ne.lat, ne.lng);
+    var tiles = getTilesBestFit(zoom, sw, ne);
+
+
     var mercator = GlobalMercator();
     var res = [];
     for (var i = 0; i < tiles.length; i++) {

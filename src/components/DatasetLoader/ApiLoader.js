@@ -9,8 +9,8 @@ export default function ApiLoader(api, flattenedDatasets) {
 
     var cache = Cache();
 
-    function loadBboxTiled(bbox, datasetId, dataset, callback) {
-        var tileBounds = getTiles(bbox, dataset.minZoom);
+    function loadBboxTiled(bbox, zoom, datasetId, dataset, callback) {
+        var tileBounds = getTiles(bbox, zoom);
         var res = [];
         var errors = [];
         var finished = _.after(tileBounds.length, function () {
@@ -71,23 +71,23 @@ export default function ApiLoader(api, flattenedDatasets) {
         }
     }
 
-    function loadBbox(datasetId, dataset, requestedBbox, callback) {
+    function loadBbox(datasetId, dataset, requestedBbox, zoom, callback) {
         var bbox = (!!dataset.fixedBbox)
             ? dataset.fixedBbox
             : requestedBbox;
         var useTiles = true;
         if (useTiles) {
-            loadBboxTiled(bbox, datasetId, dataset, callback);
+            loadBboxTiled(bbox, zoom, datasetId, dataset, callback);
         } else {
             loadBboxUntiled(bbox, datasetId, dataset, callback);
         }
     }
 
-    return function (datasetId, requestedBbox, callback) {
+    return function (datasetId, requestedBbox, zoom, callback) {
         var dataset = flattenedDatasets[datasetId];
         try {
             if (dataset.bbox || (dataset.isStatic && dataset.fixedBbox)) {
-                loadBbox(datasetId, dataset, requestedBbox, callback);
+                loadBbox(datasetId, dataset, requestedBbox, zoom, callback);
             } else {
                 api.getData(
                     dataset.dataset,

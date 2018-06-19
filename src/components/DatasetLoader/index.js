@@ -150,8 +150,10 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         });
 
         var bbox = bounds.toBBoxString();
+        var zoom = map.getZoom();
+        console.log(zoom);
         _.each(toLoad, function (dataset) {
-            _loadDatasetFromApi(dataset._id, bbox, function (error, data) {
+            _loadDatasetFromApi(dataset._id, bbox, zoom, function (error, data) {
                 _datasetUpdated(dataset._id, data, error);
                 completed();
             });
