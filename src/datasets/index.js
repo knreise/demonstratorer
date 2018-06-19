@@ -34,16 +34,19 @@ var QUERY_GENERATORS = {
 };
 
 function createQuery(dataset, filter) {
-    var filters = _.map(filter.split(':'), function (filter) {
+    var filters = _.compact(_.map(filter.split(':'), function (filter) {
 
         var s = filter.split(';');
         var filterIdx = parseInt(s[0], 10);
         var query = s[1];
+        if (!query || query === '') {
+            return null;
+        }
         return {
             type: dataset.filterOptions.filterVariables[filterIdx],
             query: query
         };
-    });
+    }));
 
     if (!_.has(QUERY_GENERATORS, dataset.filterOptions.filterType)) {
         return null;
@@ -72,7 +75,10 @@ export function getDatasets(ids) {
         .map(function (dataset) {
             var datasetConfig = datasetList[dataset.id];
             if (dataset.filter && datasetConfig.filterOptions) {
-                datasetConfig.dataset.query = createQuery(datasetConfig, dataset.filter);
+                var query = createQuery(datasetConfig, dataset.filter);
+                if (!!query) {
+                    datasetConfig.dataset.query = query;
+                }
             }
             return datasetConfig;
         })
