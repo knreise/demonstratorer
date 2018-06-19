@@ -77,8 +77,11 @@ function _createUserImage(mediaObject) {
     var img = $('<img class="thumbnail fullwidth" src="' + mediaObject.image + '" />');
     container.append(img);
     _createFullsize(mediaObject, img);
+    var creator = !!mediaObject.creator
+        ? mediaObject.creator
+        : 'Ukjent';
     container.append('<p>Beskrivelse: ' + mediaObject.description + '</p>');
-    container.append('<p>Fotograf: ' + mediaObject.creator + '</p>');
+    container.append('<p>Fotograf: ' + creator + '</p>');
     container.append('<p>Klausul/ Vilkår for bruk: ' + mediaObject.license + '</p>');
     return container;
 }
