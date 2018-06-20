@@ -18,7 +18,7 @@ import map_detail from './images/map_detail.png';
 
 function Demonstrator(props) {
     return (
-        <a href={`/demonstratorer/${props.id}.html`} className="list-group-item">
+        <a href={`./demonstratorer/${props.id}.html`} className="list-group-item">
             <h4 className="list-group-item-heading">
                 <i className="fa fa-map-o" /> {props.name}
             </h4>
@@ -84,7 +84,7 @@ class FrontPage extends Component {
                                 <h2>Sett opp ditt eget kart</h2>
                                 <p>Det er som en del av arbeidet med å sette opp ulike kartvisninger og demonstratorer også utviklet et web-grensesnitt der du enkelt kan generere ditt eget kart. Her kan du velge område, hvilke datasett du vil ha med og hvilket kartgrunnlag du ønsker å bruke.</p>
                                 <p>
-                                    <a className="btn btn-small btn-info" href='/generator.html'>
+                                    <a className="btn btn-small btn-info" href='./generator.html'>
                                     <i className="fa fa-pencil-square-o fa-lg"></i> Lag ditt kart her</a>
                                 </p>
                             </div>
