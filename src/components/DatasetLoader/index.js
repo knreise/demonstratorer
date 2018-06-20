@@ -3,6 +3,7 @@ import L from 'leaflet';
 import booleanContains from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
 import intersect from '@turf/intersect';
+import center from '@turf/center';
 
 import itemLoaders from './itemLoaders';
 import ApiLoader from './ApiLoader';
@@ -56,6 +57,36 @@ function filterData(filterGeom, data) {
     });
     return createFeatureCollection(insideFeatures);
 }
+
+
+function filterData2(filterGeom, data) {
+    var insideFeatures = _.filter(data.features, function (feature) {
+        var inside = _.map(filterGeom.features, function (filter) {
+            if (!feature.geometry) {
+                return false;
+            }
+            if (feature.geometry.type !== 'Point') {
+                return booleanContains(filter, center(feature));
+            }
+            return booleanContains(filter, feature);
+            /*
+            if (feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'MultiLineString') {
+                //TODO: turf does not handle multi geoms
+                return true;
+            }
+            if (feature.geometry.type === 'Polygon') {
+                return booleanContains(filter, feature) || booleanOverlap(filter, feature);
+            }
+            return booleanContains(filter, feature);
+            */
+        });
+        return inside.indexOf(true) > -1;
+    });
+    return createFeatureCollection(insideFeatures);
+}
+
+
+
 
 function getBounds(filterFc, bounds) {
     if (filterFc.features.length > 1) {
@@ -211,7 +242,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
             currentErrors[datasetId] = null;
 
             if (filter) {
-                data = filterData(filter, data);
+                data = filterData2(filter, data);
             }
 
             currentData[datasetId] = data;
