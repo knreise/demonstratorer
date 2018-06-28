@@ -76,7 +76,6 @@ export default function LayerManager(map, loader) {
         }
         currentZoom = newZoom;
 
-
         _.each(polygonToPoints, function (datasetId) {
             var dataset = loader.getDataset(datasetId);
             if (!dataset.isEnabled || !dataset.isAvailable) {
@@ -351,7 +350,6 @@ export default function LayerManager(map, loader) {
     }
 
     function _updateInCommonCluster(dataset, newLayerGroup) {
-
         var clusterLayer = layerGroups[_getParent(dataset._id)];
         var prevLayers = _getLayersFromCommonCluster(dataset);
         clusterLayer.removeLayers(prevLayers);

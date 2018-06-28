@@ -11,6 +11,7 @@ export default function ApiLoader(api, flattenedDatasets) {
 
     function loadBboxTiled(bbox, zoom, datasetId, dataset, callback) {
         var tileBounds = getTiles(bbox, zoom);
+
         var res = [];
         var errors = [];
         var finished = _.after(tileBounds.length, function () {
