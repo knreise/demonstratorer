@@ -3,6 +3,7 @@ import $ from 'jquery';
 import L from 'leaflet';
 import distance from '@turf/distance';
 import bearing from '@turf/bearing';
+import union from '@turf/union';
 import booleanContains from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
 
@@ -150,15 +151,13 @@ function createFeatureCollection(features) {
 export {createFeatureCollection};
 
 export function boundsToPoly(bounds) {
-    return createFeatureCollection([
-        L.polygon([
-            bounds.getSouthWest(),
-            bounds.getNorthWest(),
-            bounds.getNorthEast(),
-            bounds.getSouthEast(),
-            bounds.getSouthWest()
-        ]).toGeoJSON()
-    ]);
+    return L.polygon([
+        bounds.getSouthWest(),
+        bounds.getNorthWest(),
+        bounds.getNorthEast(),
+        bounds.getSouthEast(),
+        bounds.getSouthWest()
+    ]).toGeoJSON()
 }
 
 export function polyToBounds(poly) {
@@ -194,7 +193,7 @@ function multiPolyFilter(mp, boundsPoly) {
 }
 
 function filter(bounds, fc) {
-    var boundsPoly = boundsToPoly(bounds).features[0];
+    var boundsPoly = boundsToPoly(bounds);
     var insideFeatures = _.filter(fc.features, function (feature) {
         if (feature.geometry.type === 'Point') {
             return booleanContains(boundsPoly, feature);
@@ -274,3 +273,35 @@ UrlFunctions.getFeatureLink = function (feature) {
 };
 
 export {UrlFunctions};
+
+
+function mergeFeatures(features) {
+   //var features = featureCollection.features;
+    if (!features.length) {
+        return;
+    }
+    if (features.length === 1) {
+        return features[0];
+    }
+    var first = features[0];
+    var rest = _.rest(features);
+    return _.reduce(rest, function (acc, feature) {
+        return union(feature, acc);
+    }, first);
+}
+
+export {mergeFeatures};
+
+export function flattenGeom(geometry) {
+    if (geometry.type === 'Feature') {
+        geometry = geometry.geometry
+    }
+    if (geometry.type === 'MultiPolygon') {
+        var polys = _.map(geometry.coordinates, function (poly) {
+            return {'type': 'Polygon', 'coordinates': poly};
+        });
+        return mergeFeatures(polys)
+    }
+    return geometry;
+}
+

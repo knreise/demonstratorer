@@ -1,6 +1,6 @@
 import * as _ from 'underscore';
 import L from 'leaflet';
-import booleanContains from '@turf/boolean-contains';
+import booleanContainsTurf from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
 import intersect from '@turf/intersect';
 import center from '@turf/center';
@@ -13,8 +13,15 @@ import {
     getDatasetTemplate,
     createFeatureCollection,
     boundsToPoly,
-    polyToBounds
+    polyToBounds,
+    flattenGeom
 } from '../../util';
+
+
+
+function booleanContains(a, b) {
+    return booleanContainsTurf(flattenGeom(a), flattenGeom(b));
+}
 
 
 function toDict(arr, key, trans) {
@@ -59,18 +66,15 @@ function filterData(filterGeom, data) {
 }
 
 
-function filterData2(filterGeom, data) {
+function filterData2(filter, data) {
     var insideFeatures = _.filter(data.features, function (feature) {
-        var inside = _.map(filterGeom.features, function (filter) {
-            if (!feature.geometry) {
-                return false;
-            }
-            if (feature.geometry.type !== 'Point') {
-                return booleanContains(filter, center(feature));
-            }
-            return booleanContains(filter, feature);
-        });
-        return inside.indexOf(true) > -1;
+        if (!feature.geometry) {
+            return false;
+        }
+        if (feature.geometry.type !== 'Point') {
+            return booleanContains(filter, center(feature));
+        }
+        return booleanContains(filter, feature);
     });
     return createFeatureCollection(insideFeatures);
 }
@@ -78,12 +82,16 @@ function filterData2(filterGeom, data) {
 
 
 
-function getBounds(filterFc, bounds) {
-    if (filterFc.features.length > 1) {
-        console.warn('large filter!');
+function getBounds(filterPoly, bounds) {
+    if (filterPoly.type === 'FeatureCollection') {
+        if (filterPoly.features.length > 1) {
+            console.warn('large filter!');
+        }
+        filterPoly = filterPoly.features[0];
     }
-    var filterPoly = filterFc.features[0];
-    var boundsPoly = boundsToPoly(bounds).features[0];
+    var boundsPoly = boundsToPoly(bounds);
+
+
     if (booleanContains(filterPoly, boundsPoly)) {
         //bounds are inside the filter: use bounds
         return bounds;

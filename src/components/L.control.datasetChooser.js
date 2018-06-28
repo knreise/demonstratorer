@@ -52,10 +52,21 @@ function _getLabel(dataset, errors) {
 
 L.Control.DatasetChooser = L.Control.extend({
 
-    initialize: function (loader, options) {
+    initialize: function (options) {
         L.setOptions(this, options);
-        this.loader = loader;
         this.numLoading = 0;
+    },
+
+    onAdd: function (map) {
+        this._map = map;
+        this._initLayout();
+        this._update();
+        //this._expand()
+        return this._container;
+    },
+
+    addLoader: function(loader) {
+        this.loader = loader;
         loader.onLoadStart(_.bind(function (datasetId) {
             this.numLoading += 1;
             this._update();
@@ -74,19 +85,20 @@ L.Control.DatasetChooser = L.Control.extend({
         }, this));
     },
 
-    onAdd: function (map) {
-        this._map = map;
-        this._initLayout();
-        this._update();
-        //this._expand()
-        return this._container;
+    startLoad: function () {
+        this.numLoading += 1;
+        this._checkSpinner();
+    },
+    stopLoad: function () {
+        this.numLoading -= 1;
+        this._checkSpinner();
     },
 
     _checkSpinner: function () {
         if (!this._btnIcon) {
             return;
         }
-        if (this.numLoading === 0) {
+        if (this.numLoading <= 0) {
             this._btnIcon.className = this._btnIcon.className.replace(
                 ' fa-spinner fa-pulse',
                 ' fa-bars'
@@ -122,22 +134,21 @@ L.Control.DatasetChooser = L.Control.extend({
         this._checkSpinner();
         var fragment = document.createDocumentFragment();
         var hasError = false;
-        _.each(this.loader.getLayers(), function (dataset) {
-            var errors = this.loader.getErrors(dataset._id);
-            if (errors.length && dataset.isAvailable && dataset.isEnabled) {
-                hasError = true;
-            }
-            var label = _getLabel(dataset, errors);
-            fragment.appendChild(label);
-            label.addEventListener('click', _.bind(function (e) {
-                this.loader.toggleEnabled(dataset._id);
-            }, this));
-        }, this);
-
-        var isLoading = this.numLoading > 0;
-        if (!isLoading) {
-            //hasError = false;
+        if (this.loader) {
+            _.each(this.loader.getLayers(), function (dataset) {
+                var errors = this.loader.getErrors(dataset._id);
+                if (errors.length && dataset.isAvailable && dataset.isEnabled) {
+                    hasError = true;
+                }
+                var label = _getLabel(dataset, errors);
+                fragment.appendChild(label);
+                label.addEventListener('click', _.bind(function (e) {
+                    this.loader.toggleEnabled(dataset._id);
+                }, this));
+            }, this);
         }
+
+        
 
         this._toggleError(hasError);
         while (this._overlaysList.firstChild) {
@@ -203,6 +214,10 @@ L.Control.DatasetChooser = L.Control.extend({
     },
 
     _toggle: function () {
+        if (!this.loader) {
+            return;
+        }
+
         if (this.expanded) {
             this._collapse();
         } else {
@@ -236,6 +251,6 @@ L.Control.DatasetChooser = L.Control.extend({
 
 });
 
-L.control.datasetChooser = function (loader, options) {
-    return new L.Control.DatasetChooser(loader, options);
+L.control.datasetChooser = function (options) {
+    return new L.Control.DatasetChooser(options);
 };

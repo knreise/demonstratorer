@@ -63,15 +63,12 @@ function setupMap(api, datasets, options) {
         api = getApi();
     }
 
-
-
     datasets = lookupDatasets(datasets);
-
-
     options = extendOptions(options);
 
     var map = createMap('map', options);
-
+    var datasetChooser = L.control.datasetChooser().addTo(map);
+    datasetChooser.startLoad();
     freezeMap(map);
     addExtraLayers(map, options);
 
@@ -126,7 +123,6 @@ function setupMap(api, datasets, options) {
                 var inverted = getInverted(filterGeom);
                 inverted.addTo(map);
             }
-
             var filter;
             if (filterGeom && options.buffer) {
                 filter = createGeomFilter(filterGeom, options.buffer);
@@ -148,15 +144,13 @@ function setupMap(api, datasets, options) {
             }
 
             var loader = DatasetLoader(datasets, map, api, map.getBounds(), filter);
-
+            datasetChooser.addLoader(loader);
             var layerManager = LayerManager(map, loader);
             layerManager.onSelect(onFeatureClick);
             layerManager.onDeSelect(onDeSelect);
-
-            L.control.datasetChooser(loader).addTo(map);
-
             layerManager.init();
             loader.init();
+            datasetChooser.stopLoad();
 
         });
     });
