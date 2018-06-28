@@ -1,6 +1,8 @@
 import * as _ from 'underscore';
 import simplify from '@turf/simplify';
 import buffer from '@turf/buffer';
+import union from '@turf/union';
+
 import {createFeatureCollection} from '../util';
 
 function _simplify(featureCollection) {
@@ -10,18 +12,26 @@ function _simplify(featureCollection) {
     return createFeatureCollection(features);
 }
 
+function merge(features) {
+    if (features.length < 2) {
+        return features;
+    }
+    var first = features[0];
+    var rest = _.rest(features);
+    return _.reduce(rest, function (acc, feature) {
+        return union(feature, acc);
+    }, first);
+}
+
 export default function createGeomFilter(geom, bufferDist) {
     var fc = createFeatureCollection(
         _.map(geom.getLayers(), function (layer) {
             return layer.toGeoJSON();
         })
     );
-    if (buffer >= 0) {
-        return _simplify(fc);
+    var simplified = _simplify(fc);
+    if (bufferDist <= 0) {
+        return merge(simplified.features);
     }
-    return buffer(
-        _simplify(fc) : fc,
-        bufferDist,
-        {units: 'kilometers'}
-    );
+    return merge(buffer(simplified, bufferDist, {units: 'kilometers'}));
 }

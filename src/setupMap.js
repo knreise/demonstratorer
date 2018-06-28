@@ -63,7 +63,10 @@ function setupMap(api, datasets, options) {
         api = getApi();
     }
 
+
+
     datasets = lookupDatasets(datasets);
+
 
     options = extendOptions(options);
 
@@ -72,7 +75,7 @@ function setupMap(api, datasets, options) {
     freezeMap(map);
     addExtraLayers(map, options);
 
-    /*var splashScreen =*/ setupSplashScreen(map, options);
+    setupSplashScreen(map, options);
 
     var locateBtn = addLocateButton(map);
 
@@ -102,6 +105,7 @@ function setupMap(api, datasets, options) {
 
         getUserPos(map, options, function (initPos) {
             unFreezeMap(map);
+
             if (initPos && bounds.contains(L.latLng(initPos.lat, initPos.lon))) {
                 map.setView([initPos.lat, initPos.lon], initPos.zoom);
             } else {
@@ -158,6 +162,7 @@ function setupMap(api, datasets, options) {
     });
 
     return map;
+
 };
 
 

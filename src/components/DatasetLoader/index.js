@@ -69,16 +69,6 @@ function filterData2(filterGeom, data) {
                 return booleanContains(filter, center(feature));
             }
             return booleanContains(filter, feature);
-            /*
-            if (feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'MultiLineString') {
-                //TODO: turf does not handle multi geoms
-                return true;
-            }
-            if (feature.geometry.type === 'Polygon') {
-                return booleanContains(filter, feature) || booleanOverlap(filter, feature);
-            }
-            return booleanContains(filter, feature);
-            */
         });
         return inside.indexOf(true) > -1;
     });
@@ -182,7 +172,6 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
         var bbox = bounds.toBBoxString();
         var zoom = map.getZoom();
-        console.log(zoom);
         _.each(toLoad, function (dataset) {
             _loadDatasetFromApi(dataset._id, bbox, zoom, function (error, data) {
                 _datasetUpdated(dataset._id, data, error);

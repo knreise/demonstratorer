@@ -16,6 +16,7 @@
     "@turf/helpers": "^5.1.0",
     "@turf/intersect": "^5.1.5",
     "@turf/simplify": "^5.1.0",
+    "@turf/union": "^6.0.3",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^3.3.7",
     "font-awesome": "^4.7.0",

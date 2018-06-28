@@ -99,12 +99,12 @@ module.exports = {
             description: 'Historie og kulturminner langs Nidelva i Trondheim.',
             params: {
                 datasets: [
-                    'verneomr',
+                   /* 'verneomr',
                     'difo',
                     'trondheimbyarkiv',
                     'wikipedia',
                     'lokalwiki',
-                    'ra_kulturmiljo',
+                    'ra_kulturmiljo',*/
                     'ra_lokalitet'
                 ],
                 image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/TrondheimNidelva-improved.jpg/640px-TrondheimNidelva-improved.jpg',

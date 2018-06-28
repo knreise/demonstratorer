@@ -49,7 +49,9 @@ export default function getInitBounds(api, options, callback) {
     } else if (options.line) {
         boundsParam = options.line;
         boundsFunc = function (line, callback) {
+
             getLine(api, options.line, function (err, line) {
+
                 if (err) {
                     callback(err);
                     return;
@@ -59,6 +61,7 @@ export default function getInitBounds(api, options, callback) {
                     clickable: false
                 });
                 var bounds = lineLayer.getBounds();
+
                 callback(null, bounds, lineLayer);
             });
         };
