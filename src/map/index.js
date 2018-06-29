@@ -61,7 +61,7 @@ export function freezeMap(map) {
     map.scrollWheelZoom.disable();
     map.keyboard.disable();
     if (map.zoomControl) {
-        map.zoomControl.removeFrom(map);
+        map.zoomControl.remove()
     }
     // Disable tap handler, if present.
     if (map.tap) {

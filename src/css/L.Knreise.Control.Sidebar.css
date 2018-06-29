@@ -274,6 +274,7 @@
 .leaflet-sidebar .close {
     font-size: 25px;
     line-height: 25px;
+    z-index: 1000 !important;
 }
 
 #splashscreen {
