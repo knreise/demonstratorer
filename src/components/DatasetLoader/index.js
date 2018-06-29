@@ -182,9 +182,7 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
 
         var zoom = map.getBoundsZoom(bounds);
         _.each(toLoad, function (dataset) {
-
             _loadDatasetFromApi(dataset._id, bbox, zoom, function (error, data) {
-                console.log('loaded', dataset._id, data.features.length)
                 _datasetUpdated(dataset._id, data, error);
                 completed();
             });
@@ -241,11 +239,9 @@ export default function DatasetLoader(datasets, map, api, initBounds, filter) {
         } else {
             currentErrors[datasetId] = null;
 
-            console.log('before filter', data.features.length)
             if (filter) {
                 data = filterData2(filter, data);
             }
-            console.log('after filter', data.features.length)
 
             currentData[datasetId] = data;
         }
