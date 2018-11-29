@@ -54,7 +54,8 @@ function getApi() {
         },
         europeana: {
             apikey: 'pYEaya4fK'
-        }
+        },
+        proxyUrl: 'https://whispering-brook-15323.herokuapp.com/'
     });
 }
 

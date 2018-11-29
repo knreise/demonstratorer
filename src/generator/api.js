@@ -1,7 +1,7 @@
 import * as _ from 'underscore';
 import KNreiseAPI from 'knreise-api';
 
-const api = KNreiseAPI();
+const api = KNreiseAPI({proxyUrl: 'https://whispering-brook-15323.herokuapp.com/'});
 
 function formatKomm(num) {
     return ('0000' + num).slice(-4);
